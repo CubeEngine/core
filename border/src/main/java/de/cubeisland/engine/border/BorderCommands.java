@@ -25,14 +25,17 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.Triplet;
 
@@ -58,10 +61,10 @@ public class BorderCommands extends ContainerCommand
     private int generated;
     private boolean running = false;
 
-    @Command(desc = "Sets the center of the border",
-             indexed = @Grouped(req = false, value = {@Indexed(label = "chunkX"), @Indexed(label = "chunkZ")}),
-             flags = @Flag(longName = "spawn", name = "s"),
-             params = @Param(names = {"in", "world", "w"}, label = "world", type = World.class, completer = WorldCompleter.class))
+    @Command(desc = "Sets the center of the border")
+    @IParams(@Grouped(req = false, value = {@Indexed(label = "chunkX"), @Indexed(label = "chunkZ")}))
+    @NParams(@Named(names = {"in", "world", "w"}, label = "world", type = World.class, completer = WorldCompleter.class))
+    @Flags(@Flag(longName = "spawn", name = "s"))
     public void setCenter(ParameterizedContext context)
     {
         World world;
@@ -110,7 +113,8 @@ public class BorderCommands extends ContainerCommand
     }
 
     @Alias(names = "generateBorder")
-    @Command(desc = "Generates the chunks located in the border", indexed = @Grouped(@Indexed(label = "world")))
+    @Command(desc = "Generates the chunks located in the border")
+    @IParams(@Grouped(@Indexed(label = "world")))
     public void generate(ParameterizedContext context)
     {
         if (running)

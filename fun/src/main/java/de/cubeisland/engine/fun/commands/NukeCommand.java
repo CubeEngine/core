@@ -32,12 +32,15 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.Vector3;
@@ -63,26 +66,16 @@ public class NukeCommand
         module.getCore().getEventManager().registerListener(module, this.nukeListener);
     }
 
-    @Command(
-        desc = "Makes a carpet of TNT fall on a player or where you're looking",
-        indexed = {
-            @Grouped(req = false, value = @Indexed(label = "param1")),
-            @Grouped(req = false, value = @Indexed(label = "param2")),
-            @Grouped(req = false, value = @Indexed(label = "param3")),
-        },
-        params =
-            {
-                @Param(names = {"player", "p"}, type = User.class),
-                @Param(names = {"height", "h"}, type = Integer.class),
-                @Param(names = {"range", "r"}, type = Integer.class),
-                @Param(names = {"shape", "s"}, type = String.class)
-            },
-        flags =
-            {
-                @Flag(longName = "unsafe", name = "u"),
-                @Flag(longName = "quiet", name = "q")
-            }
-    )
+    @Command(desc = "Makes a carpet of TNT fall on a player or where you're looking")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "param1")),
+              @Grouped(req = false, value = @Indexed(label = "param2")),
+              @Grouped(req = false, value = @Indexed(label = "param3"))})
+    @NParams({@Named(names = {"player", "p"}, type = User.class),
+              @Named(names = {"height", "h"}, type = Integer.class),
+              @Named(names = {"range", "r"}, type = Integer.class),
+              @Named(names = {"shape", "s"}, type = String.class)})
+    @Flags({@Flag(longName = "unsafe", name = "u"),
+            @Flag(longName = "quiet", name = "q")})
     public void nuke(ParameterizedContext context)
     {
         Location location;

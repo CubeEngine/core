@@ -31,11 +31,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.fun.Fun;
@@ -59,9 +61,9 @@ public class RocketCommand
         return this.rocketListener;
     }
 
-    @Command(desc = "Shoots a player upwards with a cool smoke effect",
-             indexed = @Grouped(req = false, value = @Indexed(label = "height")),
-             params = @Param(names = {"player", "p"}, type = User.class))
+    @Command(desc = "Shoots a player upwards with a cool smoke effect")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "height")))
+    @NParams(@Named(names = {"player", "p"}, type = User.class))
     public void rocket(ParameterizedContext context)
     {
         int height = context.getArg(0, 10);

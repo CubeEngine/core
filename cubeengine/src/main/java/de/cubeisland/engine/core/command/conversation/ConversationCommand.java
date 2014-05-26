@@ -48,7 +48,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
 
     protected ConversationCommand(Module module, ConversationContextFactory contextFactory)
     {
-        super(module, "", "", contextFactory, null);
+        super(module, "", "", contextFactory, null, false);
         module.getCore().getEventManager().registerListener(module, this);
     }
 

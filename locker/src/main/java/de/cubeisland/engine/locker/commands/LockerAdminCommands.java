@@ -23,8 +23,9 @@ import org.bukkit.inventory.InventoryHolder;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.storage.Lock;
@@ -59,7 +60,8 @@ public class LockerAdminCommands extends ContainerCommand
         return lockById;
     }
 
-    @Command(desc = "Opens a protected chest by protection id", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
+    @Command(desc = "Opens a protected chest by protection id")
+    @IParams(@Grouped(@Indexed(label = "id", type = Integer.class)))
     public void view(ParameterizedContext context)
     {
         Lock lock = this.getLockById(context, context.<Integer>getArg(0));
@@ -83,7 +85,8 @@ public class LockerAdminCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a protection by its id", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
+    @Command(desc = "Deletes a protection by its id")
+    @IParams(@Grouped(@Indexed(label = "id", type = Integer.class)))
     public void remove(ParameterizedContext context)
     {
         Lock lock = this.getLockById(context, context.<Integer>getArg(0, null));
@@ -91,7 +94,8 @@ public class LockerAdminCommands extends ContainerCommand
         lock.delete((User)context.getSender());
     }
 
-    @Command(desc = "Teleport to a protection", indexed = @Grouped(@Indexed(label = "id", type = Integer.class)))
+    @Command(desc = "Teleport to a protection")
+    @IParams(@Grouped(@Indexed(label = "id", type = Integer.class)))
     public void tp(ParameterizedContext context)
     {
         Lock lock = this.getLockById(context, context.<Integer>getArg(0, null));
@@ -106,8 +110,8 @@ public class LockerAdminCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes all locks of given player",
-             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Deletes all locks of given player")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void purge(ParameterizedContext context)
     {
         User user = context.getArg(0);

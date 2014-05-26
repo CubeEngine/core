@@ -35,12 +35,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -87,8 +89,8 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     }
 
     @Alias(names = "ptc")
-    @Command(desc = "Removes all commands from your powertool",
-             flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Removes all commands from your powertool")
+    @Flags(@Flag(longName = "all", name = "a"))
     public void clear(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
@@ -119,9 +121,9 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     }
 
     @Alias(names = "ptr")
-    @Command(names = {"remove", "del", "delete", "rm"}, desc = "Removes a command from your powertool",
-             flags = @Flag(longName = "chat", name = "c"),
-             indexed = @Grouped(req = false, value = @Indexed(label = "command"), greedy = true))
+    @Command(alias = {"del", "delete", "rm"}, desc = "Removes a command from your powertool")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "command"), greedy = true))
+    @Flags(@Flag(longName = "chat", name = "c"))
     public void remove(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -178,10 +180,10 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     }
 
     @Alias(names = "pta")
-    @Command(desc = "Adds a command to your powertool", flags = {
-        @Flag(longName = "chat", name = "c"),
-        @Flag(longName = "replace", name = "r")},
-             indexed = @Grouped(value = @Indexed(label = "commandstring"), greedy = true))
+    @Command(desc = "Adds a command to your powertool")
+    @IParams(@Grouped(value = @Indexed(label = "commandstring"), greedy = true))
+    @Flags({@Flag(longName = "chat", name = "c"),
+           @Flag(longName = "replace", name = "r")})
     public void add(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
@@ -215,7 +217,8 @@ public class PowerToolCommand extends ContainerCommand implements Listener
     }
 
     @Alias(names = "ptl")
-    @Command(desc = "Lists your powertool-bindings.", flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Lists your powertool-bindings.")
+    @Flags(@Flag(longName = "all", name = "a"))
     public void list(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)

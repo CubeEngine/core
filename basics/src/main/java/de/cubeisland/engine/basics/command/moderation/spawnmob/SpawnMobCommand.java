@@ -25,8 +25,9 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsConfiguration;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
 
@@ -45,10 +46,10 @@ public class SpawnMobCommand
         config = basics.getConfiguration();
     }
 
-    @Command(desc = "Spawns the specified Mob",
-             indexed = {@Grouped(@Indexed(label = "<mob>[:data][,<ridingmob>[:data]]")),
-                        @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false),
-                        @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
+    @Command(desc = "Spawns the specified Mob")
+    @IParams({@Grouped(@Indexed(label = "<mob>[:data][,<ridingmob>[:data]]")),
+              @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false),
+              @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void spawnMob(CommandContext context)
     {
         User sender = null;

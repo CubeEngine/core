@@ -19,8 +19,9 @@ package de.cubeisland.engine.chat;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -35,17 +36,17 @@ public class ChatCommands
         this.module = module;
     }
 
-    @Command(desc = "Allows you to emote", indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
+    @Command(desc = "Allows you to emote")
+    @IParams(@Grouped(value = @Indexed(label = "message"), greedy = true))
     public void me(CommandContext context)
     {
         String message = context.getStrings(0);
         this.module.getCore().getUserManager().broadcastStatus(message, context.getSender());
     }
 
-    @Command(desc = "Changes your display name",
-             indexed = {
-                 @Grouped(@Indexed(label = {"name","!reset"})),
-                 @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Command(desc = "Changes your display name")
+    @IParams({@Grouped(@Indexed(label = {"name","!reset"})),
+              @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
     public void nick(CommandContext context)
     {
         User forUser;

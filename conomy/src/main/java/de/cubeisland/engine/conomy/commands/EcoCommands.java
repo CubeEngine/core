@@ -24,12 +24,14 @@ import de.cubeisland.engine.conomy.account.Account;
 import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -46,11 +48,10 @@ public class EcoCommands extends ContainerCommand
         this.manager = module.getManager();
     }
 
-    @Command(names = {"give", "grant"},
-             desc = "Gives money to one or all players.",
-             indexed = { @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = @Flag(longName = "online", name = "o"))
+    @Command(alias = "grant", desc = "Gives money to one or all players.")
+    @IParams({@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags(@Flag(longName = "online", name = "o"))
     public void give(ParameterizedContext context)
     {
         Double amount = context.getArg(1);
@@ -90,11 +91,10 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(names = {"take", "remove"},
-             desc = "Takes money from given user",
-             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = UserListOrAllReader.class)),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = @Flag(longName = "online", name = "o"))
+    @Command(alias = "remove", desc = "Takes money from given user")
+    @IParams({@Grouped(@Indexed(label = {"player","!*"}, type = UserListOrAllReader.class)),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags(@Flag(longName = "online", name = "o"))
     public void take(ParameterizedContext context)
     {
         Double amount = context.getArg(1);
@@ -128,9 +128,9 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Reset the money from given user",
-             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
-             flags = @Flag(longName = "online", name = "o"))
+    @Command(desc = "Reset the money from given user")
+    @IParams(@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
+    @Flags(@Flag(longName = "online", name = "o"))
     public void reset(ParameterizedContext context)
     {
         if ("*".equals(context.getArg(0)))
@@ -163,10 +163,10 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Sets the money of a given player",
-             indexed = { @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = @Flag(longName = "online", name = "o"))
+    @Command(desc = "Sets the money of a given player")
+    @IParams({@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags(@Flag(longName = "online", name = "o"))
     public void set(ParameterizedContext context)
     {
         Double amount = context.getArg(1);
@@ -200,10 +200,10 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Scales the money of a given player",
-             indexed = {@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
-                        @Grouped(@Indexed(label = "factor", type = Float.class))},
-             flags = @Flag(longName = "online", name = "o"))
+    @Command(desc = "Scales the money of a given player")
+    @IParams({@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)),
+              @Grouped(@Indexed(label = "factor", type = Float.class))})
+    @Flags(@Flag(longName = "online", name = "o"))
     public void scale(ParameterizedContext context)
     {
         Float factor = context.getArg(1);
@@ -232,8 +232,8 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Hides the account of a given player",
-             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
+    @Command(desc = "Hides the account of a given player")
+    @IParams(@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
     public void hide(ParameterizedContext context)
     {
         if ("*".equals(context.getArg(0)))
@@ -259,8 +259,8 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Unhides the account of a given player",
-             indexed = @Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
+    @Command(desc = "Unhides the account of a given player")
+    @IParams(@Grouped(@Indexed(label = {"players","!*"}, type = UserListOrAllReader.class)))
     public void unhide(ParameterizedContext context)
     {
         if ("*".equals(context.getArg(0)))
@@ -287,7 +287,8 @@ public class EcoCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a users account.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Deletes a users account.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void delete(CommandContext context)
     {
         User user = context.getArg(0);
@@ -299,9 +300,9 @@ public class EcoCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "{user} did not have an account to delete!", user);
     }
 
-    @Command(desc = "Creates a new account",
-             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Creates a new account")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @Flags(@Flag(longName = "force", name = "f"))
     public void create(ParameterizedContext context)
     {
         if (context.hasArg(0))

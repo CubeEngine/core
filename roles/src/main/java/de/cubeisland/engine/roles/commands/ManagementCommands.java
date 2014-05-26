@@ -24,8 +24,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.roles.Roles;
 import de.cubeisland.engine.roles.role.RolesAttachment;
@@ -64,8 +65,8 @@ public class ManagementCommands extends ContainerCommand
 
     public static World curWorldOfConsole = null;
 
-    @Command(desc = "Sets or resets the current default world", indexed = @Grouped(req = false, value = @Indexed(
-        label = "world", type = World.class)))
+    @Command(desc = "Sets or resets the current default world")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
     public void defaultworld(CommandContext context)
     {
         World world = null;

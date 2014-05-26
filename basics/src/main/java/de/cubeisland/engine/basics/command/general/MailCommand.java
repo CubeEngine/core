@@ -31,8 +31,9 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import gnu.trove.set.TLongSet;
@@ -55,7 +56,8 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "readmail")
-    @Command(desc = "Reads your mail.", indexed = @Grouped(value = @Indexed(label = {"player","!console"}, type = {User.class, String.class}), req = false))
+    @Command(desc = "Reads your mail.")
+    @IParams(@Grouped(value = @Indexed(label = {"player","!console"}, type = {User.class, String.class}), req = false))
     public void read(CommandContext context)
     {
         User sender;
@@ -134,7 +136,8 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "spymail")
-    @Command(desc = "Shows the mail of other players.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Shows the mail of other players.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void spy(CommandContext context)
     {
         User user = context.getArg(0);
@@ -155,10 +158,9 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "sendmail")
-    @Command(desc = "Sends mails to other players.",
-             indexed = {
-                 @Grouped(@Indexed(label = "player", type = User.class)),
-                 @Grouped(value = @Indexed(label = "message"), greedy = true)})
+    @Command(desc = "Sends mails to other players.")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void send(CommandContext context)
     {
         User user = context.getArg(0);
@@ -168,8 +170,8 @@ public class MailCommand extends ContainerCommand
     }
 
     @Alias(names = "sendallmail")
-    @Command(desc = "Sends mails to all players.",
-             indexed = @Grouped(value = @Indexed(label = "mailid"), greedy = true))
+    @Command(desc = "Sends mails to all players.")
+    @IParams(@Grouped(value = @Indexed(label = "mailid"), greedy = true))
     public void sendAll(CommandContext context)
     {
         Set<User> users = this.module.getCore().getUserManager().getOnlineUsers();
@@ -205,8 +207,8 @@ public class MailCommand extends ContainerCommand
         context.sendTranslated(POSITIVE, "Sent mail to everyone!");
     }
 
-    @Command(desc = "Removes a single mail",
-             indexed = @Grouped(@Indexed(label = "mailid")))
+    @Command(desc = "Removes a single mail")
+    @IParams(@Grouped(@Indexed(label = "mailid")))
     public void remove(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -241,8 +243,8 @@ public class MailCommand extends ContainerCommand
         }
     }
 
-    @Command(names = {"clear"}, desc = "Clears your mail.",
-             indexed = @Grouped(value = @Indexed(label = "player", type = User.class), req = false))
+    @Command(desc = "Clears your mail.")
+    @IParams(@Grouped(value = @Indexed(label = "player", type = User.class), req = false))
     public void clear(CommandContext context)
     {
         User sender = null;

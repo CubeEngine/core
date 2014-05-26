@@ -21,8 +21,9 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -68,8 +69,8 @@ public class PaginationCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Display the given page of your previous command.",
-             indexed = @Grouped(@Indexed(label = "pageNumber", type = Integer.class)))
+    @Command(desc = "Display the given page of your previous command.")
+    @IParams(@Grouped(@Indexed(label = "pageNumber", type = Integer.class)))
     public void showpage(CommandContext context)
     {
         if (paginationManager.hasResult(context.getSender()))

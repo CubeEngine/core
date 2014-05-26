@@ -54,7 +54,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")), null);
+        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")), null, false);
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
@@ -102,11 +102,11 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         context.sendMessage(" ");
 
         List<CubeCommand> commands = new ArrayList<>();
-        for (CubeCommand command : context.getCommand().getChildren())
+        for (CubeCommand child : context.getCommand().getChildren())
         {
-            if (command.isAuthorized(sender))
+            if (!child.isCheckperm() || child.isAuthorized(sender))
             {
-                commands.add(command);
+                commands.add(child);
             }
         }
 

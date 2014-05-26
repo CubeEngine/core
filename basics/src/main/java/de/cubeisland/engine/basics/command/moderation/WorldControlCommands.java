@@ -32,14 +32,17 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsConfiguration;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -65,11 +68,10 @@ public class WorldControlCommands
         this.entityRemovals = new EntityRemovals(module);
     }
 
-    @Command(desc = "Changes the weather",
-             indexed = {
-                 @Grouped(@Indexed(label = {"!sun","!rain","!storm"})),
-                 @Grouped(req = false, value = @Indexed(label = "duration"))},
-             params = @Param(names = "in", label = "world", type = World.class))
+    @Command(desc = "Changes the weather")
+    @IParams({@Grouped(@Indexed(label = {"!sun","!rain","!storm"})),
+              @Grouped(req = false, value = @Indexed(label = "duration"))})
+    @NParams(@Named(names = "in", label = "world", type = World.class))
     public void weather(ParameterizedContext context)
     {
         User sender = null;
@@ -143,11 +145,10 @@ public class WorldControlCommands
         world.setWeatherDuration(duration);
     }
 
-    @Command(desc = "Removes entity",
-             indexed = {
-                 @Grouped(@Indexed(label = "entityType[:itemMaterial]")),
-                 @Grouped(req = false, value = @Indexed(label = {"radius","!*"}, type = IntegerOrAllReader.class))},
-             params = @Param(names = "in", label = "world", type = World.class))
+    @Command(desc = "Removes entity")
+    @IParams({@Grouped(@Indexed(label = "entityType[:itemMaterial]")),
+              @Grouped(req = false, value = @Indexed(label = {"radius","!*"}, type = IntegerOrAllReader.class))})
+    @NParams(@Named(names = "in", label = "world", type = World.class))
     public void remove(ParameterizedContext context)
     {
         User sender = null;
@@ -297,13 +298,12 @@ public class WorldControlCommands
     }
 
     @Command(desc = "Gets rid of mobs close to you. Valid types are:\n" +
-        "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.",
-             flags = { @Flag(longName = "lightning", name = "l"), // die with style
-                       @Flag(longName = "all", name = "a")// infinite radius
-    }, params = @Param(names = "in", type = World.class, completer = WorldCompleter.class),
-             indexed = {
-                 @Grouped(value = @Indexed(label = "types..."), req = false),
-                 @Grouped(value = @Indexed(label = "radius"), req = false)})
+        "monster, animal, pet, golem, boss, other, creeper, skeleton, spider etc.")
+    @IParams({@Grouped(value = @Indexed(label = "types..."), req = false),
+              @Grouped(value = @Indexed(label = "radius"), req = false)})
+    @NParams(@Named(names = "in", type = World.class, completer = WorldCompleter.class))
+    @Flags({@Flag(longName = "lightning", name = "l"), // die with style
+            @Flag(longName = "all", name = "a")})// infinite radius
     public void butcher(ParameterizedContext context)
     {
         User sender = null;

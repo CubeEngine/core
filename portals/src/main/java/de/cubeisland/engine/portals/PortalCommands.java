@@ -24,13 +24,15 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
@@ -56,9 +58,10 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvpc")
-    @Command(desc = "Creates a new Portal", indexed = @Grouped(@Indexed(label = "name")),
-    params = {@Param(names = "worlddest", label = "world", completer = WorldCompleter.class, type = World.class),
-              @Param(names = "portaldest", label = "portal")})
+    @Command(desc = "Creates a new Portal")
+    @IParams(@Grouped(@Indexed(label = "name")))
+    @NParams({@Named(names = "worlddest", label = "world", completer = WorldCompleter.class, type = World.class),
+              @Named(names = "portaldest", label = "portal")})
     public void create(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -117,7 +120,8 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvps")
-    @Command(desc = "Selects an existing portal", indexed = @Grouped(@Indexed(label = "portal")))
+    @Command(desc = "Selects an existing portal")
+    @IParams(@Grouped(@Indexed(label = "portal")))
     public void select(CommandContext context)
     {
         Portal portal = this.manager.getPortal(context.<String>getArg(0));
@@ -136,7 +140,8 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names ="mvpi")
-    @Command(desc = "Show info about a portal", indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
+    @Command(desc = "Show info about a portal")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "portal")))
     public void info(CommandContext context)
     {
         Portal portal = null;
@@ -163,7 +168,8 @@ public class PortalCommands extends ContainerCommand
     }
 
     @Alias(names = "mvpr")
-    @Command(desc = "Removes a portal permanently", indexed = @Grouped(@Indexed(label = "portal")))
+    @Command(desc = "Removes a portal permanently")
+    @IParams(@Grouped(@Indexed(label = "portal")))
     public void remove(CommandContext context)
     {
         Portal portal = this.manager.getPortal(context.<String>getArg(0));
@@ -176,8 +182,8 @@ public class PortalCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Portal {name} deleted", portal.getName());
     }
 
-    @Command(desc = "Shows debug portal information instead of teleporting",
-             indexed = @Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
+    @Command(desc = "Shows debug portal information instead of teleporting")
+    @IParams(@Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
     public void debug(CommandContext context)
     {
         if (context.getSender() instanceof User)

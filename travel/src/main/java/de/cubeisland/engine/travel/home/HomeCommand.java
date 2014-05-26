@@ -24,14 +24,17 @@ import org.bukkit.Location;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
 import de.cubeisland.engine.core.command.reflected.OnlyIngame;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
@@ -67,9 +70,9 @@ public class HomeCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Teleport to a home",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "home")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(desc = "Teleport to a home")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "home")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void tp(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -116,12 +119,11 @@ public class HomeCommand extends TpPointCommand
     }
 
     @Alias(names = {"sethome"})
-    @Command(names = {"set", "sethome", "create", "createhome"},
-             desc = "Set your home",
-             indexed = @Grouped(req = false, value = @Indexed(label = "name")),
-             flags = {@Flag(longName = "public", name = "pub", permission = "public")})
+    @Command(alias = {"create", "sethome", "createhome"}, desc = "Set your home")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "name")))
+    @Flags(@Flag(longName = "public", name = "pub", permission = "public"))
     @OnlyIngame("Ok so I'll need your new address then. No seriously this won't work!")
-    public void create(ParameterizedContext context)
+    public void set(ParameterizedContext context)
     {
         User sender = (User)context.getSender();
         if (this.manager.getCount(sender) >= this.module.getConfig().homes.max && !module.getPermissions().HOME_SET_MORE.isAuthorized(context.getSender()))
@@ -145,12 +147,11 @@ public class HomeCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "Your home {name} has been created!", home.getName());
     }
 
-    @Command(desc = "Set the welcome message of homes",
-             names = {"greeting", "setgreeting", "setwelcome", "setwelcomemsg"},
-             indexed = {@Grouped(@Indexed(label = "home")),
-                        @Grouped(req = false, value = @Indexed(label = "welcome message"), greedy = true)},
-             params = @Param(names = "owner", type = User.class, permission = "other"),
-             flags = @Flag(longName = "append", name = "a"))
+    @Command(desc = "Set the welcome message of homes", alias = {"setgreeting", "setwelcome", "setwelcomemsg"})
+    @IParams({@Grouped(@Indexed(label = "home")),
+              @Grouped(req = false, value = @Indexed(label = "welcome message"), greedy = true)})
+    @NParams(@Named(names = "owner", type = User.class, permission = "other"))
+    @Flags(@Flag(longName = "append", name = "a"))
     public void greeting(ParameterizedContext context)
     {
         User user = this.getUser(context, "owner");
@@ -182,9 +183,9 @@ public class HomeCommand extends TpPointCommand
     }
 
     @OnlyIngame("I am calling the moving company right now!")
-    @Command(names = {"move", "replace"}, desc = "Move a home",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "name")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(alias = {"replace"}, desc = "Move a home")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "name")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void move(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -212,9 +213,9 @@ public class HomeCommand extends TpPointCommand
     }
 
     @Alias(names = {"remhome", "removehome", "delhome", "deletehome"})
-    @Command(names = {"remove", "delete", "rem", "del"}, desc = "Remove a home",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "name")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(alias = {"delete", "rem", "del"}, desc = "Remove a home")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "name")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void remove(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -238,10 +239,10 @@ public class HomeCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "The home {name} of {user} has been removed", name, user);
     }
 
-    @Command(desc = "Rename a home",
-             indexed = {@Grouped(@Indexed(label = "home")),
-                        @Grouped(@Indexed(label = "new name"))},
-             params = @Param(names = "owner", type = User.class))
+    @Command(desc = "Rename a home")
+    @IParams({@Grouped(@Indexed(label = "home")),
+              @Grouped(@Indexed(label = "new name"))})
+    @NParams(@Named(names = "owner", type = User.class))
     public void rename(ParameterizedContext context)
     {
         User user = getUser(context, "owner");
@@ -277,12 +278,11 @@ public class HomeCommand extends TpPointCommand
     }
 
     @Alias(names = {"listhomes", "homes"})
-    @Command(names = {"list", "listhomes"},
-             desc = "Lists homes a player can access",
-             flags = {@Flag(name = "pub", longName = "public"),
-                      @Flag(name = "o", longName = "owned"),
-                      @Flag(name = "i", longName = "invited")},
-             indexed = @Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Command(alias = "listhomes", desc = "Lists homes a player can access")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Flags({@Flag(name = "pub", longName = "public"),
+            @Flag(name = "o", longName = "owned"),
+            @Flag(name = "i", longName = "invited")})
     public void list(ParameterizedContext context) throws Exception
     {
         if ((context.hasArg(0) && "*".equals(context.getArg(0))) || !(context.hasArg(0) || context.isSender(User.class)))
@@ -330,10 +330,9 @@ public class HomeCommand extends TpPointCommand
         this.showList(context, null, this.manager.list(true, true));
     }
 
-    @Command(names = {"ilist", "invited"},
-             desc = "List all players invited to your homes",
-             indexed = @Grouped(req = false, value = @Indexed(label = "home")),
-             params = @Param(names = "owner", type = User.class, permission = "other"))
+    @Command(alias = {"ilist", "invited"}, desc = "List all players invited to your homes")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "home")))
+    @NParams(@Named(names = "owner", type = User.class, permission = "other"))
     public void invitedList(ParameterizedContext context)
     {
         User user = this.getUser(context, "owner");
@@ -378,9 +377,9 @@ public class HomeCommand extends TpPointCommand
     }
 
     @OnlyIngame("How about making a phone call to invite someone instead?")
-    @Command(desc = "Invite a user to one of your homes",
-             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
-                        @Grouped(req = false, value = @Indexed(label = "home"))})
+    @Command(desc = "Invite a user to one of your homes")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(req = false, value = @Indexed(label = "home"))})
     public void invite(CommandContext context)
     {
         User sender = (User)context.getSender();
@@ -421,9 +420,9 @@ public class HomeCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Uninvite a player from one of your homes",
-             indexed = {@Grouped(@Indexed(label = "player", type = User.class)),
-                        @Grouped(req = false, value = @Indexed(label = "home"))})
+    @Command(desc = "Uninvite a player from one of your homes")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(req = false, value = @Indexed(label = "home"))})
     public void unInvite(CommandContext context)
     {
         User sender = (User)context.getSender();
@@ -463,10 +462,9 @@ public class HomeCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "{user} is no longer invited to your home {name}", invited, home.getName());
     }
 
-    @Command(names = {"private", "makeprivate", "setprivate"},
-             desc = "Make one of your homes private",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "home")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(name = "private", alias = {"makeprivate", "setprivate"}, desc = "Make one of your homes private")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "home")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePrivate(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -495,10 +493,9 @@ public class HomeCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "The home {name} of {user} is now private", home.getOwnerName(), home.getName());
     }
 
-    @Command(names = {"public", "makepublic", "setpublic"},
-             desc = "Make one of your homes public",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "home")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(name = "public", alias = {"makepublic", "setpublic"}, desc = "Make one of your homes public")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "home")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePublic(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -528,10 +525,10 @@ public class HomeCommand extends TpPointCommand
     }
 
     @Alias(names = {"clearhomes"})
-    @Command(desc = "Clear all homes (of an user)",
-             flags = {@Flag(name = "pub", longName = "public"),
-                      @Flag(name = "priv", longName = "private")},
-             indexed = @Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Command(desc = "Clear all homes (of an user)")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Flags({@Flag(name = "pub", longName = "public"),
+            @Flag(name = "priv", longName = "private")})
     public CommandResult clear(final ParameterizedContext context)
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))

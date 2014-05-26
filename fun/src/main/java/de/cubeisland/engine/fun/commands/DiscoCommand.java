@@ -23,11 +23,13 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.fun.Fun;
 import gnu.trove.map.hash.THashMap;
@@ -46,11 +48,9 @@ public class DiscoCommand
         this.activeTasks = new THashMap<>();
     }
 
-    @Command(
-        desc = "Rapidly changes from day to night",
-        indexed = @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
-        params = @Param(names = {"delay", "d"}, type = Integer.class)
-    )
+    @Command(desc = "Rapidly changes from day to night")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
+    @NParams(@Named(names = {"delay", "d"}, type = Integer.class))
     public void disco(ParameterizedContext context)
     {
         final CommandSender sender = context.getSender();

@@ -26,12 +26,14 @@ import de.cubeisland.engine.conomy.account.ConomyManager;
 import de.cubeisland.engine.conomy.account.UserAccount;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 
@@ -50,9 +52,9 @@ public class BankCommands extends ContainerCommand
     }
 
     @Alias(names = "bbalance")
-    @Command(desc = "Shows the balance of the specified bank",
-             indexed = @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)),
-             flags = @Flag(longName = "showHidden", name = "f"))
+    @Command(desc = "Shows the balance of the specified bank")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)))
+    @Flags(@Flag(longName = "showHidden", name = "f"))
     public void balance(ParameterizedContext context)
     {
         if (context.hasArg(0))
@@ -84,8 +86,8 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "Please do specify the bank you want to show the balance of!");
     }
 
-    @Command(desc = "Lists all banks",
-             indexed = @Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
+    @Command(desc = "Lists all banks")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "owner", type = User.class)))
     public void list(CommandContext context) //Lists all banks [of given player]
     {
         String format = " - " + ChatFormat.YELLOW;
@@ -119,10 +121,10 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Invites a user to a bank",
-             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Invites a user to a bank")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void invite(ParameterizedContext context)
     {
         User user = context.getArg(0);
@@ -169,10 +171,10 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "Please do specify the bank you want to invite to!");
     }
 
-    @Command(desc = "Joins a bank",
-             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Joins a bank")
+    @IParams({@Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void join(ParameterizedContext context)
     {
         User user;
@@ -232,9 +234,9 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "{user} is now a member of the {name#bank} bank!", user, account.getName());
     }
 
-    @Command(desc = "Leaves a bank",
-             indexed = { @Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Command(desc = "Leaves a bank")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
     public void leave(CommandContext context)
     {
         if (context.hasArg(0))
@@ -299,9 +301,9 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "You have to specify a bank to leave!");
     }
 
-    @Command(desc = "Removes a player from the invite-list",
-             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(@Indexed(label = "bank", type = BankAccount.class))})
+    @Command(desc = "Removes a player from the invite-list")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(@Indexed(label = "bank", type = BankAccount.class))})
     public void uninvite(CommandContext context)
     {
         User user = context.getArg(0);
@@ -320,8 +322,8 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You are not allowed to uninvite someone from this bank!");
     }
 
-    @Command(desc = "Rejects an invite from a bank",
-             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
+    @Command(desc = "Rejects an invite from a bank")
+    @IParams(@Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void rejectinvite(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -339,9 +341,9 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "How did you manage to get invited in the first place?");
     }
 
-    @Command(desc = "Creates a new bank",
-             indexed = @Grouped(@Indexed(label = "name")),
-             flags = @Flag(longName = "nojoin", name = "nj"))
+    @Command(desc = "Creates a new bank")
+    @IParams(@Grouped(@Indexed(label = "name")))
+    @Flags(@Flag(longName = "nojoin", name = "nj"))
     public void create(ParameterizedContext context)
     {
         if (this.manager.bankAccountExists(context.<String>getArg(0)))
@@ -359,7 +361,8 @@ public class BankCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Deletes a bank", indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
+    @Command(desc = "Deletes a bank")
+    @IParams(@Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void delete(CommandContext context)
     {
         BankAccount account = context.getArg(0);
@@ -386,10 +389,10 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "You deleted the bank {name#bank}!", account.getName());
     }
 
-    @Command(desc = "Renames a bank",
-             indexed = { @Grouped(@Indexed(label = "name",type = BankAccount.class)),
-                         @Grouped(@Indexed(label = "new name"))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Renames a bank")
+    @IParams({@Grouped(@Indexed(label = "name",type = BankAccount.class)),
+              @Grouped(@Indexed(label = "new name"))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void rename(ParameterizedContext context)
     {
         BankAccount account = context.getArg(0);
@@ -410,10 +413,10 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "Bank name {input#bank} has already been taken!", context.getArg(1));
     }
 
-    @Command(desc = "Sets given user as owner for a bank",
-             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(@Indexed(label = "player", type = User.class))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Sets given user as owner for a bank")
+    @IParams({@Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(@Indexed(label = "player", type = User.class))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void setOwner(ParameterizedContext context)
     {
         User user = context.getArg(1);
@@ -431,8 +434,8 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "{user} is now owner of the bank {name#bank}!", user, account.getName());
     }
 
-    @Command(desc = "Lists the current invites of a bank",
-             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
+    @Command(desc = "Lists the current invites of a bank")
+    @IParams(@Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void listinvites(ParameterizedContext context)
     {
         BankAccount account = context.getArg(0);
@@ -463,8 +466,8 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "This bank does not require invites");
     }
 
-    @Command(desc = "Lists the members of a bank",
-             indexed = @Grouped(@Indexed(label = "bank", type = BankAccount.class)))
+    @Command(desc = "Lists the members of a bank")
+    @IParams(@Grouped(@Indexed(label = "bank", type = BankAccount.class)))
     public void listmembers(CommandContext context)
     {
         BankAccount account = context.getArg(0);
@@ -502,10 +505,10 @@ public class BankCommands extends ContainerCommand
     public void info(CommandContext context)//list all members with their rank
     {}
 
-    @Command(desc = "Deposits given amount of money into the bank",
-             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Deposits given amount of money into the bank")
+    @IParams({@Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void deposit(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -530,10 +533,10 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You cannot deposit into a bank as console!");
     }
 
-    @Command(desc = "Withdraws given amount of money from the bank",
-             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Withdraws given amount of money from the bank")
+    @IParams({@Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void withdraw(ParameterizedContext context)//takes money from the bank
     {
         if (context.getSender() instanceof User)
@@ -563,12 +566,12 @@ public class BankCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You cannot withdraw from a bank as console!");
     }
 
-    @Command(desc = "Pays given amount of money as bank to another account",
-             indexed = { @Grouped(@Indexed(label = "bank", type = BankAccount.class)),
-                         @Grouped(@Indexed(label = "target-account" )),
-                         @Grouped(@Indexed(label = "amount", type = Double.class))},
-             flags = {@Flag(longName = "force", name = "f"),
-                      @Flag(longName = "bank", name = "b")})
+    @Command(desc = "Pays given amount of money as bank to another account")
+    @IParams({@Grouped(@Indexed(label = "bank", type = BankAccount.class)),
+              @Grouped(@Indexed(label = "target-account" )),
+              @Grouped(@Indexed(label = "amount", type = Double.class))})
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "bank", name = "b")})
     public void pay(ParameterizedContext context)//pay AS bank to a player or other bank <name> [-bank]
     {
         BankAccount account = context.getArg(0);

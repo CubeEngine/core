@@ -31,13 +31,16 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.i18n.I18nUtil;
@@ -108,7 +111,7 @@ public class ShoutCommand extends ContainerCommand
     }
 
     @Alias(names = {"announcements"})
-    @Command(names = {"list", "announcements"}, desc = "List all announcements")
+    @Command(alias = "announcements", desc = "List all announcements")
     public void list(CommandContext context)
     {
         Iterator<Announcement> iter = this.module.getAnnouncementManager().getAllAnnouncements().iterator();
@@ -126,16 +129,15 @@ public class ShoutCommand extends ContainerCommand
         }
     }
 
-    @Command(desc = "Creates a new announcement",
-             indexed = @Grouped(@Indexed(label = "name")),
-             params = {
-                     @Param(names ={"message", "m"}),
-                     @Param(names ={"delay", "d"}, label = "<x> minutes|hours|days"),
-                       @Param(names ={"world", "w"}),
-                       @Param(names = {"permission", "p"}, label = "permission node"),
-                       @Param(names ={"group", "g"}),
-                       @Param(names ={"locale", "l"})},
-             flags = {@Flag(name = "fc", longName = "fixed-cycle")})
+    @Command(desc = "Creates a new announcement")
+    @IParams(@Grouped(@Indexed(label = "name")))
+    @NParams({@Named(names ={"message", "m"}),
+              @Named(names ={"delay", "d"}, label = "<x> minutes|hours|days"),
+              @Named(names ={"world", "w"}),
+              @Named(names = {"permission", "p"}, label = "permission node"),
+              @Named(names ={"group", "g"}),
+              @Named(names ={"locale", "l"})})
+    @Flags(@Flag(name = "fc", longName = "fixed-cycle"))
     public void create(ParameterizedContext context)
     {
         if (!context.hasParam("message"))

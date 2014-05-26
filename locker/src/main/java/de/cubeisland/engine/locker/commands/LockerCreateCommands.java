@@ -19,12 +19,14 @@ package de.cubeisland.engine.locker.commands;
 
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.locker.Locker;
 import de.cubeisland.engine.locker.commands.CommandListener.CommandType;
 import de.cubeisland.engine.locker.storage.LockManager;
@@ -57,10 +59,9 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cprivate")
-    @Command(names = "private",
-    desc = "creates a private protection",
-    indexed = @Grouped(req = false, value = @Indexed(label = "password")),
-    flags = @Flag(name = "key", longName = "keybook"))
+    @Command(name = "private", desc = "creates a private protection")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "password")))
+    @Flags(@Flag(name = "key", longName = "keybook"))
     public void cPrivate(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -68,8 +69,7 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cpublic")
-    @Command(names = "public",
-             desc = "creates a public protection")
+    @Command(name = "public", desc = "creates a public protection")
     public void cPublic(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -77,10 +77,9 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cdonation")
-    @Command(names = "donation",
-             desc = "creates a donation protection",
-             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
-             flags = @Flag(name = "key", longName = "keybook"))
+    @Command(name = "donation", desc = "creates a donation protection")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "password")))
+    @Flags(@Flag(name = "key", longName = "keybook"))
     public void cDonation(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -88,10 +87,9 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cfree")
-    @Command(names = "free",
-             desc = "creates a free protection",
-             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
-             flags = @Flag(name = "key", longName = "keybook"))
+    @Command(name = "free", desc = "creates a free protection")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "password")))
+    @Flags(@Flag(name = "key", longName = "keybook"))
     public void cFree(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -99,10 +97,9 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cpassword")
-    @Command(names = "password",
-             desc = "creates a donation protection",
-             indexed = @Grouped(@Indexed(label = "password")),
-             flags = @Flag(name = "key", longName = "keybook"))
+    @Command(name = "password", desc = "creates a donation protection")
+    @IParams(@Grouped(@Indexed(label = "password")))
+    @Flags(@Flag(name = "key", longName = "keybook"))
     public void cPassword(ParameterizedContext context) // same as private but with pw
     {
         if (isNotUser(context.getSender())) return;
@@ -110,10 +107,9 @@ public class LockerCreateCommands extends ContainerCommand
     }
 
     @Alias(names = "cguarded")
-    @Command(names = "guarded",
-             desc = "creates a guarded protection",
-             indexed = @Grouped(req = false, value = @Indexed(label = "password")),
-             flags = @Flag(name = "key", longName = "keybook"))
+    @Command(name = "guarded", desc = "creates a guarded protection")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "password")))
+    @Flags(@Flag(name = "key", longName = "keybook"))
     public void cguarded(ParameterizedContext context) // same as private but with pw
     {
         if (isNotUser(context.getSender())) return;

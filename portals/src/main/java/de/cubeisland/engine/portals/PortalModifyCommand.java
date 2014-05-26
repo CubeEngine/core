@@ -26,8 +26,9 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.module.service.Selector;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.WorldLocation;
@@ -48,9 +49,9 @@ public class PortalModifyCommand extends ContainerCommand
         this.manager = manager;
     }
 
-    @Command(desc = "Changes the owner of a portal",
-             indexed = {@Grouped(@Indexed(label = "owner", type = User.class)),
-                        @Grouped(req = false, value = @Indexed(label = "portal"))})
+    @Command(desc = "Changes the owner of a portal")
+    @IParams({@Grouped(@Indexed(label = "owner", type = User.class)),
+              @Grouped(req = false, value = @Indexed(label = "portal"))})
     public void owner(CommandContext context)
     {
         User user = context.getArg(0);
@@ -80,9 +81,9 @@ public class PortalModifyCommand extends ContainerCommand
     }
 
     @Alias(names = "mvpd")
-    @Command(names = {"destination","dest"}, desc = "changes the destination of the selected portal",
-        indexed = {@Grouped(@Indexed(label = {"!here","world","p:<portal>"})),
-                   @Grouped(req = false, value = @Indexed(label = "portal"))})
+    @Command(alias = "dest", desc = "changes the destination of the selected portal")
+    @IParams({@Grouped(@Indexed(label = {"!here","world","p:<portal>"})),
+              @Grouped(req = false, value = @Indexed(label = "portal"))})
     public void destination(CommandContext context)
     {
         Portal portal = null;
@@ -139,8 +140,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(POSITIVE, "Portal destination set!");
     }
 
-    @Command(desc = "Changes a portals location",
-             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
+    @Command(desc = "Changes a portals location")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "portal")))
     public void location(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -179,8 +180,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You have to be ingame to do this!");
     }
 
-    @Command(desc = "Modifies the location where a player exits when teleporting a portal",
-             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
+    @Command(desc = "Modifies the location where a player exits when teleporting a portal")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "portal")))
     public void exit(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -216,8 +217,8 @@ public class PortalModifyCommand extends ContainerCommand
         context.sendTranslated(NEGATIVE, "You have to be ingame to do this!");
     }
 
-    @Command(desc = "Toggles safe teleportation for this portal",
-             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
+    @Command(desc = "Toggles safe teleportation for this portal")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "portal")))
     public void togglesafe(CommandContext context)
     {
         Portal portal = null;
@@ -252,8 +253,8 @@ public class PortalModifyCommand extends ContainerCommand
         }
     }
 
-    @Command(desc = "Toggles whether entities can teleport with this portal",
-             indexed = @Grouped(req = false, value = @Indexed(label = "portal")))
+    @Command(desc = "Toggles whether entities can teleport with this portal")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "portal")))
     public void entity(CommandContext context)
     {
         Portal portal = null;

@@ -26,14 +26,17 @@ import org.bukkit.entity.Entity;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -64,8 +67,8 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cinfo")
-    @Command(desc = "Shows information about a protection",
-    flags = @Flag(longName = "persist", name = "p"))
+    @Command(desc = "Shows information about a protection")
+    @Flags(@Flag(longName = "persist", name = "p"))
     public void info(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -127,8 +130,8 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cremove")
-    @Command(desc = "Shows information about a protection",
-             flags = @Flag(longName = "persist", name = "p"))
+    @Command(desc = "Shows information about a protection")
+    @Flags(@Flag(longName = "persist", name = "p"))
     public void remove(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -141,9 +144,9 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cunlock")
-    @Command(desc = "Unlocks a password protected chest",
-             indexed = @Grouped(@Indexed(label = "password")),
-             flags = @Flag(longName = "persist", name = "p"))
+    @Command(desc = "Unlocks a password protected chest")
+    @IParams(@Grouped(@Indexed(label = "password")))
+    @Flags(@Flag(longName = "persist", name = "p"))
     public void unlock(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -156,11 +159,10 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cmodify")
-    @Command(names = "modify",
-             desc = "adds or removes player from the accesslist",
-             indexed = @Grouped(@Indexed(label = "players")),
-    flags = {@Flag(name = "g", longName = "global"),
-             @Flag(longName = "persist", name = "p")})
+    @Command(desc = "adds or removes player from the accesslist")
+    @IParams(@Grouped(@Indexed(label = "players")))
+    @Flags({@Flag(name = "g", longName = "global"),
+            @Flag(longName = "persist", name = "p")})
     public void modify(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -198,9 +200,9 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cgive")
-    @Command(desc = "gives a protection to someone else",
-             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
-             flags = @Flag(longName = "persist", name = "p"))
+    @Command(desc = "gives a protection to someone else")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
+    @Flags(@Flag(longName = "persist", name = "p"))
     public void give(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;
@@ -212,10 +214,9 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "ckey")
-    @Command(names = "key",
-             desc = "creates a KeyBook or invalidates previous KeyBooks",
-             flags = { @Flag(longName = "invalidate", name = "i"),
-                       @Flag(longName = "persist", name = "p")})
+    @Command(desc = "creates a KeyBook or invalidates previous KeyBooks")
+    @Flags({@Flag(longName = "invalidate", name = "i"),
+            @Flag(longName = "persist", name = "p")})
     public void key(ParameterizedContext context)
     {
         if (!this.module.getConfig().allowKeyBooks)
@@ -242,10 +243,10 @@ public class LockerCommands extends ContainerCommand
     }
 
     @Alias(names = "cflag")
-    @Command(desc = "Sets or unsets flags",
-             params = {@Param(names = "set", label = "flags...", completer = FlagCompleter.class),
-                       @Param(names = "unset", label = "flags...", completer = FlagCompleter.class)},
-             flags = @Flag(longName = "persist", name = "p"))
+    @Command(desc = "Sets or unsets flags")
+    @NParams({@Named(names = "set", label = "flags...", completer = FlagCompleter.class),
+              @Named(names = "unset", label = "flags...", completer = FlagCompleter.class)})
+    @Flags(@Flag(longName = "persist", name = "p"))
     public void flag(ParameterizedContext context)
     {
         if (isNotUser(context.getSender())) return;

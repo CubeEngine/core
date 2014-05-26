@@ -23,14 +23,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.cubeisland.engine.core.permission.PermDefault;
+
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Command
+public @interface CommandPermission
 {
-    String name() default "";
-    String[] alias() default {};
-    String desc();
+    /**
+     * If set to false the permission will not get checked automatically
+     */
+    boolean checkPermission() default true;
+    /**
+     * Use this permission node instead of the automatically generated one.
+     * 'cubeengine.<module>.command' will be prepended to this.
+     */
+    String value() default "";
+    PermDefault permDefault() default PermDefault.OP;
 }
 
 

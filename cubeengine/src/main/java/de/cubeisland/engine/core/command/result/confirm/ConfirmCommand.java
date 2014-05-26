@@ -32,7 +32,7 @@ public class ConfirmCommand extends CubeCommand
 
     public ConfirmCommand(Module module, ContextFactory contextFactory, ConfirmManager confirmManager)
     {
-        super(module, "confirm", "Confirm a command", contextFactory, null);
+        super(module, "confirm", "Confirm a command", contextFactory, null, false);
         this.confirmManager = confirmManager;
     }
 

@@ -41,11 +41,13 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -77,11 +79,10 @@ public class InformationCommands
                                                      .appendSeconds().appendSuffix(" second", " seconds").toFormatter();
     }
 
-    @Command(desc = "Displays the biome type you are standing in.",
-             indexed = {
-                 @Grouped(value = @Indexed(label = "world"), req = false),
-                 @Grouped(value = @Indexed(label = "block-x"), req = false),
-                 @Grouped(value = @Indexed(label = "block-z"), req = false)})
+    @Command(desc = "Displays the biome type you are standing in.")
+    @IParams({@Grouped(value = @Indexed(label = "world"), req = false),
+              @Grouped(value = @Indexed(label = "block-x"), req = false),
+              @Grouped(value = @Indexed(label = "block-z"), req = false)})
     public void biome(CommandContext context)
     {
         World world;
@@ -120,8 +121,8 @@ public class InformationCommands
         context.sendTranslated(NEUTRAL, "Biome at {vector:x\\=:z\\=}: {biome}", new BlockVector2(x, z), biome);
     }
 
-    @Command(desc = "Displays the seed of a world.",
-             indexed = @Grouped(value = @Indexed(label = "world"), req = false))
+    @Command(desc = "Displays the seed of a world.")
+    @IParams(@Grouped(value = @Indexed(label = "world"), req = false))
     public void seed(CommandContext context)
     {
         World world = null;
@@ -201,12 +202,11 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays near players(entities/mobs) to you.",
-             indexed = {
-                 @Grouped(value = @Indexed(label = "radius"), req = false),
-                 @Grouped(value = @Indexed(label = "player", type = User.class), req = false)},
-             flags = {@Flag(longName = "entity", name = "e"),
-                      @Flag(longName = "mob", name = "m")})
+    @Command(desc = "Displays near players(entities/mobs) to you.")
+    @IParams({@Grouped(value = @Indexed(label = "radius"), req = false),
+              @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
+    @Flags({@Flag(longName = "entity", name = "e"),
+            @Flag(longName = "mob", name = "m")})
     public void near(ParameterizedContext context)
     {
         User user;
@@ -352,7 +352,7 @@ public class InformationCommands
         list.add(s);
     }
 
-    @Command(names = {"ping", "pong"}, desc = "Pong!")
+    @Command(alias = "pong", desc = "Pong!")
     public void ping(CommandContext context)
     {
         final String label = context.getLabel().toLowerCase(Locale.ENGLISH);
@@ -366,8 +366,8 @@ public class InformationCommands
         }
     }
 
-    @Command(desc = "Displays chunk, memory and world information.",
-             flags = @Flag(longName = "reset" , name = "r"))
+    @Command(desc = "Displays chunk, memory and world information.")
+    @Flags(@Flag(longName = "reset" , name = "r"))
     public void lag(ParameterizedContext context)
     {
         if (context.hasFlag("r"))
@@ -445,7 +445,7 @@ public class InformationCommands
     }
 
 
-    @Command(desc = "Displays all loaded worlds", names = {"listWorlds","worldlist","worlds"})
+    @Command(desc = "Displays all loaded worlds", alias = {"worldlist","worlds"})
     public void listWorlds(CommandContext context)
     {
         context.sendTranslated(POSITIVE, "Loaded worlds:");

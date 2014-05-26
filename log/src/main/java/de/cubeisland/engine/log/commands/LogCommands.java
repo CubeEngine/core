@@ -28,8 +28,9 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -213,8 +214,8 @@ public class LogCommands extends ContainerCommand
         "chest: Shows chest-interactions only\n" +
         "player: Shows player-interacions only\n" +
         "kills: Shows kill-interactions only\n" +
-        "block: Shows block-changes only",
-             indexed = @Grouped(req = false, value = @Indexed(label = "log-type")))
+        "block: Shows block-changes only")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "log-type")))
     public void block(CommandContext context)
     {
         //TODO tabcompleter for logBlockTypes (waiting for CE-389)
@@ -244,8 +245,8 @@ public class LogCommands extends ContainerCommand
         "chest: Shows chest-interactions only\n" +
         "player: Shows player-interacions only\n" +
         "kills: Shows kill-interactions only\n" +
-        "block: Shows block-changes only",
-             indexed = @Grouped(req = false, value = @Indexed(label = "log-type")))
+        "block: Shows block-changes only")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "log-type")))
     public void tool(CommandContext context)
     {
         //TODO tabcompleter for logToolTypes (waiting for CE-389)

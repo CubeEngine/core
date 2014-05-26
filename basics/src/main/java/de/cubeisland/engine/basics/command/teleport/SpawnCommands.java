@@ -22,12 +22,15 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.world.WorldSetSpawnEvent;
@@ -49,11 +52,11 @@ public class SpawnCommands
         this.module = basics;
     }
 
-    @Command(desc = "Changes the global respawnpoint",
-             indexed = { @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
-                         @Grouped(req = false, value = { @Indexed(label = "x"),
-                                                         @Indexed(label = "y"),
-                                                         @Indexed(label = "z")})})
+    @Command(desc = "Changes the global respawnpoint")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
+              @Grouped(req = false, value = {@Indexed(label = "x"),
+                                             @Indexed(label = "y"),
+                                             @Indexed(label = "z")})})
     public void setSpawn(CommandContext context)
     {
         User sender = null;
@@ -108,11 +111,11 @@ public class SpawnCommands
         context.sendTranslated(POSITIVE, "The spawn in {world} is now set to {vector:x\\=:y\\=:z\\=}", world, new BlockVector3(x, y, z));
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.",
-             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
-             params = @Param(names = {"world", "w"}, type = World.class),
-             flags = {@Flag(longName = "force", name = "f"),
-                      @Flag(longName = "all", name = "a")})
+    @Command(desc = "Teleport directly to the worlds spawn.")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @NParams(@Named(names = {"world", "w"}, type = World.class))
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "all", name = "a")})
     public void spawn(ParameterizedContext context)
     {
         User user = null;
@@ -198,8 +201,8 @@ public class SpawnCommands
         }
     }
 
-    @Command(desc = "Teleports you to the spawn of given world",
-             indexed = @Grouped(@Indexed(label = "world", type = World.class)))
+    @Command(desc = "Teleports you to the spawn of given world")
+    @IParams(@Grouped(@Indexed(label = "world", type = World.class)))
     public void tpworld(CommandContext context)
     {
         if (context.getSender() instanceof User)

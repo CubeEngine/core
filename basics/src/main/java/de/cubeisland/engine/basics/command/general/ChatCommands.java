@@ -28,8 +28,9 @@ import de.cubeisland.engine.basics.storage.BasicsUserEntity;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -60,10 +61,9 @@ public class ChatCommands
 
 
 
-    @Command(desc = "Sends a private message to someone",
-             names = {"tell", "message", "msg", "pm", "m", "t", "whisper", "w"},
-             indexed = { @Grouped(@Indexed(label = {"player","!console"}, type = {User.class, String.class})),
-                         @Grouped(value = @Indexed(label = "message"), greedy = true)})
+    @Command(desc = "Sends a private message to someone", alias = {"tell", "message", "pm", "m", "t", "whisper", "w"})
+    @IParams({@Grouped(@Indexed(label = {"player","!console"}, type = {User.class, String.class})),
+              @Grouped(value = @Indexed(label = "message"), greedy = true)})
     public void msg(CommandContext context)
     {
         if ("console".equalsIgnoreCase(context.getArg(0).toString()))
@@ -82,9 +82,8 @@ public class ChatCommands
         }
     }
 
-    @Command(names = {"reply", "r"},
-             desc = "Replies to the last person that whispered to you.",
-             indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
+    @Command(alias = "r", desc = "Replies to the last person that whispered to you.")
+    @IParams(@Grouped(value = @Indexed(label = "message"), greedy = true))
     public void reply(CommandContext context)
     {
         UUID lastWhisper;
@@ -156,8 +155,8 @@ public class ChatCommands
         return true;
     }
 
-    @Command(desc = "Broadcasts a message",
-             indexed = @Grouped(value = @Indexed(label = "message"), greedy = true))
+    @Command(desc = "Broadcasts a message")
+    @IParams(@Grouped(value = @Indexed(label = "message"), greedy = true))
     public void broadcast(CommandContext context)
     {
         StringBuilder sb = new StringBuilder();
@@ -169,9 +168,9 @@ public class ChatCommands
         this.um.broadcastMessage(NEUTRAL, "[{text:Broadcast}] {}", sb.toString());
     }
 
-    @Command(desc = "Mutes a player",
-             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(value = @Indexed(label = "duration"), req = false)})
+    @Command(desc = "Mutes a player")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(value = @Indexed(label = "duration"), req = false)})
     public void mute(CommandContext context)
     {
         User user = context.getArg(0);
@@ -201,8 +200,8 @@ public class ChatCommands
         context.sendTranslated(NEUTRAL, "You muted {user} globally for {input#amount}!", user, timeString);
     }
 
-    @Command(desc = "Unmutes a player",
-             indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Unmutes a player")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void unmute(CommandContext context)
     {
         User user = context.getArg(0);
@@ -212,7 +211,7 @@ public class ChatCommands
         context.sendTranslated(POSITIVE, "{user} is no longer muted!", user);
     }
 
-    @Command(names = {"rand","roll"}, desc = "Shows a random number from 0 to 100")
+    @Command(alias = "roll", desc = "Shows a random number from 0 to 100")
     public void rand(CommandContext context)
     {
         this.um.broadcastStatus(YELLOW, "rolled a {integer}!", context.getSender(), new Random().nextInt(100));

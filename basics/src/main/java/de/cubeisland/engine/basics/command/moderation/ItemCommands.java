@@ -30,18 +30,20 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import de.cubeisland.engine.core.command.parameterized.Param;
-import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
-
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.readers.IntegerOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
+import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -72,8 +74,8 @@ public class ItemCommands
         this.module = module;
     }
 
-    @Command(desc = "Looks up an item for you!",
-            indexed = @Grouped(req = false, value = @Indexed(label = "item")))
+    @Command(desc = "Looks up an item for you!")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "item")))
     public PaginatedResult itemDB(CommandContext context)
     {
         if (context.hasArg(0))
@@ -127,9 +129,9 @@ public class ItemCommands
         return null;
     }
 
-    @Command(desc = "Changes the display name of the item in your hand.",
-             indexed = { @Grouped(@Indexed(label = "name")),
-                         @Grouped(req = false, value = @Indexed(label = "lore..."),greedy = true)})
+    @Command(desc = "Changes the display name of the item in your hand.")
+    @IParams({@Grouped(@Indexed(label = "name")),
+              @Grouped(req = false, value = @Indexed(label = "lore..."),greedy = true)})
     public void rename(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -157,9 +159,8 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "Trying to give your {text:toys} a name?");
     }
 
-    @Command(names = {"headchange", "skullchange"},
-             desc = "Changes a skull to a players skin.",
-             indexed = @Grouped(req = false, value = @Indexed(label = "name")))
+    @Command(alias = "skullchange", desc = "Changes a skull to a players skin.")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "name")))
     public void headchange(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -181,8 +182,8 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "This will you only give headaches!");
     }
 
-    @Command(desc = "Grants unlimited items",
-             indexed = @Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
+    @Command(desc = "Grants unlimited items")
+    @IParams(@Grouped(req = false, value = @Indexed(label = {"!on","!off"})))
     public void unlimited(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -223,10 +224,10 @@ public class ItemCommands
         context.sendTranslated(NEGATIVE, "This command can only be used by a player!");
     }
 
-    @Command(desc = "Adds an Enchantment to the item in your hand",
-             flags = @Flag(longName = "unsafe", name = "u"),
-             indexed = { @Grouped(value = @Indexed(label = "enchantment"), req = false),
-                         @Grouped(value = @Indexed(label = "level"), req = false)})
+    @Command(desc = "Adds an Enchantment to the item in your hand")
+    @IParams({@Grouped(value = @Indexed(label = "enchantment"), req = false),
+              @Grouped(value = @Indexed(label = "level"), req = false)})
+    @Flags(@Flag(longName = "unsafe", name = "u"))
     public void enchant(ParameterizedContext context)
     {
         if (!context.hasArg(0))
@@ -340,11 +341,11 @@ public class ItemCommands
         return sb.toString();
     }
 
-    @Command(desc = "Gives the specified Item to a player",
-             flags = {@Flag(name = "b", longName = "blacklist")},
-             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(@Indexed(label = "material[:data]")),
-                         @Grouped(value = @Indexed(label = "amount"), req = false)})
+    @Command(desc = "Gives the specified Item to a player")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(@Indexed(label = "material[:data]")),
+              @Grouped(value = @Indexed(label = "amount"), req = false)})
+    @Flags(@Flag(name = "b", longName = "blacklist"))
     @SuppressWarnings("deprecation")
     public void give(ParameterizedContext context)
     {
@@ -384,12 +385,11 @@ public class ItemCommands
         user.sendTranslated(POSITIVE, "{user} just gave you {amount} {input#item}!", context.getSender().getName(), amount, matname);
     }
 
-    @Command(names = {"item", "i"}, desc = "Gives the specified Item to you",
-             indexed = {
-                @Grouped(@Indexed(label = "material[:data]", type = ItemStack.class)),
-                @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false)},
-             params = @Param(names = "ench", label = "enchantment[:level]"),
-             flags = {@Flag(longName = "blacklist", name = "b")})
+    @Command(alias = "i", desc = "Gives the specified Item to you")
+    @IParams({@Grouped(@Indexed(label = "material[:data]", type = ItemStack.class)),
+              @Grouped(value = @Indexed(label = "amount", type = Integer.class), req = false)})
+    @NParams(@Named(names = "ench", label = "enchantment[:level]"))
+    @Flags(@Flag(longName = "blacklist", name = "b"))
     @SuppressWarnings("deprecation")
     public void item(ParameterizedContext context)
     {
@@ -447,8 +447,8 @@ public class ItemCommands
         context.sendTranslated(NEUTRAL, "Did you try to use {text:/give} on your new I-Tem?");
     }
 
-    @Command(desc = "Refills the stack in hand",
-             indexed = @Grouped(value = @Indexed(label = {"amount","!*"}, type = IntegerOrAllReader.class), req = false))
+    @Command(desc = "Refills the stack in hand")
+    @IParams(@Grouped(value = @Indexed(label = {"amount","!*"}, type = IntegerOrAllReader.class), req = false))
     public void more(CommandContext context)
     {
         if (!context.isSender(User.class))
@@ -497,8 +497,8 @@ public class ItemCommands
         sender.sendTranslated(POSITIVE, "Refilled {amount} stacks in hand!", amount);
     }
 
-    @Command(desc = "Repairs your items",
-             flags = @Flag(longName = "all", name = "a"))
+    @Command(desc = "Repairs your items")
+    @Flags(@Flag(longName = "all", name = "a"))
     // without item in hand
     public void repair(ParameterizedContext context)
     {

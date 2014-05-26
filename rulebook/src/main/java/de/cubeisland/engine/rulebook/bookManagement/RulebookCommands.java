@@ -26,13 +26,17 @@ import org.bukkit.inventory.PlayerInventory;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -63,12 +67,11 @@ public class RulebookCommands extends ContainerCommand
         this.module.getCore().getPermissionManager().registerPermission(module, getPermission);
     }
 
-    @Alias( names = {"getrules", "rules"})
-    @Command(
-        desc = "gets the player the rulebook in the inventory",
-        indexed = @Grouped(req = false, value = @Indexed(label = "language")),
-        params = @Param(names = {"player", "p"}, label = "name", type = User.class),
-        permDefault = TRUE)
+    @Alias(names = {"getrules", "rules"})
+    @Command(desc = "gets the player the rulebook in the inventory")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "language")))
+    @NParams(@Named(names = {"player", "p"}, label = "name", type = User.class))
+    @CommandPermission(permDefault = TRUE)
     public void getRuleBook(ParameterizedContext context)
     {
         if(!(context.getSender() instanceof User) && !context.hasParam("player"))
@@ -152,10 +155,9 @@ public class RulebookCommands extends ContainerCommand
     }
 
     @Alias(names = "listrules")
-    @Command(
-        desc = "list all available languages of the rulebooks.",
-        flags = {@Flag(longName = "supported", name = "s")},
-        permDefault = TRUE)
+    @Command(desc = "list all available languages of the rulebooks.")
+    @Flags(@Flag(longName = "supported", name = "s"))
+    @CommandPermission(permDefault = TRUE)
     public void list(ParameterizedContext context)
     {
         if(!context.hasFlag("s"))
@@ -184,9 +186,8 @@ public class RulebookCommands extends ContainerCommand
     }
 
     @Alias(names = "removerules")
-    @Command(
-        desc = "removes the declared language and languagefiles!",
-        indexed = @Grouped(@Indexed(label = "language")))
+    @Command(desc = "removes the declared language and languagefiles!")
+    @IParams(@Grouped(@Indexed(label = "language")))
     public void remove(CommandContext context)
     {
         Language language = this.rulebookManager.getLanguage(context.<String>getArg(0));
@@ -216,9 +217,8 @@ public class RulebookCommands extends ContainerCommand
     }
 
     @Alias(names = "modifyrules")
-    @Command(
-        desc = "modified the rulebook of the declared language with the book in hand",
-        indexed = @Grouped(@Indexed(label = "language")))
+    @Command(desc = "modified the rulebook of the declared language with the book in hand")
+    @IParams(@Grouped(@Indexed(label = "language")))
     public void modify(CommandContext context)
     {
         if(!(context.getSender() instanceof User))
@@ -265,9 +265,8 @@ public class RulebookCommands extends ContainerCommand
     }
 
     @Alias(names = "addrules")
-    @Command(
-        desc = "adds the book in hand as rulebook of the declared language",
-        indexed = @Grouped(@Indexed(label = "language")))
+    @Command(desc = "adds the book in hand as rulebook of the declared language")
+    @IParams(@Grouped(@Indexed(label = "language")))
     public void add(CommandContext context)
     {
         if(!(context.getSender() instanceof User))

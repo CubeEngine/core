@@ -73,9 +73,11 @@ public abstract class CubeCommand
     private boolean permRegistered = false;
 
     private String onlyIngame = null;
+    private boolean checkperm;
 
-    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission)
+    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission, boolean checkperm)
     {
+        this.checkperm = checkperm;
         if ("?".equals(name))
         {
             throw new IllegalArgumentException("Invalid command name: " + name);
@@ -95,7 +97,7 @@ public abstract class CubeCommand
 
     public CubeCommand(Module module, String name, String description, BasicContextFactory cFactory)
     {
-        this(module, name, description, cFactory, Permission.detachedPermission(name, OP));
+        this(module, name, description, cFactory, Permission.detachedPermission(name, OP), true);
     }
 
     public String getName()
@@ -126,6 +128,11 @@ public abstract class CubeCommand
     public boolean isAuthorized(CommandSender sender)
     {
         return this.permission == null || sender == null || this.permission.isAuthorized(sender);
+    }
+
+    public boolean isCheckperm()
+    {
+        return checkperm;
     }
 
     public Permission getPermission()
@@ -524,7 +531,7 @@ public abstract class CubeCommand
             final CommandSender sender = context.getSender();
             for (CubeCommand command : context.getCommand().getChildren())
             {
-                if (command.isAuthorized(sender))
+                if (!command.isCheckperm() || command.isAuthorized(sender))
                 {
                     context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.getTranslation(NONE, command.getDescription()));
                 }
@@ -565,7 +572,7 @@ public abstract class CubeCommand
         {
             throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too many arguments."));
         }
-        if (!ctx.getCommand().isAuthorized(ctx.getSender()))
+        if (ctx.getCommand().isCheckperm() && !ctx.getCommand().isAuthorized(ctx.getSender()))
         {
             throw new PermissionDeniedException(ctx.getCommand().getPermission());
         }

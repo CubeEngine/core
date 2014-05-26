@@ -27,7 +27,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
@@ -48,12 +49,11 @@ public class Writer extends Module
         this.getCore().getCommandManager().registerCommands(this, this, ReflectedCommand.class);
     }
 
-    @Command(names = {"edit", "rewrite"},
-             desc = "Edit a sign or unsign a book",
-             params = {@Param(names ={"1", "Line1"}, label = "1st line"),
-                       @Param(names ={"2", "Line2"}, label = "2nd line"),
-                       @Param(names ={"3", "Line3"}, label = "3rd line"),
-                       @Param(names ={"4", "Line4"}, label = "4th line")})
+    @Command(alias = "rewrite", desc = "Edit a sign or unsign a book")
+    @NParams({@Named(names ={"1", "Line1"}, label = "1st line"),
+              @Named(names ={"2", "Line2"}, label = "2nd line"),
+              @Named(names ={"3", "Line3"}, label = "3rd line"),
+              @Named(names ={"4", "Line4"}, label = "4th line")})
     public void edit(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof User))

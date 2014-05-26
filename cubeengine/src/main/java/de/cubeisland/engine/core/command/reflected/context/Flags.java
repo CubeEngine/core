@@ -15,14 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.reflected;
+package de.cubeisland.engine.core.command.reflected.context;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public @interface Indexed
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Flags
 {
-    String[] label();
-    Class[] type() default String.class;
-    Class<? extends Completer> completer() default Completer.class;
-    boolean req() default true;
+    Flag[] value();
 }
+
+

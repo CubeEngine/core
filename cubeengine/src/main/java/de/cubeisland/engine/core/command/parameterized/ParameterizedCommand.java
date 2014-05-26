@@ -38,9 +38,9 @@ import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public abstract class ParameterizedCommand extends CubeCommand
 {
-    protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser, Permission permission)
+    protected ParameterizedCommand(Module module, String name, String description, ParameterizedContextFactory parser, Permission permission, boolean checkperm)
     {
-        super(module, name, description, parser, permission);
+        super(module, name, description, parser, permission, checkperm);
     }
 
     @Override

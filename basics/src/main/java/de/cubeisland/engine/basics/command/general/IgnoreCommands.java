@@ -26,8 +26,9 @@ import de.cubeisland.engine.basics.storage.IgnoreList;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.readers.UserListReader;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -82,8 +83,8 @@ public class IgnoreCommands
         return ignore != null;
     }
 
-    @Command(desc = "Ignores all messages from players",
-             indexed = @Grouped(@Indexed(label = "players", type = UserListReader.class)))
+    @Command(desc = "Ignores all messages from players")
+    @IParams(@Grouped(@Indexed(label = "players", type = UserListReader.class)))
     public void ignore(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -116,8 +117,8 @@ public class IgnoreCommands
                                rand1, rand2, rand1 + rand2);
     }
 
-    @Command(desc = "Stops ignoring all messages from a player",
-             indexed = @Grouped(@Indexed(label = "players", type = UserListReader.class)))
+    @Command(desc = "Stops ignoring all messages from a player")
+    @IParams(@Grouped(@Indexed(label = "players", type = UserListReader.class)))
     public void unignore(CommandContext context)
     {
         if (context.getSender() instanceof User)

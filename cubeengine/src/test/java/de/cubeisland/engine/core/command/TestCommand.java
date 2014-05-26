@@ -24,7 +24,7 @@ public class TestCommand extends CubeCommand
 
     public TestCommand(Module module, String name, String description, ContextFactory contextFactory)
     {
-        super(module, name, description, contextFactory, null);
+        super(module, name, description, contextFactory, null, false);
     }
 
     @Override

@@ -15,23 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.parameterized;
+package de.cubeisland.engine.core.command.reflected.context;
 
 import de.cubeisland.engine.core.permission.PermDefault;
 
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 
-public @interface Param
+public @interface Flag
 {
-    String[] names();
+    String name();
 
-    String label() default "";
-
-    Class type() default String.class;
-
-    boolean required() default false;
-
-    Class<? extends Completer> completer() default Completer.class;
+    String longName() default "";
 
     String permission() default "";
 

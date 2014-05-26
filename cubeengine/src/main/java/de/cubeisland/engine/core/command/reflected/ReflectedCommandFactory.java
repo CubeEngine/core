@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.command.reflected;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import de.cubeisland.engine.core.command.CommandContext;
@@ -35,9 +33,14 @@ import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
@@ -48,11 +51,6 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
     public Class<T> getCommandType()
     {
         return (Class<T>)ReflectedCommand.class;
-    }
-
-    protected Class<? extends Annotation> getAnnotationType()
-    {
-        return Command.class;
     }
 
     protected boolean validateSignature(Module module, Object holder, Method method)
@@ -68,145 +66,152 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
     }
 
     @SuppressWarnings("unchecked")
-    protected T buildCommand(Module module, Object holder, Method method, Annotation rawAnnotation)
+    protected T buildCommand(Module module, Object holder, Method method, Command cmdAnnot)
     {
-        Command annotation = (Command)rawAnnotation;
-
-        String[] commandNames = annotation.names();
-        if (commandNames.length == 0)
+        String name = method.getName();
+        if (!cmdAnnot.name().isEmpty())
         {
-            commandNames = new String[] {
-                method.getName()
-            };
+            name = cmdAnnot.name();
+        }
+        name = name.trim().toLowerCase();
+        Set<String> aliases = new HashSet<>();
+        for (String alias : cmdAnnot.alias())
+        {
+            aliases.add(alias.trim().toLowerCase());
         }
 
-        String name = commandNames[0].trim().toLowerCase(Locale.ENGLISH);
-        Set<String> aliases = new HashSet<>(commandNames.length - 1);
-        for (int i = 1; i < commandNames.length; ++i)
+        String permNode = name;
+        PermDefault permDefault = PermDefault.DEFAULT;
+        boolean checkPermission = true;
+        if (method.isAnnotationPresent(CommandPermission.class))
         {
-            aliases.add(commandNames[i].toLowerCase(Locale.ENGLISH));
+            CommandPermission permAnnot = method.getAnnotation(CommandPermission.class);
+            if (!permAnnot.value().isEmpty())
+            {
+                permNode = permAnnot.value();
+            }
+            permDefault = permAnnot.permDefault();
+            checkPermission = permAnnot.checkPermission();
         }
+        Permission cmdPermission = Permission.detachedPermission(permNode, permDefault);
 
-        String permNode = annotation.permNode();
-        if (permNode.isEmpty())
+        List<CommandParameterIndexed> indexedParams = new ArrayList<>();
+        if (method.isAnnotationPresent(IParams.class))
         {
-            permNode = name;
-        }
-        PermDefault permDefault = annotation.permDefault();
-        if (!annotation.checkPerm())
-        {
-            permDefault = PermDefault.TRUE;
-        }
-        Permission permission = Permission.detachedPermission(permNode, permDefault);
-
-        Set<CommandFlag> flags = new HashSet<>(annotation.flags().length);
-        for (Flag flag : annotation.flags())
-        {
-            Permission flagPerm = null;
-            if (!flag.permission().isEmpty())
+            int index = 0;
+            for (Grouped arg : method.getAnnotation(IParams.class).value())
             {
-                flagPerm = permission.child(flag.permission(), flag.permDefault());
-            }
-            flags.add(new CommandFlag(flag.name(), flag.longName(), flagPerm));
-        }
-
-        Set<CommandParameter> params = new LinkedHashSet<>(annotation.params().length);
-        for (Param param : annotation.params())
-        {
-            // TODO multivalue param
-            // TODO greedy param (take args until next keyword)
-
-            String[] names = param.names();
-            if (names.length < 1)
-            {
-                continue;
-            }
-            String[] paramAliases;
-            if (names.length > 1)
-            {
-                paramAliases = Arrays.copyOfRange(names, 1, names.length);
-            }
-            else
-            {
-                paramAliases = new String[0];
-            }
-
-            Permission paramPerm = null;
-            if (!param.permission().isEmpty())
-            {
-                paramPerm = permission.child(param.permission(), param.permDefault());
-            }
-            final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type(), paramPerm);
-            cParam.addAliases(paramAliases);
-            cParam.setRequired(param.required());
-            cParam.setCompleter(getCompleter(module, param.completer()));
-            params.add(cParam);
-        }
-
-        List<CommandParameterIndexed> indexedParams = new ArrayList<>(annotation.indexed().length);
-        int index = 0;
-        for (Grouped arg : annotation.indexed())
-        {
-            Indexed[] indexed = arg.value();
-            if (indexed.length == 0)
-            {
-                throw new IllegalArgumentException("You have to define at least one Indexed!");
-            }
-            Indexed aIndexed = indexed[0];
-            String[] labels = aIndexed.label();
-            if (labels.length == 0)
-            {
-                labels = new String[]{String.valueOf(index)};
-            }
-
-            int greed = indexed.length;
-            if (arg.greedy())
-            {
-                greed = -1;
-            }
-            CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), greed);
-            indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
-
-            Set<String> staticLabels = new HashSet<>();
-            for (String label : labels)
-            {
-                if (label.startsWith("!"))
+                Indexed[] indexed = arg.value();
+                if (indexed.length == 0)
                 {
-                    staticLabels.add(label.substring(1));
+                    throw new IllegalArgumentException("You have to define at least one Indexed!");
                 }
-            }
-
-            if (!staticLabels.isEmpty())
-            {
-                indexedParam.setCompleter(new IndexedParameterCompleter(indexedParam.getCompleter(), staticLabels));
-            }
-
-            indexedParams.add(indexedParam);
-
-            if (indexed.length > 1)
-            {
-                for (int i = 1; i < indexed.length; i++)
+                Indexed aIndexed = indexed[0];
+                String[] labels = aIndexed.label();
+                if (labels.length == 0)
                 {
-                    index++;
-                    aIndexed = indexed[i];
-                    labels = aIndexed.label();
-                    if (labels.length == 0)
+                    labels = new String[]{String.valueOf(index)};
+                }
+
+                int greed = indexed.length;
+                if (arg.greedy())
+                {
+                    greed = -1;
+                }
+                CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), greed);
+                indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+
+                Set<String> staticLabels = new HashSet<>();
+                for (String label : labels)
+                {
+                    if (label.startsWith("!"))
                     {
-                        labels = new String[]{String.valueOf(index)};
+                        staticLabels.add(label.substring(1));
                     }
-                    indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(),0);
-                    indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
-                    indexedParams.add(indexedParam);
                 }
+
+                if (!staticLabels.isEmpty())
+                {
+                    indexedParam.setCompleter(new IndexedParameterCompleter(indexedParam.getCompleter(), staticLabels));
+                }
+
+                indexedParams.add(indexedParam);
+
+                if (indexed.length > 1)
+                {
+                    for (int i = 1; i < indexed.length; i++)
+                    {
+                        index++;
+                        aIndexed = indexed[i];
+                        labels = aIndexed.label();
+                        if (labels.length == 0)
+                        {
+                            labels = new String[]{String.valueOf(index)};
+                        }
+                        indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(),0);
+                        indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+                        indexedParams.add(indexedParam);
+                    }
+                }
+                index++;
             }
-            index++;
         }
-        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, annotation.desc(),
-                this.createContextFactory(indexedParams, flags, params), permission);
+
+        Set<CommandParameter> params = new LinkedHashSet<>();
+        if (method.isAnnotationPresent(NParams.class))
+        {
+            for (Named param : method.getAnnotation(NParams.class).value())
+            {
+                // TODO multivalue param
+                // TODO greedy param (take args until next keyword)
+
+                String[] names = param.names();
+                if (names.length < 1)
+                {
+                    continue;
+                }
+                String[] paramAliases;
+                if (names.length > 1)
+                {
+                    paramAliases = Arrays.copyOfRange(names, 1, names.length);
+                }
+                else
+                {
+                    paramAliases = new String[0];
+                }
+
+                Permission paramPerm = null;
+                if (!param.permission().isEmpty())
+                {
+                    paramPerm = cmdPermission.child(param.permission(), param.permDefault());
+                }
+                final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type(), paramPerm);
+                cParam.addAliases(paramAliases);
+                cParam.setRequired(param.required());
+                cParam.setCompleter(getCompleter(module, param.completer()));
+                params.add(cParam);
+            }
+        }
+        Set<CommandFlag> flags = new HashSet<>();
+        if (method.isAnnotationPresent(Flags.class))
+        {
+            for (Flag flag : method.getAnnotation(Flags.class).value())
+            {
+                Permission flagPerm = null;
+                if (!flag.permission().isEmpty())
+                {
+                    flagPerm = cmdPermission.child(flag.permission(), flag.permDefault());
+                }
+                flags.add(new CommandFlag(flag.name(), flag.longName(), flagPerm));
+            }
+        }
+
+        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, cmdAnnot.desc(),
+                this.createContextFactory(indexedParams, flags, params), cmdPermission, checkPermission);
 
         cmd.setAliases(aliases);
-        cmd.setLoggable(annotation.loggable());
-        cmd.setAsynchronous(annotation.async());
+        cmd.setLoggable(!method.isAnnotationPresent(Unloggable.class));
+        cmd.setAsynchronous(method.isAnnotationPresent(CallAsync.class));
 
         if (method.isAnnotationPresent(OnlyIngame.class))
         {
@@ -250,7 +255,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 continue;
             }
 
-            Annotation annotation = method.getAnnotation(this.getAnnotationType());
+            Command annotation = method.getAnnotation(Command.class);
             if (annotation == null)
             {
                 continue;

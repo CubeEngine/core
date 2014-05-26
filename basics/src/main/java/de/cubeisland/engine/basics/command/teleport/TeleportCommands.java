@@ -25,12 +25,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -71,11 +74,11 @@ public class TeleportCommands
         return user.teleport(loc, PlayerTeleportEvent.TeleportCause.COMMAND);
     }
 
-    @Command(desc = "Teleport directly to a player.",
-             indexed = { @Grouped(@Indexed(label = "player", type = User.class)),
-                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))},
-             flags = { @Flag(longName = "force", name = "f"), // is not shown directly in usage
-                       @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleport directly to a player.")
+    @IParams({@Grouped(@Indexed(label = "player", type = User.class)),
+              @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Flags({@Flag(longName = "force", name = "f"), // is not shown directly in usage
+              @Flag(longName = "unsafe", name = "u")})
     public void tp(ParameterizedContext context)
     {
         User user = null;
@@ -172,10 +175,10 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleports everyone directly to a player.",
-             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
-             flags = {@Flag(longName = "force", name = "f"),
-                      @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleports everyone directly to a player.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "unsafe", name = "u")})
     public void tpall(ParameterizedContext context)
     {
         User user = context.getArg(0);
@@ -216,10 +219,10 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleport a player directly to you.",
-             indexed = @Grouped(@Indexed(label = "player", type = User.class)),
-             flags = { @Flag(longName = "force", name = "f"),
-                       @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleport a player directly to you.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "unsafe", name = "u")})
     public void tphere(ParameterizedContext context)
     {
         User sender = null;
@@ -262,9 +265,9 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Teleport every player directly to you.",
-             flags = {@Flag(longName = "force", name = "f"),
-                      @Flag(longName = "unsafe", name = "u")})
+    @Command(desc = "Teleport every player directly to you.")
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "unsafe", name = "u")})
     public void tphereall(ParameterizedContext context)
     {
         User sender = null;
@@ -305,13 +308,12 @@ public class TeleportCommands
         }
     }
 
-    @Command(desc = "Direct teleport to a coordinate.",
-             indexed = @Grouped(value = {
-                 @Indexed(label = "x", type = Integer.class),
-                 @Indexed(label = "y", req = false, type = Integer.class),
-                 @Indexed(label = "z", type = Integer.class)}),
-             params = @Param(names = {"world", "w"}, type = World.class),
-             flags = @Flag(longName = "safe", name = "s"))
+    @Command(desc = "Direct teleport to a coordinate.")
+    @IParams(@Grouped(value = {@Indexed(label = "x", type = Integer.class),
+                               @Indexed(label = "y", req = false, type = Integer.class),
+                               @Indexed(label = "z", type = Integer.class)}))
+    @NParams(@Named(names = {"world", "w"}, type = World.class))
+    @Flags(@Flag(longName = "safe", name = "s"))
     public void tppos(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)

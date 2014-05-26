@@ -27,14 +27,17 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.readers.UserListOrAllReader;
-import de.cubeisland.engine.core.command.reflected.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
@@ -62,15 +65,12 @@ public class SpawnCommands
         manager = roles.getRolesManager();
     }
 
-    @Command(desc = "Changes the respawnpoint",
-             indexed = {@Grouped(req = false,
-                  value = @Indexed(label = {"role","!global"})),
-                     @Grouped(req = false,
-                  value = {@Indexed(label = "x"),
-                           @Indexed(label = "y"),
-                           @Indexed(label = "z"),}),
-                     @Grouped(req = false,
-                  value = @Indexed(label = "world"))})
+    @Command(desc = "Changes the respawnpoint")
+    @IParams({@Grouped(req = false, value = @Indexed(label = {"role","!global"})),
+              @Grouped(req = false, value = {@Indexed(label = "x"),
+                                             @Indexed(label = "y"),
+                                             @Indexed(label = "z"),}),
+              @Grouped(req = false, value = @Indexed(label = "world"))})
     public void setSpawn(CommandContext context)
     {
         if (!(context.getSender() instanceof User) && context.hasArg(4))
@@ -150,11 +150,11 @@ public class SpawnCommands
         manager.getProvider(world).recalculateRoles();
     }
 
-    @Command(desc = "Teleport directly to the worlds spawn.",
-             indexed = @Grouped(value = @Indexed(label = {"players","!*"}, type = UserListOrAllReader.class), req = false),
-             params = {@Param(names = {"world", "w", "in"}, type = World.class),
-                       @Param(names = {"role", "r"}, completer = RoleCompleter.class)} ,
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Teleport directly to the worlds spawn.")
+    @IParams(@Grouped(value = @Indexed(label = {"players","!*"}, type = UserListOrAllReader.class), req = false))
+    @NParams({@Named(names = {"world", "w", "in"}, type = World.class),
+              @Named(names = {"role", "r"}, completer = RoleCompleter.class)})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void spawn(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof User || context.hasArg(0)))

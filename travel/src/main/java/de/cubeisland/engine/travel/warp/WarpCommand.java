@@ -23,13 +23,16 @@ import java.util.Set;
 import org.bukkit.Location;
 
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.reflected.OnlyIngame;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmResult;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -66,9 +69,9 @@ public class WarpCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Teleport to a warp",
-             indexed = {@Grouped(@Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(desc = "Teleport to a warp")
+    @IParams({@Grouped(@Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void tp(CommandContext context)
     {
         User user = getUser(context, 1);
@@ -113,9 +116,9 @@ public class WarpCommand extends TpPointCommand
 
     @OnlyIngame
     @Alias(names = {"createwarp", "mkwarp", "makewarp"})
-    @Command(names = {"create", "make"}, desc = "Create a warp",
-             flags = {@Flag(name = "priv", longName = "private", permission = "private")},
-             indexed = @Grouped(@Indexed(label = "name")))
+    @Command(alias = "make", desc = "Create a warp")
+    @IParams(@Grouped(@Indexed(label = "name")))
+    @Flags(@Flag(name = "priv", longName = "private", permission = "private"))
     public void create(ParameterizedContext context)
     {
         if (this.manager.getCount() >= this.module.getConfig().warps.max)
@@ -145,12 +148,11 @@ public class WarpCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "Your warp {name} has been created!", warp.getName());
     }
 
-    @Command(desc = "Set the welcome message of warps",
-             names = {"setgreeting", "greeting", "setwelcome", "setwelcomemsg"},
-             indexed = {@Grouped(@Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "welcome message"), greedy = true)},
-             params = @Param(names = "owner", type = User.class, permission = "other"),
-             flags = @Flag(longName = "append", name = "a"))
+    @Command(desc = "Set the welcome message of warps", alias = {"setgreeting", "setwelcome", "setwelcomemsg"})
+    @IParams({@Grouped(@Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "welcome message"), greedy = true)})
+    @NParams(@Named(names = "owner", type = User.class, permission = "other"))
+    @Flags(@Flag(longName = "append", name = "a"))
     public void greeting(ParameterizedContext context)
     {
         User user = this.getUser(context, "owner");
@@ -182,9 +184,9 @@ public class WarpCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Move a warp",
-             indexed = {@Grouped(value = @Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(desc = "Move a warp")
+    @IParams({@Grouped(value = @Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void move(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -211,9 +213,9 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Alias(names = {"removewarp", "deletewarp", "delwarp", "remwarp"})
-    @Command(names = {"remove", "delete"}, desc = "Remove a warp",
-             indexed = {@Grouped(@Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(alias = "delete", desc = "Remove a warp")
+    @IParams({@Grouped(@Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void remove(CommandContext context)
     {
         User user = getUser(context, 1);
@@ -237,10 +239,10 @@ public class WarpCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "The warp {name} of {user} has been removed", name, user);
     }
 
-    @Command(desc = "Rename a warp",
-             indexed = {@Grouped(@Indexed(label = "warp")),
-                        @Grouped(@Indexed(label = "new name"))},
-            params = @Param(names = "owner", type = User.class))
+    @Command(desc = "Rename a warp")
+    @IParams({@Grouped(@Indexed(label = "warp")),
+              @Grouped(@Indexed(label = "new name"))})
+    @NParams(@Named(names = "owner", type = User.class))
     public void rename(ParameterizedContext context)
     {
         User user = getUser(context, "owner");
@@ -274,11 +276,11 @@ public class WarpCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "Could not rename the warp to {name}", newName);
     }
 
-    @Command(desc = "List all available warps",
-             flags = {@Flag(name = "pub", longName = "public"),
-                      @Flag(name = "o", longName = "owned"),
-                      @Flag(name = "i", longName = "invited")},
-             indexed = @Grouped(req = false, value = @Indexed(label = {"owner","!*"}, type = {User.class, String.class})))
+    @Command(desc = "List all available warps")
+    @IParams(@Grouped(req = false, value = @Indexed(label = {"owner","!*"}, type = {User.class, String.class})))
+    @Flags({@Flag(name = "pub", longName = "public"),
+            @Flag(name = "o", longName = "owned"),
+            @Flag(name = "i", longName = "invited")})
     public void list(ParameterizedContext context)
     {
         if ((context.hasArg(0) && "*".equals(context.getArg(0))) || !(context.hasArg(0) || context.isSender(User.class)))
@@ -338,10 +340,9 @@ public class WarpCommand extends TpPointCommand
         this.showList(context, null, this.manager.list(true, true));
     }
 
-    @Command(names = {"ilist", "invited"},
-             desc = "List all players invited to your warps",
-             indexed = @Grouped(req = false, value = @Indexed(label = "warp")),
-             params = @Param(names = "owner", type = User.class, permission = "other"))
+    @Command(alias = {"ilist", "invited"}, desc = "List all players invited to your warps")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "warp")))
+    @NParams(@Named(names = "owner", type = User.class, permission = "other"))
     public void invitedList(ParameterizedContext context)
     {
         User user = this.getUser(context, "owner");
@@ -386,9 +387,9 @@ public class WarpCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Invite a user to one of your warps",
-             indexed = {@Grouped(@Indexed(label = "warp")),
-                        @Grouped(@Indexed(label = "player", type = User.class))})
+    @Command(desc = "Invite a user to one of your warps")
+    @IParams({@Grouped(@Indexed(label = "warp")),
+              @Grouped(@Indexed(label = "player", type = User.class))})
     public void invite(CommandContext context)
     {
         User sender = (User)context.getSender();
@@ -423,9 +424,9 @@ public class WarpCommand extends TpPointCommand
     }
 
     @OnlyIngame
-    @Command(desc = "Uninvite a player from one of your warps",
-             indexed = {@Grouped(value = @Indexed(label = "warp")),
-                        @Grouped(@Indexed(label = "player", type = User.class))})
+    @Command(desc = "Uninvite a player from one of your warps")
+    @IParams({@Grouped(value = @Indexed(label = "warp")),
+              @Grouped(@Indexed(label = "player", type = User.class))})
     public void unInvite(CommandContext context)
     {
         User sender = (User)context.getSender();
@@ -459,9 +460,9 @@ public class WarpCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "{user} is no longer invited to your warp {name}", invited, warp.getName());
     }
 
-    @Command(names = {"private", "makeprivate"}, desc = "Make a players warp private",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(name = "private", alias = "makeprivate", desc = "Make a players warp private")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePrivate(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -490,9 +491,9 @@ public class WarpCommand extends TpPointCommand
         context.sendTranslated(POSITIVE, "The warp {name} of {user} is now private", warp.getOwnerName(), warp.getName());
     }
 
-    @Command(names = "public", desc = "Make a users warp public",
-             indexed = {@Grouped(req = false, value = @Indexed(label = "warp")),
-                        @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
+    @Command(name = "public", desc = "Make a users warp public")
+    @IParams({@Grouped(req = false, value = @Indexed(label = "warp")),
+              @Grouped(req = false, value = @Indexed(label = "owner", type = User.class))})
     public void makePublic(CommandContext context)
     {
         User user = this.getUser(context, 1);
@@ -522,10 +523,10 @@ public class WarpCommand extends TpPointCommand
     }
 
     @Alias(names = {"clearwarps"})
-    @Command(desc = "Clear all warps (of a player)",
-             flags = {@Flag(name = "pub", longName = "public"),
-                      @Flag(name = "priv", longName = "private")},
-             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @Command(desc = "Clear all warps (of a player)")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @Flags({@Flag(name = "pub", longName = "public"),
+            @Flag(name = "priv", longName = "private")})
     public ConfirmResult clear(final ParameterizedContext context)
     {
         if (this.module.getConfig().clearOnlyFromConsole && !(context.getSender() instanceof ConsoleCommandSender))

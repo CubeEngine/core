@@ -26,11 +26,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Command
+public @interface CallAsync
 {
-    String name() default "";
-    String[] alias() default {};
-    String desc();
 }
 
 

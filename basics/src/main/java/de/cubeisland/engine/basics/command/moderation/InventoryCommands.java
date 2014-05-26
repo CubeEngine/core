@@ -24,11 +24,13 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.InventoryGuardFactory;
 
@@ -49,11 +51,11 @@ public class InventoryCommands
         this.module = module;
     }
 
-    @Command(desc = "Allows you to see into the inventory of someone else.",
-            flags = {@Flag(longName = "force", name = "f"),
-                     @Flag(longName = "quiet", name = "q"),
-                     @Flag(longName = "ender", name = "e")},
-            indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Allows you to see into the inventory of someone else.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
+    @Flags({@Flag(longName = "force", name = "f"),
+            @Flag(longName = "quiet", name = "q"),
+            @Flag(longName = "ender", name = "e")})
     public void invsee(ParameterizedContext context)
     {
         if (context.getSender() instanceof User)
@@ -148,11 +150,10 @@ public class InventoryCommands
         context.sendTranslated(NEGATIVE, "Yeah you better put it away!");
     }
 
-    @Command(names = {"clearinventory", "ci", "clear"},
-            desc = "Clears the inventory",
-            indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
-            flags = { @Flag(longName = "removeArmor", name = "ra"),
-                      @Flag(longName = "quiet", name = "q")})
+    @Command(alias = {"ci", "clear"}, desc = "Clears the inventory")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @Flags({@Flag(longName = "removeArmor", name = "ra"),
+            @Flag(longName = "quiet", name = "q")})
     @SuppressWarnings("deprecation")
     public void clearinventory(ParameterizedContext context)
     {

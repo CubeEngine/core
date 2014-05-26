@@ -38,13 +38,17 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
@@ -71,10 +75,8 @@ public class VanillaCommands implements CommandHolder
         return ReflectedCommand.class;
     }
 
-    @Command(
-        names = {"stop", "shutdown", "killserver", "quit"},
-        desc = "Shuts down the server",
-        indexed = @Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
+    @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
     public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -88,7 +90,8 @@ public class VanillaCommands implements CommandHolder
         this.core.getServer().shutdown();
     }
 
-    @Command(desc = "Reloads the server.", flags = @Flag(name = "m", longName = "modules"))
+    @Command(desc = "Reloads the server.")
+    @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(ParameterizedContext context)
     {
         final String message = context.getStrings(0);
@@ -115,11 +118,9 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(
-        desc = "Changes the difficulty level of the server",
-        indexed = @Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)),
-        params = @Param(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class)
-    )
+    @Command(desc = "Changes the difficulty level of the server")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)))
+    @NParams(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
     public void difficulty(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
@@ -153,12 +154,10 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(
-        desc = "Makes a player an operator",
-        indexed = @Grouped(req = false, value = @Indexed(label = "player", type = {User.class, OfflinePlayer.class})),
-        flags = @Flag(name = "f", longName = "force"),
-        permDefault = FALSE
-    )
+    @Command(desc = "Makes a player an operator")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = {User.class, OfflinePlayer.class})))
+    @Flags(@Flag(name = "f", longName = "force"))
+    @CommandPermission(permDefault = FALSE)
     public void op(ParameterizedContext context)
     {
         if (!context.hasArgs())
@@ -224,8 +223,9 @@ public class VanillaCommands implements CommandHolder
         this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
     }
 
-    @Command(desc = "Revokes the operator status of a player", permDefault = FALSE,
-             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
+    @Command(desc = "Revokes the operator status of a player")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
+    @CommandPermission(permDefault = FALSE)
     public void deop(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -299,9 +299,8 @@ public class VanillaCommands implements CommandHolder
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Command(names = {"save-all", "saveall"},
-             indexed = @Grouped(req = false, value = @Indexed(label = "world", type = World.class)),
-             desc = "Saves all or a specific world to disk.")
+    @Command(alias = "save-all", desc = "Saves all or a specific world to disk.")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
     public void saveall(CommandContext context)
     {
         if (context.hasArg(0))
@@ -335,9 +334,9 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
-    @Command(desc = "Displays the version of the server or a given plugin",
-             indexed = @Grouped(req = false, value = @Indexed(label = "plugin")),
-             flags = @Flag(name = "s", longName = "source"))
+    @Command(desc = "Displays the version of the server or a given plugin")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "plugin")))
+    @Flags(@Flag(name = "s", longName = "source"))
     public void version(ParameterizedContext context)
     {
         Server server = this.core.getServer();
@@ -403,8 +402,8 @@ public class VanillaCommands implements CommandHolder
             this.delegateChild("list");
         }
 
-        @Command(desc = "Adds a player to the whitelist.",
-                 indexed = @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Command(desc = "Adds a player to the whitelist.")
+        @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void add(CommandContext context)
         {
             if (!context.hasArgs())
@@ -423,10 +422,8 @@ public class VanillaCommands implements CommandHolder
             context.sendTranslated(POSITIVE, "{user} is now whitelisted.", player);
         }
 
-        @Command(names = {
-        "remove", "rm"
-        }, desc = "Removes a player from the whitelist.",
-                 indexed = @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Command(alias = "rm", desc = "Removes a player from the whitelist.")
+        @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void remove(CommandContext context)
         {
             if (!context.hasArgs())

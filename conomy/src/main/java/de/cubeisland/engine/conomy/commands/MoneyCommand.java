@@ -26,13 +26,16 @@ import de.cubeisland.engine.conomy.account.UserAccount;
 import de.cubeisland.engine.conomy.account.storage.AccountModel;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -67,9 +70,9 @@ public class MoneyCommand extends ContainerCommand
     }
 
     @Alias(names = {"balance", "moneybalance", "pmoney"})
-    @Command(desc = "Shows your balance",
-             indexed = @Grouped(req = false, value = @Indexed(label = "player", type = User.class)),
-             flags = @Flag(longName = "showHidden", name = "f"))
+    @Command(desc = "Shows your balance")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = User.class)))
+    @Flags(@Flag(longName = "showHidden", name = "f"))
     public void balance(ParameterizedContext context)
     {
         User user;
@@ -100,9 +103,9 @@ public class MoneyCommand extends ContainerCommand
     }
 
     @Alias(names = {"toplist", "balancetop", "topmoney"})
-    @Command(desc = "Shows the players with the highest balance.",
-             indexed = @Grouped(req = false, value = @Indexed(label = "[fromRank-]toRank")),
-             flags = @Flag(longName = "showhidden", name = "f"))
+    @Command(desc = "Shows the players with the highest balance.")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "[fromRank-]toRank")))
+    @Flags(@Flag(longName = "showhidden", name = "f"))
     public void top(ParameterizedContext context)
     {
         boolean showHidden = context.hasFlag("f");
@@ -150,12 +153,11 @@ public class MoneyCommand extends ContainerCommand
     }
 
     @Alias(names = {"pay"})
-    @Command(names = {"pay", "give"},
-             desc = "Transfer the given amount to another account.",
-             indexed = {@Grouped(@Indexed(label = "player")),
-                        @Grouped(@Indexed(label = "amount"))},
-             params = @Param(names = "as", type = User.class),
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(alias = "give", desc = "Transfer the given amount to another account.")
+    @IParams({@Grouped(@Indexed(label = "player")),
+              @Grouped(@Indexed(label = "amount"))})
+    @NParams(@Named(names = "as", type = User.class))
+    @Flags(@Flag(longName = "force", name = "f"))
     public void pay(ParameterizedContext context)
     {
         String amountString = context.getArg(1);

@@ -24,12 +24,14 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.FileUtil;
 
@@ -59,9 +61,9 @@ public class KitCommand extends ContainerCommand
         });
     }
 
-    @Command(desc = "Creates a new kit with the items in your inventory.",
-            flags = @Flag(longName = "toolbar", name = "t"),
-            indexed = @Grouped(@Indexed(label = "kitname")))
+    @Command(desc = "Creates a new kit with the items in your inventory.")
+    @IParams(@Grouped(@Indexed(label = "kitname")))
+    @Flags(@Flag(longName = "toolbar", name = "t"))
     public void create(ParameterizedContext context)
     {
         User sender = null;
@@ -136,12 +138,11 @@ public class KitCommand extends ContainerCommand
     }
 
     @Alias(names = "kit")
-    @Command(desc = "Gives a set of items.",
-             indexed = {@Grouped(@Indexed(label = "kitname")),
-                        @Grouped(req = false, value =  @Indexed(label = "player", type = User.class))},
-             flags = {@Flag(longName = "all", name = "a"),
-                      @Flag(longName = "force", name = "f")
-    })
+    @Command(desc = "Gives a set of items.")
+    @IParams({@Grouped(@Indexed(label = "kitname")),
+              @Grouped(req = false, value =  @Indexed(label = "player", type = User.class))})
+    @Flags({@Flag(longName = "all", name = "a"),
+            @Flag(longName = "force", name = "f")})
     public void give(ParameterizedContext context)
     {
         String kitname = context.getArg(0);

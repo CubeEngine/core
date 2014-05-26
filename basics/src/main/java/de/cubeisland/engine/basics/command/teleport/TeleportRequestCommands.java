@@ -23,8 +23,9 @@ import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.basics.BasicsAttachment;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -45,7 +46,8 @@ public class TeleportRequestCommands
         this.basics = basics;
     }
 
-    @Command(desc = "Requests to teleport to a player.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Requests to teleport to a player.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void tpa(CommandContext context)
     {
         User sender = null;
@@ -88,7 +90,8 @@ public class TeleportRequestCommands
         }
     }
 
-    @Command(desc = "Requests to teleport a player to you.", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Requests to teleport a player to you.")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void tpahere(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -127,7 +130,7 @@ public class TeleportRequestCommands
         context.sendTranslated(NEGATIVE, "{text:Pro Tip}: Teleport does not work IRL!");
     }
 
-    @Command(names = {"tpac", "tpaccept"}, desc = "Accepts any pending teleport request.")
+    @Command(alias = "tpac", desc = "Accepts any pending teleport request.")
     public void tpaccept(CommandContext context)
     {
         if (context.getSender() instanceof User)

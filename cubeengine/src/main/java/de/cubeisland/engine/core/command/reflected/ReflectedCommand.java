@@ -35,9 +35,9 @@ public class ReflectedCommand extends ParameterizedCommand
     private final Class<? extends CommandContext> contextType;
 
     @SuppressWarnings("unchecked")
-    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, ParameterizedContextFactory factory, Permission permission)
+    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, ParameterizedContextFactory factory, Permission permission, boolean checkperm)
     {
-        super(module, name, description, factory, permission);
+        super(module, name, description, factory, permission, checkperm);
 
         this.holder = holder;
         this.method = method;

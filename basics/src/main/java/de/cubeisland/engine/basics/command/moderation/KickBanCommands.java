@@ -31,12 +31,14 @@ import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.readers.UserOrAllReader;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -72,9 +74,9 @@ public class KickBanCommands
         this.um = this.module.getCore().getUserManager();
     }
 
-    @Command(desc = "Kicks a player from the server",
-             indexed = { @Grouped(@Indexed(label = {"player","!*"}, type = UserOrAllReader.class)),
-                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
+    @Command(desc = "Kicks a player from the server")
+    @IParams({@Grouped(@Indexed(label = {"player","!*"}, type = UserOrAllReader.class)),
+              @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
     public void kick(ParameterizedContext context)
     {
         String reason;
@@ -107,12 +109,11 @@ public class KickBanCommands
         this.um.broadcastMessageWithPerm(NONE, reason, module.perms().KICK_RECEIVEMESSAGE);
     }
 
-    @Command(names = {"ban", "kickban"},
-             desc = "Bans a player permanently on your server.",
-             indexed = { @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
-                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)},
-             flags = {@Flag(longName = "ipban", name = "ip"),
-                      @Flag(longName = "force", name = "f")})
+    @Command(alias = "kickban", desc = "Bans a player permanently on your server.")
+    @IParams({@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
+              @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
+    @Flags({@Flag(longName = "ipban", name = "ip"),
+            @Flag(longName = "force", name = "f")})
     public void ban(ParameterizedContext context)
     {
         if (this.cannotBanUser(context)) return;
@@ -199,9 +200,8 @@ public class KickBanCommands
         return reason;
     }
 
-    @Command(names = {"unban", "pardon"},
-             desc = "Unbans a previously banned player.",
-             indexed = @Grouped(@Indexed(label = "player")))
+    @Command(alias = "pardon", desc = "Unbans a previously banned player.")
+    @IParams(@Grouped(@Indexed(label = "player")))
     public void unban(CommandContext context)
     {
         String userName = context.getArg(0);
@@ -218,10 +218,9 @@ public class KickBanCommands
         context.sendTranslated(NEGATIVE, "{user} is not banned, maybe you misspelled his name?", userName);
     }
 
-    @Command(names = {"ipban", "banip"},
-             desc = "Bans the IP from this server.",
-             indexed = { @Grouped(@Indexed(label = "IP address")),
-                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
+    @Command(alias = "banip", desc = "Bans the IP from this server.")
+    @IParams({@Grouped(@Indexed(label = "IP address")),
+              @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
     public void ipban(CommandContext context)
     {
         String ipaddress = context.getArg(0);
@@ -260,9 +259,8 @@ public class KickBanCommands
         }
     }
 
-    @Command(names = {"ipunban", "unbanip", "pardonip"},
-             desc = "Bans the IP from this server.",
-             indexed = @Grouped(@Indexed(label = "IP address")))
+    @Command(alias = {"unbanip", "pardonip"}, desc = "Bans the IP from this server.")
+    @IParams(@Grouped(@Indexed(label = "IP address")))
     public void ipunban(CommandContext context)
     {
         String ipadress = context.getArg(0);
@@ -284,12 +282,11 @@ public class KickBanCommands
         }
     }
 
-    @Command(names = {"tempban","tban"},
-             desc = "Bans a player for a given time.",
-             indexed = { @Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
-                         @Grouped(@Indexed(label = "time")),
-                         @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)},
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(alias = "tban", desc = "Bans a player for a given time.")
+    @IParams({@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)),
+              @Grouped(@Indexed(label = "time")),
+              @Grouped(value = @Indexed(label = "reason"), req = false, greedy = true)})
+    @Flags(@Flag(longName = "force", name = "f"))
     public void tempban(ParameterizedContext context)
     {
         if (this.cannotBanUser(context)) return;
@@ -356,8 +353,8 @@ public class KickBanCommands
         context.sendTranslated(POSITIVE, "Reloadhe ban lists successfully!");
     }
 
-    @Command(desc = "View all players banned from this server",
-             indexed = @Grouped(req = false, value = @Indexed(label = {"!ips","!players"})))
+    @Command(desc = "View all players banned from this server")
+    @IParams(@Grouped(req = false, value = @Indexed(label = {"!ips","!players"})))
     public void banlist(CommandContext context)
     {
         // TODO paging

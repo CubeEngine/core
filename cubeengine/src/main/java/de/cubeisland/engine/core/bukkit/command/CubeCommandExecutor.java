@@ -207,7 +207,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         try
         {
             context = toCommandContext(this.command, sender, label, args, true);
-            if (!context.getCommand().isAuthorized(sender))
+            if (context.getCommand().isCheckperm() && !context.getCommand().isAuthorized(sender))
             {
                 return Collections.emptyList();
             }
@@ -259,7 +259,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             Set<CubeCommand> names = command.getChildren();
             for (CubeCommand child : names)
             {
-                if (startsWithIgnoreCase(child.getName(), token) && child.isAuthorized(sender))
+                if (startsWithIgnoreCase(child.getName(), token) && (!child.isCheckperm() || child.isAuthorized(sender)))
                 {
                     actions.add(child.getName());
                 }

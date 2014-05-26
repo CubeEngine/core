@@ -39,12 +39,15 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -78,11 +81,11 @@ public class ThrowCommands
         }
     }
 
-    @Command(names = "throw",desc = "Throw something!",
-        indexed = {@Grouped(@Indexed(label = "material")),
-                   @Grouped(req = false, value = @Indexed(label = "amount"))},
-        params = @Param(names = { "delay", "d" }, type = Integer.class),
-        flags = @Flag(longName = "unsafe", name = "u"))
+    @Command(name = "throw", desc = "Throw something!")
+    @IParams({@Grouped(@Indexed(label = "material")),
+                   @Grouped(req = false, value = @Indexed(label = "amount"))})
+    @NParams(@Named(names = { "delay", "d" }, type = Integer.class))
+    @Flags(@Flag(longName = "unsafe", name = "u"))
     public void throwCommand(ParameterizedContext context)
     {
         if (!(context.getSender() instanceof User))

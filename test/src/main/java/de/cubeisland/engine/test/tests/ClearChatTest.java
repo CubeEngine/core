@@ -40,9 +40,7 @@ public class ClearChatTest extends Test
         this.setSuccess(true);
     }
 
-    @Command(names = {
-        "cls", "clearscreen"
-    }, desc = "Clears the chat")
+    @Command(alias = "cls", desc = "Clears the chat")
     public void clearscreen(CommandContext context)
     {
         if (context.getSender() instanceof User)

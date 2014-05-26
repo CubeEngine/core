@@ -37,12 +37,15 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Pair;
@@ -70,24 +73,24 @@ public class WorldsCommands extends ContainerCommand
         this.wm = module.getCore().getWorldManager();
     }
 
-    @Command(desc = "Creates a new universe",
-             indexed = @Grouped(@Indexed(label = "name")))
+    @Command(desc = "Creates a new universe")
+    @IParams(@Grouped(@Indexed(label = "name")))
     public void createuniverse(ParameterizedContext context)
     {
         context.sendMessage("TODO");
         // TODO universe create cmd
     }
 
-    @Command(desc = "Creates a new world",
-             indexed = {@Grouped(@Indexed(label = "name")),
-                        @Grouped(req = false, value = @Indexed(label = "universe"))},
-             params = {@Param(names = {"environment","env"}, type = Environment.class),
-                      @Param(names = "seed"),
-                      @Param(names = {"worldtype","type"}, type = WorldType.class),
-                      @Param(names = {"structure","struct"}, label = "true|false", type = Boolean.class),
-                      @Param(names = {"generator","gen"})},
-             flags = {@Flag(longName = "recreate",name = "r"),
-                     @Flag(longName = "noload",name = "no")})
+    @Command(desc = "Creates a new world")
+    @IParams({@Grouped(@Indexed(label = "name")),
+              @Grouped(req = false, value = @Indexed(label = "universe"))})
+    @NParams({@Named(names = {"environment","env"}, type = Environment.class),
+              @Named(names = "seed"),
+              @Named(names = {"worldtype","type"}, type = WorldType.class),
+              @Named(names = {"structure","struct"}, label = "true|false", type = Boolean.class),
+              @Named(names = {"generator","gen"})})
+    @Flags({@Flag(longName = "recreate",name = "r"),
+            @Flag(longName = "noload",name = "no")})
     public void create(ParameterizedContext context)
     {
         World world = this.wm.getWorld(0);
@@ -188,9 +191,9 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Loads a world from configuration",
-             indexed = {@Grouped(@Indexed(label = "world")),
-                        @Grouped(req = false, value = @Indexed(label = "universe"))})
+    @Command(desc = "Loads a world from configuration")
+    @IParams({@Grouped(@Indexed(label = "world")),
+              @Grouped(req = false, value = @Indexed(label = "universe"))})
     public void load(CommandContext context)
     {
         World world = this.wm.getWorld(context.<String>getArg(0));
@@ -249,9 +252,9 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Unload a loaded world",
-             indexed = @Grouped(@Indexed(label = "world", type = World.class)),
-             flags = @Flag(longName = "force", name = "f"))
+    @Command(desc = "Unload a loaded world")
+    @IParams(@Grouped(@Indexed(label = "world", type = World.class)))
+    @Flags(@Flag(longName = "force", name = "f"))
     public void unload(ParameterizedContext context)
     {
         World world = context.getArg(0);
@@ -297,8 +300,9 @@ public class WorldsCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Remove a world", indexed = @Grouped(@Indexed(label = "world")),
-    flags = @Flag(name = "f", longName = "folder"))
+    @Command(desc = "Remove a world")
+    @IParams(@Grouped(@Indexed(label = "world")))
+    @Flags(@Flag(name = "f", longName = "folder"))
     public void remove(ParameterizedContext context)
     {
         World world = this.wm.getWorld(context.<String>getArg(0));
@@ -356,7 +360,8 @@ public class WorldsCommands extends ContainerCommand
     }
     // list / list worlds that you can enter
 
-    @Command(desc = "Show info about a world", indexed = @Grouped(@Indexed(label = "world")))
+    @Command(desc = "Show info about a world")
+    @IParams(@Grouped(@Indexed(label = "world")))
     public void info(CommandContext context)
     {
         WorldConfig config = multiverse.getWorldConfig(context.<String>getArg(0));
@@ -369,7 +374,8 @@ public class WorldsCommands extends ContainerCommand
     }
     // info
 
-    @Command(desc = "Lists the players in a world", indexed = @Grouped(@Indexed(label = "world", type = World.class)))
+    @Command(desc = "Lists the players in a world")
+    @IParams(@Grouped(@Indexed(label = "world", type = World.class)))
     public void listplayers(CommandContext context)
     {
         World world = context.getArg(0);
@@ -390,7 +396,8 @@ public class WorldsCommands extends ContainerCommand
 
     // create nether & create end commands / auto link to world / only works for NORMAL Env worlds
 
-    @Command(desc = "Sets the main world", indexed = @Grouped(@Indexed(label = "world", type = World.class)))
+    @Command(desc = "Sets the main world")
+    @IParams(@Grouped(@Indexed(label = "world", type = World.class)))
     public void setMainWorld(CommandContext context)
     {
         World world = context.getArg(0);
@@ -401,9 +408,9 @@ public class WorldsCommands extends ContainerCommand
     // set main world (of universe) (of universes)
     // set main universe
 
-    @Command(desc = "Moves a world into another universe",
-             indexed = {@Grouped(@Indexed(label = "world", type = World.class)),
-                        @Grouped(@Indexed(label = "universe"))})
+    @Command(desc = "Moves a world into another universe")
+    @IParams({@Grouped(@Indexed(label = "world", type = World.class)),
+              @Grouped(@Indexed(label = "universe"))})
     public void move(CommandContext context)
     {
         World world = context.getArg(0);
@@ -447,7 +454,8 @@ public class WorldsCommands extends ContainerCommand
     }
     // move to other universe
 
-    @Command(desc = "Teleports to the spawn of a world", indexed = @Grouped(@Indexed(label = {"world","u:<universe>"})))
+    @Command(desc = "Teleports to the spawn of a world")
+    @IParams(@Grouped(@Indexed(label = {"world","u:<universe>"})))
     public void spawn(CommandContext context)
     {
         if (context.getSender() instanceof User)
@@ -491,7 +499,8 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(NEGATIVE, "This command can only be used ingame!");
     }
 
-    @Command(desc = "Loads a player's state for their current world", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Loads a player's state for their current world")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void loadPlayer(CommandContext context)
     {
         User user = context.getArg(0);
@@ -500,7 +509,8 @@ public class WorldsCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Loaded {user}'s data from file!", user);
     }
 
-    @Command(desc = "Save a player's state for their current world", indexed = @Grouped(@Indexed(label = "player", type = User.class)))
+    @Command(desc = "Save a player's state for their current world")
+    @IParams(@Grouped(@Indexed(label = "player", type = User.class)))
     public void savePlayer(CommandContext context)
     {
         User user = context.getArg(0);

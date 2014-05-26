@@ -15,19 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.parameterized;
+package de.cubeisland.engine.core.command.reflected.context;
 
-import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.command.parameterized.Completer;
 
-import static de.cubeisland.engine.core.permission.PermDefault.OP;
-
-public @interface Flag
+public @interface Indexed
 {
-    String name();
-
-    String longName() default "";
-
-    String permission() default "";
-
-    PermDefault permDefault() default OP;
+    String[] label();
+    Class[] type() default String.class;
+    Class<? extends Completer> completer() default Completer.class;
+    boolean req() default true;
 }

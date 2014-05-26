@@ -22,18 +22,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
-import de.cubeisland.engine.core.command.result.paginated.PaginationIterator;
-
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.result.paginated.PaginatedResult;
+import de.cubeisland.engine.core.command.result.paginated.PaginationIterator;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -52,12 +54,12 @@ public class ManagementCommands extends ContainerCommand
         this.config = module.getConfig();
     }
 
-    @Command(desc = "Adds a custom chat command.",
-    		 permDefault = TRUE,
-             indexed = {@Grouped(@Indexed(label = "name")),
-                        @Grouped(value = @Indexed(label = "message"), greedy = true)},
-             flags = {@Flag(name = "force", permDefault = TRUE),
-                      @Flag(name = "global")})
+    @Command(desc = "Adds a custom chat command.")
+    @IParams({@Grouped(@Indexed(label = "name")),
+              @Grouped(value = @Indexed(label = "message"), greedy = true)})
+    @Flags({@Flag(name = "force", permDefault = TRUE),
+            @Flag(name = "global")})
+    @CommandPermission(permDefault = TRUE)
     public void add(ParameterizedContext context)
     {
         String name = context.getArg(0);
@@ -84,10 +86,10 @@ public class ManagementCommands extends ContainerCommand
         config.save();
     }
 
-    @Command(desc = "Deletes a custom chat command.",
-             indexed = @Grouped(@Indexed(label = "name", completer = CustomCommandCompleter.class)),
-             flags = @Flag(name = "global"),
-             permDefault = TRUE)
+    @Command(desc = "Deletes a custom chat command.")
+    @IParams(@Grouped(@Indexed(label = "name", completer = CustomCommandCompleter.class)))
+    @Flags(@Flag(name = "global"))
+    @CommandPermission(permDefault = TRUE)
     public void delete(ParameterizedContext context)
     {
         String name = context.getArg(0);
@@ -105,8 +107,8 @@ public class ManagementCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Prints out all the custom chat commands.",
-             permDefault = TRUE)
+    @Command(desc = "Prints out all the custom chat commands.")
+    @CommandPermission(permDefault = TRUE)
     public CommandResult help(ParameterizedContext context)
     {
         return new PaginatedResult(context, new CustomCommandIterator());

@@ -28,11 +28,13 @@ import org.bukkit.block.BlockState;
 import org.bukkit.material.Openable;
 
 import de.cubeisland.engine.basics.Basics;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.Vector3;
 import de.cubeisland.engine.core.util.math.shape.Sphere;
@@ -48,22 +50,18 @@ public class DoorCommand
         this.basics = basics;
     }
 
-    @Command(
-        desc = "Opens or closes doors around the player.",
-        indexed = {
-            @Grouped(@Indexed(label = {"!open","!close"})),
-            @Grouped(@Indexed(label = "radius")),
-            @Grouped(req = false, value = {
-                @Indexed(label = "world"),
-                @Indexed(label = "x"),
-                @Indexed(label = "y"),
-                @Indexed(label = "z")})},
-        flags = {
-            @Flag(longName = "all", name = "a"),
-            @Flag(longName = "woodenDoor", name = "w"),
-            @Flag(longName = "ironDoor", name = "i"),
-            @Flag(longName = "trapDoor", name = "t"),
-            @Flag(longName = "fenceGate", name = "f")})
+    @Command(desc = "Opens or closes doors around the player.")
+    @IParams({@Grouped(@Indexed(label = {"!open","!close"})),
+              @Grouped(@Indexed(label = "radius")),
+              @Grouped(req = false, value = {@Indexed(label = "world"),
+                                             @Indexed(label = "x"),
+                                             @Indexed(label = "y"),
+                                             @Indexed(label = "z")})})
+    @Flags({@Flag(longName = "all", name = "a"),
+              @Flag(longName = "woodenDoor", name = "w"),
+              @Flag(longName = "ironDoor", name = "i"),
+              @Flag(longName = "trapDoor", name = "t"),
+              @Flag(longName = "fenceGate", name = "f")})
     public void doors(ParameterizedContext context)
     {
         boolean open;

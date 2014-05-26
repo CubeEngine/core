@@ -28,12 +28,15 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.basics.Basics;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.parameterized.Flag;
-import de.cubeisland.engine.core.command.parameterized.Param;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
+import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -57,10 +60,10 @@ public class TimeControlCommands
         this.lockTask = new LockTask();
     }
 
-    @Command(desc = "Changes the time of a world",
-             flags = @Flag(longName = "lock", name = "l"),
-             params = @Param(names = { "w", "worlds", "in"}),
-             indexed = @Grouped(value = @Indexed(label = "time"), req = false))
+    @Command(desc = "Changes the time of a world")
+    @IParams(@Grouped(value = @Indexed(label = "time"), req = false))
+    @NParams(@Named(names = { "w", "worlds", "in"}))
+    @Flags(@Flag(longName = "lock", name = "l"))
     public void time(ParameterizedContext context)
     {
         List<World> worlds;
@@ -142,10 +145,10 @@ public class TimeControlCommands
         }
     }
 
-    @Command(desc = "Changes the time for a player",
-             flags = @Flag(longName = "lock", name = "l"),
-             indexed = { @Grouped(@Indexed(label = {"time","!reset"})),
-                         @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Command(desc = "Changes the time for a player")
+    @IParams({@Grouped(@Indexed(label = {"time","!reset"})),
+              @Grouped(req = false, value = @Indexed(label = "player", type = User.class))})
+    @Flags(@Flag(longName = "lock", name = "l"))
     public void ptime(ParameterizedContext context)
     {
         Long time = 0L;

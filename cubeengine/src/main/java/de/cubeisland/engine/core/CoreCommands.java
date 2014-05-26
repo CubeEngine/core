@@ -35,18 +35,23 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.Flag;
 import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.reflected.CallAsync;
 import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.Grouped;
-import de.cubeisland.engine.core.command.reflected.Indexed;
+import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.Unloggable;
+import de.cubeisland.engine.core.command.reflected.context.Flag;
+import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
+import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.logging.LogLevel;
 
+import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static java.util.Arrays.asList;
 
@@ -77,7 +82,8 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
     }
 
-    @Command(desc = "Reloads all of the modules!", flags = @Flag(name = "f", longName = "file"))
+    @Command(desc = "Reloads all of the modules!")
+    @Flags(@Flag(name = "f", longName = "file"))
     public void reloadmodules(ParameterizedContext context)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
@@ -87,9 +93,10 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
     }
 
-    @Command(names = {"setpassword", "setpw"}, desc = "Sets your password.", loggable = false,
-             indexed = {@Grouped(@Indexed(label = "password")),
-                        @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
+    @Unloggable
+    @Command(alias = "setpw", desc = "Sets your password.")
+    @IParams({@Grouped(@Indexed(label = "password")),
+              @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void setPassword(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -129,8 +136,8 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(names = {"clearpassword", "clearpw"}, desc = "Clears your password.",
-             indexed = @Grouped(value = @Indexed(label = {"player","!*"}, type = {User.class, String.class}), req = false))
+    @Command(alias = "clearpw", desc = "Clears your password.")
+    @IParams(@Grouped(value = @Indexed(label = {"player","!*"}, type = {User.class, String.class}), req = false))
     public void clearPassword(ParameterizedContext context)
     {
         CommandSender sender = context.getSender();
@@ -170,9 +177,10 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Logs you in with your password!",
-             indexed = @Grouped(@Indexed(label = "password"))
-        , permDefault = PermDefault.TRUE, loggable = false)
+    @Unloggable
+    @Command(desc = "Logs you in with your password!")
+    @IParams(@Grouped(@Indexed(label = "password")))
+    @CommandPermission(permDefault = TRUE)
     public void login(CommandContext context)
     {
         CommandSender sender = context.getSender();
@@ -258,8 +266,8 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Changes or displays the log level of the server.",
-             indexed = @Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
+    @Command(desc = "Changes or displays the log level of the server.")
+    @IParams(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
     public void loglevel(CommandContext context)
     {
         if (context.hasArgs())
@@ -273,9 +281,9 @@ public class CoreCommands extends ContainerCommand
         }
     }
 
-    @Command(desc = "Searches for a user in the database",
-             indexed = @Grouped(@Indexed(label = "name")),
-             async = true)
+    @CallAsync
+    @Command(desc = "Searches for a user in the database")
+    @IParams(@Grouped(@Indexed(label = "name")))
     public CommandResult searchUser(CommandContext context)
     {
         final boolean exact = core.getUserManager().findExactUser(context.<String>getArg(0)) != null;
