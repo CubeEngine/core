@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.cubeisland.engine</groupId>
-  <artifactId>aggregator</artifactId>
+  <artifactId>core-aggregator</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>CubeEngine Aggregator</name>
+  <name>CubeEngine-Core Aggregator</name>
   <packaging>pom</packaging>
 
   <properties>
@@ -26,7 +26,7 @@
   </distributionManagement>
 
   <modules>
-    <module>cubeengine</module>
+    <module>core</module>
   </modules>
 
   <build>
