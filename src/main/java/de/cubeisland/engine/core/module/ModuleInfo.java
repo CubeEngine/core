@@ -99,7 +99,7 @@ public class ModuleInfo
 
         if (config.main == null)
         {
-            config.main = "de.cubeisland.engine." + this.id + "." + this.id.substring(0, 1).toUpperCase(Locale.US) + this.id.substring(1);
+            config.main = "de.cubeisland.engine.module" + this.id + "." + this.id.substring(0, 1).toUpperCase(Locale.US) + this.id.substring(1);
         }
         this.main = config.main;
         this.description = config.description;
