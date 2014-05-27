@@ -32,16 +32,19 @@ import org.jooq.types.UInteger;
 public interface UserManager extends Cleanable
 {
     boolean login(User user, String password);
+
     boolean checkPassword(User user, String password);
+
     void setPassword(User user, String password);
+
     void resetPassword(User user);
+
     void resetAllPasswords();
 
     /**
      * Removes the user permanently. Data cannot be restored later on
      *
      * @param user the User
-     * @return fluent interface
      */
     void removeUser(User user);
 
@@ -49,14 +52,16 @@ public interface UserManager extends Cleanable
      * Gets a user by CommandSender (creates new user if not found)
      *
      * @param name the sender
+     *
      * @return the User OR null if sender is not a Player
      */
     User getExactUser(String name);
 
     /**
-     * Gets a use by its UUID (creates a new user if not found)
+     * Gets a user by its UUID (creates a new user if not found)
      *
      * @param uuid the uuid
+     *
      * @return the user
      */
     User getExactUser(UUID uuid);
@@ -64,8 +69,8 @@ public interface UserManager extends Cleanable
     /**
      * Gets a user by his database ID
      *
-     *
      * @param id the ID to get the user by
+     *
      * @return the user or null if not found
      */
     User getUser(UInteger id);
@@ -74,6 +79,7 @@ public interface UserManager extends Cleanable
      * Gets a user by his name
      *
      * @param name the name to get the user by
+     *
      * @return the user or null if not found
      */
     User findExactUser(String name);
@@ -82,9 +88,7 @@ public interface UserManager extends Cleanable
      * Queries the database directly if the user is not loaded to get its name.
      * <p>Only use with valid key!
      *
-     *
      * @param key the users key
-     * @return
      */
     String getUserName(UInteger key);
 
@@ -94,7 +98,9 @@ public interface UserManager extends Cleanable
      * @return a unmodifiable List of players
      */
     Set<User> getOnlineUsers();
+
     Set<User> getLoadedUsers();
+
     void shutdown();
 
     /**
@@ -102,6 +108,7 @@ public interface UserManager extends Cleanable
      * yet added)
      *
      * @param name the name
+     *
      * @return the found User or null
      */
     User findUser(String name);
@@ -109,25 +116,42 @@ public interface UserManager extends Cleanable
     /**
      * Finds an User (can also search for matches in the database)
      *
-     * @param name the name
+     * @param name     the name
      * @param database matches in the database too if true
+     *
      * @return the found User or null
      */
     User findUser(String name, boolean database);
+
     void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params);
+
     void broadcastMessage(MessageType messageType, String message, Object... args);
+
     void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args);
+
     void broadcastStatus(String message, CommandSender sender, Object... args);
+
     Triplet<Long, String, Integer> getFailedLogin(User user);
+
     void kickAll(String message);
+
     void kickAll(String message, Object... params);
+
     void attachToAll(Class<? extends UserAttachment> attachmentClass, Module module);
+
     void detachFromAll(Class<? extends UserAttachment> attachmentClass);
+
     void detachAllOf(Module module);
+
     void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass, Module module);
+
     void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass);
+
     void removeDefaultAttachments(Module module);
+
     void removeDefaultAttachments();
+
     Set<Long> getAllIds();
+
     void cleanup(Module module);
 }

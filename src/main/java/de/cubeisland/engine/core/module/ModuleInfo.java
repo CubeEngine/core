@@ -52,6 +52,7 @@ public class ModuleInfo
     private final Set<String> loadAfter;
     // Service Info:
     private final Set<String> services;
+    private final Set<String> softServices;
     private final Set<String> providedServices;
 
     ModuleInfo(Core core)
@@ -76,6 +77,7 @@ public class ModuleInfo
         this.pluginDependencies = Collections.emptySet();
         this.loadAfter = this.pluginDependencies;
         this.services = Collections.emptySet();
+        this.softServices = Collections.emptySet();
         this.providedServices = Collections.emptySet();
     }
 
@@ -157,6 +159,7 @@ public class ModuleInfo
         this.loadAfter = config.loadAfter;
 
         this.services = config.services;
+        this.softServices = config.softServices;
         this.providedServices = config.providedServices;
     }
 
@@ -323,5 +326,10 @@ public class ModuleInfo
     public Set<String> getProvidedServices()
     {
         return providedServices;
+    }
+
+    public Set<String> getSoftServices()
+    {
+        return softServices;
     }
 }

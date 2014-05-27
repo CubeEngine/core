@@ -40,6 +40,7 @@ public class ModuleConfig extends ReflectedYaml
     public Set<String> pluginDependencies = new HashSet<>(0);
     public Set<String> loadAfter = new HashSet<>(0);
     public Set<String> services = new HashSet<>(0);
+    public Set<String> softServices = new HashSet<>(0);
     public Set<String> providedServices = new HashSet<>(0);
 
     @Override

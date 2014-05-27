@@ -241,7 +241,7 @@ public abstract class BaseModuleManager implements ModuleManager
         ModuleInfo info = infoMap.get(moduleId);
         if (info == null)
         {
-            return;
+            return; // TODO missing dependency
         }
 
         loadStack.add(moduleId);
@@ -250,6 +250,15 @@ public abstract class BaseModuleManager implements ModuleManager
         out.addFirst(moduleId);
 
         Set<String> soft = new HashSet<>(info.getLoadAfter());
+        for (String service : info.getSoftServices())
+        {
+            LinkedList<String> providers = this.serviceProviders.get(service);
+            if (providers != null)
+            {
+                soft.add(providers.getLast());
+            }
+        }
+
         soft.addAll(info.getSoftDependencies().keySet());
         for (String dep : soft)
         {

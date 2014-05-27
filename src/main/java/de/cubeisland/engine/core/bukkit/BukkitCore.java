@@ -31,7 +31,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -43,23 +45,22 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
-
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CoreCommands;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.CoreCommands;
-import de.cubeisland.engine.core.module.ModuleCommands;
-import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
+import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleCommands;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
