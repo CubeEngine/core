@@ -175,9 +175,8 @@ public class VanillaCommands implements CommandHolder
                 final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
                 for (OfflinePlayer player : ops)
                 {
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + sender.getTranslation(
-                        NONE, "Last seen: {input#date}", dateFormat
-                        .format(new Date(player.getLastPlayed()))) + ")");
+                    String lastSeen = sender.getTranslation(NONE, "Last seen: {input#date}", dateFormat.format(new Date(player.getLastPlayed())));
+                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + lastSeen + ")");
                 }
             }
             return;
@@ -462,11 +461,19 @@ public class VanillaCommands implements CommandHolder
             else
             {
                 context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
-                // TODO show op
                 context.sendMessage(" ");
                 for (OfflinePlayer player : whitelist)
                 {
                     context.sendMessage(" - " + player.getName());
+                }
+                Set<OfflinePlayer> operators = this.core.getServer().getOperators();
+                if (!operators.isEmpty())
+                {
+                    context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
+                    for (OfflinePlayer operator : operators)
+                    {
+                        context.sendMessage(" - " + operator.getName());
+                    }
                 }
             }
         }
