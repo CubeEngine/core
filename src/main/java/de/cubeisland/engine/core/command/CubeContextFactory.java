@@ -28,7 +28,6 @@ import gnu.trove.set.hash.THashSet;
 
 public class CubeContextFactory extends ContextReader
 {
-    // TODO readContext where needed after calling this!!!
     public CubeContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
         final List<String> indexed = new LinkedList<>();

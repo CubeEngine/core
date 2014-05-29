@@ -36,8 +36,6 @@ import static java.util.Locale.ENGLISH;
 
 public class ContextDescriptor
 {
-    // TODO DO NOT FORGET TO CALCULATE ARGBOUNDS!!!
-
     private int indexedCount = 0;
 
     protected ArgBounds bounds;

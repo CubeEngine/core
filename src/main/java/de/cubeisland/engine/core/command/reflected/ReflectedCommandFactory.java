@@ -238,6 +238,7 @@ public class ReflectedCommandFactory
         ctxFactory.addIndexed(indexed);
         ctxFactory.addNamed(named);
         ctxFactory.addFlags(flags);
+        ctxFactory.calculateArgBounds();
         return ctxFactory;
     }
 
