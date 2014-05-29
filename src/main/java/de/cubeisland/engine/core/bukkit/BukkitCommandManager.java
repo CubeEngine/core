@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.command.Command;
 
 import de.cubeisland.engine.core.Core;
@@ -28,11 +31,14 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
 
@@ -46,6 +52,7 @@ public class BukkitCommandManager implements CommandManager
     private final ConfirmManager confirmManager;
     private final PaginationManager paginationManager;
     private final ReflectedCommandFactory commandFactory;
+    private Map<Class, Completer> completers = new HashMap<>();
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
@@ -58,6 +65,8 @@ public class BukkitCommandManager implements CommandManager
         // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
         this.paginationManager = new PaginationManager(core);
+
+        this.registerDefaultCompleter(new PlayerCompleter(), User.class);
     }
 
     public CommandInjector getInjector()
@@ -198,5 +207,28 @@ public class BukkitCommandManager implements CommandManager
     public PaginationManager getPaginationManager()
     {
         return paginationManager;
+    }
+
+    @Override
+    public Completer getDefaultCompleter(Class... types)
+    {
+        for (Class type : types)
+        {
+            Completer completer = this.completers.get(type);
+            if (completer != null)
+            {
+                return completer;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void registerDefaultCompleter(Completer completer, Class... types)
+    {
+        for (Class type : types)
+        {
+            this.completers.put(type, completer);
+        }
     }
 }

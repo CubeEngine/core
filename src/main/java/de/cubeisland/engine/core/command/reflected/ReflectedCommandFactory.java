@@ -112,7 +112,7 @@ public class ReflectedCommandFactory
                     greed = -1;
                 }
                 CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(), greed);
-                indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+                indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
 
                 Set<String> staticLabels = new HashSet<>();
                 for (String label : labels)
@@ -142,7 +142,7 @@ public class ReflectedCommandFactory
                             labels = new String[]{String.valueOf(index)};
                         }
                         indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), arg.req(), aIndexed.req(),0);
-                        indexedParam.setCompleter(getCompleter(module, aIndexed.completer()));
+                        indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
                         indexedParams.add(indexedParam);
                     }
                 }
@@ -181,7 +181,7 @@ public class ReflectedCommandFactory
                 final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type(), paramPerm);
                 cParam.addAliases(paramAliases);
                 cParam.setRequired(param.required());
-                cParam.setCompleter(getCompleter(module, param.completer()));
+                cParam.setCompleter(getCompleter(module, param.completer(), param.type()));
                 params.add(cParam);
             }
         }
@@ -214,11 +214,11 @@ public class ReflectedCommandFactory
         return cmd;
     }
 
-    private Completer getCompleter(Module module, Class<? extends Completer> completerClass)
+    private Completer getCompleter(Module module, Class<? extends Completer> completerClass, Class... types)
     {
         if (completerClass == Completer.class)
         {
-            return null;
+            return module.getCore().getCommandManager().getDefaultCompleter(types);
         }
         try
         {

@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
-
+import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
+import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
@@ -36,6 +36,7 @@ public interface CommandManager extends Cleanable
      * @param parents the path under which the command should be registered
      */
     void registerCommand(CubeCommand command, String... parents);
+
     void registerCommands(Module module, CommandHolder commandHolder, String... parents);
 
     /**
@@ -45,12 +46,14 @@ public interface CommandManager extends Cleanable
      * @param commandHolder the command holder containing the commands
      * @param parents       the path under which the command should be registered
      */
-    void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents);
+    void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType,
+                          String... parents);
 
     /**
      * Gets a CubeCommand by its name
      *
      * @param name the name
+     *
      * @return the CubeCommand instance or null if not found
      */
     CubeCommand getCommand(String name);
@@ -58,7 +61,7 @@ public interface CommandManager extends Cleanable
     /**
      * Removes a command by its name
      *
-     * @param name the name of the command to remove
+     * @param name       the name of the command to remove
      * @param completely whether to remove all the aliases as well
      */
     void removeCommand(String name, boolean completely);
@@ -76,12 +79,24 @@ public interface CommandManager extends Cleanable
     void removeCommands();
 
     boolean runCommand(CommandSender sender, String commandLine);
+
     ConsoleCommandSender getConsoleSender();
 
     void logExecution(CommandSender sender, CubeCommand cubeCommand, String[] args);
+
     void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
 
     ConfirmManager getConfirmManager();
 
     PaginationManager getPaginationManager();
+
+    /**
+     * Returns a completer for the first registered class
+     */
+    Completer getDefaultCompleter(Class... types);
+
+    /**
+     * Registers a completer for given classes
+     */
+    void registerDefaultCompleter(Completer completer, Class... types);
 }

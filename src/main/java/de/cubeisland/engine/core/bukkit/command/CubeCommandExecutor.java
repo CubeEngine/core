@@ -228,13 +228,20 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             Set<CubeCommand> names = command.getChildren();
             for (CubeCommand child : names)
             {
+                if ("?".equals(child.getName()))
+                {
+                    continue;
+                }
                 if (startsWithIgnoreCase(child.getName(), token) && (!child.isCheckperm() || child.isAuthorized(sender)))
                 {
                     actions.add(child.getName());
                 }
             }
+            if (actions.isEmpty())
+            {
+                return null;
+            }
             Collections.sort(actions, String.CASE_INSENSITIVE_ORDER);
-
             return actions;
         }
         return null;

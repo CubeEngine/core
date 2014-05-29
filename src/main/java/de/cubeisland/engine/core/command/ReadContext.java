@@ -32,12 +32,13 @@ public class ReadContext extends BaseCommandContext
     List<Object> indexed;
     Map<String, Object> named;
 
-    public ReadContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags, Type last)
+    public ReadContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags,
+                       Type last)
     {
         super(rawArgs, rawIndexed, rawNamed, flags, last);
     }
 
-        public List<Object> getIndexed()
+    public List<Object> getIndexed()
     {
         return new ArrayList<>(this.indexed);
     }

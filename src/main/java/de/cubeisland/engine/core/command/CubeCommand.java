@@ -531,8 +531,8 @@ public abstract class CubeCommand
             return tabCompleteParamValue(context, cFactory);
         }
         List<String> result = new ArrayList<>();
-        List<Object> args = context.getIndexed();
-        String last = args.get(args.size() - 1).toString();
+        List<String> args = context.getRawIndexed();
+        String last = args.get(args.size() - 1);
         if (context.last == FLAG_OR_INDEXED)
         {
             tabCompleteFlags(context, cFactory, result, last);
