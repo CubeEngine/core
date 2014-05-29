@@ -26,7 +26,7 @@ public class MissingParameterException extends CommandException
         this.paramName = paramName;
     }
 
-    public MissingParameterException(String message, String paramName)
+    public MissingParameterException(String paramName, String message)
     {
         super(message);
         this.paramName = paramName;
