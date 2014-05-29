@@ -84,7 +84,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         {
             while (args.length > 0)
             {
-                CubeCommand child = command.getChild(args[0]); // TODO ALWAYS register child "?"
+                CubeCommand child = command.getChild(args[0]);
                 if (child == null)
                 {
                     break;

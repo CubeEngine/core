@@ -241,7 +241,7 @@ public abstract class BaseModuleManager implements ModuleManager
         ModuleInfo info = infoMap.get(moduleId);
         if (info == null)
         {
-            return; // TODO missing dependency
+            return;
         }
 
         loadStack.add(moduleId);

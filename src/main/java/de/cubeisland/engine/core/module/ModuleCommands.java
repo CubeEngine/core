@@ -237,6 +237,7 @@ public class ModuleCommands extends ContainerCommand
         Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
         Set<String> pluginDependencies = moduleInfo.getPluginDependencies();
         Set<String> services = moduleInfo.getServices();
+        Set<String> softServices = moduleInfo.getSoftServices();
         Set<String> providedServices = moduleInfo.getProvidedServices();
 
         String green = "   " + ChatFormat.BRIGHT_GREEN + "- ";
@@ -305,6 +306,13 @@ public class ModuleCommands extends ContainerCommand
                 context.sendMessage(green + service); // TODO colors to show if service is found OR NOT
             }
         }
-        // TODO dont forget to add soft service dependencies when they're there
+        if (!softServices.isEmpty())
+        {
+            context.sendTranslated(POSITIVE, "Service soft dependencies");
+            for (String service : softServices)
+            {
+                context.sendMessage(green + service); // TODO colors to show if service is found OR NOT
+            }
+        }
     }
 }
