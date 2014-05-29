@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -38,7 +38,7 @@ public class IndexedParameterCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(ParameterizedTabContext context, String token)
+    public List<String> complete(CubeContext context, String token)
     {
         List<String> result = new ArrayList<>();
         if (this.completer != null)

@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.ContextFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.CubeContextFactory;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -30,14 +30,14 @@ public class ConfirmCommand extends CubeCommand
 {
     private final ConfirmManager confirmManager;
 
-    public ConfirmCommand(Module module, ContextFactory contextFactory, ConfirmManager confirmManager)
+    public ConfirmCommand(Module module, CubeContextFactory contextFactory, ConfirmManager confirmManager)
     {
         super(module, "confirm", "Confirm a command", contextFactory, null, false);
         this.confirmManager = confirmManager;
     }
 
     @Override
-    public CommandResult run(CommandContext context)
+    public CommandResult run(CubeContext context)
     {
         int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
         if (pendingConfirmations < 1)

@@ -26,14 +26,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
@@ -45,20 +44,14 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 
-public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFactory<T>
+public class ReflectedCommandFactory
 {
-    @SuppressWarnings("unchecked")
-    public Class<T> getCommandType()
-    {
-        return (Class<T>)ReflectedCommand.class;
-    }
-
     protected boolean validateSignature(Module module, Object holder, Method method)
     {
         Class<?>[] methodParams = method.getParameterTypes();
-        if (methodParams.length != 1 || !CommandContext.class.isAssignableFrom(methodParams[0]))
+        if (methodParams.length != 1 || !CubeContext.class.isAssignableFrom(methodParams[0]))
         {
-            module.getLog().warn("The method ''{}.{}'' does not match the required method signature: public void {}(CommandContext context)",
+            module.getLog().warn("The method ''{}.{}'' does not match the required method signature: public void {}(CubeContext context)",
                                  holder.getClass().getSimpleName(), method.getName(), method.getName());
             return false;
         }
@@ -66,7 +59,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
     }
 
     @SuppressWarnings("unchecked")
-    protected T buildCommand(Module module, Object holder, Method method, Command cmdAnnot)
+    protected CubeCommand buildCommand(Module module, Object holder, Method method, Command cmdAnnot)
     {
         String name = method.getName();
         if (!cmdAnnot.name().isEmpty())
@@ -207,7 +200,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
 
         ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, cmdAnnot.desc(),
-                this.createContextFactory(indexedParams, flags, params), cmdPermission, checkPermission);
+                this.createContextFactory(indexedParams, params, flags), cmdPermission, checkPermission);
 
         cmd.setAliases(aliases);
         cmd.setLoggable(!method.isAnnotationPresent(Unloggable.class));
@@ -218,7 +211,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
             cmd.setOnlyIngame(method.getAnnotation(OnlyIngame.class).value());
         }
 
-        return (T)cmd;
+        return cmd;
     }
 
     private Completer getCompleter(Module module, Class<? extends Completer> completerClass)
@@ -238,15 +231,19 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
         }
     }
 
-    protected ParameterizedContextFactory createContextFactory(List<CommandParameterIndexed> indexed, Set<CommandFlag> flags, Set<CommandParameter> params)
+    protected CubeContextFactory createContextFactory(List<CommandParameterIndexed> indexed,
+                                                      Set<CommandParameter> named, Set<CommandFlag> flags)
     {
-        return new ParameterizedContextFactory(indexed, flags, params);
+        CubeContextFactory ctxFactory = new CubeContextFactory();
+        ctxFactory.addIndexed(indexed);
+        ctxFactory.addNamed(named);
+        ctxFactory.addFlags(flags);
+        return ctxFactory;
     }
 
-    @Override
-    public List<T> parseCommands(Module module, Object holder)
+    public List<CubeCommand> parseCommands(Module module, Object holder)
     {
-        List<T> commands = new ArrayList<>();
+        List<CubeCommand> commands = new ArrayList<>();
 
         for (Method method : holder.getClass().getDeclaredMethods())
         {
@@ -265,7 +262,7 @@ public class ReflectedCommandFactory<T extends CubeCommand> implements CommandFa
                 continue;
             }
 
-            T command = this.buildCommand(module, holder, method, annotation);
+            CubeCommand command = this.buildCommand(module, holder, method, annotation);
             if (command != null)
             {
                 commands.add(command);

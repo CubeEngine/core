@@ -22,13 +22,13 @@ import java.util.Locale;
 import org.bukkit.entity.Villager;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class ProfessionReader extends ArgumentReader
 {
     @Override
-    public Villager.Profession read(String arg, Locale locale) throws InvalidArgumentException
+    public Villager.Profession read(String arg, Locale locale) throws ReaderException
     {
         return Match.profession().profession(arg);
     }

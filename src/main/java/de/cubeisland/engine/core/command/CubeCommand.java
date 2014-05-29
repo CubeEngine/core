@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -34,17 +35,23 @@ import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.parameterized.CommandFlag;
+import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
+import static de.cubeisland.engine.core.command.ContextParser.Type.*;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
+import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
@@ -65,7 +72,7 @@ public abstract class CubeCommand
     private CubeCommand parent;
     private final Map<String, CubeCommand> children;
     protected final List<String> childrenAliases;
-    private final ContextFactory contextFactory;
+    private final CubeContextFactory contextFactory;
     private boolean loggable;
     private boolean asynchronous = false;
     private final Permission permission;
@@ -75,7 +82,7 @@ public abstract class CubeCommand
     private String onlyIngame = null;
     private boolean checkperm;
 
-    public CubeCommand(Module module, String name, String description, ContextFactory contextFactory, Permission permission, boolean checkperm)
+    public CubeCommand(Module module, String name, String description, CubeContextFactory contextFactory, Permission permission, boolean checkperm)
     {
         this.checkperm = checkperm;
         if ("?".equals(name))
@@ -95,7 +102,7 @@ public abstract class CubeCommand
         this.permission = permission;
     }
 
-    public CubeCommand(Module module, String name, String description, BasicContextFactory cFactory)
+    public CubeCommand(Module module, String name, String description, CubeContextFactory cFactory)
     {
         this(module, name, description, cFactory, Permission.detachedPermission(name, OP), true);
     }
@@ -208,7 +215,7 @@ public abstract class CubeCommand
         this.getModule().getCore().getCommandManager().registerCommand(new AliasCommand(this, names[0], aliases, prefix, suffix), parents);
     }
 
-    public ContextFactory getContextFactory()
+    public CubeContextFactory getContextFactory()
     {
         return this.contextFactory;
     }
@@ -303,6 +310,27 @@ public abstract class CubeCommand
                 sb.append(' ');
             }
         }
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            if (param.checkPermission(permissible))
+            {
+                if (param.isRequired())
+                {
+                    sb.append('<').append(param.getName()).append(" <").append(param.getLabel()).append(">> ");
+                }
+                else
+                {
+                    sb.append('[').append(param.getName()).append(" <").append(param.getLabel()).append(">] ");
+                }
+            }
+        }
+        for (CommandFlag flag : this.getContextFactory().getFlags())
+        {
+            if (flag.checkPermission(permissible))
+            {
+                sb.append("[-").append(flag.getLongName()).append("] ");
+            }
+        }
         return sb.toString().trim();
     }
 
@@ -354,14 +382,14 @@ public abstract class CubeCommand
     }
 
         /**
-         * This overload returns the usage translated for the given CommandContext
+         * This overload returns the usage translated for the given CubeContext
          * using the correct labels
          *
          * @param context the command context
          * @return the usage string
          */
 
-    public String getUsage(CommandContext context)
+    public String getUsage(CubeContext context)
     {
         final CommandSender sender = context.getSender();
         String usage = this.getUsage(sender.getLocale(), context.getSender());
@@ -479,11 +507,113 @@ public abstract class CubeCommand
         cmd.parent = null;
     }
 
-    public List<String> tabComplete(CommandContext context)
+    public List<String> tabComplete(CubeContext context)
     {
-        return null;
-        // TODO indexed Completers
+        if (context.last == ContextParser.Type.NOTHING)
+        {
+            return null;
+        }
+        final CubeContextFactory cFactory = this.getContextFactory();
+        if (context.last == PARAM_VALUE)
+        {
+            return tabCompleteParamValue(context, cFactory);
+        }
+        List<String> result = new ArrayList<>();
+        List<Object> args = context.getIndexed();
+        String last = args.get(args.size() - 1).toString();
+        if (context.last == FLAG_OR_INDEXED)
+        {
+            tabCompleteFlags(context, cFactory, result, last);
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+        }
+        else if (context.last == INDEXED_OR_PARAM)
+        {
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+            tabCompleteParam(context, cFactory, result, last);
+        }
+        else if (context.last == ANY)
+        {
+            tabCompleteIndexed(context, cFactory, result, args.size() - 1, last);
+            tabCompleteParam(context, cFactory, result, last);
+            tabCompleteFlags(context, cFactory, result, last);
+        }
+        if (result.isEmpty())
+        {
+            return null; //TODO remove once ALL our commands have tabcompleter for players
+        }
+        return result;
     }
+
+    private List<String> tabCompleteParamValue(CubeContext context, CubeContextFactory cFactory)
+    {
+        Iterator<Entry<String, String>> iterator = context.getRawNamed().entrySet().iterator();
+        Entry<String, String> lastParameter;
+        do
+        {
+            lastParameter = iterator.next();
+        }
+        while (iterator.hasNext());
+        Completer completer = cFactory.getParameter(lastParameter.getKey()).getCompleter();
+        if (completer != null)
+        {
+            return completer.complete(context, lastParameter.getValue());
+        }
+        return null; //TODO remove once ALL our commands have tabcompleter for players
+    }
+
+    private void tabCompleteParam(CubeContext context, CubeContextFactory cFactory, List<String> result, String last)
+    {
+        for (CommandParameter parameter : cFactory.getParameters())
+        {
+            if (!context.hasNamed(parameter.getName()))
+            {
+                if (startsWithIgnoreCase(parameter.getName(), last))
+                {
+                    result.add(parameter.getName());
+                }
+                if (!last.isEmpty())
+                {
+                    for (String alias : parameter.getAliases())
+                    {
+                        if (alias.length() > 2 && startsWithIgnoreCase(alias, last))
+                        {
+                            result.add(alias);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void tabCompleteIndexed(CubeContext context, CubeContextFactory cFactory,
+                                    List<String> result, int index, String last)
+    {
+        CommandParameterIndexed indexed = cFactory.getIndexed(index);
+        if (indexed != null)
+        {
+            Completer indexedCompleter = indexed.getCompleter();
+            if (indexedCompleter != null)
+            {
+                result.addAll(indexedCompleter.complete(context, last));
+            }
+        }
+    }
+
+    private void tabCompleteFlags(CubeContext context, CubeContextFactory cFactory, List<String> result, String last)
+    {
+        if (!last.isEmpty())
+        {
+            last = last.substring(1);
+        }
+        for (CommandFlag commandFlag : cFactory.getFlags())
+        {
+            if (!context.hasFlag(commandFlag.getName()) && startsWithIgnoreCase(commandFlag.getLongName(), last))
+            {
+                result.add("-" + commandFlag.getLongName());
+            }
+        }
+    }
+
 
     /**
      * Returns the module this command was registered by
@@ -508,16 +638,16 @@ public abstract class CubeCommand
     /**
      * This method handles the command execution
      *
-     * @param context The CommandContext containing all the necessary information
+     * @param context The CubeContext containing all the necessary information
      */
-    public abstract CommandResult run(CommandContext context);
+    public abstract CommandResult run(CubeContext context);
 
     /**
      * This method is called if the help page of this command was requested by the ?-action
      *
-     * @param context The CommandContext containing all the necessary information
+     * @param context The CubeContext containing all the necessary information
      */
-    public void help(HelpContext context)
+    public void help(CubeContext context)
     {
         context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
         context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
@@ -561,14 +691,14 @@ public abstract class CubeCommand
         return this.onlyIngame;
     }
 
-    public void checkContext(CommandContext ctx) throws CommandException
+    public void checkContext(CubeContext ctx) throws CommandException
     {
         ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
-        if (ctx.getArgCount() < bounds.getMin())
+        if (ctx.getIndexedCount() < bounds.getMin())
         {
             throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too few arguments."));
         }
-        if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getArgCount() > bounds.getMax())
+        if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getIndexedCount() > bounds.getMax())
         {
             throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too many arguments."));
         }
@@ -584,6 +714,32 @@ public abstract class CubeCommand
                 throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "This command can only be used ingame!"), false);
             }
             throw new IncorrectUsageException(onlyIngame, false);
+        }
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            if (param.isRequired())
+            {
+                if (!(ctx.hasNamed(param.getName())))
+                {
+                    throw new MissingParameterException(param.getName());
+                }
+            }
+        }
+        for (CommandParameter param : this.getContextFactory().getParameters())
+        {
+            if (ctx.hasNamed(param.getName()) &&
+                !param.checkPermission(ctx.getSender()))
+            {
+                throw new PermissionDeniedException(param.getPermission());
+            }
+        }
+        for (CommandFlag flag : this.getContextFactory().getFlags())
+        {
+            if (ctx.hasFlag(flag.getName())
+                && !flag.checkPermission(ctx.getSender()))
+            {
+                throw new PermissionDeniedException(flag.getPermission());
+            }
         }
     }
 }

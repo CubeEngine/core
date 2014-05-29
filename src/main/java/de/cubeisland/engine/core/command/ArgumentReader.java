@@ -34,7 +34,7 @@ import org.bukkit.entity.Villager.Profession;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.readers.BooleanReader;
 import de.cubeisland.engine.core.command.readers.ByteReader;
 import de.cubeisland.engine.core.command.readers.DifficultyReader;
@@ -74,7 +74,7 @@ public abstract class ArgumentReader
      * @param locale
      * @return the number of arguments paired with the value that got read from the input array
      */
-    public abstract Object read(String arg, Locale locale) throws InvalidArgumentException;
+    public abstract Object read(String arg, Locale locale) throws ReaderException;
 
     public static void init(Core core)
     {
@@ -163,13 +163,13 @@ public abstract class ArgumentReader
         }
     }
 
-    public static <T> T read(Class<T> clazz, String string, CommandSender sender) throws InvalidArgumentException
+    public static <T> T read(Class<T> clazz, String string, CommandSender sender) throws ReaderException
     {
         return read(clazz, string, sender.getLocale());
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T read(Class<T> type, String string, Locale locale) throws InvalidArgumentException
+    public static <T> T read(Class<T> type, String string, Locale locale) throws ReaderException
     {
         ArgumentReader reader = resolveReader(type);
         if (reader == null)

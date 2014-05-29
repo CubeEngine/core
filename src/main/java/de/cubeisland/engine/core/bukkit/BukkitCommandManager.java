@@ -17,47 +17,42 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bukkit.command.Command;
-
-import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommand;
 import de.cubeisland.engine.core.command.AliasCommand;
-import de.cubeisland.engine.core.command.CommandFactory;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
+import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
-import gnu.trove.map.hash.THashMap;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
 public class BukkitCommandManager implements CommandManager
 {
     private final CommandInjector injector;
-    private final Map<Class<? extends CubeCommand>, CommandFactory> commandFactories;
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
     private final PaginationManager paginationManager;
+    private final ReflectedCommandFactory commandFactory;
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
         this.consoleSender = new ConsoleCommandSender(core);
         this.injector = injector;
-        this.commandFactories = new THashMap<>();
+
+        this.commandFactory = new ReflectedCommandFactory();
 
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
@@ -88,7 +83,6 @@ public class BukkitCommandManager implements CommandManager
     public void clean()
     {
         this.injector.shutdown();
-        this.commandFactories.clear();
     }
 
     public void registerCommand(CubeCommand command, String... parents)
@@ -147,38 +141,9 @@ public class BukkitCommandManager implements CommandManager
     @SuppressWarnings("unchecked")
     public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
     {
-        CommandFactory<? extends CubeCommand> commandFactory = this.getCommandFactory(commandType);
-        if (commandFactory == null)
-        {
-            throw new IllegalArgumentException("The given command factory is not registered!");
-        }
         for (CubeCommand command : commandFactory.parseCommands(module, commandHolder))
         {
             this.registerCommand(command, parents);
-        }
-    }
-
-    public <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory)
-    {
-        this.commandFactories.put(factory.getCommandType(), factory);
-    }
-
-    public CommandFactory getCommandFactory(Class<? extends CubeCommand> type)
-    {
-        return this.commandFactories.get(type);
-    }
-
-    public void removeCommandFactory(Class clazz)
-    {
-        this.commandFactories.remove(clazz);
-
-        Iterator<Entry<Class<? extends CubeCommand>, CommandFactory>> it = this.commandFactories.entrySet().iterator();
-        while (it.hasNext())
-        {
-            if (it.next().getValue().getClass() == clazz)
-            {
-                it.remove();
-            }
         }
     }
 

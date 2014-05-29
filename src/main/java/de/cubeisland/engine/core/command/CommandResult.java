@@ -19,5 +19,5 @@ package de.cubeisland.engine.core.command;
 
 public interface CommandResult
 {
-    public void show(CommandContext context);
+    public void show(CubeContext context);
 }

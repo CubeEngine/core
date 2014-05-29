@@ -32,7 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
@@ -44,7 +44,6 @@ import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.IParams;
 import de.cubeisland.engine.core.command.reflected.context.NParams;
 import de.cubeisland.engine.core.command.reflected.context.Named;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
@@ -77,7 +76,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
     @IParams(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
-    public void stop(CommandContext context)
+    public void stop(CubeContext context)
     {
         String message = context.getStrings(0);
         if (message == null || message.isEmpty())
@@ -92,7 +91,7 @@ public class VanillaCommands implements CommandHolder
 
     @Command(desc = "Reloads the server.")
     @Flags(@Flag(name = "m", longName = "modules"))
-    public void reload(ParameterizedContext context)
+    public void reload(CubeContext context)
     {
         final String message = context.getStrings(0);
         if (message != null)
@@ -121,10 +120,10 @@ public class VanillaCommands implements CommandHolder
     @Command(desc = "Changes the difficulty level of the server")
     @IParams(@Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)))
     @NParams(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
-    public void difficulty(ParameterizedContext context)
+    public void difficulty(CubeContext context)
     {
         CommandSender sender = context.getSender();
-        World world = context.getParam("world", null);
+        World world = context.getArg("world", null);
         if (world == null)
         {
             if (sender instanceof User)
@@ -137,7 +136,7 @@ public class VanillaCommands implements CommandHolder
                 return;
             }
         }
-        if (context.hasArg(0))
+        if (context.hasIndexed(0))
         {
             Difficulty difficulty = context.getArg(0);
 
@@ -158,9 +157,9 @@ public class VanillaCommands implements CommandHolder
     @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = {User.class, OfflinePlayer.class})))
     @Flags(@Flag(name = "f", longName = "force"))
     @CommandPermission(permDefault = FALSE)
-    public void op(ParameterizedContext context)
+    public void op(CubeContext context)
     {
-        if (!context.hasArgs())
+        if (!context.hasIndexed())
         {
             Set<OfflinePlayer> ops = this.core.getServer().getOperators();
             if (ops.isEmpty())
@@ -225,11 +224,11 @@ public class VanillaCommands implements CommandHolder
     @Command(desc = "Revokes the operator status of a player")
     @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
     @CommandPermission(permDefault = FALSE)
-    public void deop(CommandContext context)
+    public void deop(CubeContext context)
     {
         CommandSender sender = context.getSender();
         OfflinePlayer offlinePlayer;
-        if (context.hasArg(0))
+        if (context.hasIndexed(0))
         {
             offlinePlayer = context.getArg(0);
         }
@@ -274,7 +273,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Lists all loaded plugins")
-    public void plugins(CommandContext context)
+    public void plugins(CubeContext context)
     {
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
@@ -300,9 +299,9 @@ public class VanillaCommands implements CommandHolder
     // integrate /saveoff and /saveon and provide aliases
     @Command(alias = "save-all", desc = "Saves all or a specific world to disk.")
     @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
-    public void saveall(CommandContext context)
+    public void saveall(CubeContext context)
     {
-        if (context.hasArg(0))
+        if (context.hasIndexed(0))
         {
             World world = context.getArg(0);
             if (world == null)
@@ -336,16 +335,16 @@ public class VanillaCommands implements CommandHolder
     @Command(desc = "Displays the version of the server or a given plugin")
     @IParams(@Grouped(req = false, value = @Indexed(label = "plugin")))
     @Flags(@Flag(name = "s", longName = "source"))
-    public void version(ParameterizedContext context)
+    public void version(CubeContext context)
     {
         Server server = this.core.getServer();
-        if (context.hasArgs())
+        if (context.hasIndexed())
         {
             if (!core.perms().COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
             {
                 throw new PermissionDeniedException(core.perms().COMMAND_VERSION_PLUGINS);
             }
-            Plugin plugin = server.getPluginManager().getPlugin(context.<String>getArg(0));
+            Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
                 context.sendTranslated(NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
@@ -380,7 +379,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    public static void showSourceVersion(ParameterizedContext context, String sourceVersion)
+    public static void showSourceVersion(CubeContext context, String sourceVersion)
     {
         if (context.hasFlag("s") && sourceVersion != null)
         {
@@ -403,9 +402,9 @@ public class VanillaCommands implements CommandHolder
 
         @Command(desc = "Adds a player to the whitelist.")
         @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
-        public void add(CommandContext context)
+        public void add(CubeContext context)
         {
-            if (!context.hasArgs())
+            if (!context.hasIndexed())
             {
                 context.sendTranslated(NEGATIVE, "You have to specify the player to add to the whitelist!");
                 return;
@@ -423,9 +422,9 @@ public class VanillaCommands implements CommandHolder
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
         @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
-        public void remove(CommandContext context)
+        public void remove(CubeContext context)
         {
-            if (!context.hasArgs())
+            if (!context.hasIndexed())
             {
                 context.sendTranslated(NEGATIVE, "You have to specify the player to remove from the whitelist!");
                 return;
@@ -442,7 +441,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Lists all the whitelisted players")
-        public void list(CommandContext context)
+        public void list(CubeContext context)
         {
             Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
@@ -479,7 +478,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Enables the whitelisting")
-        public void on(CommandContext context)
+        public void on(CubeContext context)
         {
             if (this.core.getServer().hasWhitelist())
             {
@@ -492,7 +491,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Disables the whitelisting")
-        public void off(CommandContext context)
+        public void off(CubeContext context)
         {
             if (!this.core.getServer().hasWhitelist())
             {
@@ -505,7 +504,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Wipes the whitelist completely")
-        public void wipe(CommandContext context)
+        public void wipe(CubeContext context)
         {
             if (context.isSender(User.class))
             {

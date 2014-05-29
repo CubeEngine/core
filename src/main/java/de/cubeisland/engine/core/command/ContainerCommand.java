@@ -23,15 +23,13 @@ import java.util.List;
 import java.util.Set;
 
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-public abstract class ContainerCommand extends ParameterizedCommand implements CommandHolder
+public abstract class ContainerCommand extends CubeCommand implements CommandHolder
 {
     private static final Set<String> NO_ALIASES = Collections.emptySet();
     private final Class<? extends CubeCommand> subCommandType;
@@ -54,7 +52,8 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, new ParameterizedContextFactory(CommandParameterIndexed.emptyIndex("action")), null, false);
+        super(module, name, description, new CubeContextFactory(), null, false);
+        this.getContextFactory().addIndexed(CommandParameterIndexed.emptyIndex("action"));
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
@@ -65,7 +64,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
         this.delegation = new DelegatingContextFilter()
         {
             @Override
-            public String delegateTo(CommandContext context)
+            public String delegateTo(CubeContext context)
             {
                 return name;
             }
@@ -83,10 +82,9 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     }
 
     @Override
-    public CommandResult run(CommandContext context)
+    public CommandResult run(CubeContext context)
     {
-        this.help(new HelpContext(context));
-        return null;
+        return this.getChild("?").run(context);
     }
 
     public DelegatingContextFilter getDelegation()
@@ -95,7 +93,7 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
     }
 
     @Override
-    public void help(HelpContext context)
+    public void help(CubeContext context)
     {
         CommandSender sender = context.getSender();
         context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", this.getUsage(context));
@@ -129,8 +127,8 @@ public abstract class ContainerCommand extends ParameterizedCommand implements C
 
     public static abstract class DelegatingContextFilter
     {
-        public abstract String delegateTo(CommandContext context);
-        public CommandContext filterContext(CommandContext context, String child)
+        public abstract String delegateTo(CubeContext context);
+        public CubeContext filterContext(CubeContext context, String child)
         {
             return context;
         }

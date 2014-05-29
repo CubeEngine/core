@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.user.User;
 
 public class PlayerListCompleter implements Completer
 {
     @Override
-    public List<String> complete(ParameterizedTabContext context, String token)
+    public List<String> complete(CubeContext context, String token)
     {
         List<String> result = new ArrayList<>();
         String lastToken = token;

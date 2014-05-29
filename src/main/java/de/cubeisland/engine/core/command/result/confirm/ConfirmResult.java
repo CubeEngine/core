@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
@@ -34,7 +34,7 @@ public class ConfirmResult implements CommandResult
     private final Module module;
     private String message = "";
 
-    public ConfirmResult(Runnable runnable, CommandContext context)
+    public ConfirmResult(Runnable runnable, CubeContext context)
     {
         this.runnable = runnable;
         this.sender = context.getSender();
@@ -47,7 +47,7 @@ public class ConfirmResult implements CommandResult
     }
 
     @Override
-    public void show(CommandContext context)
+    public void show(CubeContext context)
     {
         context.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
         if (!message.isEmpty())

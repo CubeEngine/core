@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.CommandResult;
 
 public abstract class LongRunningResult implements CommandResult
@@ -26,7 +26,7 @@ public abstract class LongRunningResult implements CommandResult
     private int taskId = -1;
 
     @Override
-    public void show(final CommandContext context)
+    public void show(final CubeContext context)
     {
         this.taskId = context.getCore().getTaskManager().runTimer(context.getCommand().getModule(), new Runnable()
         {
@@ -52,5 +52,5 @@ public abstract class LongRunningResult implements CommandResult
         this.isDone = true;
     }
 
-    public abstract void run(CommandContext context);
+    public abstract void run(CubeContext context);
 }

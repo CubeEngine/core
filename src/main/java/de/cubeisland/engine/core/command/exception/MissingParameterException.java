@@ -19,13 +19,21 @@ package de.cubeisland.engine.core.command.exception;
 
 public class MissingParameterException extends CommandException
 {
+    private String paramName;
+
     public MissingParameterException(String paramName)
     {
-        super(paramName);
+        this.paramName = paramName;
+    }
+
+    public MissingParameterException(String message, String paramName)
+    {
+        super(message);
+        this.paramName = paramName;
     }
 
     public String getParamName()
     {
-        return this.getMessage();
+        return paramName;
     }
 }

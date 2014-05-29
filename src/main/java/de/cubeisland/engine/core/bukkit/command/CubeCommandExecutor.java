@@ -36,16 +36,16 @@ import org.bukkit.entity.Player;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.AliasCommand;
-import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.ContainerCommand.DelegatingContextFilter;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.HelpContext;
 import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.core.command.exception.IncorrectArgumentException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
@@ -75,7 +75,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         return command;
     }
     
-    private static CommandContext toCommandContext(CubeCommand command, CommandSender sender, String label, String[] args, boolean tabComplete)
+    private static CubeContext toCubeContext(CubeCommand command, CommandSender sender, String label, String[] args, boolean tabComplete)
     {
         Stack<String> labels = new Stack<>();
         labels.push(label);
@@ -84,11 +84,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         {
             while (args.length > 0)
             {
-                if ("?".equals(args[0]))
-                {
-                    return new HelpContext(command, sender, labels, Arrays.copyOfRange(args, 1, args.length));
-                }
-                CubeCommand child = command.getChild(args[0]);
+                CubeCommand child = command.getChild(args[0]); // TODO ALWAYS register child "?"
                 if (child == null)
                 {
                     break;
@@ -113,16 +109,8 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             args = newArgs;
         }
 
-        CommandContext ctx;
-        if (tabComplete)
-        {
-             ctx = command.getContextFactory().tabCompleteParse(command, sender, labels, args);
-        }
-        else
-        {
-            ctx = command.getContextFactory().parse(command, sender, labels, args);
-        }
-        if (command instanceof ContainerCommand && (ctx.getArgCount() != 1 || !tabComplete))
+        CubeContext ctx = command.getContextFactory().parse(command, sender, labels, args);
+        if (command instanceof ContainerCommand && (ctx.getIndexedCount() != 1 || !tabComplete))
         {
             DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
             if (delegation != null)
@@ -133,15 +121,8 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                     CubeCommand target = command.getChild(child);
                     if (target != null)
                     {
-
-                        if (tabComplete)
-                        {
-                            return target.getContextFactory().tabCompleteParse(target, sender, labels, args);
-                        }
-                        else
-                        {
-                            return target.getContextFactory().parse(target, sender, labels, args);
-                        }
+                        // TODO delegation.filterContext()
+                        return target.getContextFactory().parse(target, sender, labels, args);
                     }
                     command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                 }
@@ -155,27 +136,16 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
     {
         final CommandSender sender = wrapSender(this.command.getModule().getCore(), bukkitSender);
 
-        final CommandContext context;
+        CubeContext ctx = null;
         try
         {
-            context = toCommandContext(this.command, sender, label, args, false);
-        }
-        catch (CommandException e)
-        {
-            this.handleCommandException(null, sender, e);
-            return true;
-        }
+            ctx = toCubeContext(this.command, sender, label, args, false);
+            ctx.getCommand().getContextFactory().readContext(ctx, sender.getLocale());
 
-        try
-        {
-            if (context instanceof HelpContext)
+            if (ctx.getCommand().isAsynchronous())
             {
-                context.getCommand().help((HelpContext)context);
-                return true;
-            }
-            if (this.command.isAsynchronous())
-            {
-                context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
+                final CubeContext context = ctx;
+                ctx.getCore().getTaskManager().getThreadFactory().newThread(new Runnable()
                 {
                     @Override
                     public void run()
@@ -186,14 +156,13 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             }
             else
             {
-                this.run0(context);
+                this.run0(ctx);
             }
         }
         catch (CommandException e)
         {
-            this.handleCommandException(context, sender, e);
+            this.handleCommandException(ctx, sender, e);
         }
-
         return true;
     }
 
@@ -203,10 +172,10 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         final Core core = this.command.getModule().getCore();
         final CommandSender sender = wrapSender(core, bukkitSender);
 
-        final CommandContext context;
+        final CubeContext context;
         try
         {
-            context = toCommandContext(this.command, sender, label, args, true);
+            context = toCubeContext(this.command, sender, label, args, true);
             if (context.getCommand().isCheckperm() && !context.getCommand().isAuthorized(sender))
             {
                 return Collections.emptyList();
@@ -228,7 +197,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             if (result != null)
             {
                 final int max = core.getConfiguration().commands.maxTabCompleteOffers;
-                if (result.size() > max && false) // TODO remove false
+                if (result.size() > max)
                 {
                     if (StringUtils.implode(", ", result).length() < TAB_LIMIT_THRESHOLD)
                     {
@@ -247,13 +216,13 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         return null;
     }
     
-    protected final List<String> completeChild(CommandContext context)
+    protected final List<String> completeChild(CubeContext context)
     {
         CubeCommand command = context.getCommand();
-        if (command.hasChildren() && context.getArgCount() == 1)
+        if (command.hasChildren() && context.getIndexedCount() == 1)
         {
             List<String> actions = new ArrayList<>();
-            String token = context.<String>getArg(0).toLowerCase(Locale.ENGLISH);
+            String token = context.getString(0).toLowerCase(Locale.ENGLISH);
 
             CommandSender sender = context.getSender();
             Set<CubeCommand> names = command.getChildren();
@@ -296,7 +265,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
     }
 
-    private void run0(CommandContext ctx)
+    private void run0(CubeContext ctx)
     {
         try
         {
@@ -309,16 +278,11 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         catch (Exception e)
         {
-            handleCommandException(ctx, e);
+            handleCommandException(ctx, ctx.getSender(), e);
         }
     }
 
-    private void handleCommandException(final CommandContext context, Throwable t)
-    {
-        this.handleCommandException(context, context.getSender(), t);
-    }
-
-    private void handleCommandException(final CommandContext context, final CommandSender sender, Throwable t)
+    private void handleCommandException(final CubeContext context, final CommandSender sender, Throwable t)
     {
         if (!CubeEngine.isMainThread())
         {
@@ -340,7 +304,14 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         if (t instanceof MissingParameterException)
         {
-            sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", t.getMessage());
+            if (t.getMessage().isEmpty())
+            {
+                sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", ((MissingParameterException)t).getParamName());
+            }
+            else
+            {
+                sender.sendMessage(t.getMessage());
+            }
         }
         else if (t instanceof IncorrectUsageException)
         {
@@ -368,9 +339,9 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
             }
         }
-        else if (t instanceof InvalidArgumentException)
+        else if (t instanceof ReaderException)
         {
-            InvalidArgumentException e = (InvalidArgumentException)t;
+            ReaderException e = (ReaderException)t;
             if (e.getMessage() != null)
             {
                 sender.sendMessage(t.getMessage());
@@ -393,6 +364,17 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                 sender.sendTranslated(NEGATIVE, "Contact an administrator if you think this is a mistake!");
             }
             sender.sendTranslated(NEGATIVE, "Missing permission: {name}", e.getPermission());
+        }
+        else if (t instanceof IncorrectArgumentException)
+        {
+            if (((IncorrectArgumentException)t).isNamedArgument())
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument for {input#named}: {input#reason}", ((IncorrectArgumentException)t).getName(), t.getCause().getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument at {integer#index}: {input#reason}", ((IncorrectArgumentException)t).getIndex(), t.getCause().getMessage());
+            }
         }
         else
         {

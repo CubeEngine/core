@@ -15,21 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.exception;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Stack;
-
-public final class HelpContext extends BasicContext
+public class IncorrectArgumentException extends CommandException
 {
-    public HelpContext(CommandContext ctx)
+    private String name;
+    private Integer index;
+
+    public IncorrectArgumentException(String name, Throwable cause)
     {
-        super(ctx.getCommand(), ctx.getSender(), ctx.getLabels(), ctx.getArgs());
+        super(cause);
+        this.name = name;
     }
 
-    public HelpContext(CubeCommand command, CommandSender sender, Stack<String> labels, String[] args)
+    public IncorrectArgumentException(Integer index, Throwable cause)
     {
-        super(command, sender, labels, new LinkedList<Object>(Arrays.asList(args)));
+        super(cause);
+        this.index = index;
+    }
+
+    public boolean isNamedArgument()
+    {
+        return this.index == null;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Integer getIndex()
+    {
+        return index;
     }
 }

@@ -22,18 +22,18 @@ import de.cubeisland.engine.core.module.Module;
 public class TestCommand extends CubeCommand
 {
 
-    public TestCommand(Module module, String name, String description, ContextFactory contextFactory)
+    public TestCommand(Module module, String name, String description, CubeContextFactory contextFactory)
     {
         super(module, name, description, contextFactory, null, false);
     }
 
     @Override
-    public CommandResult run(CommandContext context)
+    public CommandResult run(CubeContext context)
     {
         return null;
     }
 
     @Override
-    public void help(HelpContext context)
+    public void help(CubeContext context)
     {}
 }

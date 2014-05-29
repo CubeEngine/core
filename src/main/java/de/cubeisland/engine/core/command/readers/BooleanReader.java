@@ -22,9 +22,8 @@ import java.util.Set;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.THashSet;
 
 public class BooleanReader extends ArgumentReader
@@ -50,7 +49,7 @@ public class BooleanReader extends ArgumentReader
     }
 
     @Override
-    public Boolean read(String arg, Locale locale) throws InvalidArgumentException
+    public Boolean read(String arg, Locale locale) throws ReaderException
     {
         arg = arg.trim().toLowerCase(locale);
         if (this.yesStrings.contains(arg))

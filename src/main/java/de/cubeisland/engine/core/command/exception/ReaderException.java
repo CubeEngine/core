@@ -15,15 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.exception;
 
-import java.util.List;
-
-import de.cubeisland.engine.core.module.Module;
-
-public interface CommandFactory<T extends CubeCommand>
+public class ReaderException extends CommandException
 {
-    Class<T> getCommandType();
-
-    List<T> parseCommands(Module module, Object holder);
+    public ReaderException(String message)
+    {
+        super(message);
+    }
 }

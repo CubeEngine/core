@@ -263,7 +263,6 @@ public final class BukkitCore extends JavaPlugin implements Core
                 pm.registerEvents(new PreCommandListener(BukkitCore.this), BukkitCore.this);
             }
         });
-        this.commandManager.registerCommandFactory(new ReflectedCommandFactory());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);

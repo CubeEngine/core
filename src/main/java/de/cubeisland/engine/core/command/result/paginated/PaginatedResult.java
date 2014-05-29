@@ -20,26 +20,27 @@ package de.cubeisland.engine.core.command.result.paginated;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CubeContext;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public class PaginatedResult implements CommandResult
 {
-    private final CommandContext context;
+    private final CubeContext context;
     private final PaginationIterator iterator;
 
     private int pageNumber = 0;
 
-    public PaginatedResult(CommandContext context, List<String> lines)
+    public PaginatedResult(CubeContext context, List<String> lines)
     {
         this.context = context;
         this.iterator = new StringListIterator(lines);
 
         context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSender(), this);
     }
-    public PaginatedResult(CommandContext context, PaginationIterator iterator)
+    public PaginatedResult(CubeContext context, PaginationIterator iterator)
     {
         this.context = context;
         this.iterator = iterator;
@@ -48,7 +49,7 @@ public class PaginatedResult implements CommandResult
     }
 
     @Override
-    public void show(CommandContext context)
+    public void show(CubeContext context)
     {
         int pageCount = iterator.pageCount(PaginationManager.LINES_PER_PAGE);
         context.sendTranslated(NONE, PaginationManager.HEADER, pageNumber + 1, pageCount);

@@ -112,7 +112,6 @@ public class ModuleClassLoader extends URLClassLoader
             clazz = it.next().getValue();
             this.moduleLoader.getCore().getConfigFactory().getDefaultConverterManager().removeConverter(clazz);
             ArgumentReader.removeReader(clazz);
-            this.moduleLoader.getCore().getCommandManager().removeCommandFactory(clazz);
             it.remove();
         }
 

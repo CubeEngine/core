@@ -19,13 +19,16 @@ package de.cubeisland.engine.core.command.readers;
 
 import java.util.Locale;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
+
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class IntReader extends ArgumentReader
 {
     @Override
-    public Integer read(String arg, Locale locale) throws InvalidArgumentException
+    public Integer read(String arg, Locale locale) throws ReaderException
     {
         String num = arg.replace(',', '.').replace(".", "");
         try
@@ -34,7 +37,7 @@ public class IntReader extends ArgumentReader
         }
         catch (NumberFormatException e)
         {
-            throw new InvalidArgumentException("Could not parse {input} to integer!", arg);
+            throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Could not parse {input} to integer!", arg));
         }
     }
 }

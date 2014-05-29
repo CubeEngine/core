@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.Queue;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.BasicContextFactory;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CubeContextFactory;
 import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Pair;
@@ -45,8 +45,7 @@ public class ConfirmManager
         this.core = core;
         this.pendingConfirmations = new HashMap<>();
         confirmationTimeoutTasks = new HashMap<>();
-        commandManager.registerCommand(new ConfirmCommand(core.getModuleManager()
-                                                              .getCoreModule(), new BasicContextFactory(), this));
+        commandManager.registerCommand(new ConfirmCommand(core.getModuleManager().getCoreModule(), new CubeContextFactory(), this));
     }
 
     /**

@@ -28,12 +28,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.HelpContext;
+import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -42,7 +40,7 @@ import gnu.trove.set.hash.TLongHashSet;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
-public abstract class ConversationCommand extends ParameterizedCommand implements Listener
+public abstract class ConversationCommand extends CubeCommand implements Listener
 {
     private final TLongHashSet usersInMode = new TLongHashSet();
 
@@ -72,7 +70,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
             user.sendMessage(ChatFormat.PURPLE + "[" + ChatFormat.WHITE + "ChatCommand" + ChatFormat.PURPLE + "] " + ChatFormat.WHITE + event.getMessage());
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CommandContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
+            CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
             this.run(context);
             event.setCancelled(true);
         }
@@ -88,13 +86,14 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
 
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CommandContext context = this.getContextFactory().tabCompleteParse(this, user, labels, StringUtils.explode(" ", event.getChatMessage()));
+            CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ",
+                                                                                                         event.getChatMessage()));
             event.getTabCompletions().addAll(this.tabComplete(context));
         }
     }
 
     @Override
-    public List<String> tabComplete(ParameterizedTabContext context)
+    public List<String> tabComplete(CubeContext context)
     {
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
@@ -107,7 +106,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
         {
             params.add(param.getName().toLowerCase());
         }
-        List<Object> args = context.getArgs();
+        List<Object> args = context.getIndexed();
         if (args.isEmpty())
         {
             list.addAll(flags);
@@ -187,7 +186,7 @@ public abstract class ConversationCommand extends ParameterizedCommand implement
     }
 
     @Override
-    public void help(HelpContext context)
+    public void help(CubeContext context)
     {
         context.sendTranslated(NEUTRAL, "Flags:");
         Set<String> flags = new HashSet<>();

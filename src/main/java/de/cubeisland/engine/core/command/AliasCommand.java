@@ -54,25 +54,19 @@ public final class AliasCommand extends CubeCommand
     }
 
     @Override
-    public ContextFactory getContextFactory()
+    public CubeContextFactory getContextFactory()
     {
         return super.getContextFactory();
     }
 
     @Override
-    public CommandResult run(CommandContext context)
+    public CommandResult run(CubeContext context)
     {
         return this.target.run(context);
     }
 
     @Override
-    public void help(HelpContext context) 
-    {
-        this.target.help(context);
-    }
-
-    @Override
-    public List<String> tabComplete(CommandContext context)
+    public List<String> tabComplete(CubeContext context)
     {
         return this.target.tabComplete(context);
     }

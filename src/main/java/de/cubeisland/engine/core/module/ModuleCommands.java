@@ -30,11 +30,10 @@ import org.bukkit.plugin.Plugin;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
@@ -70,12 +69,12 @@ public class ModuleCommands extends ContainerCommand
         }
 
         @Override
-        public Module read(String arg, Locale locale) throws InvalidArgumentException
+        public Module read(String arg, Locale locale) throws ReaderException
         {
             Module module = this.mm.getModule(arg);
             if (module == null)
             {
-                throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "The given module could not be found!"));
+                throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "The given module could not be found!"));
             }
             return module;
         }
@@ -83,7 +82,7 @@ public class ModuleCommands extends ContainerCommand
 
     @Alias(names = "modules")
     @Command(alias = "show", desc = "Lists all the loaded modules")
-    public void list(CommandContext context)
+    public void list(CubeContext context)
     {
         Collection<Module> modules = this.mm.getModules();
 
@@ -113,7 +112,7 @@ public class ModuleCommands extends ContainerCommand
 
     @Command(desc = "Enables a module")
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
-    public void enable(CommandContext context)
+    public void enable(CubeContext context)
     {
         Module module = context.getArg(0);
         if (this.mm.enableModule(module))
@@ -128,9 +127,9 @@ public class ModuleCommands extends ContainerCommand
 
     @Command(desc = "Disables a module")
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
-    public void disable(CommandContext context)
+    public void disable(CubeContext context)
     {
-        Module module = this.mm.getModule(context.<String>getArg(0));
+        Module module = this.mm.getModule(context.getString(0));
         if (module == null)
         {
             context.sendTranslated(NEGATIVE, "The given module could not be found!");
@@ -144,7 +143,7 @@ public class ModuleCommands extends ContainerCommand
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
-    public void unload(CommandContext context)
+    public void unload(CubeContext context)
     {
         Module module = context.getArg(0);
         this.mm.unloadModule(module);
@@ -154,7 +153,7 @@ public class ModuleCommands extends ContainerCommand
     @Command(desc = "Reloads a module")
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     @Flags(@Flag(name = "f", longName = "file"))
-    public void reload(ParameterizedContext context)
+    public void reload(CubeContext context)
     {
         Module module = context.getArg(0);
         try
@@ -179,7 +178,7 @@ public class ModuleCommands extends ContainerCommand
 
     @Command(desc = "Loads a module from the modules directory.")
     @IParams(@Grouped(@Indexed(label = "file name")))
-    public void load(CommandContext context)
+    public void load(CubeContext context)
     {
         String moduleFileName = context.getArg(0);
         if (moduleFileName.contains(".") || moduleFileName.contains("/") || moduleFileName.contains("\\"))
@@ -225,7 +224,7 @@ public class ModuleCommands extends ContainerCommand
     @Command(desc = "Get info about a module")
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     @Flags(@Flag(name = "s", longName = "source"))
-    public void info(ParameterizedContext context)
+    public void info(CubeContext context)
     {
         Module module = context.getArg(0);
         ModuleInfo moduleInfo = module.getInfo();

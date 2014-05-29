@@ -20,12 +20,12 @@ package de.cubeisland.engine.core.command.readers;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 
 public class UserListOrAllReader extends ArgumentReader
 {
     @Override
-    public Object read(String arg, Locale locale) throws InvalidArgumentException
+    public Object read(String arg, Locale locale) throws ReaderException
     {
         if ("*".equals(arg))
         {

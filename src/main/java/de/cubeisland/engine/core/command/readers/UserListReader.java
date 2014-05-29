@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Locale;
 
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
 
 public class UserListReader extends ArgumentReader
 {
     @Override
-    public List<User> read(String arg, Locale locale) throws InvalidArgumentException
+    public List<User> read(String arg, Locale locale) throws ReaderException
     {
         List<User> users = new ArrayList<>();
         String[] userStrings = StringUtils.explode(",", arg);

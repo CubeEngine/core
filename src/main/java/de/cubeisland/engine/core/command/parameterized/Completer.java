@@ -19,7 +19,9 @@ package de.cubeisland.engine.core.command.parameterized;
 
 import java.util.List;
 
+import de.cubeisland.engine.core.command.CubeContext;
+
 public interface Completer
 {
-    List<String> complete(ParameterizedTabContext context, String token);
+    List<String> complete(CubeContext context, String token);
 }

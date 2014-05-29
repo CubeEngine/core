@@ -20,29 +20,27 @@ package de.cubeisland.engine.core.command.reflected;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.CubeContextFactory;
 import de.cubeisland.engine.core.command.exception.CommandException;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedCommand;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 
-public class ReflectedCommand extends ParameterizedCommand
+public class ReflectedCommand extends CubeCommand
 {
     private final Object holder;
     private final Method method;
-    private final Class<? extends CommandContext> contextType;
 
     @SuppressWarnings("unchecked")
-    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, ParameterizedContextFactory factory, Permission permission, boolean checkperm)
+    public ReflectedCommand(Module module, Object holder, Method method, String name, String description, CubeContextFactory factory, Permission permission, boolean checkperm)
     {
         super(module, name, description, factory, permission, checkperm);
 
         this.holder = holder;
         this.method = method;
         this.method.setAccessible(true);
-        this.contextType = (Class<? extends CommandContext>)method.getParameterTypes()[0];
 
         Alias annotation = method.getAnnotation(Alias.class);
         if (annotation != null)
@@ -52,31 +50,28 @@ public class ReflectedCommand extends ParameterizedCommand
     }
 
     @Override
-    public CommandResult run(final CommandContext context)
+    public CommandResult run(final CubeContext context)
     {
-        if (this.contextType.isInstance(context))
+        try
         {
-            try
+            Object result = this.method.invoke(this.holder, context);
+            if (result instanceof CommandResult)
             {
-                Object result = this.method.invoke(this.holder, context);
-                if (result instanceof CommandResult)
-                {
-                    return (CommandResult)result;
-                }
+                return (CommandResult)result;
             }
-            catch (IllegalAccessException e)
-            {
-                throw new RuntimeException(e);
-            }
-            catch (InvocationTargetException e)
-            {
-                if (e.getCause() instanceof CommandException)
-                {
-                    throw (CommandException)e.getCause();
-                }
-                throw new RuntimeException(e.getCause());
-            }
+            return null;
         }
-        return null;
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (InvocationTargetException e)
+        {
+            if (e.getCause() instanceof CommandException)
+            {
+                throw (CommandException)e.getCause();
+            }
+            throw new RuntimeException(e.getCause());
+        }
     }
 }

@@ -22,8 +22,8 @@ import java.util.List;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.Completer;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedTabContext;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
@@ -43,7 +43,7 @@ public class PlayerCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(ParameterizedTabContext context, String token)
+    public List<String> complete(CubeContext context, String token)
     {
         final CommandSender sender = context.getSender();
         List<String> playerNames = new ArrayList<>();

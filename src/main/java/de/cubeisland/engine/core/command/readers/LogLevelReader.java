@@ -21,7 +21,7 @@ import java.util.Locale;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.logging.LogLevel;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -29,12 +29,12 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 public class LogLevelReader extends ArgumentReader
 {
     @Override
-    public LogLevel read(String arg, Locale locale) throws InvalidArgumentException
+    public LogLevel read(String arg, Locale locale) throws ReaderException
     {
         LogLevel logLevel = LogLevel.toLevel(arg);
         if (logLevel == null)
         {
-            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "The given log level is unknown."));
+            throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "The given log level is unknown."));
         }
         return logLevel;
     }

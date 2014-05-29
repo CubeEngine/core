@@ -701,7 +701,7 @@ msgstr ""
 msgid "Display the previous page of your previous command."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/BasicContextFactory.java:131
+#: de/cubeisland/engine/core/command/CubeContextFactory.java:131
 msgid "Invalid argument at {}: {}"
 msgstr ""
 

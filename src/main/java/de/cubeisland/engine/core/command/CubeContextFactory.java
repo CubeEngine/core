@@ -17,24 +17,23 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import gnu.trove.set.hash.THashSet;
 
-public interface ContextFactory
+public class CubeContextFactory extends ContextReader
 {
-    ArgBounds getArgBounds();
-
-    ContextFactory addIndexed(List<CommandParameterIndexed> indexedParams);
-    ContextFactory addIndexed(CommandParameterIndexed param);
-    ContextFactory removeLastIndexed();
-    CommandParameterIndexed getIndexed(int index);
-    List<CommandParameterIndexed> getIndexedParameters();
-
-    CommandContext parse(CubeCommand command, CommandContext context);
-    CommandContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs);
-    CommandContext tabCompleteParse(CubeCommand command, CommandSender sender, Stack<String> labels,String[] rawArgs);
-
-    void calculateArgBounds();
+    // TODO readContext where needed after calling this!!!
+    public CubeContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
+    {
+        final List<String> indexed = new LinkedList<>();
+        final Set<String> flags = new THashSet<>();
+        final Map<String, String> named = new LinkedHashMap<>();
+        return new CubeContext(rawArgs, indexed, named, flags, this.parse(rawArgs, indexed, named, flags), command, sender, labels);
+    }
 }

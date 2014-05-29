@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -36,7 +36,7 @@ public class ItemStackReader extends ArgumentReader
         ItemStack item = Match.material().itemStack(arg);
         if (item == null)
         {
-            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Item {input#item} not found!", arg));
+            throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

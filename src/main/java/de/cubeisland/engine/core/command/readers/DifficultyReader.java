@@ -23,21 +23,21 @@ import org.bukkit.Difficulty;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class DifficultyReader extends ArgumentReader
 {
     @Override
-    public Difficulty read(String arg, Locale locale) throws InvalidArgumentException
+    public Difficulty read(String arg, Locale locale) throws ReaderException
     {
         try
         {
             Difficulty difficulty = Difficulty.getByValue(Integer.valueOf(arg));
             if (difficulty == null)
             {
-                throw new InvalidArgumentException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
+                throw new ReaderException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
             }
             return difficulty;
         }
@@ -49,7 +49,7 @@ public class DifficultyReader extends ArgumentReader
             }
             catch (IllegalArgumentException ex)
             {
-                throw new InvalidArgumentException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "{input} is not a known difficulty!", arg));
+                throw new ReaderException(CubeEngine.getCore().getI18n().translate(locale, NEGATIVE, "{input} is not a known difficulty!", arg));
             }
         }
     }

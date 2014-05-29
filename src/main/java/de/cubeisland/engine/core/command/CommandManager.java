@@ -78,10 +78,6 @@ public interface CommandManager extends Cleanable
     boolean runCommand(CommandSender sender, String commandLine);
     ConsoleCommandSender getConsoleSender();
 
-    <T extends CubeCommand> void registerCommandFactory(CommandFactory<T> factory);
-    CommandFactory getCommandFactory(Class<? extends CubeCommand> type);
-    void removeCommandFactory(Class type);
-
     void logExecution(CommandSender sender, CubeCommand cubeCommand, String[] args);
     void logTabCompletion(CommandSender sender, CubeCommand cubeCommand, String[] args);
 

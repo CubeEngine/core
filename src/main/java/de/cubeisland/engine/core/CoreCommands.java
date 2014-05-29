@@ -31,11 +31,10 @@ import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.parameterized.ParameterizedContext;
+import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.reflected.CallAsync;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
@@ -71,7 +70,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
-    public void reload(CommandContext context)
+    public void reload(CubeContext context)
     {
         context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
         Profiler.startProfiling("ceReload");
@@ -84,7 +83,7 @@ public class CoreCommands extends ContainerCommand
 
     @Command(desc = "Reloads all of the modules!")
     @Flags(@Flag(name = "f", longName = "file"))
-    public void reloadmodules(ParameterizedContext context)
+    public void reloadmodules(CubeContext context)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
@@ -97,11 +96,11 @@ public class CoreCommands extends ContainerCommand
     @Command(alias = "setpw", desc = "Sets your password.")
     @IParams({@Grouped(@Indexed(label = "password")),
               @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
-    public void setPassword(CommandContext context)
+    public void setPassword(CubeContext context)
     {
         CommandSender sender = context.getSender();
         User target;
-        if (context.hasArg(1))
+        if (context.hasIndexed(1))
         {
             target = context.getArg(1);
             if (target == null)
@@ -125,7 +124,7 @@ public class CoreCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "You are not allowed to change the password of an other player!");
             return;
         }
-        core.getUserManager().setPassword(target, context.<String>getArg(0));
+        core.getUserManager().setPassword(target, context.getString(0));
         if (sender == target)
         {
             sender.sendTranslated(POSITIVE, "The player's password has been set!");
@@ -138,10 +137,10 @@ public class CoreCommands extends ContainerCommand
 
     @Command(alias = "clearpw", desc = "Clears your password.")
     @IParams(@Grouped(value = @Indexed(label = {"player","!*"}, type = {User.class, String.class}), req = false))
-    public void clearPassword(ParameterizedContext context)
+    public void clearPassword(CubeContext context)
     {
         CommandSender sender = context.getSender();
-        if (context.hasArg(0))
+        if (context.hasIndexed(0))
         {
             if ("*".equals(context.getArg(0)))
             {
@@ -181,7 +180,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Logs you in with your password!")
     @IParams(@Grouped(@Indexed(label = "password")))
     @CommandPermission(permDefault = TRUE)
-    public void login(CommandContext context)
+    public void login(CubeContext context)
     {
         CommandSender sender = context.getSender();
         if (sender instanceof User)
@@ -192,7 +191,7 @@ public class CoreCommands extends ContainerCommand
                 context.sendTranslated(POSITIVE, "You are already logged in!");
                 return;
             }
-            boolean isLoggedIn = core.getUserManager().login(user, context.<String>getArg(0));
+            boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
             if (isLoggedIn)
             {
                 user.sendTranslated(POSITIVE, "You logged in successfully!");
@@ -228,7 +227,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Logs you out!")
-    public void logout(CommandContext context)
+    public void logout(CubeContext context)
     {
         CommandSender sender = context.getSender();
         if (sender instanceof User)
@@ -251,7 +250,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Toggles the online mode")
-    public void onlinemode(CommandContext context)
+    public void onlinemode(CubeContext context)
     {
         final boolean newState = !this.core.getServer().getOnlineMode();
         BukkitUtils.setOnlineMode(newState);
@@ -268,9 +267,9 @@ public class CoreCommands extends ContainerCommand
 
     @Command(desc = "Changes or displays the log level of the server.")
     @IParams(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
-    public void loglevel(CommandContext context)
+    public void loglevel(CubeContext context)
     {
-        if (context.hasArgs())
+        if (context.hasIndexed())
         {
             context.getCore().getLog().setLevel(context.<LogLevel>getArg(0));
             context.sendTranslated(POSITIVE, "New log level successfully set!");
@@ -284,14 +283,14 @@ public class CoreCommands extends ContainerCommand
     @CallAsync
     @Command(desc = "Searches for a user in the database")
     @IParams(@Grouped(@Indexed(label = "name")))
-    public CommandResult searchUser(CommandContext context)
+    public CommandResult searchUser(CubeContext context)
     {
-        final boolean exact = core.getUserManager().findExactUser(context.<String>getArg(0)) != null;
-        final User user = core.getUserManager().findUser(context.<String>getArg(0), true);
+        final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;
+        final User user = core.getUserManager().findUser(context.getString(0), true);
         return new CommandResult()
         {
             @Override
-            public void show(CommandContext context)
+            public void show(CubeContext context)
             {
                 if (user == null)
                 {

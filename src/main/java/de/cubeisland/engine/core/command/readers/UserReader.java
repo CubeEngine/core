@@ -22,7 +22,7 @@ import java.util.Locale;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.InvalidArgumentException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -40,12 +40,12 @@ public class UserReader extends ArgumentReader
     }
 
     @Override
-    public User read(String arg, Locale locale) throws InvalidArgumentException
+    public User read(String arg, Locale locale) throws ReaderException
     {
         User user = this.core.getUserManager().findUser(arg);
         if (user == null)
         {
-            throw new InvalidArgumentException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Player {user} not found!", arg));
+            throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Player {user} not found!", arg));
         }
         return user;
     }

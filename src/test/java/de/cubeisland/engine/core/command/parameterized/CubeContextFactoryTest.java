@@ -17,24 +17,24 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.TestCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.CubeContextFactory;
 import de.cubeisland.engine.core.command.TestCommand;
 import de.cubeisland.engine.core.command.sender.TestConsoleSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleManager;
 import junit.framework.TestCase;
 
-import static de.cubeisland.engine.core.command.parameterized.ParameterizedContextFactory.readString;
+import static de.cubeisland.engine.core.command.ContextParser.readString;
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 
-public class ParameterizedContextFactoryTest extends TestCase
+public class CubeContextFactoryTest extends TestCase
 {
     private Core core;
     private ModuleManager mm;
@@ -75,22 +75,21 @@ public class ParameterizedContextFactoryTest extends TestCase
 
     public void testContextFactory()
     {
-        final ParameterizedContextFactory factory = new ParameterizedContextFactory(
-            Collections.<CommandParameterIndexed>emptyList(),
-            Arrays.asList(new CommandFlag("a", "all", null)),
-            Arrays.asList(new CommandParameter("test", "label", String.class, null))
-        );
+        CubeContextFactory factory = new CubeContextFactory();
+        factory.addFlag(new CommandFlag("a", "all", null));
+        factory.addNamed(new CommandParameter("test", "label", String.class, null));
 
         Stack<String> labels = new Stack<>();
         labels.add("testCommand");
         CommandSender sender = new TestConsoleSender(this.core);
         Module module = this.mm.getModule("test");
         CubeCommand testCommand = new TestCommand(module, labels.get(0), "desscription", factory);
-        ParameterizedContext ctx = factory.parse(testCommand, sender, labels, new String[] {
+        CubeContext ctx = factory.parse(testCommand, sender, labels, new String[] {
         "-a", "test", "\"value\""
         });
+        ctx.getCommand().getContextFactory().readContext(ctx, sender.getLocale());
 
         assertEquals(ctx.hasFlag("a"), true);
-        assertEquals(ctx.getParam("test"), "value");
+        assertEquals(ctx.getArg("test"), "value");
     }
 }
