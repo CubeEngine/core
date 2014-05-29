@@ -549,10 +549,6 @@ public abstract class CubeCommand
             tabCompleteParam(context, cFactory, result, last);
             tabCompleteFlags(context, cFactory, result, last);
         }
-        if (result.isEmpty())
-        {
-            return null; //TODO remove once ALL our commands have tabcompleter for players
-        }
         return result;
     }
 
@@ -570,7 +566,7 @@ public abstract class CubeCommand
         {
             return completer.complete(context, lastParameter.getValue());
         }
-        return null; //TODO remove once ALL our commands have tabcompleter for players
+        return Collections.emptyList();
     }
 
     private void tabCompleteParam(CubeContext context, CubeContextFactory cFactory, List<String> result, String last)
