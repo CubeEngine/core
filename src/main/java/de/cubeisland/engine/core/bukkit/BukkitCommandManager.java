@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.bukkit;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.World;
 import org.bukkit.command.Command;
 
 import de.cubeisland.engine.core.Core;
@@ -33,6 +34,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
@@ -67,6 +69,7 @@ public class BukkitCommandManager implements CommandManager
         this.paginationManager = new PaginationManager(core);
 
         this.registerDefaultCompleter(new PlayerCompleter(), User.class);
+        this.registerDefaultCompleter(new WorldCompleter(), World.class);
     }
 
     public CommandInjector getInjector()
