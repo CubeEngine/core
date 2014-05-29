@@ -26,8 +26,12 @@ import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 
-import static de.cubeisland.engine.core.util.ChatFormat.*;
-import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.core.util.ChatFormat.GREY;
+import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
+import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
 public abstract class ContainerCommand extends CubeCommand implements CommandHolder
 {
@@ -93,36 +97,56 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
     }
 
     @Override
-    public void help(CubeContext context)
+    protected void addHelp()
     {
-        CommandSender sender = context.getSender();
-        context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", this.getUsage(context));
-        context.sendMessage(" ");
+        this.addChild(new ContainerHelpCommand(this));
+    }
 
-        List<CubeCommand> commands = new ArrayList<>();
-        for (CubeCommand child : context.getCommand().getChildren())
+    public static class ContainerHelpCommand extends HelpCommand
+    {
+        public ContainerHelpCommand(CubeCommand target)
         {
-            if (!child.isCheckperm() || child.isAuthorized(sender))
-            {
-                commands.add(child);
-            }
+            super(target);
         }
 
-        if (commands.isEmpty())
+        @Override
+        public CommandResult run(CubeContext context)
         {
-            context.sendTranslated(NEGATIVE, "No actions are available");
-        }
-        else
-        {
-            context.sendTranslated(NEUTRAL, "The following actions are available:");
+            CommandSender sender = context.getSender();
+            context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", target.getUsage(context));
             context.sendMessage(" ");
-            for (CubeCommand command : commands)
+
+            List<CubeCommand> commands = new ArrayList<>();
+            for (CubeCommand child : target.getChildren())
             {
-                context.sendMessage(YELLOW + command.getName() + WHITE + ": "  + GREY + sender.getTranslation(NONE, command.getDescription()));
+                if (child == this)
+                {
+                    continue;
+                }
+                if (!child.isCheckperm() || child.isAuthorized(sender))
+                {
+                    commands.add(child);
+                }
             }
+
+            if (commands.isEmpty())
+            {
+                context.sendTranslated(NEGATIVE, "No actions are available");
+            }
+            else
+            {
+                context.sendTranslated(NEUTRAL, "The following actions are available:");
+                context.sendMessage(" ");
+                for (CubeCommand command : commands)
+                {
+                    context.sendMessage(YELLOW + command.getName() + WHITE + ": "  + GREY + sender.getTranslation(NONE, command.getDescription()));
+                }
+            }
+            context.sendMessage(" ");
+            context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + target.implodeCommandParentNames(
+                "/"));
+            return null;
         }
-        context.sendMessage(" ");
-        context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.implodeCommandParentNames("/"));
     }
 
     public static abstract class DelegatingContextFilter

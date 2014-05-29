@@ -85,7 +85,7 @@ public abstract class CubeCommand
     public CubeCommand(Module module, String name, String description, CubeContextFactory contextFactory, Permission permission, boolean checkperm)
     {
         this.checkperm = checkperm;
-        if ("?".equals(name))
+        if ("?".equals(name) && !HelpCommand.class.isAssignableFrom(this.getClass()))
         {
             throw new IllegalArgumentException("Invalid command name: " + name);
         }
@@ -100,6 +100,16 @@ public abstract class CubeCommand
         this.childrenAliases = new ArrayList<>();
         this.loggable = true;
         this.permission = permission;
+
+        if (!HelpCommand.class.isAssignableFrom(this.getClass()))
+        {
+            this.addHelp();
+        }
+    }
+
+    protected void addHelp()
+    {
+        this.addChild(new HelpCommand(this));
     }
 
     public CubeCommand(Module module, String name, String description, CubeContextFactory cFactory)
@@ -642,33 +652,46 @@ public abstract class CubeCommand
      */
     public abstract CommandResult run(CubeContext context);
 
-    /**
-     * This method is called if the help page of this command was requested by the ?-action
-     *
-     * @param context The CubeContext containing all the necessary information
-     */
-    public void help(CubeContext context)
+    public static class HelpCommand extends CubeCommand
     {
-        context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", this.getDescription());
-        context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", this.getUsage(context));
+        protected CubeCommand target;
 
-        if (this.hasChildren())
+        public HelpCommand(CubeCommand target)
         {
-            context.sendMessage(" ");
-            context.sendTranslated(NEUTRAL, "The following subcommands are available:");
-            context.sendMessage(" ");
+            super(target.module, "?", "Displays Help", new CubeContextFactory());
+            this.target = target;
+            this.addIndexed(CommandParameterIndexed.greedyIndex());
+        }
 
-            final CommandSender sender = context.getSender();
-            for (CubeCommand command : context.getCommand().getChildren())
+        @Override
+        public CommandResult run(CubeContext context)
+        {
+            context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", target.getDescription());
+            context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", target.getUsage(context));
+
+            if (this.hasChildren())
             {
-                if (!command.isCheckperm() || command.isAuthorized(sender))
+                context.sendMessage(" ");
+                context.sendTranslated(NEUTRAL, "The following subcommands are available:");
+                context.sendMessage(" ");
+
+                final CommandSender sender = context.getSender();
+                for (CubeCommand command : target.getChildren())
                 {
-                    context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.getTranslation(NONE, command.getDescription()));
+                    if (command == this)
+                    {
+                        continue;
+                    }
+                    if (!command.isCheckperm() || command.isAuthorized(sender))
+                    {
+                        context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.getTranslation(NONE, command.getDescription()));
+                    }
                 }
             }
+            context.sendMessage(" ");
+            context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + target.getModule().getId() + "/" + target.implodeCommandParentNames("/"));
+            return null;
         }
-        context.sendMessage(" ");
-        context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + this.getModule().getId() + "/" + this.implodeCommandParentNames("/"));
     }
 
     public void addIndexed(CommandParameterIndexed indexed)

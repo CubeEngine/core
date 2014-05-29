@@ -83,7 +83,7 @@ public class CubeContextFactoryTest extends TestCase
         labels.add("testCommand");
         CommandSender sender = new TestConsoleSender(this.core);
         Module module = this.mm.getModule("test");
-        CubeCommand testCommand = new TestCommand(module, labels.get(0), "desscription", factory);
+        CubeCommand testCommand = new TestCommand(module, labels.get(0), "description", factory);
         CubeContext ctx = factory.parse(testCommand, sender, labels, new String[] {
         "-a", "test", "\"value\""
         });

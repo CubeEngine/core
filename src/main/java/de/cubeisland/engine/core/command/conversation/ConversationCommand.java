@@ -28,6 +28,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
+import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
@@ -186,21 +187,36 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     }
 
     @Override
-    public void help(CubeContext context)
+    protected void addHelp()
     {
-        context.sendTranslated(NEUTRAL, "Flags:");
-        Set<String> flags = new HashSet<>();
-        for (CommandFlag flag : this.getContextFactory().getFlags())
+        this.addChild(new ConversationHelpCommand(this));
+    }
+
+    public static class ConversationHelpCommand extends HelpCommand
+    {
+        public ConversationHelpCommand(CubeCommand target)
         {
-            flags.add(flag.getLongName().toLowerCase());
+            super(target);
         }
-        context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, flags));
-        context.sendTranslated(NEUTRAL, "Parameters:");
-        Set<String> params  = new HashSet<>();
-        for (CommandParameter param : this.getContextFactory().getParameters())
+
+        @Override
+        public CommandResult run(CubeContext context)
         {
-            params.add(param.getName().toLowerCase());
+            context.sendTranslated(NEUTRAL, "Flags:");
+            Set<String> flags = new HashSet<>();
+            for (CommandFlag flag : target.getContextFactory().getFlags())
+            {
+                flags.add(flag.getLongName().toLowerCase());
+            }
+            context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, flags));
+            context.sendTranslated(NEUTRAL, "Parameters:");
+            Set<String> params  = new HashSet<>();
+            for (CommandParameter param : target.getContextFactory().getParameters())
+            {
+                params.add(param.getName().toLowerCase());
+            }
+            context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, params));
+            return null;
         }
-        context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, params));
     }
 }

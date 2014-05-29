@@ -32,8 +32,4 @@ public class TestCommand extends CubeCommand
     {
         return null;
     }
-
-    @Override
-    public void help(CubeContext context)
-    {}
 }
