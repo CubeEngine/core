@@ -660,7 +660,12 @@ public abstract class CubeCommand
         {
             super(target.module, "?", "Displays Help", new CubeContextFactory());
             this.target = target;
-            this.addIndexed(CommandParameterIndexed.greedyIndex());
+        }
+
+        @Override
+        public CubeContextFactory getContextFactory()
+        {
+            return target.getContextFactory();
         }
 
         @Override
@@ -692,11 +697,6 @@ public abstract class CubeCommand
             context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + target.getModule().getId() + "/" + target.implodeCommandParentNames("/"));
             return null;
         }
-    }
-
-    public void addIndexed(CommandParameterIndexed indexed)
-    {
-        this.getContextFactory().addIndexed(indexed);
     }
 
     public boolean isOnlyIngame()
