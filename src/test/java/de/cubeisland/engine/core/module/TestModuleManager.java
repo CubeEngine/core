@@ -109,10 +109,7 @@ public class TestModuleManager implements ModuleManager
     @Override
     public void reloadModule(Module module, boolean fromFile) throws ModuleException
     {
-        if (fromFile)
-        {
-        }
-        else
+        if (!fromFile)
         {
             if (module instanceof Reloadable)
             {
