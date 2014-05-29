@@ -28,10 +28,3 @@ the complete package or single jar files.
 Chat
 ----
 - IRC: [#cubeengine on EsperNet](https://webchat.esper.net/?channels=cubeengine&nick=)
-
-Sponsor a feature
------------------
-* Core: [![tip for next commit](http://tip4commit.com/projects/697.svg)](http://tip4commit.com/projects/697)
-* Main modules: [![tip for next commit](http://tip4commit.com/projects/778.svg)](http://tip4commit.com/projects/778)
-* Extra modules: [![tip for next commit](http://tip4commit.com/projects/779.svg)](http://tip4commit.com/projects/779)
-* Module prototypes: [![tip for next commit](http://tip4commit.com/projects/780.svg)](http://tip4commit.com/projects/780)
