@@ -38,6 +38,12 @@ public final class AliasCommand extends CubeCommand
         this.suffix = (suffix == null || suffix.isEmpty() ? NO_ADDITION : explode(" ", suffix));
     }
 
+    @Override
+    protected void addHelp()
+    {
+        // Help is already given by the target
+    }
+
     public CubeCommand getTarget()
     {
         return this.target;
@@ -54,12 +60,6 @@ public final class AliasCommand extends CubeCommand
     }
 
     @Override
-    public CubeContextFactory getContextFactory()
-    {
-        return super.getContextFactory();
-    }
-
-    @Override
     public CommandResult run(CubeContext context)
     {
         return this.target.run(context);
@@ -69,5 +69,65 @@ public final class AliasCommand extends CubeCommand
     public List<String> tabComplete(CubeContext context)
     {
         return this.target.tabComplete(context);
+    }
+
+    @Override
+    public Set<CubeCommand> getChildren()
+    {
+        return target.getChildren();
+    }
+
+    @Override
+    public boolean hasChildren()
+    {
+        return target.hasChildren();
+    }
+
+    @Override
+    public boolean hasChild(String name)
+    {
+        return target.hasChild(name);
+    }
+
+    @Override
+    public void addChild(CubeCommand command)
+    {
+        target.addChild(command);
+    }
+
+    @Override
+    public CubeCommand getChild(String name)
+    {
+        return target.getChild(name);
+    }
+
+    @Override
+    public void removeChild(String name)
+    {
+        target.removeChild(name);
+    }
+
+    @Override
+    public boolean isAsynchronous()
+    {
+        return target.isAsynchronous();
+    }
+
+    @Override
+    public boolean isLoggable()
+    {
+        return target.isLoggable();
+    }
+
+    @Override
+    public void setAsynchronous(boolean asynchronous)
+    {
+        target.setAsynchronous(asynchronous);
+    }
+
+    @Override
+    public void setLoggable(boolean state)
+    {
+        target.setLoggable(state);
     }
 }

@@ -294,7 +294,7 @@ public abstract class CubeCommand
     {
         StringBuilder sb = new StringBuilder();
         int inGroup = 0;
-        for (CommandParameterIndexed indexedParam : this.contextFactory.getIndexedParameters())
+        for (CommandParameterIndexed indexedParam : this.getContextFactory().getIndexedParameters())
         {
             if (indexedParam.getCount() == 1 || indexedParam.getCount() < 0)
             {
@@ -401,9 +401,7 @@ public abstract class CubeCommand
 
     public String getUsage(CubeContext context)
     {
-        final CommandSender sender = context.getSender();
-        String usage = this.getUsage(sender.getLocale(), context.getSender());
-        return (sender instanceof User ? "/" : "") + implode(" ", context.getLabels()) + ' ' + replaceSemiOptionalArgs(sender, usage);
+        return this.getUsage(context.getSender(), context.getLabels());
     }
 
     /**
@@ -417,7 +415,11 @@ public abstract class CubeCommand
     public String getUsage(CommandSender sender, List<String> parentLabels)
     {
         String usage = this.getUsage(sender.getLocale(), sender);
-        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + name + ' ' + usage;
+        if ("?".equals(parentLabels.get(parentLabels.size() - 1)))
+        {
+            parentLabels.remove(parentLabels.size() - 1);
+        }
+        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + usage;
     }
 
     /**
@@ -426,7 +428,7 @@ public abstract class CubeCommand
      * @param name the child name
      * @return the child or null if not found
      */
-    public final CubeCommand getChild(String name)
+    public CubeCommand getChild(String name)
     {
         if (name == null)
         {
@@ -441,7 +443,7 @@ public abstract class CubeCommand
      *
      * @param command the command to add
      */
-    public final void addChild(CubeCommand command)
+    public void addChild(CubeCommand command)
     {
         expectNotNull(command, "The command must not be null!");
 
@@ -471,7 +473,7 @@ public abstract class CubeCommand
      * @param name the name to check for
      * @return true if a matching command was found
      */
-    public final boolean hasChild(String name)
+    public boolean hasChild(String name)
     {
         return name != null && this.children.containsKey(name.toLowerCase());
     }
@@ -481,7 +483,7 @@ public abstract class CubeCommand
      *
      * @return true if that is the case
      */
-    public final boolean hasChildren()
+    public boolean hasChildren()
     {
         return !this.children.isEmpty();
     }
@@ -491,7 +493,7 @@ public abstract class CubeCommand
      *
      * @return a Set of children
      */
-    public final Set<CubeCommand> getChildren()
+    public Set<CubeCommand> getChildren()
     {
         return new HashSet<>(this.children.values());
     }
@@ -501,7 +503,7 @@ public abstract class CubeCommand
      *
      * @param name the name fo the child
      */
-    public final void removeChild(String name)
+    public void removeChild(String name)
     {
         CubeCommand cmd = this.getChild(name);
         Iterator<Map.Entry<String, CubeCommand>> it = this.children.entrySet().iterator();
@@ -666,6 +668,12 @@ public abstract class CubeCommand
         public CubeContextFactory getContextFactory()
         {
             return target.getContextFactory();
+        }
+
+        @Override
+        public void checkContext(CubeContext ctx) throws CommandException
+        {
+            // Help is always correct :)
         }
 
         @Override
