@@ -72,7 +72,14 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
             CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
-            this.run(context);
+            if (event.getMessage().startsWith("?"))
+            {
+                this.getChild("?").run(context);
+            }
+            else
+            {
+                this.run(context);
+            }
             event.setCancelled(true);
         }
     }

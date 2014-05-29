@@ -68,6 +68,7 @@ public class ConversationContextFactory extends CubeContextFactory
                 CommandFlag flag = this.flagMap.get(rawArg);
                 if (flag != null)
                 {
+                    offset++;
                     flags.add(flag.getName());
                     type.last = NOTHING;
                 }
