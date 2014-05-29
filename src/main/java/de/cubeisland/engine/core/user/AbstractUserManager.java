@@ -501,8 +501,12 @@ public abstract class AbstractUserManager implements UserManager
         }
         if (entity != null)
         {
-            User user = new User(entity);
-            this.cacheUser(user);
+            User user = this.cachedUserByDbId.get(entity.getKey());
+            if (user == null)
+            {
+                user = new User(entity);
+                this.cacheUser(user);
+            }
             return user;
         }
         return null;
