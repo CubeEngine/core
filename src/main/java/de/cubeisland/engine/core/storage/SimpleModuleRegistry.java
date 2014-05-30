@@ -22,9 +22,9 @@ import de.cubeisland.engine.core.module.Module;
 public class SimpleModuleRegistry implements ModuleRegistry
 {
     private final Module module;
-    private final Registry registry;
+    private final TableRegistry registry;
 
-    public SimpleModuleRegistry(Module module, Registry registry)
+    public SimpleModuleRegistry(Module module, TableRegistry registry)
     {
         this.module = module;
         this.registry = registry;

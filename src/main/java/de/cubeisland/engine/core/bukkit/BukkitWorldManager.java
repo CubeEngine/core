@@ -65,7 +65,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                     {
                         loadedWorlds.remove(world);
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getKey().longValue(), world);
+                        worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
                         worldUUIDs.add(world.getUID());
                     }
                 }
@@ -76,7 +76,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                         WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);
                         entity.insert();
                         worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getKey().longValue(), world);
+                        worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
                         worldUUIDs.add(world.getUID());
                     }
                 }

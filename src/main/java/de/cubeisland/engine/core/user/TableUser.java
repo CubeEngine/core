@@ -37,13 +37,24 @@ import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabaseConfigurati
 import de.cubeisland.engine.core.util.McUUID;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
-import org.jooq.util.mysql.MySQLDataType;
+
+import static org.jooq.impl.SQLDataType.*;
+import static org.jooq.util.mysql.MySQLDataType.DATETIME;
 
 public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implements TableUpdateCreator<UserEntity>
 {
     public static TableUser TABLE_USER;
+    public final TableField<UserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<UserEntity, String> LASTNAME = createField("lastname", VARCHAR.length(16).nullable(false),
+                                                                       this);
+    public final TableField<UserEntity, Boolean> NOGC = createField("nogc", BOOLEAN.nullable(false), this);
+    public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", DATETIME.nullable(false), this);
+    public final TableField<UserEntity, byte[]> PASSWD = createField("passwd", VARBINARY.length(128), this);
+    public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", DATETIME.nullable(false), this);
+    public final TableField<UserEntity, String> LANGUAGE = createField("language", VARCHAR.length(5), this);
+    public final TableField<UserEntity, Long> LEAST = createField("UUIDleast", BIGINT.nullable(false), this);
+    public final TableField<UserEntity, Long> MOST = createField("UUIDmost", BIGINT.nullable(false), this);
 
     public TableUser(String prefix)
     {
@@ -64,16 +75,6 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
         return TABLE_USER;
     }
 
-    public final TableField<UserEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
-    public final TableField<UserEntity, String> LASTNAME = createField("lastname", SQLDataType.VARCHAR.length(16).nullable(false), this);
-    public final TableField<UserEntity, Boolean> NOGC = createField("nogc", BOOLEAN.nullable(false), this);
-    public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", MySQLDataType.DATETIME.nullable(false), this);
-    public final TableField<UserEntity, byte[]> PASSWD = createField("passwd", SQLDataType.VARBINARY.length(128), this);
-    public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", MySQLDataType.DATETIME.nullable(false), this);
-    public final TableField<UserEntity, String> LANGUAGE = createField("language", SQLDataType.VARCHAR.length(5), this);
-    public final TableField<UserEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT.nullable(false), this);
-    public final TableField<UserEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT.nullable(false), this);
-
     @Override
     public Class<UserEntity> getRecordType()
     {
@@ -85,11 +86,10 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
     {
         if (dbVersion.getMajor() == 1)
         {
-            CubeEngine.getLog().info("Updating {} to Version 2" , this.getName());
+            CubeEngine.getLog().info("Updating {} to Version 2", this.getName());
 
             CubeEngine.getLog().info("Get all names with missing UUID values");
-            ResultSet resultSet = connection.prepareStatement("SELECT `player` FROM " + this.getName())
-                                            .executeQuery();
+            ResultSet resultSet = connection.prepareStatement("SELECT `player` FROM " + this.getName()).executeQuery();
             List<String> list = new ArrayList<>();
             while (resultSet.next())
             {
@@ -104,7 +104,6 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
                                             "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
                                             "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
 
-
             PreparedStatement stmt = connection.prepareStatement("UPDATE " + this.getName() +
                                                                      " SET `UUIDleast`=? , `UUIDmost`=?" +
                                                                      " WHERE `player` = ?");
@@ -113,7 +112,8 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
             {
                 if (entry.getValue() == null)
                 {
-                    PreparedStatement deleteStmt = connection.prepareStatement("DELETE FROM " + this.getName() + " WHERE `player` = ?");
+                    PreparedStatement deleteStmt = connection.prepareStatement(
+                        "DELETE FROM " + this.getName() + " WHERE `player` = ?");
                     deleteStmt.setString(1, entry.getKey());
                     deleteStmt.execute();
                     continue;
@@ -127,7 +127,7 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
 
             CubeEngine.getLog().info("Create unique index on uuids and rename to lastname");
             connection.prepareStatement("CREATE UNIQUE INDEX `uuid` ON " + this.getName() +
-                                       " (`UUIDleast`,`UUIDmost`)").execute();
+                                            " (`UUIDleast`,`UUIDmost`)").execute();
 
             CubeEngine.getLog().info("Drop unique index on player and rename to lastname");
             connection.prepareStatement("DROP INDEX `player` ON " + this.getName()).execute();

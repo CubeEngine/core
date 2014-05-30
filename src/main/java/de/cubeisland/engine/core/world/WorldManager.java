@@ -28,14 +28,15 @@ import org.bukkit.generator.ChunkGenerator;
 
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
+import org.jooq.types.UInteger;
 
 public interface WorldManager extends Cleanable
 {
     World createWorld(WorldCreator creator);
-    long getWorldId(World world);
-    Long getWorldId(String name);
-    long[] getAllWorldIds();
-    World getWorld(long id);
+    UInteger getWorldId(World world);
+    UInteger getWorldId(String name);
+    Set<UInteger> getAllWorldIds();
+    World getWorld(UInteger id);
     World getWorld(String name);
     World getWorld(UUID uid);
     boolean unloadWorld(String worldName, boolean save);

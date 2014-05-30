@@ -66,6 +66,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
@@ -312,7 +313,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return 0;
         }
-        return this.entity.getLastseen().getTime();
+        return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
     }
 
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
@@ -411,7 +412,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean isPasswordSet()
     {
-        return this.entity.getPasswd().length > 0;
+        return this.entity.getValue(TABLE_USER.PASSWD).length > 0;
     }
 
     public void logout()
@@ -526,7 +527,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         BukkitUtils.setInvulnerable(this, state);
     }
 
-    public Long getWorldId()
+    public UInteger getWorldId()
     {
         try
         {
@@ -712,7 +713,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         String name = super.getName();
         if (name == null)
         {
-            return this.entity.getLastName();
+            return this.entity.getValue(TABLE_USER.LASTNAME);
         }
         return name;
     }

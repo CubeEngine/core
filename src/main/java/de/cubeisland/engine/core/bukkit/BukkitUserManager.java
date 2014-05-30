@@ -156,7 +156,7 @@ public class BukkitUserManager extends AbstractUserManager
                 this.cacheUser(user);
                 return user;
             }
-            userEntity.setLastName(this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getLastName()));
+            userEntity.setValue(TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getValue(TABLE_USER.LASTNAME)));
             userEntity.update();
         }
         if (create)
@@ -218,7 +218,7 @@ public class BukkitUserManager extends AbstractUserManager
                 public void run()
                 {
                     scheduledForRemoval.remove(user.getUniqueId());
-                    user.getEntity().setLastseen(new Timestamp(System.currentTimeMillis()));
+                    user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                     user.getEntity().update();
                     if (user.isOnline())
                     {

@@ -39,7 +39,7 @@ import de.cubeisland.engine.core.module.exception.InvalidModuleException;
 import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.module.exception.ModuleLoadException;
-import de.cubeisland.engine.core.storage.Registry;
+import de.cubeisland.engine.core.storage.TableRegistry;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -56,7 +56,7 @@ public class ModuleLoader
    private final Map<String, ModuleClassLoader> classLoaders;
     protected final String infoFileName;
     private final Path tempPath;
-    private final Registry registry;
+    private final TableRegistry registry;
 
     protected ModuleLoader(Core core, ClassLoader parentClassLoader)
     {
@@ -66,8 +66,8 @@ public class ModuleLoader
         this.classLoaders = new HashMap<>();
         this.infoFileName = "module.yml";
         this.tempPath = core.getFileManager().getTempPath().resolve("modules");
-        this.core.getDB().registerTable(Registry.class);
-        this.registry = Registry.TABLE_REGISTRY;
+        this.core.getDB().registerTable(TableRegistry.class);
+        this.registry = TableRegistry.TABLE_REGISTRY;
         this.registry.setDsl(core.getDB().getDSL());
         try
         {
@@ -402,7 +402,7 @@ public class ModuleLoader
         this.libClassLoader.shutdown();
     }
 
-    Registry getRegistry()
+    TableRegistry getRegistry()
     {
         return this.registry;
     }

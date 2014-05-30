@@ -23,17 +23,33 @@ import de.cubeisland.engine.core.util.Version;
 import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 
-public class Registry extends Table<RegistryModel>
+import static org.jooq.impl.SQLDataType.VARCHAR;
+
+public class TableRegistry extends Table<RegistryModel>
 {
+    public static TableRegistry TABLE_REGISTRY;
+    public final TableField<RegistryModel, String> KEY = createField("key", VARCHAR.length(16).nullable(false), this);
+    public final TableField<RegistryModel, String> MODULE = createField("module", VARCHAR.length(16).nullable(false), this);
+    public final TableField<RegistryModel, String> VALUE = createField("value", VARCHAR.length(256).nullable(false), this);
     private final THashMap<String, THashMap<String, String>> data = new THashMap<>();
+
+    private DSLContext dsl;
+
+    public TableRegistry(String prefix)
+    {
+        super(prefix + "registry", new Version(1));
+        this.setPrimaryKey(KEY, MODULE);
+        this.addFields(KEY, MODULE, VALUE);
+        TABLE_REGISTRY = this;
+    }
 
     public void merge(Module module, String key, String value)
     {
         this.loadForModule(module);
-        this.dsl.insertInto(this, this.KEY, this.MODULE, this.VALUE).values(key, module.getId(), value)
-                .onDuplicateKeyUpdate().set(VALUE, value).execute();
+        this.dsl.insertInto(this, this.KEY, this.MODULE, this.VALUE).values(key, module.getId(),
+                                                                            value).onDuplicateKeyUpdate().set(VALUE,
+                                                                                                              value).execute();
         this.data.get(module.getId()).put(key, value);
     }
 
@@ -52,7 +68,7 @@ public class Registry extends Table<RegistryModel>
             this.data.put(module.getId(), map);
             for (RegistryModel registryModel : this.dsl.selectFrom(this).where(MODULE.eq(module.getId())).fetch())
             {
-                map.put(registryModel.getKey(), registryModel.getValue());
+                map.put(registryModel.getValue(TABLE_REGISTRY.KEY), registryModel.getValue(TABLE_REGISTRY.VALUE));
             }
         }
     }
@@ -68,28 +84,14 @@ public class Registry extends Table<RegistryModel>
         this.dsl.delete(this).where(MODULE.eq(module.getId())).execute();
     }
 
-    public static Registry TABLE_REGISTRY;
-    private DSLContext dsl;
-
-    public Registry(String prefix)
-    {
-        super(prefix + "registry", new Version(1));
-        this.setPrimaryKey(KEY, MODULE);
-        this.addFields(KEY, MODULE, VALUE);
-        TABLE_REGISTRY = this;
-    }
-
     public void setDsl(DSLContext dsl)
     {
         this.dsl = dsl;
     }
 
-    public final TableField<RegistryModel, String> KEY = createField("key", SQLDataType.VARCHAR.length(16).nullable(false), this);
-    public final TableField<RegistryModel, String> MODULE = createField("module", SQLDataType.VARCHAR.length(16).nullable(false), this);
-    public final TableField<RegistryModel, String> VALUE = createField("value", SQLDataType.VARCHAR.length(256).nullable(false), this);
-
     @Override
-    public Class<RegistryModel> getRecordType() {
+    public Class<RegistryModel> getRecordType()
+    {
         return RegistryModel.class;
     }
 }

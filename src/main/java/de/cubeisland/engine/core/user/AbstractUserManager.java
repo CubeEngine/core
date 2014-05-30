@@ -115,8 +115,8 @@ public abstract class AbstractUserManager implements UserManager
         {
             messageDigest.reset();
             password += this.salt;
-            password += user.getEntity().getFirstseen().toString();
-            return Arrays.equals(user.getEntity().getPasswd(), messageDigest.digest(password.getBytes()));
+            password += user.getEntity().getValue(TABLE_USER.FIRSTSEEN).toString();
+            return Arrays.equals(user.getEntity().getValue(TABLE_USER.PASSWD), messageDigest.digest(password.getBytes()));
         }
     }
 
@@ -126,15 +126,15 @@ public abstract class AbstractUserManager implements UserManager
         {
             this.messageDigest.reset();
             password += this.salt;
-            password += user.getEntity().getFirstseen().toString();
-            user.getEntity().setPasswd(this.messageDigest.digest(password.getBytes()));
+            password += user.getEntity().getValue(TABLE_USER.FIRSTSEEN).toString();
+            user.getEntity().setValue(TABLE_USER.PASSWD, this.messageDigest.digest(password.getBytes()));
             user.getEntity().update();
         }
     }
 
     public void resetPassword(User user)
     {
-        user.getEntity().setPasswd(null);
+        user.getEntity().setValue(TABLE_USER.PASSWD, null);
         user.getEntity().update();
     }
 
@@ -240,9 +240,9 @@ public abstract class AbstractUserManager implements UserManager
 
     protected void updateLastName(User user)
     {
-        if (!user.getName().equalsIgnoreCase(user.getEntity().getLastName()))
+        if (!user.getName().equalsIgnoreCase(user.getEntity().getValue(TABLE_USER.LASTNAME)))
         {
-            user.getEntity().setLastName(user.getName());
+            user.getEntity().setValue(TABLE_USER.LASTNAME, user.getName());
             user.getEntity().update();
         }
     }

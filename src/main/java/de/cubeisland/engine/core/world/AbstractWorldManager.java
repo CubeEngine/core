@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.world;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -34,8 +35,8 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import org.jooq.DSLContext;
+import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
@@ -43,7 +44,7 @@ import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 public abstract class AbstractWorldManager implements WorldManager
 {
     protected final Map<String, WorldEntity> worlds;
-    protected final TLongObjectHashMap<World> worldIds;
+    protected final Map<UInteger, World> worldIds;
     protected final Set<UUID> worldUUIDs;
     private final Map<String, Map<String, ChunkGenerator>> generatorMap;
 
@@ -54,18 +55,18 @@ public abstract class AbstractWorldManager implements WorldManager
     {
         this.database = core.getDB();
         this.worlds = new THashMap<>();
-        this.worldIds = new TLongObjectHashMap<>();
+        this.worldIds = new HashMap<>();
         this.worldUUIDs = new HashSet<>();
         this.generatorMap = new THashMap<>();
     }
 
-    public synchronized long getWorldId(World world)
+    public synchronized UInteger getWorldId(World world)
     {
         if (world == null)
         {
             throw new IllegalArgumentException("the world given is null!");
         }
-        return this.getWorldEntity(world).getKey().longValue();
+        return this.getWorldEntity(world).getValue(TABLE_WORLD.KEY);
     }
 
     @Override
@@ -84,13 +85,13 @@ public abstract class AbstractWorldManager implements WorldManager
                 worldEntity.insert();
             }
             this.worlds.put(world.getName(), worldEntity);
-            this.worldIds.put(worldEntity.getKey().longValue(), world);
+            this.worldIds.put(worldEntity.getValue(TABLE_WORLD.KEY), world);
             this.worldUUIDs.add(world.getUID());
         }
         return worldEntity;
     }
 
-    public synchronized Long getWorldId(String name)
+    public synchronized UInteger getWorldId(String name)
     {
         WorldEntity entity = this.worlds.get(name);
         if (entity == null)
@@ -99,12 +100,12 @@ public abstract class AbstractWorldManager implements WorldManager
             if (world == null) return null;
             return this.getWorldId(world);
         }
-        return entity.getKey().longValue();
+        return entity.getValue(TABLE_WORLD.KEY);
     }
 
-    public synchronized long[] getAllWorldIds()
+    public synchronized Set<UInteger> getAllWorldIds()
     {
-        return this.worldIds.keySet().toArray();
+        return this.worldIds.keySet();
     }
 
     @Override
@@ -113,7 +114,7 @@ public abstract class AbstractWorldManager implements WorldManager
         return Collections.unmodifiableSet(this.worldUUIDs);
     }
 
-    public synchronized World getWorld(long id)
+    public synchronized World getWorld(UInteger id)
     {
         return this.worldIds.get(id);
     }

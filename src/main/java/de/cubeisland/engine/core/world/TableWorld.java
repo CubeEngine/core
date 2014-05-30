@@ -27,12 +27,18 @@ import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.types.UInteger;
+
+import static org.jooq.impl.SQLDataType.BIGINT;
+import static org.jooq.impl.SQLDataType.VARCHAR;
 
 public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implements TableUpdateCreator<WorldEntity>
 {
     public static TableWorld TABLE_WORLD;
+    public final TableField<WorldEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
+    public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", VARCHAR.length(64).nullable(false), this);
+    public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", BIGINT.nullable(false),this);
+    public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", BIGINT.nullable(false), this);
 
     public TableWorld(String prefix)
     {
@@ -49,13 +55,14 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
         if (dbVersion.getMajor() == 1)
         {
             connection.prepareStatement("ALTER TABLE " + this.getName() +
-                                              "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
-                                              "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
-            ResultSet resultSet = connection.prepareStatement("SELECT `key`, `worldUUID` FROM " + this.getName()).executeQuery();
+                                            "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
+                                            "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
+            ResultSet resultSet = connection.prepareStatement(
+                "SELECT `key`, `worldUUID` FROM " + this.getName()).executeQuery();
             connection.setAutoCommit(false);
             PreparedStatement updateBatch = connection.prepareStatement("UPDATE " + this.getName() +
-                            "\nSET `UUIDleast` = ?, `UUIDmost` = ?" +
-                            "\nWHERE `key` = ?");
+                                                                            "\nSET `UUIDleast` = ?, `UUIDmost` = ?" +
+                                                                            "\nWHERE `key` = ?");
             while (resultSet.next())
             {
                 UUID uuid = UUID.fromString(resultSet.getString("worldUUID"));
@@ -66,7 +73,8 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
             }
             updateBatch.executeBatch();
             connection.setAutoCommit(true);
-            connection.prepareStatement("ALTER TABLE " + this.getName() + " ADD UNIQUE `uuid` ( `UUIDleast` , `UUIDmost` )").execute();
+            connection.prepareStatement(
+                "ALTER TABLE " + this.getName() + " ADD UNIQUE `uuid` ( `UUIDleast` , `UUIDmost` )").execute();
             connection.prepareStatement("ALTER TABLE " + this.getName() + " DROP `worldUUID`").execute();
         }
         else
@@ -75,13 +83,9 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
         }
     }
 
-    public final TableField<WorldEntity, UInteger> KEY = createField("key", U_INTEGER.nullable(false), this);
-    public final TableField<WorldEntity, String> WORLDNAME = createField("worldName", SQLDataType.VARCHAR.length(64).nullable(false), this);
-    public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", SQLDataType.BIGINT.nullable(false), this);
-    public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", SQLDataType.BIGINT.nullable(false), this);
-
     @Override
-    public Class<WorldEntity> getRecordType() {
+    public Class<WorldEntity> getRecordType()
+    {
         return WorldEntity.class;
     }
 }
