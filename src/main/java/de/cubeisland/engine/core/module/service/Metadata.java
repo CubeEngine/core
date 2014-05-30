@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.module.service;
 
-import java.util.UUID;
+import org.bukkit.World;
 
 import de.cubeisland.engine.core.user.User;
 
@@ -42,12 +42,28 @@ public interface Metadata
      *
      * @return the previous value or null
      */
-    String setMetadata(User user, UUID world, String key, String value);
+    String setMetadata(User user, World world, String key, String value);
 
     /**
      * Gets MetaData for given PlayerUUID and key in the given world
      *
      * @return the value or null
      */
-    String getMetadata(User user, UUID world, String key);
+    String getMetadata(User user, World world, String key);
+
+    /**
+     * Gets MetaData for given role and key in the given world
+     * <p>pass null world for global role
+     *
+     * @return the value or null
+     */
+    String getRoleMetadata(String role, World world, String key);
+
+    /**
+     * Sets MetaData for given role and key in the given world
+     * <p>pass null world for global role
+     *
+     * @return the previous value or null
+     */
+    String setRoleMetadata(String role, World world, String key, String value);
 }
