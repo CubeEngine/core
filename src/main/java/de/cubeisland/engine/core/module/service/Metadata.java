@@ -66,4 +66,6 @@ public interface Metadata
      * @return the previous value or null
      */
     String setRoleMetadata(String role, World world, String key, String value);
+
+    String getName();
 }
