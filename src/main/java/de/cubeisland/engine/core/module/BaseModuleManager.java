@@ -255,6 +255,8 @@ public abstract class BaseModuleManager implements ModuleManager
             LinkedList<String> providers = this.serviceProviders.get(service);
             if (providers != null)
             {
+                providers = new LinkedList<>(providers);
+                providers.remove(moduleId);
                 soft.add(providers.getLast());
             }
         }
@@ -274,6 +276,8 @@ public abstract class BaseModuleManager implements ModuleManager
             LinkedList<String> providers = this.serviceProviders.get(service);
             if (providers != null)
             {
+                providers = new LinkedList<>(providers);
+                providers.remove(moduleId);
                 strong.add(providers.getLast());
             }
         }
