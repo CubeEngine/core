@@ -51,7 +51,7 @@ public interface Economy
     boolean deposit(UUID player, double amount);
 
     boolean bankExists(String name);
-    boolean createBank(String name, String ownerName);
+    boolean createBank(String name, UUID owner);
     boolean deleteBank(String name);
     double getBankBalance(String name);
     boolean bankHas(String name, double amount);

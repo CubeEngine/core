@@ -44,14 +44,6 @@
         <option name="JD_KEEP_EMPTY_PARAMETER" value="false" />
         <option name="JD_KEEP_EMPTY_EXCEPTION" value="false" />
         <option name="JD_KEEP_EMPTY_RETURN" value="false" />
-        <PHPCodeStyleSettings>
-          <option name="INDENT_CODE_IN_PHP_TAGS" value="true" />
-          <option name="ALIGN_KEY_VALUE_PAIRS" value="true" />
-          <option name="PHPDOC_BLANK_LINES_AROUND_PARAMETERS" value="true" />
-          <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
-          <option name="LOWER_CASE_NULL_CONST" value="true" />
-          <option name="BLANK_LINE_BEFORE_RETURN_STATEMENT" value="true" />
-        </PHPCodeStyleSettings>
         <XML>
           <option name="XML_ATTRIBUTE_WRAP" value="0" />
           <option name="XML_KEEP_BLANK_LINES" value="1" />
