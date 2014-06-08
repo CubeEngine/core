@@ -52,9 +52,7 @@ import static de.cubeisland.engine.core.permission.PermDefault.OP;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 /**
  * This class is the base for all of our commands
@@ -352,7 +350,7 @@ public abstract class CubeCommand
         {
             if (rawLabels.length == 1)
             {
-                labels[i] = convertLabel(true, "!" + rawLabels[i]);
+                labels[i] = convertLabel(true, "#" + rawLabels[i]);
             }
             else
             {
@@ -365,6 +363,10 @@ public abstract class CubeCommand
     private String convertLabel(boolean req, String label)
     {
         if (label.startsWith("!"))
+        {
+            return label.substring(1);
+        }
+        else if (label.startsWith("#"))
         {
             return label.substring(1);
         }
@@ -419,7 +421,7 @@ public abstract class CubeCommand
         {
             parentLabels.remove(parentLabels.size() - 1);
         }
-        return sender instanceof User ? "/" : "" + implode(" ", parentLabels) + ' ' + usage;
+        return (sender instanceof User ? "/" : "") + implode(" ", parentLabels) + ' ' + usage;
     }
 
     /**
