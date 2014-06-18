@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -31,9 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -54,7 +53,6 @@ import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
 import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
@@ -86,6 +84,7 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
+import de.cubeisland.engine.core.webapi.InetAddressConverter;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
 import de.cubeisland.engine.core.world.ConfigWorldConverter;
@@ -206,7 +205,9 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper, logger
         this.apiServer = new ApiServer(this);
-        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve("webapi.yml").toFile()));
+        configFactory.getDefaultConverterManager().registerConverter(InetAddress.class, new InetAddressConverter());
+        this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve(
+            "webapi.yml").toFile()));
 
         // depends on: logger
         if (this.config.catchSystemSignals)

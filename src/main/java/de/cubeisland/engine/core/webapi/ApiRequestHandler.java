@@ -53,8 +53,6 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 /**
  * This class handles all requests
- *
- * @author Phillip Schichtel
  */
 public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
 {

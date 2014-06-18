@@ -23,8 +23,6 @@ import java.util.HashMap;
  * This exception should be used to express an error during the action
  * execution. For example when the action expects a number as parameter, but a
  * letter was given.
- *
- * @since 1.0.0
  */
 public class ApiRequestException extends RuntimeException
 {

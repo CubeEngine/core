@@ -51,8 +51,7 @@ import org.apache.commons.lang.Validate;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 /**
- * This class represents the API server and provides methods to configure and
- * controll it
+ * This class represents the API server and provides methods to configure and control it
  */
 public class ApiServer
 {
@@ -71,9 +70,9 @@ public class ApiServer
     private final AtomicInteger maxThreads;
     private final Set<String> disabledRoutes;
     private final AtomicBoolean enableWhitelist;
-    private final Set<String> whitelist;
+    private final Set<InetAddress> whitelist;
     private final AtomicBoolean enableBlacklist;
-    private final Set<String> blacklist;
+    private final Set<InetAddress> blacklist;
     private final ConcurrentMap<String, ApiHandler> handlers;
     private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions;
 
@@ -421,14 +420,9 @@ public class ApiServer
         this.enableWhitelist.set(state);
     }
 
-    public void whitelistAddress(String address)
-    {
-        this.whitelist.add(address);
-    }
-
     public void whitelistAddress(InetAddress address)
     {
-        this.whitelistAddress(address.getHostAddress());
+        this.whitelist.add(address);
     }
 
     public void whitelistAddress(InetSocketAddress address)
@@ -436,14 +430,9 @@ public class ApiServer
         this.whitelistAddress(address.getAddress());
     }
 
-    public void unWhitelistAddress(String address)
-    {
-        this.whitelist.remove(address);
-    }
-
     public void unWhitelistAddress(InetAddress address)
     {
-        this.unWhitelistAddress(address.getHostAddress());
+        this.whitelist.remove(address);
     }
 
     public void unWhitelistAddress(InetSocketAddress address)
@@ -451,24 +440,13 @@ public class ApiServer
         this.unWhitelistAddress(address.getAddress());
     }
 
-    public void setWhitelist(Set<String> newWhitelist)
+    public void setWhitelist(Set<InetAddress> newWhitelist)
     {
         expectNotNull(newWhitelist, "The whitelist must not be null!");
         Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
 
         this.whitelist.clear();
         this.whitelist.addAll(newWhitelist);
-    }
-
-    /**
-     * Checks whether an string representation of an IP is whitelisted
-     *
-     * @param ip the IP
-     * @return true if it is
-     */
-    public boolean isWhitelisted(String ip)
-    {
-        return !this.enableWhitelist.get() || this.whitelist.contains(ip);
     }
 
     /**
@@ -479,7 +457,7 @@ public class ApiServer
      */
     public boolean isWhitelisted(InetAddress ip)
     {
-        return this.isWhitelisted(ip.getHostAddress());
+        return !this.enableWhitelist.get() || this.whitelist.contains(ip);
     }
 
     /**
@@ -503,14 +481,9 @@ public class ApiServer
         this.enableBlacklist.set(state);
     }
 
-    public void blacklistAddress(String address)
-    {
-        this.blacklist.add(address);
-    }
-
     public void blacklistAddress(InetAddress address)
     {
-        this.blacklistAddress(address.getHostAddress());
+        this.blacklist.add(address);
     }
 
     public void blacklistAddress(InetSocketAddress address)
@@ -518,14 +491,9 @@ public class ApiServer
         this.blacklistAddress(address.getAddress());
     }
 
-    public void unBlacklistAddress(String address)
-    {
-        this.blacklist.remove(address);
-    }
-
     public void unBlacklistAddress(InetAddress address)
     {
-        this.unBlacklistAddress(address.getHostAddress());
+        this.blacklist.remove(address);
     }
 
     public void unBlacklistAddress(InetSocketAddress address)
@@ -533,7 +501,7 @@ public class ApiServer
         this.unBlacklistAddress(address.getAddress());
     }
 
-    public void setBlacklist(Set<String> newBlacklist)
+    public void setBlacklist(Set<InetAddress> newBlacklist)
     {
         expectNotNull(newBlacklist, "The blacklist must not be null!");
         Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
@@ -571,17 +539,6 @@ public class ApiServer
      */
     public boolean isBlacklisted(InetAddress ip)
     {
-        return this.isBlacklisted(ip.getHostAddress());
-    }
-
-    /**
-     * Checks whether a string representation of an IP is blacklisted
-     *
-     * @param ip the IP
-     * @return true if it is
-     */
-    public boolean isBlacklisted(String ip)
-    {
         return this.enableBlacklist.get() && this.blacklist.contains(ip);
     }
 
@@ -608,14 +565,9 @@ public class ApiServer
         }
     }
 
-    public boolean isAddressAccepted(String address)
-    {
-        return this.isWhitelisted(address) && !this.isBlacklisted(address);
-    }
-
     public boolean isAddressAccepted(InetAddress address)
     {
-        return this.isAddressAccepted(address.getHostAddress());
+        return this.isWhitelisted(address) && !this.isBlacklisted(address);
     }
 
     public boolean isAddressAccepted(InetSocketAddress address)

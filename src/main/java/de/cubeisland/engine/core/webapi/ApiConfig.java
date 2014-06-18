@@ -17,11 +17,12 @@
  */
 package de.cubeisland.engine.core.webapi;
 
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Set;
 
-import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
 @SuppressWarnings("all")
@@ -72,7 +73,7 @@ public class ApiConfig extends ReflectedYaml
         public boolean enable = false;
 
         @Comment("The IPs to block")
-        public Set<String> ips = Collections.emptySet();
+        public Set<InetAddress> ips = Collections.emptySet();
     }
 
     public WhitelistSection whitelist;
@@ -83,6 +84,6 @@ public class ApiConfig extends ReflectedYaml
         public boolean enable = false;
 
         @Comment("The IPs to allow")
-        public Set<String> ips = Collections.emptySet();
+        public Set<InetAddress> ips = Collections.emptySet();
     }
 }

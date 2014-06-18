@@ -24,10 +24,6 @@ import java.lang.annotation.Target;
 
 import static de.cubeisland.engine.core.webapi.RequestMethod.GET;
 
-/**
- *
- * @author Phillip Schichtel
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Action
