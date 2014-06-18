@@ -57,24 +57,25 @@ public class ApiServer
 {
     private final Core core;
     private final Log log;
-    private final AtomicInteger maxContentLength;
-    private final AtomicBoolean compress;
-    private final AtomicInteger compressionLevel;
-    private final AtomicInteger windowBits;
-    private final AtomicInteger memoryLevel;
-    private final AtomicReference<InetAddress> bindAddress;
-    private final AtomicInteger port;
-    private final AtomicReference<ServerBootstrap> bootstrap;
-    private final AtomicReference<EventLoopGroup> eventLoopGroup;
-    private final AtomicReference<Channel> channel;
-    private final AtomicInteger maxThreads;
-    private final Set<String> disabledRoutes;
-    private final AtomicBoolean enableWhitelist;
-    private final Set<InetAddress> whitelist;
-    private final AtomicBoolean enableBlacklist;
-    private final Set<InetAddress> blacklist;
-    private final ConcurrentMap<String, ApiHandler> handlers;
-    private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions;
+    private final AtomicInteger maxContentLength = new AtomicInteger(1048576);
+    private final AtomicBoolean compress = new AtomicBoolean(false);
+    private final AtomicInteger compressionLevel = new AtomicInteger(9);
+    private final AtomicInteger windowBits = new AtomicInteger(15);
+    private final AtomicInteger memoryLevel = new AtomicInteger(9);
+    private final AtomicReference<InetAddress> bindAddress = new AtomicReference<>(null);
+    private final AtomicInteger port = new AtomicInteger(6561);
+    private final AtomicReference<ServerBootstrap> bootstrap = new AtomicReference<>(null);
+    private final AtomicReference<EventLoopGroup> eventLoopGroup = new AtomicReference<>(null);
+    private final AtomicReference<Channel> channel = new AtomicReference<>(null);
+    private final AtomicInteger maxThreads = new AtomicInteger(2);
+    private final Set<String> disabledRoutes = new CopyOnWriteArraySet<>();
+    private final AtomicBoolean enableWhitelist = new AtomicBoolean(false);
+    private final Set<InetAddress> whitelist = new CopyOnWriteArraySet<>();
+    private final AtomicBoolean enableBlacklist = new AtomicBoolean(false);
+    private final Set<InetAddress> blacklist = new CopyOnWriteArraySet<>();
+    private final ConcurrentMap<String, ApiHandler> handlers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions = new ConcurrentHashMap<>();
+    private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
 
     public ApiServer(Core core)
     {
@@ -84,12 +85,6 @@ public class ApiServer
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
-
-        this.bootstrap = new AtomicReference<>(null);
-        this.eventLoopGroup = new AtomicReference<>(null);
-        this.channel = new AtomicReference<>(null);
-        this.bindAddress = new AtomicReference<>(null);
-        this.maxThreads = new AtomicInteger(2);
         try
         {
             this.bindAddress.set(InetAddress.getLocalHost());
@@ -98,22 +93,6 @@ public class ApiServer
         {
             this.log.warn("Failed to get the localhost!");
         }
-        this.port = new AtomicInteger(6561);
-        this.maxContentLength = new AtomicInteger(1048576);
-
-        this.compress = new AtomicBoolean(false);
-        this.compressionLevel = new AtomicInteger(9);
-        this.windowBits = new AtomicInteger(15);
-        this.memoryLevel = new AtomicInteger(9);
-
-        this.disabledRoutes = new CopyOnWriteArraySet<>();
-        this.enableWhitelist = new AtomicBoolean(false);
-        this.whitelist = new CopyOnWriteArraySet<>();
-        this.enableBlacklist = new AtomicBoolean(false);
-        this.blacklist = new CopyOnWriteArraySet<>();
-
-        this.handlers = new ConcurrentHashMap<>();
-        this.subscriptions = new ConcurrentHashMap<>();
     }
 
     public Log getLog()
@@ -136,6 +115,7 @@ public class ApiServer
         }
         this.setPort(config.network.port);
         this.setMaxThreads(config.network.maxThreads);
+        this.setMaxConnectionCount(config.network.maxConnectionPerIp);
 
         this.setCompressionEnabled(config.compression.enable);
         this.setCompressionLevel(config.compression.level);
@@ -653,5 +633,15 @@ public class ApiServer
                 handler.handleEvent(event, data);
             }
         }
+    }
+
+    public void setMaxConnectionCount(int maxConnectionCount)
+    {
+        this.maxConnectionCount.set(maxConnectionCount);
+    }
+
+    public int getMaxConnectionCount()
+    {
+        return maxConnectionCount.get();
     }
 }

@@ -44,6 +44,7 @@ public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
     {
         ch.pipeline()
             .addLast("ipfilter", new IpFilter(server))
+            .addLast("iplimiter", new IpLimiter(server.getMaxConnectionCount()))
             .addLast("decoder", new HttpRequestDecoder())
             .addLast("aggregator", new HttpObjectAggregator(this.server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())

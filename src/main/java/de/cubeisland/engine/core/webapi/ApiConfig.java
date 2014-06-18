@@ -41,6 +41,9 @@ public class ApiConfig extends ReflectedYaml
         @Comment("The maximum number of threads for the API server")
         public int maxThreads = 2;
 
+        @Comment("The maxiumum number of concurrent connections from one ip")
+        public int maxConnectionPerIp = 2;
+
         @Comment("The maximum amount of data written from a request")
         public int maxContentLength = 1048576;
     }
