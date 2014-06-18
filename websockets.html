@@ -3,54 +3,155 @@
     <head>
         <title>WebSockets TEST</title>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                font-family: Verdana,serif;
+                font-size: 100.01%;
+                background-color: black;
+            }
+
+            html, body, input, button {
+                color: green;
+            }
+
+            input, button {
+                background-color: transparent;
+                border: 1px dashed green;
+            }
+
+            body > div {
+                width: 700px;
+                margin: 1cm auto;
+            }
+
+            #settings {
+                margin-bottom: 15px;
+            }
+            #console {
+                margin-top: 15px;
+            }
+            #screen {
+                min-height: 100px;
+                max-height: 400px;
+                background-color: #111;
+                overflow: auto;
+            }
+            #input > div {
+                border-bottom: 1px dashed green;
+                padding: 3px;
+            }
+            #input input {
+                display: block;
+                border: 0;
+                padding: 0;
+                width: 100%;
+            }
+        </style>
+
+        <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
         <script>
-            if ("WebSocket" in window)
-            {
+            $(function() {
+                if (!("WebSocket" in window)) {
+                    alert("maaan, do you live in the stone ages? get a modern browser!");
+                    return;
+                }
                 var socket;
-                
-                window.onload = function()
-                {
-                    socket = new WebSocket("ws://localhost:6561/websocket");
-                    socket.onopen = function()
-                    {
-                        console.log("connection open!");
-                    };
-                    socket.onmessage = function(event)
-                    {
-                        console.log("message received: " + event.data);
-                    };
-                    socket.onerror = function()
-                    {
-                        console.log("error received!");
-                    };
-                    socket.onclose = function()
-                    {
-                        console.log("connection closed!");
-                    };
-                };
-                window.onunload = function()
-                {
-                    socket.close();
-                };
-                window.onkeyup = function(event)
-                {
-                    if (event.keyCode == 32)
-                    {
-                        console.log("sending a message...");
-                        socket.send("test\n" + prompt("INput:"));
+                var settings = $('#settings');
+                var host = settings.find('> input[type=text]');
+                var port = settings.find('> input[type=number]');
+                var ssl  = settings.find('> input[type=checkbox]');
+
+                var screen = $('#screen');
+                var screenContent = $('<div>');
+                screenContent.appendTo(screen);
+                var input = $('#input').find('input');
+
+                settings.find('> button').on('click', function() {
+                    if (socket) {
+                        socket.close();
                     }
-                };
-            }
-            else
-            {
-                alert("maaan, do you live in the stone ages? get a modern browser!");
-            }
+
+                    socket = connect(host.val(), parseInt(port.val()), ssl.prop('checked'),
+                                     handleOpen, handleMessage, handleError, handleClose);
+                });
+
+                function sendMessage(message) {
+                    socket.send(message);
+                    print('> ' + message)
+                }
+
+                function print(message) {
+                    screenContent.append('<div>' + message + '</div>');
+                    screen.scrollTop(screenContent.outerHeight());
+                }
+
+                function handleOpen() {
+                    print('> Connected!');
+                }
+
+                function handleMessage() {
+                    print('> ' + event.data);
+                }
+
+                function handleError(event) {
+                    print('!! ' + event.data);
+                }
+
+                function handleClose() {
+                    print('< Disconnected!');
+                }
+
+                function connect(host, port, ssl, onopen, onmessage, onerror, onclose) {
+                    var socket = new WebSocket((ssl ? 'wss' : 'ws') + '://' + host + ':' + port + '/websocket');
+
+                    if (onopen) {
+                        socket.onopen = onopen;
+                    }
+                    if (onmessage) {
+                        socket.onmessage = onmessage;
+                    }
+                    if (onerror) {
+                        socket.onerror = onerror;
+                    }
+                    if (onclose) {
+                        socket.onclose = onclose;
+                    }
+
+                    input.prop('disabled', false);
+
+                    return socket;
+                }
+
+                input.on('keydown', function (event) {
+                    if (event.keyCode == 13) {
+                        var message = $.trim(input.val());
+                        if (message.length > 0) {
+                            sendMessage(message);
+                        }
+                    }
+                });
+            });
         </script>
     </head>
     <body>
-        <p>
-            look into the javascript console to see output!<br>
-            press space to send a message!
-        </p>
+        <div>
+            <div id="settings">
+                Connect to <input type="text" value="localhost" placeholder="host">
+                <input type="number" value="6561" placeholder="port">
+                <label><input type="checkbox">SSL</label>
+                <button type="button">(re)connect</button>
+            </div>
+            <div id="console">
+                <div id="screen"></div>
+                <div id="input">
+                    <div>
+                        <input type="text" placeholder="Command" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
