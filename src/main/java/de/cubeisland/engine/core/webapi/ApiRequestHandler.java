@@ -310,8 +310,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
                 this.server.unsubscribe(content.trim(), this);
                 break;
         }
-
-        context.write(new TextWebSocketFrame(command + " -- " + content));
+        context.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
     }
 
     private void success(ChannelHandlerContext context, ApiResponse apiResponse)
