@@ -38,6 +38,10 @@
                 max-height: 400px;
                 background-color: #111;
                 overflow: auto;
+                font-family: Courier, monospace;
+            }
+            #screen > div {
+                margin: 2px;
             }
             #input > div {
                 border-bottom: 1px dashed green;
@@ -69,13 +73,15 @@
                 screenContent.appendTo(screen);
                 var input = $('#input').find('input');
 
-                settings.find('> button').on('click', function() {
+                settings.find('> button').on('click', function(e) {
                     if (socket) {
                         socket.close();
+                        $(e.target).text('reconnect');
+                    } else {
+                        socket = connect(host.val(), parseInt(port.val()), ssl.prop('checked'),
+                                         handleOpen, handleMessage, handleError, handleClose);
+                        $(e.target).text("disconnect");
                     }
-
-                    socket = connect(host.val(), parseInt(port.val()), ssl.prop('checked'),
-                                     handleOpen, handleMessage, handleError, handleClose);
                 });
 
                 function sendMessage(message) {
@@ -92,12 +98,12 @@
                     print('> Connected!');
                 }
 
-                function handleMessage() {
+                function handleMessage(event) {
                     print('> ' + event.data);
                 }
 
                 function handleError(event) {
-                    print('!! ' + event.data);
+                    print('< Error');
                 }
 
                 function handleClose() {
@@ -125,11 +131,27 @@
                     return socket;
                 }
 
-                input.on('keydown', function (event) {
-                    if (event.keyCode == 13) {
+                var history = JSON.parse(localStorage.getItem("history") || "[]");
+                var historyIndex = history.length;
+
+                input.on('keydown', function (e) {
+                    var c = e.keyCode;
+                    if (c == 13) {
                         var message = $.trim(input.val());
                         if (message.length > 0) {
                             sendMessage(message);
+                            if (history.length == 0 || history[history.length - 1] != message) {
+                                history.push(message);
+                            }
+                            historyIndex = history.length;
+                            input.val('');
+                            localStorage.setItem("history", JSON.stringify(history));
+                        }
+                    } else if (history.length > 0) {
+                        if (c == 38 && historyIndex > 0) {
+                            input.val(history[--historyIndex]);
+                        } else if (c == 40 && historyIndex < history.length) {
+                            input.val(history[++historyIndex]);
                         }
                     }
                 });
@@ -142,7 +164,7 @@
                 Connect to <input type="text" value="localhost" placeholder="host">
                 <input type="number" value="6561" placeholder="port">
                 <label><input type="checkbox">SSL</label>
-                <button type="button">(re)connect</button>
+                <button type="button">connect</button>
             </div>
             <div id="console">
                 <div id="screen"></div>
