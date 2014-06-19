@@ -412,7 +412,12 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean isPasswordSet()
     {
-        return this.entity.getValue(TABLE_USER.PASSWD).length > 0;
+        byte[] value = this.entity.getValue(TABLE_USER.PASSWD);
+        if (value == null)
+        {
+            return false;
+        }
+        return value.length > 0;
     }
 
     public void logout()
