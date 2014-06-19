@@ -92,6 +92,7 @@
                 settings.find('> button').on('click', function(e) {
                     if (socket) {
                         socket.close();
+                        socket = null;
                         $(e.target).text('reconnect');
                     } else {
                         socket = connect(host.val(), parseInt(port.val()), ssl.prop('checked'),
@@ -101,6 +102,7 @@
                 });
 
                 function sendMessage(message) {
+                    message = message.replace(/\\n/g, "\n");
                     socket.send(message);
                     print('written', message)
                 }
