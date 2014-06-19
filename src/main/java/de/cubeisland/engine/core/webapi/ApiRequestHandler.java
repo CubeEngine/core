@@ -18,13 +18,17 @@
 package de.cubeisland.engine.core.webapi;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
 import de.cubeisland.engine.logging.Log;
 import io.netty.buffer.ByteBuf;
@@ -235,15 +239,16 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         }
     }
 
-    private void handleTextWebSocketFrame(ChannelHandlerContext context, TextWebSocketFrame frame)
+    private void handleTextWebSocketFrame(ChannelHandlerContext ctx, TextWebSocketFrame frame)
     {
+        // TODO log exceptions!!!
         String content = frame.text();
 
         int newLinePos = content.indexOf('\n');
         if (newLinePos == -1)
         {
             this.log.info("the frame data didn't contain a newline !");
-            context.writeAndFlush(new TextWebSocketFrame("Invalid command: " + content));
+            ctx.writeAndFlush(new TextWebSocketFrame("Invalid command: " + content));
             // TODO error response
             return;
         }
@@ -293,7 +298,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
 
                 ApiHandler handler = this.server.getApiHandler(route);
                 Parameters params = null;
-                ApiRequest request = new ApiRequest((InetSocketAddress)context.channel()
+                ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel()
                                                                               .remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, data);
                 ApiResponse response = new ApiResponse();
                 try
@@ -310,10 +315,67 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             case "unsubscribe":
                 this.server.unsubscribe(content.trim(), this);
                 break;
+            case "authorize":
+                String[] split = content.split(" ");
+                if (split.length == 2)
+                {
+                    User user = CubeEngine.getUserManager().findExactUser(split[0]);
+                    if (user == null)
+                    {
+                        ctx.writeAndFlush(new TextWebSocketFrame("Player not found!"));
+                    }
+                    else
+                    {
+                        if (user.isPasswordSet())
+                        {
+                            if (CubeEngine.getUserManager().checkPassword(user, split[1]))
+                            {
+                                ctx.writeAndFlush(new TextWebSocketFrame("Logged in successfully!"));
+                                this.authorized.put(ctx.channel().localAddress(), user.getUniqueId());
+                            }
+                            else
+                            {
+                                ctx.writeAndFlush(new TextWebSocketFrame("Invalid password!"));
+                            }
+                        }
+                        else
+                        {
+                            ctx.writeAndFlush(new TextWebSocketFrame(user.getName() + " has no password set!"));
+                        }
+                    }
+                }
+                else
+                {
+                    ctx.writeAndFlush(new TextWebSocketFrame("Invalid command length!"));
+                }
+                break;
+            case "logout":
+                UUID removed = authorized.remove(ctx.channel().localAddress());
+                if (removed == null)
+                {
+                    ctx.writeAndFlush(new TextWebSocketFrame("Not logged in!"));
+                }
+                else
+                {
+                    ctx.writeAndFlush(new TextWebSocketFrame("Logged out successfully!"));
+                }
+                break;
+            case "command":
+                if (authorized.containsKey(ctx.channel().localAddress()))
+                {
+                    ctx.writeAndFlush(new TextWebSocketFrame("Not implemented yet!")); // TODO execute commands with permissions of user
+                }
+                else
+                {
+                    ctx.writeAndFlush(new TextWebSocketFrame("Not allowed to execute commands!"));
+                }
+                break;
             default:
-                context.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
+                ctx.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
         }
     }
+
+    private Map<SocketAddress, UUID> authorized = new HashMap<>(); // TODO remove when channel closes
 
     private void success(ChannelHandlerContext context, ApiResponse apiResponse)
     {
