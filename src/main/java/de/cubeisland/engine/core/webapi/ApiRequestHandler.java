@@ -243,6 +243,7 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
         if (newLinePos == -1)
         {
             this.log.info("the frame data didn't contain a newline !");
+            context.writeAndFlush(new TextWebSocketFrame("Invalid command: " + content));
             // TODO error response
             return;
         }
@@ -309,8 +310,9 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
             case "unsubscribe":
                 this.server.unsubscribe(content.trim(), this);
                 break;
+            default:
+                context.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
         }
-        context.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
     }
 
     private void success(ChannelHandlerContext context, ApiResponse apiResponse)
