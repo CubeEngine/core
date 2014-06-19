@@ -53,6 +53,22 @@
                 padding: 0;
                 width: 100%;
             }
+
+            .message-written {
+                color: yellow;
+            }
+
+            .message-read {
+                color: lime;
+            }
+
+            .message-error {
+                color: red;
+            }
+
+            .message-status {
+                color: gray;
+            }
         </style>
 
         <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
@@ -86,28 +102,31 @@
 
                 function sendMessage(message) {
                     socket.send(message);
-                    print('> ' + message)
+                    print('written', message)
                 }
 
-                function print(message) {
-                    screenContent.append('<div>' + message + '</div>');
-                    screen.scrollTop(screenContent.outerHeight());
+                function print(type, message) {
+                    var scroll = Math.abs(screen.scrollTop() - (screenContent.outerHeight() - screen.outerHeight())) < 5;
+                    screenContent.append('<div class="message-' + type + '">' + message + '</div>');
+                    if (scroll) {
+                        screen.scrollTop(screenContent.outerHeight() - screen.outerHeight());
+                    }
                 }
 
                 function handleOpen() {
-                    print('> Connected!');
+                    print('status', 'Connected!');
                 }
 
                 function handleMessage(event) {
-                    print('< ' + event.data);
+                    print('read', event.data);
                 }
 
                 function handleError(event) {
-                    print('< Error');
+                    print('error', 'Error');
                 }
 
                 function handleClose() {
-                    print('< Disconnected!');
+                    print('status', 'Disconnected!');
                 }
 
                 function connect(host, port, ssl, onopen, onmessage, onerror, onclose) {
