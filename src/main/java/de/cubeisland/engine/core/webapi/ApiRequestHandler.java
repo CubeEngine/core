@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.webapi;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
@@ -242,137 +244,116 @@ public class ApiRequestHandler extends SimpleChannelInboundHandler<Object>
     private void handleTextWebSocketFrame(ChannelHandlerContext ctx, TextWebSocketFrame frame)
     {
         // TODO log exceptions!!!
-        String content = frame.text();
-
-        int newLinePos = content.indexOf('\n');
-        if (newLinePos == -1)
+        try
         {
-            this.log.info("the frame data didn't contain a newline !");
-            ctx.writeAndFlush(new TextWebSocketFrame("Invalid command: " + content));
-            // TODO error response
-            return;
-        }
-        String command = content.substring(0, newLinePos).trim();
-        content = content.substring(newLinePos).trim();
+            JsonNode jsonNode = objectMapper.readTree(frame.text());
+            JsonNode command = jsonNode.get("command");
+            if (command == null)
+            {
+                ctx.writeAndFlush(new TextWebSocketFrame("No command!"));
+                return;
+            }
+            JsonNode data = jsonNode.get("data");
+            switch (command.asText())
+            {
+                case "request":
+                    String route = normalizeRoute(jsonNode.get("route").asText());
+                    JsonNode reqMethod = data.get("requestmethod");
+                    RequestMethod method = reqMethod != null ? RequestMethod.getByName(reqMethod.asText()) : RequestMethod.GET;
+                    JsonNode reqdata = data.get("data");
 
-        switch (command)
-        {
-            case "request":
-                String route;
-                newLinePos = content.indexOf('\n');
-                RequestMethod method = null;
-                if (newLinePos == -1)
-                {
-                    route = content;
-                }
-                else
-                {
-                    route = normalizeRoute(content.substring(0, newLinePos));
-                    content = content.substring(newLinePos).trim();
-
-                    final int spacePos = route.indexOf(' ');
-                    if (spacePos != -1)
-                    {
-                        method = RequestMethod.getByName(route.substring(0, spacePos));
-                        route = route.substring(spacePos + 1);
-                    }
-                }
-
-                if (method == null)
-                {
-                    method = RequestMethod.GET;
-                }
-
-                JsonNode data = null;
-                if (!content.isEmpty())
-                {
+                    ApiHandler handler = this.server.getApiHandler(route);
+                    Parameters params = null;
+                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, reqdata);
+                    ApiResponse response = new ApiResponse();
                     try
                     {
-                        data = this.objectMapper.readTree(content);
+                        handler.execute(request, response);
                     }
-                    catch (Exception e)
+                    catch (Exception ignored)
                     {
-                        // TODO ERROR
                     }
-                }
-
-                ApiHandler handler = this.server.getApiHandler(route);
-                Parameters params = null;
-                ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel()
-                                                                              .remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, data);
-                ApiResponse response = new ApiResponse();
-                try
-                {
-                    handler.execute(request, response);
-                }
-                catch (Exception ignored)
-                {
-                }
-                break;
-            case "subscribe":
-                this.server.subscribe(content.trim(), this);
-                break;
-            case "unsubscribe":
-                this.server.unsubscribe(content.trim(), this);
-                break;
-            case "authorize":
-                String[] split = content.split(" ");
-                if (split.length == 2)
-                {
-                    User user = CubeEngine.getUserManager().findExactUser(split[0]);
+                    break;
+                case "subscribe":
+                    this.server.subscribe(data.asText().trim(), this);
+                    break;
+                case "unsubscribe":
+                    this.server.unsubscribe(data.asText().trim(), this);
+                    break;
+                case "authorize":
+                    String rawuser = data.get("user").asText();
+                    String pass = data.get("pass").asText();
+                    User user = CubeEngine.getUserManager().findExactUser(rawuser);
                     if (user == null)
                     {
-                        ctx.writeAndFlush(new TextWebSocketFrame("Player not found!"));
+                        ctx.writeAndFlush(error("Player not found!"));
                     }
                     else
                     {
                         if (user.isPasswordSet())
                         {
-                            if (CubeEngine.getUserManager().checkPassword(user, split[1]))
+                            if (CubeEngine.getUserManager().checkPassword(user, pass))
                             {
-                                ctx.writeAndFlush(new TextWebSocketFrame("Logged in successfully!"));
+                                ctx.writeAndFlush(ok("Logged in successfully!"));
                                 this.authorized.put(ctx.channel().localAddress(), user.getUniqueId());
                             }
                             else
                             {
-                                ctx.writeAndFlush(new TextWebSocketFrame("Invalid password!"));
+                                ctx.writeAndFlush(error("Invalid password!"));
                             }
                         }
                         else
                         {
-                            ctx.writeAndFlush(new TextWebSocketFrame(user.getName() + " has no password set!"));
+                            ctx.writeAndFlush(error(user.getName() + " has no password set!"));
                         }
                     }
-                }
-                else
-                {
-                    ctx.writeAndFlush(new TextWebSocketFrame("Invalid command length!"));
-                }
-                break;
-            case "logout":
-                UUID removed = authorized.remove(ctx.channel().localAddress());
-                if (removed == null)
-                {
-                    ctx.writeAndFlush(new TextWebSocketFrame("Not logged in!"));
-                }
-                else
-                {
-                    ctx.writeAndFlush(new TextWebSocketFrame("Logged out successfully!"));
-                }
-                break;
-            case "command":
-                if (authorized.containsKey(ctx.channel().localAddress()))
-                {
-                    ctx.writeAndFlush(new TextWebSocketFrame("Not implemented yet!")); // TODO execute commands with permissions of user
-                }
-                else
-                {
-                    ctx.writeAndFlush(new TextWebSocketFrame("Not allowed to execute commands!"));
-                }
-                break;
-            default:
-                ctx.writeAndFlush(new TextWebSocketFrame(command + " -- " + content));
+                    break;
+                case "logout":
+                    UUID removed = authorized.remove(ctx.channel().localAddress());
+                    if (removed == null)
+                    {
+                        ctx.writeAndFlush(error("Not logged in!"));
+                    }
+                    else
+                    {
+                        ctx.writeAndFlush(ok("Logged out successfully!"));
+                    }
+                    break;
+                case "command":
+                    if (authorized.containsKey(ctx.channel().localAddress()))
+                    {
+                        ctx.writeAndFlush(ok("Not implemented yet!")); // TODO execute commands with permissions of user
+                    }
+                    else
+                    {
+                        ctx.writeAndFlush(error("Not allowed to execute commands!"));
+                    }
+                    break;
+                default:
+                    ctx.writeAndFlush(ok(command + " -- " + data.asText()));
+            }
         }
+        catch (IOException e)
+        {
+            this.log.info("the frame data was no valid json!");
+            ctx.writeAndFlush(new TextWebSocketFrame("Invalid json!"));
+        }
+    }
+
+    private TextWebSocketFrame error(String msg)
+    {
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("type", "ERROR");
+        node.put("msg", msg);
+        return new TextWebSocketFrame(node.toString());
+    }
+
+    private TextWebSocketFrame ok(String msg)
+    {
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("type", "OK");
+        node.put("msg", msg);
+        return new TextWebSocketFrame(node.toString());
     }
 
     private Map<SocketAddress, UUID> authorized = new HashMap<>(); // TODO remove when channel closes

@@ -102,9 +102,22 @@
                 });
 
                 function sendMessage(message) {
-                    message = message.replace(/\\n/g, "\n");
-                    socket.send(message);
-                    print('written', message)
+
+                    var json = {};
+                    json.command = message.substring(0, message.indexOf(":"));
+                    var data = message.substring(message.indexOf(":") + 1);
+                    try
+                    {
+                        json.data = JSON.parse(data);
+
+                    }
+                    catch (err)
+                    {
+                        print('error', "Cannot parse: " +  message);
+                        return 0;
+                    }
+                    socket.send(JSON.stringify(json));
+                    print('written', JSON.stringify(json));
                 }
 
                 function print(type, message) {
