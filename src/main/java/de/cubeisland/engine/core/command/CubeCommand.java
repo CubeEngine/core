@@ -37,6 +37,8 @@ import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.exception.TooFewArgumentsException;
+import de.cubeisland.engine.core.command.exception.TooManyArgumentsException;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
@@ -725,11 +727,11 @@ public abstract class CubeCommand
         ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
         if (ctx.getIndexedCount() < bounds.getMin())
         {
-            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too few arguments."));
+            throw new TooFewArgumentsException(ctx.getSender());
         }
         if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getIndexedCount() > bounds.getMax())
         {
-            throw new IncorrectUsageException(ctx.getSender().getTranslation(NEGATIVE, "You've given too many arguments."));
+            throw new TooManyArgumentsException(ctx.getSender());
         }
         if (ctx.getCommand().isCheckperm() && !ctx.getCommand().isAuthorized(ctx.getSender()))
         {
@@ -737,6 +739,7 @@ public abstract class CubeCommand
         }
         if (ctx.getCommand().isOnlyIngame() && !(ctx.isSender(User.class)))
         {
+            // TODO disallow usage for SENDER Classes
             String onlyIngame = ctx.getCommand().getOnlyIngame();
             if (onlyIngame.isEmpty())
             {

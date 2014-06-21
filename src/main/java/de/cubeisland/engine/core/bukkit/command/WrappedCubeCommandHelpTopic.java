@@ -35,7 +35,8 @@ public class WrappedCubeCommandHelpTopic extends GenericCommandHelpTopic
     @Override
     public boolean canSee(CommandSender commandSender)
     {
-        return false;
+        String permission = command.getPermission();
+        return permission == null || commandSender.hasPermission(permission);
     }
 
     public WrappedCubeCommand getCommand()

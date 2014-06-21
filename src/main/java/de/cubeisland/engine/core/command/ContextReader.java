@@ -62,9 +62,9 @@ public class ContextReader extends ContextParser
                 boolean foundStatic = false;
                 for (String label : indexed.getLabels())
                 {
-                    if (label.startsWith("!") && label.equalsIgnoreCase(arg))
+                    if (label.startsWith("!") && label.substring(1).equalsIgnoreCase(arg))
                     {
-                        result.add(label);
+                        result.add(arg);
                         foundStatic = true;
                     }
                 }

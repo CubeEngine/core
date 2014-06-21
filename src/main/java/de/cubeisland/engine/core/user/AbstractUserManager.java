@@ -54,7 +54,6 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 import org.jooq.Record1;
-import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -140,7 +139,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public void resetAllPasswords()
     {
-        this.database.getDSL().update(TABLE_USER).set(DSL.row(TABLE_USER.PASSWD), DSL.row(new byte[0])).execute();
+        this.database.getDSL().update(TABLE_USER).set(TABLE_USER.PASSWD, (byte[])null).execute();
         for (User user : this.getLoadedUsers())
         {
             user.getEntity().refresh();

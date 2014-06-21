@@ -32,25 +32,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.CommandHolder;
-import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.reflected.Alias;
+import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
+import de.cubeisland.engine.core.command.reflected.context.Grouped;
 import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.reflected.context.NParams;
 import de.cubeisland.engine.core.command.reflected.context.Named;
-import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
-import de.cubeisland.engine.core.command.reflected.Command;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
@@ -63,10 +64,12 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class VanillaCommands implements CommandHolder
 {
     private final BukkitCore core;
+    private final UserManager um;
 
     public VanillaCommands(BukkitCore core)
     {
         this.core = core;
+        this.um = core.getUserManager();
     }
 
     public Class<? extends CubeCommand> getCommandType()
@@ -85,18 +88,19 @@ public class VanillaCommands implements CommandHolder
         }
         message = ChatFormat.parseFormats(message);
 
-        this.core.getUserManager().kickAll(message);
+        um.kickAll(message);
         this.core.getServer().shutdown();
     }
 
     @Command(desc = "Reloads the server.")
+    @IParams(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
     @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(CubeContext context)
     {
         final String message = context.getStrings(0);
         if (message != null)
         {
-            context.getCore().getUserManager().broadcastMessageWithPerm(NONE, message, core.perms().COMMAND_RELOAD_NOTIFY);
+            um.broadcastMessageWithPerm(NONE, message, core.perms().COMMAND_RELOAD_NOTIFY);
         }
 
         if (context.hasFlag("m"))
@@ -122,34 +126,28 @@ public class VanillaCommands implements CommandHolder
     @NParams(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
     public void difficulty(CubeContext context)
     {
-        CommandSender sender = context.getSender();
-        World world = context.getArg("world", null);
+        World world = context.getArg("world");
         if (world == null)
         {
-            if (sender instanceof User)
+            if (context.getSender() instanceof User)
             {
-                world = ((User)sender).getWorld();
+                world = ((User)context.getSender()).getWorld();
             }
             else
             {
-                context.sendTranslated(NEGATIVE, "You have to specify a world!");
-                return;
+                throw new MissingParameterException("world", context.getSender().getTranslation(NEGATIVE, "You have to specify a world!"));
             }
         }
         if (context.hasIndexed(0))
         {
-            Difficulty difficulty = context.getArg(0);
-
-            world.setDifficulty(difficulty);
+            world.setDifficulty(context.<Difficulty>getArg(0));
             context.sendTranslated(POSITIVE, "The difficulty has been successfully set!");
+            return;
         }
-        else
+        context.sendTranslated(POSITIVE, "Current difficulty level: {input}", world.getDifficulty().name());
+        if (this.core.getServer().isHardcore())
         {
-            context.sendTranslated(NONE, "Current difficulty level: {input}", world.getDifficulty().name());
-            if (this.core.getServer().isHardcore())
-            {
-                context.sendTranslated(NONE, "Your server has the hardcore mode enabled.");
-            }
+            context.sendTranslated(POSITIVE, "Your server has the hardcore mode enabled.");
         }
     }
 
@@ -165,94 +163,71 @@ public class VanillaCommands implements CommandHolder
             if (ops.isEmpty())
             {
                 context.sendTranslated(NEUTRAL, "There are currently no operators!");
+                return;
             }
-            else
+            context.sendTranslated(NEUTRAL, "The following users are operators:");
+            context.sendMessage(" ");
+            final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, context.getSender().getLocale());
+            for (OfflinePlayer player : ops)
             {
-                context.sendTranslated(NEUTRAL, "The following users are operators:");
-                context.sendMessage(" ");
-                final CommandSender sender = context.getSender();
-                final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, sender.getLocale());
-                for (OfflinePlayer player : ops)
-                {
-                    String lastSeen = sender.getTranslation(NONE, "Last seen: {input#date}", dateFormat.format(new Date(player.getLastPlayed())));
-                    context.sendMessage(" - " + BRIGHT_GREEN + player.getName() + WHITE + " (" + lastSeen + ")");
-                }
+                context.sendTranslated(POSITIVE, " - {user} (Last seen: {input#date})", dateFormat.format(new Date(player.getLastPlayed())));
             }
             return;
         }
-        User user = context.getArg(0, null);
-        if (user == null && !context.hasFlag("f"))
+        OfflinePlayer user = context.getArg(0, null);
+        if (!(user instanceof User) && !context.hasFlag("f"))
         {
             context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getArg(0));
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
-
-        OfflinePlayer offlinePlayer = user;
-        if (offlinePlayer == null)
+        if (user.isOp())
         {
-            offlinePlayer = context.getArg(0);
-        }
-        if (offlinePlayer.isOp())
-        {
-            context.sendTranslated(NEUTRAL, "{user} is already an operator.", offlinePlayer);
+            context.sendTranslated(NEUTRAL, "{user} is already an operator.", user);
             return;
         }
-        offlinePlayer.setOp(true);
-        if (offlinePlayer.isOnline())
+        user.setOp(true);
+        if (user.isOnline())
         {
-            user = this.core.getUserManager().getExactUser(offlinePlayer.getUniqueId());
+            user = um.getExactUser(user.getUniqueId());
             if (user != null)
             {
-                user.sendTranslated(POSITIVE, "You were opped by {sender}", context.getSender());
+                ((User)user).sendTranslated(POSITIVE, "You were opped by {sender}", context.getSender());
             }
         }
-        context.sendTranslated(POSITIVE, "{user} is now an operator!", offlinePlayer);
+        context.sendTranslated(POSITIVE, "{user} is now an operator!", user);
 
-        for (User onlineUser : this.core.getUserManager().getOnlineUsers())
+        for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(user.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
+            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", user, context.getSender());
         }
 
-        this.core.getLog().info("Player {} has been opped by {}", offlinePlayer.getName(), context.getSender().getName());
+        this.core.getLog().info("Player {} has been opped by {}", user.getName(), context.getSender().getName());
     }
 
     @Command(desc = "Revokes the operator status of a player")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
+    @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
     @CommandPermission(permDefault = FALSE)
     public void deop(CubeContext context)
     {
-        CommandSender sender = context.getSender();
-        OfflinePlayer offlinePlayer;
-        if (context.hasIndexed(0))
+        OfflinePlayer offlinePlayer = context.getArg(0);
+        if (!context.getSender().getName().equals(offlinePlayer.getName()))
         {
-            offlinePlayer = context.getArg(0);
+            context.ensurePermission(core.perms().COMMAND_DEOP_OTHER);
         }
-        else
-        {
-            context.sendTranslated(NEGATIVE, "You have to specify an operator!");
-            return;
-        }
-
-        if (!sender.getName().equals(offlinePlayer.getName()) && !core.perms().COMMAND_DEOP_OTHER.isAuthorized(sender))
-        {
-            sender.sendTranslated(NEGATIVE, "You are not allowed to deop others!");
-            return;
-        }
-
         if (!offlinePlayer.isOp())
         {
-            sender.sendTranslated(NEGATIVE, "The player you tried to deop is not an operator.");
+            context.sendTranslated(NEGATIVE, "The player you tried to deop is not an operator.");
             return;
         }
         offlinePlayer.setOp(false);
         if (offlinePlayer.isOnline())
         {
-            User user = this.core.getUserManager().getExactUser(offlinePlayer.getUniqueId());
+            User user = um.getExactUser(offlinePlayer.getUniqueId());
             if (user != null)
             {
                 user.sendTranslated(POSITIVE, "You were deopped by {user}.", context.getSender());
@@ -260,13 +235,13 @@ public class VanillaCommands implements CommandHolder
         }
         context.sendTranslated(POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
-        for (User onlineUser : this.core.getUserManager().getOnlineUsers())
+        for (User onlineUser : um.getOnlineUsers())
         {
             if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(POSITIVE, "User {user} has been opped by {sender}!", offlinePlayer, context.getSender());
+            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer, context.getSender());
         }
 
         this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
@@ -297,19 +272,14 @@ public class VanillaCommands implements CommandHolder
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Command(alias = "save-all", desc = "Saves all or a specific world to disk.")
+    @Alias(names = "save-all")
+    @Command(desc = "Saves all or a specific world to disk.")
     @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
     public void saveall(CubeContext context)
     {
         if (context.hasIndexed(0))
         {
             World world = context.getArg(0);
-            if (world == null)
-            {
-                context.sendTranslated(NEGATIVE, "The given world was not found!");
-                return;
-            }
-            
             context.sendTranslated(NEUTRAL, "Saving...");
             world.save();
             for(Player player : world.getPlayers())
@@ -317,19 +287,17 @@ public class VanillaCommands implements CommandHolder
                 player.saveData();
             }
             context.sendTranslated(POSITIVE, "World {world} has been saved to disk!", world);
+            return;
         }
-        else
+        context.sendTranslated(NEUTRAL, "Saving...");
+        Profiler.startProfiling("save-worlds");
+        for (World world : this.core.getServer().getWorlds())
         {
-            context.sendTranslated(NEUTRAL, "Saving...");
-            Profiler.startProfiling("save-worlds");
-            for (World world : this.core.getServer().getWorlds())
-            {
-                world.save();
-            }
-            this.core.getServer().savePlayers();
-            context.sendTranslated(POSITIVE, "All worlds have been saved to disk!");
-            context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+            world.save();
         }
+        this.core.getServer().savePlayers();
+        context.sendTranslated(POSITIVE, "All worlds have been saved to disk!");
+        context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
@@ -338,44 +306,37 @@ public class VanillaCommands implements CommandHolder
     public void version(CubeContext context)
     {
         Server server = this.core.getServer();
-        if (context.hasIndexed())
+        if (context.hasIndexed(0))
         {
-            if (!core.perms().COMMAND_VERSION_PLUGINS.isAuthorized(context.getSender()))
-            {
-                throw new PermissionDeniedException(core.perms().COMMAND_VERSION_PLUGINS);
-            }
+            context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
                 context.sendTranslated(NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
+                return;
             }
-            else
-            {
-                context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
-                context.sendMessage(" ");
-                context.sendTranslated(NEUTRAL, ChatFormat.UNDERLINE + "Plugin information:");
-                context.sendMessage(" ");
-                if (plugin instanceof Core)
-                {
-                    showSourceVersion(context, core.getSourceVersion());
-                }
-                context.sendTranslated(NEUTRAL, "Description: {input}", plugin.getDescription().getDescription() == null ? "NONE" : plugin.getDescription().getDescription());
-                context.sendTranslated(NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite() == null ? "NONE" : plugin.getDescription().getWebsite());
-                context.sendTranslated(NEUTRAL, "Authors:");
-                for (String author : plugin.getDescription().getAuthors())
-                {
-                    context.sendMessage("   - " + ChatFormat.AQUA + author);
-                }
-            }
-        }
-        else
-        {
-            context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
-            context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
+            context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
             context.sendMessage(" ");
-            context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
-            showSourceVersion(context, core.getSourceVersion());
+            context.sendTranslated(NEUTRAL, ChatFormat.UNDERLINE + "Plugin information:");
+            context.sendMessage(" ");
+            if (plugin instanceof Core)
+            {
+                showSourceVersion(context, core.getSourceVersion());
+            }
+            context.sendTranslated(NEUTRAL, "Description: {input}", plugin.getDescription().getDescription() == null ? "NONE" : plugin.getDescription().getDescription());
+            context.sendTranslated(NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite() == null ? "NONE" : plugin.getDescription().getWebsite());
+            context.sendTranslated(NEUTRAL, "Authors:");
+            for (String author : plugin.getDescription().getAuthors())
+            {
+                context.sendMessage("   - " + ChatFormat.AQUA + author);
+            }
+            return;
         }
+        context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
+        context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
+        context.sendMessage(" ");
+        context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
+        showSourceVersion(context, core.getSourceVersion());
     }
 
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
@@ -415,7 +376,6 @@ public class VanillaCommands implements CommandHolder
                 context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
                 return;
             }
-
             player.setWhitelisted(true);
             context.sendTranslated(POSITIVE, "{user} is now whitelisted.", player);
         }
@@ -435,7 +395,6 @@ public class VanillaCommands implements CommandHolder
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
                 return;
             }
-
             player.setWhitelisted(false);
             context.sendTranslated(POSITIVE, "{user} is not whitelisted anymore.", player.getName());
         }
@@ -460,19 +419,18 @@ public class VanillaCommands implements CommandHolder
             else
             {
                 context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
-                context.sendMessage(" ");
                 for (OfflinePlayer player : whitelist)
                 {
                     context.sendMessage(" - " + player.getName());
                 }
-                Set<OfflinePlayer> operators = this.core.getServer().getOperators();
-                if (!operators.isEmpty())
+            }
+            Set<OfflinePlayer> operators = this.core.getServer().getOperators();
+            if (!operators.isEmpty())
+            {
+                context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
+                for (OfflinePlayer operator : operators)
                 {
-                    context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
-                    for (OfflinePlayer operator : operators)
-                    {
-                        context.sendMessage(" - " + operator.getName());
-                    }
+                    context.sendMessage(" - " + operator.getName());
                 }
             }
         }
@@ -511,7 +469,6 @@ public class VanillaCommands implements CommandHolder
                 context.sendTranslated(NEGATIVE, "This command is too dangerous for users!");
                 return;
             }
-
             BukkitUtils.wipeWhiteliste();
             context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");
         }

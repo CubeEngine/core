@@ -85,28 +85,23 @@ public class ModuleCommands extends ContainerCommand
     public void list(CubeContext context)
     {
         Collection<Module> modules = this.mm.getModules();
-
-        if (!modules.isEmpty())
-        {
-            context.sendTranslated(NEUTRAL, "These are the loaded modules.");
-            context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
-            context.sendMessage(" ");
-
-            for (Module module : modules)
-            {
-                if (module.isEnabled())
-                {
-                    context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getName());
-                }
-                else
-                {
-                    context.sendMessage(" - " + ChatFormat.RED + module.getName());
-                }
-            }
-        }
-        else
+        if (modules.isEmpty())
         {
             context.sendTranslated(NEUTRAL, "There are no modules loaded!");
+            return;
+        }
+        context.sendTranslated(NEUTRAL, "These are the loaded modules.");
+        context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
+        for (Module module : modules)
+        {
+            if (module.isEnabled())
+            {
+                context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getName());
+            }
+            else
+            {
+                context.sendMessage(" - " + ChatFormat.RED + module.getName());
+            }
         }
     }
 
@@ -114,8 +109,7 @@ public class ModuleCommands extends ContainerCommand
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     public void enable(CubeContext context)
     {
-        Module module = context.getArg(0);
-        if (this.mm.enableModule(module))
+        if (this.mm.enableModule(context.<Module>getArg(0)))
         {
             context.sendTranslated(POSITIVE, "The given module was successfully enabled!");
         }
@@ -129,16 +123,9 @@ public class ModuleCommands extends ContainerCommand
     @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     public void disable(CubeContext context)
     {
-        Module module = this.mm.getModule(context.getString(0));
-        if (module == null)
-        {
-            context.sendTranslated(NEGATIVE, "The given module could not be found!");
-        }
-        else
-        {
-            this.mm.disableModule(module);
-            context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
-        }
+        Module module = context.getArg(0);
+        this.mm.disableModule(module);
+        context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
@@ -186,28 +173,23 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The given file name is invalid!");
             return;
         }
-
         Path modulesPath = context.getCore().getFileManager().getModulesPath();
-
         Path modulePath = modulesPath.resolve(context.getArg(0) + ".jar");
         if (!Files.exists(modulePath))
         {
             context.sendTranslated(NEGATIVE, "The given module file was not found! The name might be case sensitive.");
             return;
         }
-
         if (!Files.isReadable(modulePath))
         {
             context.sendTranslated(NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
             return;
         }
-
         try
         {
             ModuleManager mm = context.getCore().getModuleManager();
             Module module = mm.loadModule(modulePath);
             mm.enableModule(module);
-
             context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
         }
         catch (ModuleAlreadyLoadedException e)

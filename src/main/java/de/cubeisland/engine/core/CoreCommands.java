@@ -30,21 +30,21 @@ import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.exception.TooFewArgumentsException;
 import de.cubeisland.engine.core.command.reflected.CallAsync;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.reflected.OnlyIngame;
 import de.cubeisland.engine.core.command.reflected.Unloggable;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
 import de.cubeisland.engine.core.command.reflected.context.IParams;
 import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
@@ -60,6 +60,7 @@ public class CoreCommands extends ContainerCommand
     private final BukkitCore core;
     private final BanManager banManager;
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
+    private final UserManager um;
 
     public CoreCommands(Core core)
     {
@@ -67,18 +68,18 @@ public class CoreCommands extends ContainerCommand
         this.setAliases(new HashSet<>(asList("ce")));
         this.core = (BukkitCore)core;
         this.banManager = core.getBanManager();
+        this.um = core.getUserManager();
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
     public void reload(CubeContext context)
     {
         context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
-        Profiler.startProfiling("ceReload");
+        final long startTime = System.currentTimeMillis();
         PluginManager pm = this.core.getServer().getPluginManager();
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
-        long time = Profiler.endProfiling("ceReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", time);
+        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", System.currentTimeMillis() - startTime);
     }
 
     @Command(desc = "Reloads all of the modules!")
@@ -88,8 +89,8 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
         context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
-        long time = Profiler.endProfiling("modulesReload", TimeUnit.MILLISECONDS);
-        context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}ms!", time);
+        long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
+        context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
 
     @Unloggable
@@ -98,82 +99,61 @@ public class CoreCommands extends ContainerCommand
               @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void setPassword(CubeContext context)
     {
-        CommandSender sender = context.getSender();
         User target;
         if (context.hasIndexed(1))
         {
             target = context.getArg(1);
-            if (target == null)
-            {
-                sender.sendTranslated(NEGATIVE, "Player {user} not found!");
-                return;
-            }
         }
-        else if (sender instanceof User)
+        else if (context.getSender() instanceof User)
         {
-            target = (User)sender;
+            target = (User)context.getSender();
         }
         else
         {
-            sender.sendTranslated(NEGATIVE, "No player given!");
-            return;
+            throw new TooFewArgumentsException(context.getSender());
         }
-
-        if (target == sender && !sender.isAuthorized(core.perms().COMMAND_SETPASSWORD_OTHER))
+        if (!context.getSender().equals(target))
         {
-            context.sendTranslated(NEGATIVE, "You are not allowed to change the password of an other player!");
-            return;
-        }
-        core.getUserManager().setPassword(target, context.getString(0));
-        if (sender == target)
-        {
-            sender.sendTranslated(POSITIVE, "The player's password has been set!");
+            context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
+            um.setPassword(target, context.getString(0));
+            context.sendTranslated(POSITIVE, "{user}'s password has been set!");
         }
         else
         {
-            sender.sendTranslated(POSITIVE, "Your password has been set!");
+            um.setPassword(target, context.getString(0));
+            context.sendTranslated(POSITIVE, "Your password has been set!");
         }
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    @IParams(@Grouped(value = @Indexed(label = {"player","!*"}, type = {User.class, String.class}), req = false))
+    @IParams(@Grouped(value = @Indexed(label = {"player","!*"}, type = User.class), req = false))
     public void clearPassword(CubeContext context)
     {
         CommandSender sender = context.getSender();
         if (context.hasIndexed(0))
         {
-            if ("*".equals(context.getArg(0)))
+            if ("*".equals(context.getString(0)))
             {
-                if (core.perms().COMMAND_CLEARPASSWORD_ALL.isAuthorized(context.getSender()))
-                {
-                    final UserManager um = this.getModule().getCore().getUserManager();
-                    um.resetAllPasswords();
-                    sender.sendTranslated(POSITIVE, "All passwords reset!");
-                    return;
-                }
-                context.sendTranslated(NEGATIVE, "You are not allowed to clear all passwords!");
-                return;
-            }
-            if (!core.perms().COMMAND_CLEARPASSWORD_OTHER.isAuthorized(context.getSender()))
-            {
-                context.sendTranslated(NEGATIVE, "You are not allowed to clear the password of other players!");
+                context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
+                um.resetAllPasswords();
+                sender.sendTranslated(POSITIVE, "All passwords reset!");
                 return;
             }
             User target = context.getArg(0);
-            if (target != null)
+            if (!target.equals(context.getSender()))
             {
-                this.core.getUserManager().resetPassword(target);
-                sender.sendTranslated(POSITIVE, "The player's password has been reset!");
-                return;
+                context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
             }
-            context.sendTranslated(NEGATIVE, "Player {user} not found!", context.getArg(0));
+            this.um.resetPassword(target);
+            sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", target.getName());
             return;
         }
-        if (sender instanceof User)
+        if (!(sender instanceof User))
         {
-            this.core.getUserManager().resetPassword((User)sender);
-            sender.sendTranslated(POSITIVE, "Your password has been reset!");
+            throw new TooFewArgumentsException(context.getSender());
         }
+        this.um.resetPassword((User)sender);
+        sender.sendTranslated(POSITIVE, "Your password has been reset!");
     }
 
     @Unloggable
@@ -191,7 +171,7 @@ public class CoreCommands extends ContainerCommand
                 context.sendTranslated(POSITIVE, "You are already logged in!");
                 return;
             }
-            boolean isLoggedIn = core.getUserManager().login(user, context.getString(0));
+            boolean isLoggedIn = um.login(user, context.getString(0));
             if (isLoggedIn)
             {
                 user.sendTranslated(POSITIVE, "You logged in successfully!");
@@ -227,34 +207,26 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Logs you out!")
+    @OnlyIngame("You might use /stop for this.")
     public void logout(CubeContext context)
     {
-        CommandSender sender = context.getSender();
-        if (sender instanceof User)
+        User sender = (User)context.getSender();
+        if (sender.isLoggedIn())
         {
-            User user = (User)sender;
-            if (!user.isLoggedIn())
-            {
-                sender.sendTranslated(NEUTRAL, "You're not logged in!");
-            }
-            else
-            {
-                user.logout();
-                sender.sendTranslated(POSITIVE, "You're now logged out.");
-            }
+            sender.logout();
+            context.sendTranslated(POSITIVE, "You're now logged out.");
+            return;
         }
-        else if (sender instanceof ConsoleCommandSender)
-        {
-            sender.sendTranslated(NEUTRAL, "You might use /stop for this.");
-        }
+        context.sendTranslated(NEUTRAL, "You're not logged in!");
     }
 
     @Command(desc = "Toggles the online mode")
     public void onlinemode(CubeContext context)
     {
+        context.sendTranslated(NEGATIVE, "Not working!");
+        /*
         final boolean newState = !this.core.getServer().getOnlineMode();
         BukkitUtils.setOnlineMode(newState);
-
         if (newState)
         {
             context.sendTranslated(POSITIVE, "The server is now in online-mode.");
@@ -263,30 +235,29 @@ public class CoreCommands extends ContainerCommand
         {
             context.sendTranslated(POSITIVE, "The server is not in offline-mode.");
         }
+        */
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
     @IParams(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
     public void loglevel(CubeContext context)
     {
-        if (context.hasIndexed())
+        if (context.hasIndexed(0))
         {
             context.getCore().getLog().setLevel(context.<LogLevel>getArg(0));
             context.sendTranslated(POSITIVE, "New log level successfully set!");
+            return;
         }
-        else
-        {
-            context.sendTranslated(NEUTRAL, "The current log level: {input#loglevel}", context.getCore().getLog().getLevel().getName());
-        }
+        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}", context.getCore().getLog().getLevel().getName());
     }
 
     @CallAsync
-    @Command(desc = "Searches for a user in the database")
+    @Command(alias = "finduser", desc = "Searches for a user in the database")
     @IParams(@Grouped(@Indexed(label = "name")))
-    public CommandResult searchUser(CubeContext context)
+    public CommandResult searchuser(CubeContext context)
     {
-        final boolean exact = core.getUserManager().findExactUser(context.getString(0)) != null;
-        final User user = core.getUserManager().findUser(context.getString(0), true);
+        final boolean exact = um.findExactUser(context.getString(0)) != null;
+        final User user = um.findUser(context.getString(0), true);
         return new CommandResult()
         {
             @Override
@@ -299,11 +270,9 @@ public class CoreCommands extends ContainerCommand
                 else if (exact)
                 {
                     context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", user);
+                    return;
                 }
-                else
-                {
-                    context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
-                }
+                context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
             }
         };
     }
