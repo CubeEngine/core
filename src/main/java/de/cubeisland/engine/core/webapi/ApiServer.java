@@ -73,9 +73,13 @@ public class ApiServer
     private final Set<InetAddress> whitelist = new CopyOnWriteArraySet<>();
     private final AtomicBoolean enableBlacklist = new AtomicBoolean(false);
     private final Set<InetAddress> blacklist = new CopyOnWriteArraySet<>();
+    private final AtomicBoolean enableAuthorizedList = new AtomicBoolean(false);
+    private final Set<InetAddress> authorizedList = new CopyOnWriteArraySet<>();
+
     private final ConcurrentMap<String, ApiHandler> handlers = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, List<ApiRequestHandler>> subscriptions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, List<WebSocketRequestHandler>> subscriptions = new ConcurrentHashMap<>();
     private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
+
 
     public ApiServer(Core core)
     {
@@ -127,6 +131,9 @@ public class ApiServer
 
         this.setBlacklistEnabled(config.blacklist.enable);
         this.setBlacklist(config.blacklist.ips);
+
+        this.setAuthorizedListEnabled(config.authorizedList.enable);
+        this.setAuthorizedList(config.authorizedList.ips);
     }
 
     /**
@@ -209,7 +216,7 @@ public class ApiServer
             actionAnnotation = method.getAnnotation(Action.class);
             if (actionAnnotation != null)
             {
-                route = ApiRequestHandler.normalizeRoute(actionAnnotation.route());
+                route = HttpRequestHandler.normalizeRoute(actionAnnotation.route());
                 this.handlers.put(route, new ApiHandler(holder, route, method, actionAnnotation.auth(), actionAnnotation.parameters(), actionAnnotation.methods()));
             }
         }
@@ -440,6 +447,12 @@ public class ApiServer
         return !this.enableWhitelist.get() || this.whitelist.contains(ip);
     }
 
+
+    public boolean isAuthorized(InetAddress ip)
+    {
+        return !this.enableAuthorizedList.get() || this.authorizedList.contains(ip);
+    }
+
     /**
      * Checks whether an InetSocketAddress is whitelisted
      *
@@ -522,6 +535,20 @@ public class ApiServer
         return this.enableBlacklist.get() && this.blacklist.contains(ip);
     }
 
+    public void setAuthorizedListEnabled(boolean enable)
+    {
+        this.enableAuthorizedList.set(enable);
+    }
+
+    public void setAuthorizedList(Set<InetAddress> newAuthorizedlist)
+    {
+        expectNotNull(newAuthorizedlist, "The autorizedlist must not be null!");
+        Validate.noNullElements(newAuthorizedlist, "The autorizedlist must not contain null values!");
+
+        this.authorizedList.clear();
+        this.authorizedList.addAll(newAuthorizedlist);
+    }
+
     public boolean isRouteDisabled(String route)
     {
         return this.disabledRoutes.contains(route);
@@ -550,18 +577,13 @@ public class ApiServer
         return this.isWhitelisted(address) && !this.isBlacklisted(address);
     }
 
-    public boolean isAddressAccepted(InetSocketAddress address)
-    {
-        return this.isAddressAccepted(address.getAddress());
-    }
-
-    public void subscribe(String event, ApiRequestHandler requestHandler)
+    public void subscribe(String event, WebSocketRequestHandler requestHandler)
     {
         expectNotNull(event, "The event name must not be null!");
         expectNotNull(requestHandler, "The request handler must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
-        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers == null)
         {
             this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArrayList<>());
@@ -569,13 +591,13 @@ public class ApiServer
         subscribedHandlers.add(requestHandler);
     }
 
-    public void unsubscribe(String event, ApiRequestHandler requestHandler)
+    public void unsubscribe(String event, WebSocketRequestHandler requestHandler)
     {
         expectNotNull(event, "The event name must not be null!");
         expectNotNull(requestHandler, "The request handler must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
-        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers != null)
         {
             subscribedHandlers.remove(requestHandler);
@@ -594,14 +616,14 @@ public class ApiServer
         this.subscriptions.remove(event);
     }
 
-    public void unsubscribe(ApiRequestHandler handler)
+    public void unsubscribe(WebSocketRequestHandler handler)
     {
         expectNotNull(handler, "The event name must not be null!");
 
-        Iterator<Map.Entry<String, List<ApiRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
+        Iterator<Map.Entry<String, List<WebSocketRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
 
-        List<ApiRequestHandler> handlers;
-        Iterator<ApiRequestHandler> handlerIter;
+        List<WebSocketRequestHandler> handlers;
+        Iterator<WebSocketRequestHandler> handlerIter;
         while (iter.hasNext())
         {
             handlers = iter.next().getValue();
@@ -625,10 +647,10 @@ public class ApiServer
         expectNotNull(event, "The event name must not be null!");
         event = event.toLowerCase(Locale.ENGLISH);
 
-        List<ApiRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers != null)
         {
-            for (ApiRequestHandler handler : subscribedHandlers)
+            for (WebSocketRequestHandler handler : subscribedHandlers)
             {
                 handler.handleEvent(event, data);
             }

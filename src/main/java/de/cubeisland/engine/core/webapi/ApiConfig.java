@@ -89,4 +89,15 @@ public class ApiConfig extends ReflectedYaml
         @Comment("The IPs to allow")
         public Set<InetAddress> ips = Collections.emptySet();
     }
+
+    public AuthorizedSection authorizedList;
+
+    public class AuthorizedSection implements Section
+    {
+        @Comment("This enables IPs to be authorized by default")
+        public boolean enable = false;
+
+        @Comment("The IPs to be authorized by default")
+        public Set<InetAddress> ips = Collections.emptySet();
+    }
 }
