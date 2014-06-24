@@ -26,6 +26,8 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public interface CommandSender extends org.bukkit.command.CommandSender
 {
+    UUID NON_PLAYER_UUID = new UUID(0, 0);
+
     Core getCore();
 
     String getName();

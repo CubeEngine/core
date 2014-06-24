@@ -41,6 +41,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logging.target.proxy.LogProxyTarget;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -89,6 +90,7 @@ public class ApiServer
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
+        this.log.addTarget(new LogProxyTarget(core.getLogFactory().getParent()));
         try
         {
             this.bindAddress.set(InetAddress.getLocalHost());

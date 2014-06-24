@@ -61,14 +61,10 @@ public class IpLimiter extends ChannelHandlerAdapter
     public void channelInactive(ChannelHandlerContext ctx) throws Exception
     {
         InetAddress address = ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress();
-        Integer conCount = connections.get(address) - 1;
-        if (conCount <= 0)
+        Integer conCount = connections.remove(address);
+        if (conCount != null && conCount != 1)
         {
-            connections.remove(address);
-        }
-        else
-        {
-            connections.put(address, conCount);
+            connections.put(address, conCount - 1);
         }
         super.channelInactive(ctx);
     }

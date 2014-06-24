@@ -34,7 +34,6 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class WrappedCommandSender implements CommandSender
 {
-    public static final UUID NON_PLAYER_UUID = new UUID(0, 0);
     private final Core core;
     private final org.bukkit.command.CommandSender wrapped;
 

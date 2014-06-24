@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.module.service.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
 import de.cubeisland.engine.logging.Log;
@@ -92,8 +93,14 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         boolean authorized = this.server.isAuthorized(inetSocketAddress.getAddress());
         QueryStringDecoder qsDecoder = new QueryStringDecoder(message.getUri(), this.UTF8, true, 100);
         final Parameters params = new Parameters(qsDecoder.parameters());
+        User authUser = null;
         if (!authorized)
         {
+            if (!core.getModuleManager().getServiceManager().isImplemented(Permission.class))
+            {
+                this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
+                return;
+            }
             String user = params.get("user", String.class);
             String pass = params.get("pass", String.class);
             User exactUser = core.getUserManager().findExactUser(user);
@@ -102,6 +109,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
+            authUser = exactUser;
         }
         String path = qsDecoder.path().trim();
         if (path.length() == 0 || "/".equals(path))
@@ -124,7 +132,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             WebSocketRequestHandler handler = null;
             if (!(ctx.pipeline().last() instanceof WebSocketRequestHandler))
             {
-                handler = new WebSocketRequestHandler(core, server, objectMapper);
+                handler = new WebSocketRequestHandler(core, server, objectMapper, authUser);
+                ctx.pipeline().addLast("wsEncoder", new TextWebSocketFrameEncoder(objectMapper));
                 ctx.pipeline().addLast("handler", handler);
             }
             else

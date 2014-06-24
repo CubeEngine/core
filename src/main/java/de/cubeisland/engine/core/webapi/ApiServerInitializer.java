@@ -48,9 +48,7 @@ public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
             .addLast("decoder", new HttpRequestDecoder())
             .addLast("aggregator", new HttpObjectAggregator(this.server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())
-            .addLast("httpHandler", new HttpRequestHandler(core, this.server, this.objectMapper))
-            .addLast("socketHandler", new WebSocketRequestHandler(core, this.server, this.objectMapper));
-
+            .addLast("httpHandler", new HttpRequestHandler(core, this.server, this.objectMapper));
         if (this.server.isCompressionEnabled())
         {
             ch.pipeline().addLast("deflater", new HttpContentCompressor(this.server.getCompressionLevel(), this.server.getCompressionWindowBits(), this.server.getCompressionMemoryLevel()));

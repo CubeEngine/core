@@ -21,10 +21,15 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.webapi.sender.ApiCommandSender;
+import de.cubeisland.engine.core.webapi.sender.ApiServerSender;
+import de.cubeisland.engine.core.webapi.sender.ApiUser;
 import de.cubeisland.engine.logging.Log;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -52,12 +57,14 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
+    private ApiCommandSender cmdSender;
 
-    public WebSocketRequestHandler(Core core, ApiServer server, ObjectMapper mapper)
+    public WebSocketRequestHandler(Core core, ApiServer server, ObjectMapper mapper, User authUser)
     {
         this.core = core;
         this.server = server;
         this.objectMapper = mapper;
+        this.cmdSender = authUser == null ? new ApiServerSender(core, mapper) : new ApiUser(core, authUser, mapper);
         this.log = server.getLog();
     }
 
@@ -115,7 +122,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
         }
     }
 
-    private void handleTextWebSocketFrame(ChannelHandlerContext ctx, TextWebSocketFrame frame)
+    private void handleTextWebSocketFrame(final ChannelHandlerContext ctx, TextWebSocketFrame frame)
     {
         // TODO log exceptions!!!
         try
@@ -127,7 +134,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                 ctx.writeAndFlush(new TextWebSocketFrame("No command!"));
                 return;
             }
-            JsonNode data = jsonNode.get("data");
+            final JsonNode data = jsonNode.get("data");
             switch (command.asText())
             {
                 case "request":
@@ -155,10 +162,20 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                     this.server.unsubscribe(data.asText().trim(), this);
                     break;
                 case "command":
-                    ctx.writeAndFlush(new TextWebSocketFrame("Not implemented yet!")); // TODO execute commands with permissions of user
+                    core.getTaskManager().callSync(new Callable<Object>()
+                    {
+                        @Override
+                        public Object call() throws Exception
+                        {
+                            core.getCommandManager().runCommand(cmdSender, data.asText());
+                            cmdSender.flush(ctx);
+                            return null;
+                        }
+                    });
+
                     break;
                 default:
-                    ctx.writeAndFlush(new TextWebSocketFrame(command + " -- " + data.asText()));
+                    ctx.writeAndFlush(command + " -- " + data.asText());
             }
         }
         catch (IOException e)

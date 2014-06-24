@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.webapi;
+package de.cubeisland.engine.core.webapi.sender;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,31 +23,27 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Server;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+import io.netty.channel.ChannelHandlerContext;
 
-public class ApiCommandSender implements CommandSender
+public abstract class ApiCommandSender implements CommandSender
 {
-    private final String name;
     private final Core core;
-    private final List<String> messages;
+    private ObjectMapper mapper;
+    private final List<String> messages = new ArrayList<>();
 
-    public ApiCommandSender(final Core server)
+    public ApiCommandSender(Core core, ObjectMapper mapper)
     {
-        this("ApiCommandSender", server);
-    }
-
-    public ApiCommandSender(final String name, final Core core)
-    {
-        this.name = name;
         this.core = core;
-        this.messages = new ArrayList<>();
+        this.mapper = mapper;
     }
 
     public Core getCore()
@@ -56,15 +52,9 @@ public class ApiCommandSender implements CommandSender
     }
 
     @Override
-    public String getName()
-    {
-        return this.name;
-    }
-
-    @Override
     public void sendMessage(String message)
     {
-    // TODO implement
+        this.messages.add(message);
     }
 
     @Override
@@ -77,39 +67,9 @@ public class ApiCommandSender implements CommandSender
     }
 
     @Override
-    public boolean isOp()
-    {
-        return true;
-    }
-
-    @Override
     public Server getServer()
     {
         return ((BukkitCore)this.core).getServer();
-    }
-
-    @Override
-    public boolean isPermissionSet(String name)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isPermissionSet(Permission perm)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean hasPermission(String name)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean hasPermission(Permission perm)
-    {
-        return true;
     }
 
     @Override
@@ -153,4 +113,40 @@ public class ApiCommandSender implements CommandSender
     @Override
     public void setOp(boolean value)
     {}
+
+    @Override
+    public boolean isAuthorized(de.cubeisland.engine.core.permission.Permission perm)
+    {
+        return this.hasPermission(perm.getFullName());
+    }
+
+    @Override
+    public String getTranslation(MessageType type, String message, Object... params)
+    {
+        return core.getI18n().translate(getLocale(), type, message, params);
+    }
+
+    @Override
+    public void sendTranslated(MessageType type, String message, Object... params)
+    {
+        this.sendMessage(this.getTranslation(type, message, params));
+    }
+
+    @Override
+    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
+    }
+
+    @Override
+    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
+    {
+        return core.getI18n().translateN(getLocale(), type, n, singular, plural, params);
+    }
+
+    public void flush(ChannelHandlerContext ctx)
+    {
+        ctx.writeAndFlush(mapper.valueToTree(this.messages));
+        messages.clear();
+    }
 }
