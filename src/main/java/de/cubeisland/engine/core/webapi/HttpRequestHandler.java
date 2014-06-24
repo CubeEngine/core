@@ -103,6 +103,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             }
             String user = params.get("user", String.class);
             String pass = params.get("pass", String.class);
+            if (user == null || pass == null)
+            {
+                this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+            }
             User exactUser = core.getUserManager().findExactUser(user);
             if (exactUser == null || !exactUser.isPasswordSet() || !CubeEngine.getUserManager().checkPassword(exactUser, pass))
             {
