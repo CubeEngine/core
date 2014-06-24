@@ -88,21 +88,30 @@
                 var screenContent = $('<div>');
                 screenContent.appendTo(screen);
                 var input = $('#input').find('input');
+                var go = settings.find('> button');
 
-                settings.find('> button').on('click', function(e) {
+                go.on('click', function() {
                     if (socket) {
-                        socket.close();
-                        socket = null;
-                        $(e.target).text('reconnect');
+                        disconnect();
                     } else {
-                        socket = connect(host.val(), parseInt(port.val()), ssl.prop('checked'),
-                                         handleOpen, handleMessage, handleError, handleClose);
-                        $(e.target).text("disconnect");
+                        connect();
                     }
                 });
 
-                function sendMessage(message) {
+                function disconnect() {
+                    if (socket && socket instanceof WebSocket) {
+                        socket.close();
+                        socket = null;
+                    }
+                    go.text('reconnect');
+                }
 
+                function connect() {
+                    socket = open(host.val(), parseInt(port.val()), ssl.prop('checked'));
+                    go.text("connecting...");
+                }
+
+                function sendMessage(message) {
                     var json = {};
                     json.command = message.substring(0, message.indexOf(":"));
                     var data = message.substring(message.indexOf(":") + 1);
@@ -122,50 +131,39 @@
 
                 function print(type, message) {
                     var scroll = Math.abs(screen.scrollTop() - (screenContent.outerHeight() - screen.outerHeight())) < 5;
-                    screenContent.append('<div class="message-' + type + '">' + $.text(message) + '</div>');
+                    var line = $('<div class="message-' + type + '">');
+                    line.text(message);
+                    line.appendTo(screenContent);
+
                     if (scroll) {
                         screen.scrollTop(screenContent.outerHeight() - screen.outerHeight());
                     }
                 }
 
-                function handleOpen() {
-                    print('status', 'Connected!');
-                }
-
-                function handleMessage(event) {
-                    print('read', event.data);
-                }
-
-                function handleError(event) {
-                    print('error', 'Error');
-                }
-
-                function handleClose() {
-                    print('status', 'Disconnected!');
-                }
-
-                function connect(host, port, ssl, onopen, onmessage, onerror, onclose) {
+                function open(host, port, ssl) {
                     var socket = new WebSocket((ssl ? 'wss' : 'ws') + '://' + host + ':' + port + '/websocket');
 
-                    if (onopen) {
-                        socket.onopen = onopen;
-                    }
-                    if (onmessage) {
-                        socket.onmessage = onmessage;
-                    }
-                    if (onerror) {
-                        socket.onerror = onerror;
-                    }
-                    if (onclose) {
-                        socket.onclose = onclose;
-                    }
+                    socket.onopen = function (e) {
+                        print('status', 'Connected!');
+                        input.prop('disabled', false);
+                        go.text("disconnect");
+                    };
+                    socket.onmessage = function(e) {
+                        print('read', event.data);
+                    };
+                    socket.onerror = function(e) {
+                        print('error', 'Error');
+                    };
+                    socket.onclose = function(e) {
+                        print('status', 'Disconnected!');
+                        disconnect();
+                    };
 
-                    input.prop('disabled', false);
 
                     return socket;
                 }
 
-                var history = JSON.parse(localStorage.getItem("history") || "[]");
+                var history = JSON.parse(localStorage.getItem("command-history") || "[]");
                 var historyIndex = history.length;
 
                 input.on('keydown', function (e) {
@@ -179,7 +177,7 @@
                             }
                             historyIndex = history.length;
                             input.val('');
-                            localStorage.setItem("history", JSON.stringify(history));
+                            localStorage.setItem("command-history", JSON.stringify(history));
                         }
                     } else if (history.length > 0) {
                         if (c == 38 && historyIndex > 0) {
