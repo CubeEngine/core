@@ -79,18 +79,38 @@
                     return;
                 }
                 var socket;
-                var settings = $('#settings');
-                var host = settings.find('> input[type=text]');
-                var port = settings.find('> input[type=number]');
-                var ssl  = settings.find('> input[type=checkbox]');
 
-                var screen = $('#screen');
-                var screenContent = $('<div>');
-                screenContent.appendTo(screen);
-                var input = $('#input').find('input');
-                var go = settings.find('> button');
+                var ui = {
+                    settings: {
+                        container: $('#settings'),
+                        host: null,
+                        port: 0,
+                        ssl: false
+                    },
+                    screen: $('#screen'),
+                    screenContent: $('<div>'),
+                    commandline: $('#input').find('input'),
+                    connect: null
+                };
+                ui.settings.host = ui.settings.container.find('> input[type=text]');
+                ui.settings.port = ui.settings.container.find('> input[type=number]');
+                ui.settings.ssl = ui.settings.container.find('> input[type=checkbox]');
+                ui.screenContent.appendTo(ui.screen);
+                ui.connect = ui.settings.container.find('> button');
 
-                go.on('click', function() {
+                var settings = {
+                    host: function() {
+                        return ui.settings.host.val();
+                    },
+                    port: function() {
+                        return parseInt(ui.settings.port.val());
+                    },
+                    ssl: function() {
+                        return ui.settings.ssl.prop('checked');
+                    }
+                };
+
+                ui.connect.on('click', function() {
                     if (socket) {
                         disconnect();
                     } else {
@@ -103,12 +123,12 @@
                         socket.close();
                         socket = null;
                     }
-                    go.text('reconnect');
+                    ui.connect.text('reconnect');
                 }
 
                 function connect() {
-                    socket = open(host.val(), parseInt(port.val()), ssl.prop('checked'));
-                    go.text("connecting...");
+                    socket = open(settings.host(), settings.port(), settings.ssl());
+                    ui.connect.text("connecting...");
                 }
 
                 function sendMessage(message) {
@@ -130,31 +150,31 @@
                 }
 
                 function print(type, message) {
-                    var scroll = Math.abs(screen.scrollTop() - (screenContent.outerHeight() - screen.outerHeight())) < 5;
+                    var scroll = Math.abs(ui.screen.scrollTop() - (ui.screenContent.outerHeight() - ui.screen.outerHeight())) < 5;
                     var line = $('<div class="message-' + type + '">');
                     line.text(message);
-                    line.appendTo(screenContent);
+                    line.appendTo(ui.screenContent);
 
                     if (scroll) {
-                        screen.scrollTop(screenContent.outerHeight() - screen.outerHeight());
+                        ui.screen.scrollTop(ui.screenContent.outerHeight() - ui.screen.outerHeight());
                     }
                 }
 
                 function open(host, port, ssl) {
                     var socket = new WebSocket((ssl ? 'wss' : 'ws') + '://' + host + ':' + port + '/websocket');
 
-                    socket.onopen = function (e) {
+                    socket.onopen = function () {
                         print('status', 'Connected!');
-                        input.prop('disabled', false);
-                        go.text("disconnect");
+                        ui.commandline.prop('disabled', false);
+                        ui.connect.text("disconnect");
                     };
                     socket.onmessage = function(e) {
-                        print('read', event.data);
+                        print('read', e.data);
                     };
-                    socket.onerror = function(e) {
+                    socket.onerror = function() {
                         print('error', 'Error');
                     };
-                    socket.onclose = function(e) {
+                    socket.onclose = function() {
                         print('status', 'Disconnected!');
                         disconnect();
                     };
@@ -163,27 +183,27 @@
                     return socket;
                 }
 
-                var history = JSON.parse(localStorage.getItem("command-history") || "[]");
+                var history = JSON.parse(localStorage.getItem("history") || "[]");
                 var historyIndex = history.length;
 
-                input.on('keydown', function (e) {
+                ui.commandline.on('keydown', function (e) {
                     var c = e.keyCode;
                     if (c == 13) {
-                        var message = $.trim(input.val());
+                        var message = $.trim(ui.commandline.val());
                         if (message.length > 0) {
                             sendMessage(message);
                             if (history.length == 0 || history[history.length - 1] != message) {
                                 history.push(message);
                             }
                             historyIndex = history.length;
-                            input.val('');
-                            localStorage.setItem("command-history", JSON.stringify(history));
+                            ui.commandline.val('');
+                            localStorage.setItem("history", JSON.stringify(history));
                         }
                     } else if (history.length > 0) {
                         if (c == 38 && historyIndex > 0) {
-                            input.val(history[--historyIndex]);
+                            ui.commandline.val(history[--historyIndex]);
                         } else if (c == 40 && historyIndex < history.length) {
-                            input.val(history[++historyIndex]);
+                            ui.commandline.val(history[++historyIndex]);
                         }
                     }
                 });
