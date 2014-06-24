@@ -116,7 +116,7 @@ public class CoreCommands extends ContainerCommand
         {
             context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
             um.setPassword(target, context.getString(0));
-            context.sendTranslated(POSITIVE, "{user}'s password has been set!");
+            context.sendTranslated(POSITIVE, "{user}'s password has been set!", target);
         }
         else
         {
@@ -266,6 +266,7 @@ public class CoreCommands extends ContainerCommand
                 if (user == null)
                 {
                     context.sendTranslated(NEUTRAL, "No match found for {input}!", context.getArg(0));
+                    return;
                 }
                 else if (exact)
                 {
