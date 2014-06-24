@@ -122,7 +122,7 @@
 
                 function print(type, message) {
                     var scroll = Math.abs(screen.scrollTop() - (screenContent.outerHeight() - screen.outerHeight())) < 5;
-                    screenContent.append('<div class="message-' + type + '">' + message + '</div>');
+                    screenContent.append('<div class="message-' + type + '">' + $.text(message) + '</div>');
                     if (scroll) {
                         screen.scrollTop(screenContent.outerHeight() - screen.outerHeight());
                     }
