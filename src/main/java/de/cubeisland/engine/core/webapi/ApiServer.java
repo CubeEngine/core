@@ -18,10 +18,12 @@
 package de.cubeisland.engine.core.webapi;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,6 +40,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
@@ -207,19 +211,63 @@ public class ApiServer
         return this.handlers.get(route);
     }
 
-    public void registerApiHandlers(final ApiHolder holder)
+    public void registerApiHandlers(final Module owner, final Object holder)
     {
         expectNotNull(holder, "The API holder must not be null!");
 
-        String route;
-        Action actionAnnotation;
         for (Method method : holder.getClass().getDeclaredMethods())
         {
-            actionAnnotation = method.getAnnotation(Action.class);
-            if (actionAnnotation != null)
+            Action aAction = method.getAnnotation(Action.class);
+            if (aAction != null)
             {
-                route = HttpRequestHandler.normalizeRoute(actionAnnotation.route());
-                this.handlers.put(route, new ApiHandler(holder, route, method, actionAnnotation.auth(), actionAnnotation.parameters(), actionAnnotation.methods()));
+                String route = aAction.value();
+                if (route.isEmpty())
+                {
+                    route = StringUtils.deCamelCase(method.getName(), "/");
+                }
+                route = HttpRequestHandler.normalizeRoute(route);
+                de.cubeisland.engine.core.permission.Permission perm = null;
+                if (aAction.needsAuth())
+                {
+                    perm = owner.getBasePermission().childWildcard("webapi");
+                    if (method.isAnnotationPresent(ApiPermission.class))
+                    {
+                        ApiPermission apiPerm = method.getAnnotation(ApiPermission.class);
+                        if (apiPerm.value().isEmpty())
+                        {
+                            perm = perm.child(route, apiPerm.permDefault());
+                        }
+                        else
+                        {
+                            perm = perm.child(apiPerm.value(), apiPerm.permDefault());
+                        }
+                    }
+                    else
+                    {
+                        perm = perm.child(route, PermDefault.DEFAULT);
+                    }
+                }
+                LinkedHashMap<String, Class> params = new LinkedHashMap<>();
+                Parameter[] parameters = method.getParameters();
+                for (int i = 1; i < parameters.length; i++)
+                {
+                    Parameter parameter = parameters[i];
+                    Value val = parameter.getAnnotation(Value.class);
+                    if (val == null)
+                    {
+                        throw new IllegalArgumentException("Missing Value Annotation for Additional Parameters");
+                    }
+                    if (params.put(val.value(), parameter.getType()) != null)
+                    {
+                        throw new IllegalArgumentException("Duplicate value in Value Annotation");
+                    }
+                }
+                RequestMethod reqMethod = RequestMethod.GET;
+                if (method.isAnnotationPresent(de.cubeisland.engine.core.webapi.Method.class))
+                {
+                    reqMethod = method.getAnnotation(de.cubeisland.engine.core.webapi.Method.class).value();
+                }
+                this.handlers.put(route, new ReflectedApiHandler(owner, route, perm, params, reqMethod, method, holder));
             }
         }
     }
@@ -244,7 +292,7 @@ public class ApiServer
         }
     }
 
-    public void unregisterApiHandlers(ApiHolder holder)
+    public void unregisterApiHandlers(Object holder)
     {
         Iterator<Map.Entry<String, ApiHandler>> iter = this.handlers.entrySet().iterator();
 
@@ -252,9 +300,12 @@ public class ApiServer
         while (iter.hasNext())
         {
             handler = iter.next().getValue();
-            if (handler.getHolder() == holder)
+            if (handler instanceof ReflectedApiHandler)
             {
-                iter.remove();
+                if (((ReflectedApiHandler)handler).getHolder() == holder)
+                {
+                    iter.remove();
+                }
             }
         }
     }

@@ -36,7 +36,6 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
@@ -46,6 +45,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
 import static de.cubeisland.engine.core.webapi.HttpRequestHandler.normalizeRoute;
+import static de.cubeisland.engine.core.webapi.RequestMethod.GET;
+import static de.cubeisland.engine.core.webapi.RequestMethod.getByName;
+import static io.netty.handler.codec.http.HttpHeaders.EMPTY_HEADERS;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
 
 public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSocketFrame>
@@ -140,16 +142,16 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                 case "request":
                     String route = normalizeRoute(jsonNode.get("route").asText());
                     JsonNode reqMethod = data.get("requestmethod");
-                    RequestMethod method = reqMethod != null ? RequestMethod.getByName(reqMethod.asText()) : RequestMethod.GET;
+                    RequestMethod method = reqMethod != null ? getByName(reqMethod.asText()) : GET;
                     JsonNode reqdata = data.get("data");
 
                     ApiHandler handler = this.server.getApiHandler(route);
                     Parameters params = null;
-                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, HttpHeaders.EMPTY_HEADERS, reqdata);
-                    ApiResponse response = new ApiResponse();
+                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata);
                     try
                     {
-                        handler.execute(request, response);
+                        ApiResponse response = handler.execute(request);
+                        // TODO respond ffs
                     }
                     catch (Exception ignored)
                     {

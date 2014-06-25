@@ -41,7 +41,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 import static de.cubeisland.engine.core.webapi.MimeType.JSON;
-import static de.cubeisland.engine.core.webapi.RequestError.*;
+import static de.cubeisland.engine.core.webapi.RequestStatus.*;
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 import static io.netty.channel.ChannelFutureListener.CLOSE_ON_FAILURE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
@@ -98,20 +98,20 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         {
             if (!core.getModuleManager().getServiceManager().isImplemented(Permission.class))
             {
-                this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
                 return;
             }
             String user = params.get("user", String.class);
             String pass = params.get("pass", String.class);
             if (user == null || pass == null)
             {
-                this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
             User exactUser = core.getUserManager().findExactUser(user);
             if (exactUser == null || !exactUser.isPasswordSet() || !CubeEngine.getUserManager().checkPassword(exactUser, pass))
             {
-                this.error(ctx, RequestError.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
             authUser = exactUser;
@@ -180,12 +180,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         final RequestMethod method = RequestMethod.getByName(message.getMethod().name());
 
         ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, message.headers(), data);
-        ApiResponse apiResponse = new ApiResponse();
-
         try
         {
-            handler.execute(apiRequest, apiResponse);
-            this.success(context, apiResponse);
+            this.success(context, handler.execute(apiRequest));
         }
         catch (ApiRequestException e)
         {
@@ -202,12 +199,12 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         context.write(apiResponse.getContent()).addListener(CLOSE);
     }
 
-    private void error(ChannelHandlerContext context, RequestError error)
+    private void error(ChannelHandlerContext context, RequestStatus error)
     {
         this.error(context, error, null);
     }
 
-    private void error(ChannelHandlerContext context, RequestError error, ApiRequestException e)
+    private void error(ChannelHandlerContext context, RequestStatus error, ApiRequestException e)
     {
         Map<String, Object> data = new HashMap<>();
         data.put("id", error.getCode());

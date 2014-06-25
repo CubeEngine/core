@@ -23,7 +23,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
  * This enum contains the different API errors which get return by the server if
  * something goes wrong while processing the request
  */
-public enum RequestError
+public enum RequestStatus
 {
     UNKNOWN_ERROR(
         100,
@@ -68,7 +68,7 @@ public enum RequestError
     /**
      * initializes the RequestError with an error code and an HttpResponseStatus
      */
-    private RequestError(int errorCode, HttpResponseStatus responseStatus, String description)
+    private RequestStatus(int errorCode, HttpResponseStatus responseStatus, String description)
     {
         this.errorCode = errorCode;
         this.responseStatus = responseStatus;

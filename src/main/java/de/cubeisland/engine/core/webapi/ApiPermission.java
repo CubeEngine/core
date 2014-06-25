@@ -22,15 +22,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import de.cubeisland.engine.core.permission.PermDefault;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Action
+public @interface ApiPermission
 {
-    /**
-     * The route for this action
-     * if empty string route is generated from camelcased methodname
-     */
-    public String value() default "";
-
-    public boolean needsAuth() default true;
+    public String value();
+    public PermDefault permDefault() default PermDefault.OP;
 }

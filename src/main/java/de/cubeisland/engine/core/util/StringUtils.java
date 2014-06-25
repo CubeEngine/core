@@ -479,4 +479,28 @@ public final class StringUtils
     {
         String replace(MatchResult result);
     }
+
+    public static String deCamelCase(String camelCased, String delim)
+    {
+        final StringBuilder path = new StringBuilder();
+        boolean lastUpper = true;
+        for (char c : camelCased.toCharArray())
+        {
+            if (Character.isUpperCase(c))
+            {
+                c = Character.toLowerCase(c);
+                if (!lastUpper)
+                {
+                    lastUpper = true;
+                    path.append(delim);
+                }
+            }
+            else
+            {
+                lastUpper = false;
+            }
+            path.append(c);
+        }
+        return path.toString();
+    }
 }

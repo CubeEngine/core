@@ -17,9 +17,14 @@
  */
 package de.cubeisland.engine.core.webapi;
 
-import de.cubeisland.engine.core.module.Module;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface ApiHolder
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Value
 {
-    public Module getModule();
+    public String value() default "";
 }
