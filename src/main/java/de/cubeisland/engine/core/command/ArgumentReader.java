@@ -168,7 +168,7 @@ public abstract class ArgumentReader
         ArgumentReader reader = resolveReader(type);
         if (reader == null)
         {
-            throw new IllegalStateException("No reader found for " + type.getName() + "!");
+            throw new IllegalArgumentException("No reader found for " + type.getName() + "!");
         }
         return (T)reader.read(string, locale);
     }

@@ -38,6 +38,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 import static de.cubeisland.engine.core.webapi.MimeType.JSON;
@@ -122,14 +123,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             this.error(ctx, ROUTE_NOT_FOUND);
             return;
         }
-        if (path.charAt(0) == '/')
-        {
-            path = path.substring(1);
-        }
-        if (path.charAt(path.length() - 1) == '/')
-        {
-            path = path.substring(0, path.length() - 1);
-        }
+        path = normalizePath(path);
 
         // is this request intended to initialize a websockets connection?
         if (WEBSOCKET_ROUTE.equals(path))
@@ -150,10 +144,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             return;
         }
 
-        this.handleHttpRequest(ctx, message, path, params);
+        this.handleHttpRequest(ctx, message, path, params, authUser);
     }
 
-    private void handleHttpRequest(ChannelHandlerContext context, FullHttpRequest message, String path, Parameters params)
+    private void handleHttpRequest(ChannelHandlerContext context, FullHttpRequest message, String path, Parameters params, User authUser)
     {
         ApiHandler handler = this.server.getApiHandler(path);
         if (handler == null)
@@ -164,7 +158,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         JsonNode data = null;
         ByteBuf requestContent = message.content();
-        if (requestContent != Unpooled.EMPTY_BUFFER)
+        if (!requestContent.equals(Unpooled.EMPTY_BUFFER))
         {
             try
             {
@@ -179,7 +173,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         }
         final RequestMethod method = RequestMethod.getByName(message.getMethod().name());
 
-        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, message.headers(), data);
+        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, message.headers(), data,
+                                               authUser);
         try
         {
             this.success(context, handler.execute(apiRequest));
@@ -196,7 +191,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     private void success(ChannelHandlerContext context, ApiResponse apiResponse)
     {
-        context.write(apiResponse.getContent()).addListener(CLOSE);
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer(this.serialize(apiResponse.getContent()), this.UTF8));
+        response.headers().set(CONTENT_TYPE, JSON.toString());
+        context.writeAndFlush(response).addListener(CLOSE);
     }
 
     private void error(ChannelHandlerContext context, RequestStatus error)
@@ -223,7 +220,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         context.writeAndFlush(response).addListener(CLOSE).addListener(CLOSE_ON_FAILURE);
     }
 
-    public static String normalizeRoute(String route)
+    public static String normalizePath(String route)
     {
         route = route.trim().replace('\\', '/');
         if (route.charAt(0) == '/')

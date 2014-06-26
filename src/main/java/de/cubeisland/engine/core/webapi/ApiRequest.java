@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.cubeisland.engine.core.user.User;
 import gnu.trove.map.hash.THashMap;
 import io.netty.handler.codec.http.HttpHeaders;
 
@@ -35,17 +36,20 @@ public final class ApiRequest
     private final InetSocketAddress remoteAddress;
     private final RequestMethod method;
     private final Parameters urlParams;
+    private User authUser;
     private final Map<String, List<String>> headers;
     private final JsonNode data;
 
     /**
      * Initializes the ApiRequest with an Server instance
      */
-    public ApiRequest(final InetSocketAddress remoteAddress, RequestMethod method, Parameters params, HttpHeaders headers, JsonNode data)
+    public ApiRequest(final InetSocketAddress remoteAddress, RequestMethod method, Parameters params, HttpHeaders headers, JsonNode data,
+                      User authUser)
     {
         this.remoteAddress = remoteAddress;
         this.method = method;
         this.urlParams = params;
+        this.authUser = authUser;
         this.headers = new THashMap<>();
         this.data = data;
 
@@ -84,5 +88,10 @@ public final class ApiRequest
     public JsonNode getData()
     {
         return this.data;
+    }
+
+    public User getAuthUser()
+    {
+        return authUser;
     }
 }

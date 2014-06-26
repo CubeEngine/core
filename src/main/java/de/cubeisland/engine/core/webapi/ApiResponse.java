@@ -29,7 +29,7 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
  */
 public final class ApiResponse
 {
-    private final Map<String, List<String>> headers;
+    private final Map<String, List<String>> headers = new HashMap<>();
     private Object content;
 
     /**
@@ -37,8 +37,12 @@ public final class ApiResponse
      */
     public ApiResponse()
     {
-        this.headers = new HashMap<>();
-        this.content = null;
+        this(null);
+    }
+
+    public ApiResponse(Object content)
+    {
+        this.content = content;
     }
 
     /**

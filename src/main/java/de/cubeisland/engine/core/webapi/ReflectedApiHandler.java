@@ -19,11 +19,15 @@ package de.cubeisland.engine.core.webapi;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map.Entry;
 
+import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.user.User;
 
 public final class ReflectedApiHandler extends ApiHandler
 {
@@ -46,7 +50,14 @@ public final class ReflectedApiHandler extends ApiHandler
     {
         try
         {
-            return (ApiResponse)this.method.invoke(this.holder, request);
+            Parameters params = request.getParams();
+            List<Object> list = new ArrayList<>();
+            list.add(request);
+            for (Entry<String, Class> entry : this.getParameters().entrySet())
+            {
+                list.add(ArgumentReader.read(entry.getValue(), params.getString(entry.getKey()), Locale.getDefault()));
+            }
+            return (ApiResponse)this.method.invoke(this.holder, list.toArray(new Object[list.size()]));
         }
         catch (IllegalAccessException | InvocationTargetException e)
         {

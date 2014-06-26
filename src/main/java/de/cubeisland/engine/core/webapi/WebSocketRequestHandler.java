@@ -21,21 +21,19 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.webapi.sender.ApiCommandSender;
-import de.cubeisland.engine.core.webapi.sender.ApiServerSender;
-import de.cubeisland.engine.core.webapi.sender.ApiUser;
 import de.cubeisland.engine.logging.Log;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
@@ -44,7 +42,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
-import static de.cubeisland.engine.core.webapi.HttpRequestHandler.normalizeRoute;
+import static de.cubeisland.engine.core.webapi.HttpRequestHandler.normalizePath;
 import static de.cubeisland.engine.core.webapi.RequestMethod.GET;
 import static de.cubeisland.engine.core.webapi.RequestMethod.getByName;
 import static io.netty.handler.codec.http.HttpHeaders.EMPTY_HEADERS;
@@ -59,14 +57,14 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
-    private ApiCommandSender cmdSender;
+    private User authUser;
 
     public WebSocketRequestHandler(Core core, ApiServer server, ObjectMapper mapper, User authUser)
     {
         this.core = core;
         this.server = server;
         this.objectMapper = mapper;
-        this.cmdSender = authUser == null ? new ApiServerSender(core, mapper) : new ApiUser(core, authUser, mapper);
+        this.authUser = authUser;
         this.log = server.getLog();
     }
 
@@ -124,66 +122,72 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
         }
     }
 
+    public ObjectNode buildMessage(JsonNode msgid)
+    {
+        ObjectNode response = objectMapper.createObjectNode();
+        response.put("msgid", msgid);
+        return response;
+    }
+
     private void handleTextWebSocketFrame(final ChannelHandlerContext ctx, TextWebSocketFrame frame)
     {
         // TODO log exceptions!!!
+        JsonNode jsonNode;
         try
         {
-            JsonNode jsonNode = objectMapper.readTree(frame.text());
-            JsonNode command = jsonNode.get("command");
-            if (command == null)
-            {
-                ctx.writeAndFlush(new TextWebSocketFrame("No command!"));
-                return;
-            }
-            final JsonNode data = jsonNode.get("data");
-            switch (command.asText())
-            {
-                case "request":
-                    String route = normalizeRoute(jsonNode.get("route").asText());
-                    JsonNode reqMethod = data.get("requestmethod");
-                    RequestMethod method = reqMethod != null ? getByName(reqMethod.asText()) : GET;
-                    JsonNode reqdata = data.get("data");
-
-                    ApiHandler handler = this.server.getApiHandler(route);
-                    Parameters params = null;
-                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata);
-                    try
-                    {
-                        ApiResponse response = handler.execute(request);
-                        // TODO respond ffs
-                    }
-                    catch (Exception ignored)
-                    {
-                    }
-                    break;
-                case "subscribe":
-                    this.server.subscribe(data.asText().trim(), this);
-                    break;
-                case "unsubscribe":
-                    this.server.unsubscribe(data.asText().trim(), this);
-                    break;
-                case "command":
-                    core.getTaskManager().callSync(new Callable<Object>()
-                    {
-                        @Override
-                        public Object call() throws Exception
-                        {
-                            core.getCommandManager().runCommand(cmdSender, data.asText());
-                            cmdSender.flush(ctx);
-                            return null;
-                        }
-                    });
-
-                    break;
-                default:
-                    ctx.writeAndFlush(command + " -- " + data.asText());
-            }
+            jsonNode = objectMapper.readTree(frame.text());
         }
         catch (IOException e)
         {
             this.log.info("the frame data was no valid json!");
-            ctx.writeAndFlush(new TextWebSocketFrame("Invalid json!"));
+            return;
+        }
+        JsonNode action = jsonNode.get("action");
+        JsonNode msgid = jsonNode.get("msgid");
+        if (action == null)
+        {
+            if (msgid != null)
+            {
+                ctx.writeAndFlush(buildMessage(msgid).put("response", "No action"));
+            }
+            return;
+        }
+        JsonNode data = jsonNode.get("data");
+        switch (action.asText())
+        {
+            case "http":
+                QueryStringDecoder qsDecoder = new QueryStringDecoder(normalizePath(data.get("uri").asText()), this.UTF8, true, 100);
+
+                JsonNode reqMethod = data.get("method");
+                RequestMethod method = reqMethod != null ? getByName(reqMethod.asText()) : GET;
+                JsonNode reqdata = data.get("body");
+                ApiHandler handler = this.server.getApiHandler(normalizePath(qsDecoder.path()));
+                if (handler == null)
+                {
+                    if (msgid != null)
+                    {
+                        ctx.writeAndFlush(buildMessage(msgid).put("response", "Unknown route"));
+                    }
+                    return;
+                }
+                Parameters params = new Parameters(qsDecoder.parameters());
+                ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
+                ApiResponse response = handler.execute(request);
+                if (msgid != null)
+                {
+                    ObjectNode node = buildMessage(msgid);
+                    node.put("response", objectMapper.valueToTree(response.getContent()));
+                    ctx.writeAndFlush(node);
+                }
+                break;
+            case "subscribe":
+                this.server.subscribe(data.asText().trim(), this);
+                break;
+            case "unsubscribe":
+                this.server.unsubscribe(data.asText().trim(), this);
+                break;
+            default:
+                ctx.writeAndFlush(action.asText() + " -- " + data.asText());
         }
     }
 

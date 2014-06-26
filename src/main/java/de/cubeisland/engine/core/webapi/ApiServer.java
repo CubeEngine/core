@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.webapi;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -225,7 +225,7 @@ public class ApiServer
                 {
                     route = StringUtils.deCamelCase(method.getName(), "/");
                 }
-                route = HttpRequestHandler.normalizeRoute(route);
+                route = HttpRequestHandler.normalizePath(route);
                 de.cubeisland.engine.core.permission.Permission perm = null;
                 if (aAction.needsAuth())
                 {
@@ -248,16 +248,25 @@ public class ApiServer
                     }
                 }
                 LinkedHashMap<String, Class> params = new LinkedHashMap<>();
-                Parameter[] parameters = method.getParameters();
-                for (int i = 1; i < parameters.length; i++)
+                Class<?>[] types = method.getParameterTypes();
+                Annotation[][] paramAnnotations = method.getParameterAnnotations();
+                for (int i = 1; i < types.length; i++)
                 {
-                    Parameter parameter = parameters[i];
-                    Value val = parameter.getAnnotation(Value.class);
+                    Class<?> type = types[i];
+                    Value val = null;
+                    for (Annotation annotation : paramAnnotations[i])
+                    {
+                        if (annotation instanceof Value)
+                        {
+                            val = (Value)annotation;
+                            break;
+                        }
+                    }
                     if (val == null)
                     {
                         throw new IllegalArgumentException("Missing Value Annotation for Additional Parameters");
                     }
-                    if (params.put(val.value(), parameter.getType()) != null)
+                    if (params.put(val.value(), type) != null)
                     {
                         throw new IllegalArgumentException("Duplicate value in Value Annotation");
                     }

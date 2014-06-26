@@ -27,12 +27,12 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import io.netty.channel.ChannelHandlerContext;
 
 public abstract class ApiCommandSender implements CommandSender
 {
@@ -144,9 +144,13 @@ public abstract class ApiCommandSender implements CommandSender
         return core.getI18n().translateN(getLocale(), type, n, singular, plural, params);
     }
 
-    public void flush(ChannelHandlerContext ctx)
+    /**
+     * Clears the accumulated messages and returns them as JsonNode
+     */
+    public JsonNode flush()
     {
-        ctx.writeAndFlush(mapper.valueToTree(this.messages));
+        JsonNode jsonNode = mapper.valueToTree(this.messages);
         messages.clear();
+        return jsonNode;
     }
 }
