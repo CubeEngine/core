@@ -684,18 +684,10 @@ public class ApiServer
         Iterator<Map.Entry<String, Set<WebSocketRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
 
         Set<WebSocketRequestHandler> handlers;
-        Iterator<WebSocketRequestHandler> handlerIter;
         while (iter.hasNext())
         {
             handlers = iter.next().getValue();
-            handlerIter = handlers.iterator();
-            while (handlerIter.hasNext())
-            {
-                if (handlerIter.next() == handler)
-                {
-                    handlerIter.remove();
-                }
-            }
+            handlers.remove(handler);
             if (handlers.isEmpty())
             {
                 iter.remove();
