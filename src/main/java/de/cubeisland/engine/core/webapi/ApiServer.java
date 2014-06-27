@@ -24,19 +24,17 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
@@ -54,6 +52,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.lang.Validate;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static java.util.Locale.ENGLISH;
 
 /**
  * This class represents the API server and provides methods to configure and control it
@@ -82,7 +81,7 @@ public class ApiServer
     private final Set<InetAddress> authorizedList = new CopyOnWriteArraySet<>();
 
     private final ConcurrentMap<String, ApiHandler> handlers = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, List<WebSocketRequestHandler>> subscriptions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Set<WebSocketRequestHandler>> subscriptions = new ConcurrentHashMap<>();
     private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
 
 
@@ -643,12 +642,12 @@ public class ApiServer
     {
         expectNotNull(event, "The event name must not be null!");
         expectNotNull(requestHandler, "The request handler must not be null!");
-        event = event.toLowerCase(Locale.ENGLISH);
+        event = event.toLowerCase(ENGLISH);
 
-        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        Set<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers == null)
         {
-            this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArrayList<>());
+            this.subscriptions.put(event, subscribedHandlers = new CopyOnWriteArraySet<>());
         }
         subscribedHandlers.add(requestHandler);
     }
@@ -657,9 +656,9 @@ public class ApiServer
     {
         expectNotNull(event, "The event name must not be null!");
         expectNotNull(requestHandler, "The request handler must not be null!");
-        event = event.toLowerCase(Locale.ENGLISH);
+        event = event.toLowerCase(ENGLISH);
 
-        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        Set<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers != null)
         {
             subscribedHandlers.remove(requestHandler);
@@ -673,7 +672,7 @@ public class ApiServer
     public void unsubscribe(String event)
     {
         expectNotNull(event, "The event name must not be null!");
-        event = event.toLowerCase(Locale.ENGLISH);
+        event = event.toLowerCase(ENGLISH);
 
         this.subscriptions.remove(event);
     }
@@ -682,9 +681,9 @@ public class ApiServer
     {
         expectNotNull(handler, "The event name must not be null!");
 
-        Iterator<Map.Entry<String, List<WebSocketRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
+        Iterator<Map.Entry<String, Set<WebSocketRequestHandler>>> iter = this.subscriptions.entrySet().iterator();
 
-        List<WebSocketRequestHandler> handlers;
+        Set<WebSocketRequestHandler> handlers;
         Iterator<WebSocketRequestHandler> handlerIter;
         while (iter.hasNext())
         {
@@ -704,12 +703,12 @@ public class ApiServer
         }
     }
 
-    public void fireEvent(String event, Map<String, Object> data)
+    public void fireEvent(String event, ObjectNode data)
     {
         expectNotNull(event, "The event name must not be null!");
-        event = event.toLowerCase(Locale.ENGLISH);
+        event = event.toLowerCase(ENGLISH);
 
-        List<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
+        Set<WebSocketRequestHandler> subscribedHandlers = this.subscriptions.get(event);
         if (subscribedHandlers != null)
         {
             for (WebSocketRequestHandler handler : subscribedHandlers)

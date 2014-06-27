@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.webapi;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,6 +57,8 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
     private User authUser;
+
+    private ChannelHandlerContext last;
 
     public WebSocketRequestHandler(Core core, ApiServer server, ObjectMapper mapper, User authUser)
     {
@@ -99,6 +100,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception
     {
+        this.last = ctx;
         if (frame instanceof CloseWebSocketFrame)
         {
             this.log.debug("recevied close frame");
@@ -122,13 +124,6 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
         }
     }
 
-    public ObjectNode buildMessage(JsonNode msgid)
-    {
-        ObjectNode response = objectMapper.createObjectNode();
-        response.put("msgid", msgid);
-        return response;
-    }
-
     private void handleTextWebSocketFrame(final ChannelHandlerContext ctx, TextWebSocketFrame frame)
     {
         // TODO log exceptions!!!
@@ -144,53 +139,57 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
         }
         JsonNode action = jsonNode.get("action");
         JsonNode msgid = jsonNode.get("msgid");
+        ObjectNode responseNode = objectMapper.createObjectNode();
         if (action == null)
         {
-            if (msgid != null)
-            {
-                ctx.writeAndFlush(buildMessage(msgid).put("response", "No action"));
-            }
-            return;
+            responseNode.put("response", "No action");
         }
-        JsonNode data = jsonNode.get("data");
-        switch (action.asText())
+        else
         {
-            case "http":
-                QueryStringDecoder qsDecoder = new QueryStringDecoder(normalizePath(data.get("uri").asText()), this.UTF8, true, 100);
+            JsonNode data = jsonNode.get("data");
+            switch (action.asText())
+            {
+                case "http":
+                    QueryStringDecoder qsDecoder = new QueryStringDecoder(normalizePath(data.get("uri").asText()), this.UTF8, true, 100);
 
-                JsonNode reqMethod = data.get("method");
-                RequestMethod method = reqMethod != null ? getByName(reqMethod.asText()) : GET;
-                JsonNode reqdata = data.get("body");
-                ApiHandler handler = this.server.getApiHandler(normalizePath(qsDecoder.path()));
-                if (handler == null)
-                {
+                    JsonNode reqMethod = data.get("method");
+                    RequestMethod method = reqMethod != null ? getByName(reqMethod.asText()) : GET;
+                    JsonNode reqdata = data.get("body");
+                    ApiHandler handler = this.server.getApiHandler(normalizePath(qsDecoder.path()));
+                    if (handler == null)
+                    {
+                        responseNode.put("response", "Unknown route");
+                        break;
+                    }
+                    Parameters params = new Parameters(qsDecoder.parameters());
+                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
+                    ApiResponse response = handler.execute(request);
                     if (msgid != null)
                     {
-                        ctx.writeAndFlush(buildMessage(msgid).put("response", "Unknown route"));
+                        responseNode.put("response", objectMapper.valueToTree(response.getContent()));
                     }
-                    return;
-                }
-                Parameters params = new Parameters(qsDecoder.parameters());
-                ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
-                ApiResponse response = handler.execute(request);
-                if (msgid != null)
-                {
-                    ObjectNode node = buildMessage(msgid);
-                    node.put("response", objectMapper.valueToTree(response.getContent()));
-                    ctx.writeAndFlush(node);
-                }
-                break;
-            case "subscribe":
-                this.server.subscribe(data.asText().trim(), this);
-                break;
-            case "unsubscribe":
-                this.server.unsubscribe(data.asText().trim(), this);
-                break;
-            default:
-                ctx.writeAndFlush(action.asText() + " -- " + data.asText());
+                    break;
+                case "subscribe":
+                    this.server.subscribe(data.asText().trim(), this);
+                    break;
+                case "unsubscribe":
+                    this.server.unsubscribe(data.asText().trim(), this);
+                    break;
+                default:
+                    responseNode.put("response", action.asText() + " -- " + data.asText());
+            }
+
+        }
+        if (msgid != null && responseNode.elements().hasNext())
+        {
+            responseNode.put("msgid", msgid);
+            ctx.writeAndFlush(responseNode);
         }
     }
 
-    public void handleEvent(String event, Map<String, Object> data)
-    {}
+    public void handleEvent(String event, ObjectNode data)
+    {
+        data.put("event", event);
+        this.last.writeAndFlush(data); // TODO threadsafe ???
+    }
 }

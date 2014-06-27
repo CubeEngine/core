@@ -85,6 +85,7 @@ import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.core.webapi.ApiConfig;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.webapi.CommandController;
+import de.cubeisland.engine.core.webapi.ConsoleLogEvent;
 import de.cubeisland.engine.core.webapi.InetAddressConverter;
 import de.cubeisland.engine.core.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.core.world.ConfigWorld;
@@ -94,6 +95,8 @@ import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -221,6 +224,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             try
             {
                 this.apiServer.start();
+                ConsoleLogEvent event = new ConsoleLogEvent(apiServer);
+                event.start();
+                ((Logger)LogManager.getLogger()).addAppender(event);
             }
             catch (ApiStartupException ex)
             {

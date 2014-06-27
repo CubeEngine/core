@@ -43,6 +43,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 
 import static de.cubeisland.engine.core.webapi.MimeType.JSON;
 import static de.cubeisland.engine.core.webapi.RequestStatus.*;
+import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 import static io.netty.channel.ChannelFutureListener.CLOSE_ON_FAILURE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
@@ -158,7 +159,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         JsonNode data = null;
         ByteBuf requestContent = message.content();
-        if (!requestContent.equals(Unpooled.EMPTY_BUFFER))
+        if (!requestContent.equals(EMPTY_BUFFER))
         {
             try
             {
