@@ -224,6 +224,7 @@ public class ApiServer
                 {
                     route = StringUtils.deCamelCase(method.getName(), "/");
                 }
+                route = owner.getId() + "/" + route;
                 route = HttpRequestHandler.normalizePath(route);
                 de.cubeisland.engine.core.permission.Permission perm = null;
                 if (aAction.needsAuth())

@@ -163,7 +163,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         {
             try
             {
-                data = this.objectMapper.readTree(requestContent.array());
+                byte[] bytes = new byte[requestContent.readableBytes()];
+                requestContent.readBytes(bytes);
+                data = this.objectMapper.readTree(bytes);
             }
             catch (Exception ex)
             {

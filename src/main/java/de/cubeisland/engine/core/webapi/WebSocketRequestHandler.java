@@ -190,6 +190,6 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     public void handleEvent(String event, ObjectNode data)
     {
         data.put("event", event);
-        this.last.writeAndFlush(data); // TODO threadsafe ???
+        this.last.writeAndFlush(data);
     }
 }
