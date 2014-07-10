@@ -25,13 +25,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R3.DedicatedPlayerList;
-import net.minecraft.server.v1_7_R3.GameProfileBanEntry;
-import net.minecraft.server.v1_7_R3.GameProfileBanList;
-import net.minecraft.server.v1_7_R3.IpBanEntry;
-import net.minecraft.server.v1_7_R3.IpBanList;
-import net.minecraft.server.v1_7_R3.JsonListEntry;
-import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import net.minecraft.server.v1_7_R4.DedicatedPlayerList;
+import net.minecraft.server.v1_7_R4.GameProfileBanEntry;
+import net.minecraft.server.v1_7_R4.GameProfileBanList;
+import net.minecraft.server.v1_7_R4.IpBanEntry;
+import net.minecraft.server.v1_7_R4.IpBanList;
+import net.minecraft.server.v1_7_R4.JsonListEntry;
+import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 
 import org.bukkit.Bukkit;
 
@@ -89,7 +89,7 @@ public class BukkitBanManager implements BanManager
         GameProfileBanEntry entry = (GameProfileBanEntry)this.profileBan.get(new GameProfile(uuid, null));
         if (entry != null)
         {
-            return new UserBan(((GameProfile)entry.f()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            return new UserBan(((GameProfile)entry.getKey()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
         }
         return null;
     }
@@ -183,7 +183,7 @@ public class BukkitBanManager implements BanManager
         for (JsonListEntry e : this.profileBan.getValues())
         {
             GameProfileBanEntry entry = (GameProfileBanEntry)e;
-            bans.add(new UserBan(((GameProfile)entry.f()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
+            bans.add(new UserBan(((GameProfile)entry.getKey()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
         }
         return bans;
     }

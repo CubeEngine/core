@@ -21,21 +21,21 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R3.NBTBase;
-import net.minecraft.server.v1_7_R3.NBTTagByte;
-import net.minecraft.server.v1_7_R3.NBTTagByteArray;
-import net.minecraft.server.v1_7_R3.NBTTagCompound;
-import net.minecraft.server.v1_7_R3.NBTTagDouble;
-import net.minecraft.server.v1_7_R3.NBTTagEnd;
-import net.minecraft.server.v1_7_R3.NBTTagFloat;
-import net.minecraft.server.v1_7_R3.NBTTagInt;
-import net.minecraft.server.v1_7_R3.NBTTagIntArray;
-import net.minecraft.server.v1_7_R3.NBTTagList;
-import net.minecraft.server.v1_7_R3.NBTTagLong;
-import net.minecraft.server.v1_7_R3.NBTTagShort;
-import net.minecraft.server.v1_7_R3.NBTTagString;
-import net.minecraft.server.v1_7_R3.TileEntity;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import net.minecraft.server.v1_7_R4.NBTBase;
+import net.minecraft.server.v1_7_R4.NBTTagByte;
+import net.minecraft.server.v1_7_R4.NBTTagByteArray;
+import net.minecraft.server.v1_7_R4.NBTTagCompound;
+import net.minecraft.server.v1_7_R4.NBTTagDouble;
+import net.minecraft.server.v1_7_R4.NBTTagEnd;
+import net.minecraft.server.v1_7_R4.NBTTagFloat;
+import net.minecraft.server.v1_7_R4.NBTTagInt;
+import net.minecraft.server.v1_7_R4.NBTTagIntArray;
+import net.minecraft.server.v1_7_R4.NBTTagList;
+import net.minecraft.server.v1_7_R4.NBTTagLong;
+import net.minecraft.server.v1_7_R4.NBTTagShort;
+import net.minecraft.server.v1_7_R4.NBTTagString;
+import net.minecraft.server.v1_7_R4.TileEntity;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 
 import org.bukkit.Location;
 
@@ -151,7 +151,7 @@ public class NBTUtils
                     list.addNode(listNode);
                     break;
                 case 8:
-                    list.addNode(StringNode.of(((NBTTagList)nbtBase).f(i)));
+                    list.addNode(StringNode.of(((NBTTagList)nbtBase).getString(i)));
                     break;
                 case 9:
                     //return new net.minecraft.server.NBTTagList();

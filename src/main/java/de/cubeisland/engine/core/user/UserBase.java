@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R3.EntityPlayer;
-import net.minecraft.server.v1_7_R3.NBTTagCompound;
-import net.minecraft.server.v1_7_R3.NBTTagDouble;
-import net.minecraft.server.v1_7_R3.NBTTagFloat;
-import net.minecraft.server.v1_7_R3.NBTTagList;
-import net.minecraft.server.v1_7_R3.PlayerInteractManager;
-import net.minecraft.server.v1_7_R3.WorldNBTStorage;
-import net.minecraft.server.v1_7_R3.WorldServer;
-import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import net.minecraft.server.v1_7_R4.EntityPlayer;
+import net.minecraft.server.v1_7_R4.NBTTagCompound;
+import net.minecraft.server.v1_7_R4.NBTTagDouble;
+import net.minecraft.server.v1_7_R4.NBTTagFloat;
+import net.minecraft.server.v1_7_R4.NBTTagList;
+import net.minecraft.server.v1_7_R4.PlayerInteractManager;
+import net.minecraft.server.v1_7_R4.WorldNBTStorage;
+import net.minecraft.server.v1_7_R4.WorldServer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
