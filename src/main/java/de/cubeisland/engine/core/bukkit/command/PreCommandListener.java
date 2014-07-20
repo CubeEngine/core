@@ -33,7 +33,6 @@ import org.bukkit.event.server.ServerCommandEvent;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 import static de.cubeisland.engine.core.util.StringUtils.implode;

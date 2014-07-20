@@ -20,7 +20,6 @@ package de.cubeisland.engine.core;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.ArgumentReader;

@@ -116,10 +116,8 @@ public class FreezeDetection
             if (System.currentTimeMillis() - lastHeartbeat > freezeThreshold && !freezeNotified)
             {
                 freezeNotified = true;
-                Iterator<Runnable> it = listeners.iterator();
-                while (it.hasNext())
-                {
-                    it.next().run();
+                for (Runnable listener : listeners) {
+                    listener.run();
                 }
             }
         }

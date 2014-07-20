@@ -129,7 +129,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         // is this request intended to initialize a websockets connection?
         if (WEBSOCKET_ROUTE.equals(path))
         {
-            WebSocketRequestHandler handler = null;
+            WebSocketRequestHandler handler;
             if (!(ctx.pipeline().last() instanceof WebSocketRequestHandler))
             {
                 handler = new WebSocketRequestHandler(core, server, objectMapper, authUser);

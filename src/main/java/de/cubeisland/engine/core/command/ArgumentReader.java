@@ -118,16 +118,10 @@ public abstract class ArgumentReader
         ArgumentReader reader = getReader(type);
         if (reader == null)
         {
-            Class<?> next;
-            Iterator<Class<?>> it = READERS.keySet().iterator();
-            while (it.hasNext())
-            {
-                next = it.next();
-                if (type.isAssignableFrom(next))
-                {
+            for (Class<?> next : READERS.keySet()) {
+                if (type.isAssignableFrom(next)) {
                     reader = READERS.get(next);
-                    if (reader != null)
-                    {
+                    if (reader != null) {
                         registerReader(reader, type);
                         break;
                     }

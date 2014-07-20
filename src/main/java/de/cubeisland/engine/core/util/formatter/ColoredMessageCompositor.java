@@ -36,7 +36,7 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
     public ColoredMessageCompositor(Core core)
     {
         Reflector configFactory = core.getConfigFactory();
-        configFactory.getDefaultConverterManager().registerConverter(MessageType.class, new MessageTypeConverter());;
+        configFactory.getDefaultConverterManager().registerConverter(MessageType.class, new MessageTypeConverter());
         configFactory.getDefaultConverterManager().registerConverter(ChatFormat.class, new ChatFormatConverter());
 
         this.colorConfiguration = core.getConfigFactory().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());

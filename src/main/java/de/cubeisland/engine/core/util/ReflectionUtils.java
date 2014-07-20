@@ -20,9 +20,6 @@ package de.cubeisland.engine.core.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import org.bukkit.command.PluginCommand;
-import org.bukkit.plugin.Plugin;
-
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
 public class ReflectionUtils

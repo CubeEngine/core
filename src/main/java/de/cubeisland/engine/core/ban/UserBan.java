@@ -55,6 +55,6 @@ public class UserBan extends Ban<String>
     public String toString()
     {
         String name = Bukkit.getOfflinePlayer(target).getName();
-        return DARK_GREEN + (name == null ? "Unknown" : name) + YELLOW + "(" + GOLD +  this.getTarget().toString() + YELLOW + ")";
+        return DARK_GREEN + (name == null ? "Unknown" : name) + YELLOW + "(" + GOLD +  this.getTarget() + YELLOW + ")";
     }
 }

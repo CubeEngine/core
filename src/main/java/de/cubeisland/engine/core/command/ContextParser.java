@@ -25,7 +25,6 @@ import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 
 import static de.cubeisland.engine.core.command.ContextParser.Type.*;
-import static de.cubeisland.engine.core.command.ContextParser.Type.INDEXED_OR_PARAM;
 import static java.util.Locale.ENGLISH;
 
 public class ContextParser extends ContextDescriptor
