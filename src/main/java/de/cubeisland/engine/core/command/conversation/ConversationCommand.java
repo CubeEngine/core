@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.HelpCommand;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.module.Module;

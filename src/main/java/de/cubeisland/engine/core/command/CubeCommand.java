@@ -46,15 +46,14 @@ import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.command.ContextParser.Type.*;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
-import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static java.util.Locale.ENGLISH;
 
 /**
  * This class is the base for all of our commands
@@ -63,7 +62,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
  */
 public abstract class CubeCommand
 {
-    private final Module module;
+    final Module module;
     private final String name;
     private String label;
     private final Set<String> aliases;
@@ -174,13 +173,13 @@ public abstract class CubeCommand
             cmds.push(cmd.getName());
         }
 
-        Permission perm = this.getModule().getBasePermission().childWildcard("command");
+        Permission cmdPerm = this.getModule().getBasePermission().childWildcard("command");
 
         while (!cmds.isEmpty())
         {
-            perm = perm.childWildcard(cmds.pop());
+            cmdPerm = cmdPerm.childWildcard(cmds.pop());
         }
-        this.permission.setParent(perm);
+        this.permission.setParent(cmdPerm);
         this.module.getCore().getPermissionManager().registerPermission(module, this.permission);
         this.permRegistered = true;
     }
@@ -287,101 +286,8 @@ public abstract class CubeCommand
 
     public final String getUsage(Locale locale, Permissible permissible)
     {
-        return this.getUsage0(locale, permissible);
+        return UsageGenerator.generateUsage(this.getContextFactory(), locale, permissible);
     }
-
-    protected String getUsage0(Locale locale, Permissible permissible)
-    {
-        StringBuilder sb = new StringBuilder();
-        int inGroup = 0;
-        for (CommandParameterIndexed indexedParam : this.getContextFactory().getIndexedParameters())
-        {
-            if (indexedParam.getCount() == 1 || indexedParam.getCount() < 0)
-            {
-                sb.append(convertLabel(indexedParam.isGroupRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                sb.append(' ');
-                inGroup = 0;
-            }
-            else if (indexedParam.getCount() > 1)
-            {
-                sb.append(indexedParam.isGroupRequired() ? '<' : '[');
-                sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                sb.append(' ');
-                inGroup = indexedParam.getCount() - 1;
-            }
-            else if (indexedParam.getCount() == 0)
-            {
-                sb.append(convertLabel(indexedParam.isRequired(), StringUtils.implode("|", convertLabels(indexedParam))));
-                inGroup--;
-                if (inGroup == 0)
-                {
-                    sb.append(indexedParam.isGroupRequired() ? '>' : ']');
-                }
-                sb.append(' ');
-            }
-        }
-        for (CommandParameter param : this.getContextFactory().getParameters())
-        {
-            if (param.checkPermission(permissible))
-            {
-                if (param.isRequired())
-                {
-                    sb.append('<').append(param.getName()).append(" <").append(param.getLabel()).append(">> ");
-                }
-                else
-                {
-                    sb.append('[').append(param.getName()).append(" <").append(param.getLabel()).append(">] ");
-                }
-            }
-        }
-        for (CommandFlag flag : this.getContextFactory().getFlags())
-        {
-            if (flag.checkPermission(permissible))
-            {
-                sb.append("[-").append(flag.getLongName()).append("] ");
-            }
-        }
-        return sb.toString().trim();
-    }
-
-    private String[] convertLabels(CommandParameterIndexed indexedParam)
-    {
-        String[] labels = indexedParam.getLabels().clone();
-        String[] rawLabels = indexedParam.getLabels();
-        for (int i = 0; i < rawLabels.length; i++)
-        {
-            if (rawLabels.length == 1)
-            {
-                labels[i] = convertLabel(true, "#" + rawLabels[i]);
-            }
-            else
-            {
-                labels[i] = convertLabel(true, rawLabels[i]);
-            }
-        }
-        return labels;
-    }
-
-    private String convertLabel(boolean req, String label)
-    {
-        if (label.startsWith("!"))
-        {
-            return label.substring(1);
-        }
-        else if (label.startsWith("#"))
-        {
-            return label.substring(1);
-        }
-        else if (req)
-        {
-            return "<" + label + ">";
-        }
-        else
-        {
-            return "[" + label + "]";
-        }
-    }
-
 
     /**
      * This overload returns the usage translated for the given CommandSender
@@ -434,12 +340,7 @@ public abstract class CubeCommand
      */
     public CubeCommand getChild(String name)
     {
-        if (name == null)
-        {
-            return null;
-        }
-
-        return this.children.get(name.toLowerCase(Locale.ENGLISH));
+        return name == null ? null : this.children.get(name.toLowerCase(ENGLISH));
     }
 
     /**
@@ -465,7 +366,7 @@ public abstract class CubeCommand
         command.parent = this;
         for (String alias : command.getAliases())
         {
-            alias = alias.toLowerCase(Locale.ENGLISH);
+            alias = alias.toLowerCase(ENGLISH);
             this.children.put(alias, command);
             this.childrenAliases.add(alias);
         }
@@ -653,62 +554,6 @@ public abstract class CubeCommand
      * @param context The CubeContext containing all the necessary information
      */
     public abstract CommandResult run(CubeContext context);
-
-    public static class HelpCommand extends CubeCommand
-    {
-        protected CubeCommand target;
-
-        public HelpCommand(CubeCommand target)
-        {
-            super(target.module, "?", "Displays Help", new CubeContextFactory());
-            this.target = target;
-        }
-
-        @Override
-        public CubeContextFactory getContextFactory()
-        {
-            return target.getContextFactory();
-        }
-
-        @Override
-        public void checkContext(CubeContext ctx) throws CommandException
-        {
-            if (this.target.isCheckperm() && !this.target.isAuthorized(ctx.getSender()))
-            {
-                throw new PermissionDeniedException(this.target.getPermission());
-            }
-        }
-
-        @Override
-        public CommandResult run(CubeContext context)
-        {
-            context.sendTranslated(NONE, "{text:Description:color=GREY}: {input}", target.getDescription());
-            context.sendTranslated(NONE, "{text:Usage:color=GREY}: {input}", target.getUsage(context));
-
-            if (this.hasChildren())
-            {
-                context.sendMessage(" ");
-                context.sendTranslated(NEUTRAL, "The following subcommands are available:");
-                context.sendMessage(" ");
-
-                final CommandSender sender = context.getSender();
-                for (CubeCommand command : target.getChildren())
-                {
-                    if (command == this)
-                    {
-                        continue;
-                    }
-                    if (!command.isCheckperm() || command.isAuthorized(sender))
-                    {
-                        context.sendMessage(YELLOW + command.getName() + WHITE + ": " + GREY + sender.getTranslation(NONE, command.getDescription()));
-                    }
-                }
-            }
-            context.sendMessage(" ");
-            context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + target.getModule().getId() + "/" + target.implodeCommandParentNames("/"));
-            return null;
-        }
-    }
 
     public boolean isOnlyIngame()
     {
