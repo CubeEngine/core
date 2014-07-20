@@ -673,7 +673,10 @@ public abstract class CubeCommand
         @Override
         public void checkContext(CubeContext ctx) throws CommandException
         {
-            // Help is always correct :)
+            if (this.target.isCheckperm() && !this.target.isAuthorized(ctx.getSender()))
+            {
+                throw new PermissionDeniedException(this.target.getPermission());
+            }
         }
 
         @Override
@@ -724,6 +727,11 @@ public abstract class CubeCommand
 
     public void checkContext(CubeContext ctx) throws CommandException
     {
+        if (ctx.getCommand().isCheckperm() && !ctx.getCommand().isAuthorized(ctx.getSender()))
+        {
+            throw new PermissionDeniedException(ctx.getCommand().getPermission());
+        }
+
         ArgBounds bounds = ctx.getCommand().getContextFactory().getArgBounds();
         if (ctx.getIndexedCount() < bounds.getMin())
         {
@@ -732,10 +740,6 @@ public abstract class CubeCommand
         if (bounds.getMax() > ArgBounds.NO_MAX && ctx.getIndexedCount() > bounds.getMax())
         {
             throw new TooManyArgumentsException(ctx.getSender());
-        }
-        if (ctx.getCommand().isCheckperm() && !ctx.getCommand().isAuthorized(ctx.getSender()))
-        {
-            throw new PermissionDeniedException(ctx.getCommand().getPermission());
         }
         if (ctx.getCommand().isOnlyIngame() && !(ctx.isSender(User.class)))
         {

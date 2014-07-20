@@ -37,7 +37,7 @@ public class ContextReader extends ContextParser
         {
             if (ctx.rawIndexed.get(ctx.rawIndexed.size() - 1).isEmpty())
             {
-                // remove last if empty (only needed for tabcompletion)
+                // remove last if empty (only needed for tab completion)
                 ctx.rawIndexed.remove(ctx.rawIndexed.size() - 1);
                 ctx.indexedCount--;
             }
