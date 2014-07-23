@@ -17,29 +17,42 @@
  */
 package de.cubeisland.engine.core.command.conversation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.CubeContext;
 import de.cubeisland.engine.core.command.HelpCommand;
+import de.cubeisland.engine.core.command.exception.IncorrectArgumentException;
+import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.StringUtils;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.TLongHashSet;
 
+import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
 public abstract class ConversationCommand extends CubeCommand implements Listener
@@ -72,14 +85,22 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             user.sendMessage(ChatFormat.PURPLE + "[" + ChatFormat.WHITE + "ChatCommand" + ChatFormat.PURPLE + "] " + ChatFormat.WHITE + event.getMessage());
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
-            if (event.getMessage().startsWith("?"))
+            CubeContext context = null;
+            try
             {
-                this.getChild("?").run(context);
+                context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
+                if (event.getMessage().startsWith("?"))
+                {
+                    this.getChild("?").run(context);
+                }
+                else
+                {
+                    this.run(context);
+                }
             }
-            else
+            catch (Exception e)
             {
-                this.run(context);
+                this.handleCommandException(context, user, e);
             }
             event.setCancelled(true);
         }
@@ -225,6 +246,109 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             }
             context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, params));
             return null;
+        }
+    }
+
+    // TODO REMOVE DUPLICATED CODE (CubeCommandExecuter)
+    private void handleCommandException(final CubeContext context, final CommandSender sender, Throwable t)
+    {
+        if (!CubeEngine.isMainThread())
+        {
+            final Throwable tmp = t;
+            sender.getCore().getTaskManager().callSync(new Callable<Void>()
+            {
+                @Override
+                public Void call() throws Exception
+                {
+                    handleCommandException(context, sender, tmp);
+                    return null;
+                }
+            });
+            return;
+        }
+        if (t instanceof InvocationTargetException || t instanceof ExecutionException)
+        {
+            t = t.getCause();
+        }
+        if (t instanceof MissingParameterException)
+        {
+            if (t.getMessage().isEmpty())
+            {
+                sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", ((MissingParameterException)t).getParamName());
+            }
+            else
+            {
+                sender.sendMessage(t.getMessage());
+            }
+        }
+        else if (t instanceof IncorrectUsageException)
+        {
+            IncorrectUsageException e = (IncorrectUsageException)t;
+            if (e.getMessage() != null)
+            {
+                sender.sendMessage(t.getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "That seems wrong...");
+            }
+            if (e.getDisplayUsage())
+            {
+                final String usage;
+                if (context != null)
+                {
+                    usage = context.getCommand().getUsage(context);
+                }
+                else
+                {
+                    // TODO can this happen at all?
+                    usage = this.getUsage(sender);
+                }
+                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
+            }
+        }
+        else if (t instanceof ReaderException)
+        {
+            ReaderException e = (ReaderException)t;
+            if (e.getMessage() != null)
+            {
+                sender.sendMessage(t.getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument...");
+            }
+        }
+        else if (t instanceof PermissionDeniedException)
+        {
+            PermissionDeniedException e = (PermissionDeniedException)t;
+            if (e.getMessage() != null)
+            {
+                sender.sendMessage(e.getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "You're not allowed to do this!");
+                sender.sendTranslated(NEGATIVE, "Contact an administrator if you think this is a mistake!");
+            }
+            sender.sendTranslated(NEGATIVE, "Missing permission: {name}", e.getPermission());
+        }
+        else if (t instanceof IncorrectArgumentException)
+        {
+            if (((IncorrectArgumentException)t).isNamedArgument())
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument for {input#named}: {input#reason}", ((IncorrectArgumentException)t).getName(), t.getCause().getMessage());
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "Invalid Argument at {integer#index}: {input#reason}", ((IncorrectArgumentException)t).getIndex(), t.getCause().getMessage());
+            }
+        }
+        else
+        {
+            sender.sendTranslated(CRITICAL, "An unknown error occurred while executing this command!");
+            sender.sendTranslated(CRITICAL, "Please report this error to an administrator.");
+            this.getModule().getLog().debug(t, t.getLocalizedMessage());
         }
     }
 }
