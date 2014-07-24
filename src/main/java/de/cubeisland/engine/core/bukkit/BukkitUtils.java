@@ -21,23 +21,28 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
-import net.minecraft.server.v1_7_R4.JsonList;
 import net.minecraft.server.v1_7_R4.DedicatedServer;
+import net.minecraft.server.v1_7_R4.Entity;
 import net.minecraft.server.v1_7_R4.EntityLiving;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.GenericAttributes;
 import net.minecraft.server.v1_7_R4.Item;
+import net.minecraft.server.v1_7_R4.JsonList;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
 import net.minecraft.server.v1_7_R4.PlayerInteractManager;
 import net.minecraft.server.v1_7_R4.RecipesFurnace;
 import net.minecraft.server.v1_7_R4.TileEntityFurnace;
 import net.minecraft.server.v1_7_R4.WhiteList;
+import net.minecraft.server.v1_7_R4.WorldServer;
 import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -47,9 +52,11 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.i18n.I18nUtil;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
@@ -63,6 +70,12 @@ import sun.misc.SignalHandler;
 public class BukkitUtils
 {
     private static Field entityPlayerLocaleField;
+    private static CommandLogFilter commandFilter = null;
+    private static Field dragonTarget;
+    private static Field ghastTarget;
+
+    private BukkitUtils()
+    {}
 
     static boolean init(BukkitCore core)
     {
@@ -78,9 +91,6 @@ public class BukkitUtils
         }
         return true;
     }
-
-    private BukkitUtils()
-    {}
 
     public static boolean isCompatible(BukkitCore core)
     {
@@ -131,8 +141,6 @@ public class BukkitUtils
     {
         return ((CraftServer)server).getCommandMap();
     }
-
-    private static CommandLogFilter commandFilter = null;
 
     public static void disableCommandLogging()
     {
@@ -214,26 +222,6 @@ public class BukkitUtils
     {
         WhiteList whitelist = getCraftServer().getHandle().getWhitelist();
         new ClearJsonList(whitelist);
-    }
-
-    /**
-     * Clears given JsonList
-     */
-    public static class ClearJsonList extends JsonList
-    {
-        private ClearJsonList(JsonList toClear)
-        {
-            super(toClear.c());
-            try
-            {
-                this.save();
-                toClear.load();
-            }
-            catch (IOException e)
-            {
-                throw new IllegalStateException(e);
-            }
-        }
     }
 
     private static Item getItem(Material m)
@@ -348,7 +336,6 @@ public class BukkitUtils
         {}
     }
 
-
     public static Player getOfflinePlayerAsPlayer(OfflinePlayer player)
     {
         MinecraftServer minecraftServer = DedicatedServer.getServer();
@@ -359,9 +346,6 @@ public class BukkitUtils
         entityPlayer.getBukkitEntity().loadData();
         return entityPlayer.getBukkitEntity();
     }
-
-    private static Field dragonTarget;
-    private static Field ghastTarget;
 
     public static LivingEntity getTarget(LivingEntity hunter) {
         if (hunter == null) return null;
@@ -418,5 +402,80 @@ public class BukkitUtils
     static boolean isAnsiSupported(Server server)
     {
         return ((CraftServer)server).getReader().getTerminal().isAnsiSupported();
+    }
+
+    /**
+     * Teleport player & entities crossworld (including passengers)
+     *
+     * Thanks to bergerkiller (https://forums.bukkit.org/threads/teleport-entity-including-passenger.55903/)
+     */
+    public static boolean teleport(Module module, final Entity entity, final Location to)
+    {
+        WorldServer newworld = ((CraftWorld)to.getWorld()).getHandle();
+        // Pre-load Chunks to tp to
+        Chunk chunk = to.getChunk();
+        chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ());
+        for (int cx = chunk.getX() - 3; cx <= chunk.getX() + 3; cx++)
+        {
+            for (int cz = chunk.getZ() - 3; cz <= chunk.getZ() + 3; cz++)
+            {
+                to.getWorld().getChunkAt(cx, cz);
+            }
+        }
+
+        if (entity.world != newworld && !(entity instanceof EntityPlayer))
+        {
+            if (entity.passenger != null)
+            {
+                final Entity passenger = entity.passenger;
+                passenger.vehicle = null;
+                entity.passenger = null;
+                if (teleport(module, passenger, to))
+                {
+                    module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            passenger.setPassengerOf(entity);
+                        }
+                    }, 0);
+                }
+            }
+
+            //teleport this entity
+            //entity.world.getWorld().getHandle().tracker.untrackEntity(entity);
+            entity.world.removeEntity(entity);
+            entity.dead = false;
+            entity.world = newworld;
+            entity.setLocation(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch());
+            entity.world.addEntity(entity, SpawnReason.CUSTOM);
+            //entity.world.getWorld().getHandle().tracker.track(entity);
+            return true;
+        }
+        else
+        {
+            return entity.getBukkitEntity().teleport(to);
+        }
+    }
+
+    /**
+     * Clears given JsonList
+     */
+    public static class ClearJsonList extends JsonList
+    {
+        private ClearJsonList(JsonList toClear)
+        {
+            super(toClear.c());
+            try
+            {
+                this.save();
+                toClear.load();
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
     }
 }
