@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.core.command.CubeCommand;
 
@@ -30,7 +31,8 @@ public class WrappedCubeCommand extends Command
 {
     private final CubeCommand command;
     private final CubeCommandExecutor executor;
-    
+    private HelpTopic helpTopic;
+
     public WrappedCubeCommand(CubeCommand command)
     {
         super(command.getName());
@@ -137,5 +139,15 @@ public class WrappedCubeCommand extends Command
             result = super.tabComplete(sender, label, args);
         }
         return result;
+    }
+
+    public void setHelpTopic(HelpTopic helpTopic)
+    {
+        this.helpTopic = helpTopic;
+    }
+
+    public HelpTopic getHelpTopic()
+    {
+        return helpTopic;
     }
 }

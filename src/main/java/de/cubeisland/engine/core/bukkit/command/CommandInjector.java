@@ -46,12 +46,17 @@ public class CommandInjector
     protected final BukkitCore core;
     private final Field commandMapField;
     private SimpleCommandMap commandMap;
+    private Map<String, HelpTopic> helpTopicMap;
     private Field knownCommandField;
 
+    @SuppressWarnings("unchecked")
     public CommandInjector(BukkitCore core)
     {
         this.core = core;
+
         this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
+
+        this.helpTopicMap = getFieldValue(core.getServer().getHelpMap(), "helptopics", Map.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -104,7 +109,9 @@ public class CommandInjector
             }// sometimes they are not :(
         }
         commandMap.register(command.getModule().getId(), newCommand);
-        core.getServer().getHelpMap().addTopic(new WrappedCubeCommandHelpTopic(newCommand));
+        WrappedCubeCommandHelpTopic topic = new WrappedCubeCommandHelpTopic(newCommand);
+        newCommand.setHelpTopic(topic);
+        this.helpTopicMap.put(topic.getName(), topic);
     }
 
     public Command getCommand(String name)
@@ -143,18 +150,10 @@ public class CommandInjector
                 removed.unregister(getCommandMap());
             }
         }
-        Iterator<HelpTopic> it = this.core.getServer().getHelpMap().getHelpTopics().iterator();
-        while (it.hasNext())
+
+        if (removed instanceof WrappedCubeCommand)
         {
-            HelpTopic topic = it.next();
-            if (topic instanceof WrappedCubeCommandHelpTopic)
-            {
-                WrappedCubeCommandHelpTopic wrapped = (WrappedCubeCommandHelpTopic)topic;
-                if (!getKnownCommands().containsValue(wrapped.getCommand()))
-                {
-                    it.remove();
-                }
-            }
+            this.helpTopicMap.values().remove(((WrappedCubeCommand)removed).getHelpTopic());
         }
     }
 
