@@ -599,6 +599,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public boolean equals(Object o)
     {
+        if (o == null)
+        {
+            return false;
+        }
         if (this == o)
         {
             return true;
@@ -609,7 +613,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         else if (o instanceof CommandSender)
         {
-            return ((CommandSender)o).getName().equals(this.getName());
+            return ((CommandSender)o).getUniqueId().equals(this.getUniqueId());
         }
         else if (o instanceof org.bukkit.command.CommandSender)
         {
