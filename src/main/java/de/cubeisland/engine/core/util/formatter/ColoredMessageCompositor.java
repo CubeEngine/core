@@ -22,15 +22,11 @@ import java.util.Locale;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.core.util.formatter.ColoredFormatter.ColorReader;
 import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.reflect.Reflector;
 
 public class ColoredMessageCompositor extends DefaultMessageCompositor
 {
-    private final char BASE_CHAR = '\u00A7';
-
     private ColorConfiguration colorConfiguration;
 
     public ColoredMessageCompositor(Core core)
@@ -49,8 +45,9 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
             .registerMacro(new BiomeFormatter())
             .registerMacro(new VectorFormatter())
             .registerMacro(new DecimalFormatter())
-            .registerReader("color", new ColorReader())
-            ;
+            .registerReader("color", new ColorPostProcessor.ColorReader());
+
+        this.addDefaultPostProcessor(new ColorPostProcessor());
     }
 
     public String composeMessage(MessageType type, Locale locale, String sourceMessage, Object... messageArgs)
@@ -58,23 +55,11 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
         return this.composeMessage(locale, this.getColorString(type) + sourceMessage, messageArgs);
     }
 
-    @Override
-    public void postFormat(MacroContext context, Object messageArgument, StringBuilder finalString)
-    {
-        if (finalString.length() > 2 && BASE_CHAR == finalString.charAt(0))
-        {
-            ChatFormat byChar = ChatFormat.getByChar(finalString.charAt(1));
-            if (byChar == null)
-            {
-                return;
-            }
-            finalString.append(byChar);
-        }
-    }
-
     public String getColorString(MessageType type)
     {
         ChatFormat chatFormat = this.colorConfiguration.colorMap.get(type);
         return chatFormat == null ? "" : chatFormat.toString();
     }
+
+
 }

@@ -52,7 +52,7 @@ public class LogFactory extends DefaultLogFactory
 
         ExceptionAppender exceptionAppender = new ExceptionAppender(this.exLog);
         exceptionAppender.start();
-        ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender); // TODO add filter to log only our stuff?
+        ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender);
         log4jProxyTarget.getHandle().addAppender(exceptionAppender);
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 

@@ -19,23 +19,22 @@ package de.cubeisland.engine.core.util.formatter;
 
 import org.bukkit.block.Biome;
 
-import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
-public class BiomeFormatter extends ColoredFormatter<Biome>
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_AQUA;
+
+public class BiomeFormatter extends AbstractFormatter<Biome>
 {
     public BiomeFormatter()
     {
         super(toSet("biome"));
+        this.addPostProcessor(new ColorPostProcessor(DARK_AQUA));
     }
 
     @Override
-    public String process(ChatFormat color, Biome object, MacroContext context)
+    public String process(Biome object, MacroContext context)
     {
-        if (color == null)
-        {
-            color = ChatFormat.DARK_AQUA;
-        }
-        return color.toString() + object.name();
+        return object.name(); // TODO translation ?
     }
 }

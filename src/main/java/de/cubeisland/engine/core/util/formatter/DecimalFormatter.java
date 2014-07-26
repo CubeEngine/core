@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 
@@ -27,6 +26,6 @@ public class DecimalFormatter extends de.cubeisland.engine.messagecompositor.mac
     @Override
     protected String formatNumber(Number number, MacroContext context)
     {
-        return ChatFormat.GOLD + super.formatNumber(number, context);
+        return super.formatNumber(number, context);
     }
 }

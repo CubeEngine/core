@@ -51,7 +51,7 @@ public enum ChatFormat
     RESET('r');
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
-    private static final char BASE_CHAR = '\u00A7';
+    public static final char BASE_CHAR = '\u00A7';
     private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");

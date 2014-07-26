@@ -19,13 +19,12 @@ package de.cubeisland.engine.core.util.formatter;
 
 import java.util.Set;
 
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.macro.ConstantMacro;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
 import static de.cubeisland.engine.messagecompositor.macro.AbstractFormatter.toSet;
 
-public class TextMacro implements ConstantMacro
+public class TextMacro extends ConstantMacro
 {
     private final Set<String> names;
 
@@ -37,12 +36,7 @@ public class TextMacro implements ConstantMacro
     @Override
     public String process(MacroContext macroContext)
     {
-        ChatFormat color = macroContext.readMapped("color", ChatFormat.class);
-        if (color == null)
-        {
-            color = ChatFormat.GOLD;
-        }
-        return color + macroContext.getArg(0);
+        return macroContext.getArg(0);
     }
 
     @Override

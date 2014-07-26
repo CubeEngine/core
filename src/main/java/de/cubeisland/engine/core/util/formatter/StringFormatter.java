@@ -18,12 +18,10 @@
 package de.cubeisland.engine.core.util.formatter;
 
 
-import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
-import static de.cubeisland.engine.messagecompositor.macro.AbstractFormatter.toSet;
-
-public class StringFormatter extends ColoredFormatter<String>
+public class StringFormatter extends AbstractFormatter<String>
 {
     public StringFormatter()
     {
@@ -31,12 +29,8 @@ public class StringFormatter extends ColoredFormatter<String>
     }
 
     @Override
-    public String process(ChatFormat color, String object, MacroContext context)
+    public String process(String object, MacroContext context)
     {
-        if (color == null)
-        {
-            color = ChatFormat.GOLD;
-        }
-        return color + object;
+        return object;
     }
 }

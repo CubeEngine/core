@@ -17,27 +17,47 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import java.util.Set;
-
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+import de.cubeisland.engine.messagecompositor.macro.PostProcessor;
 import de.cubeisland.engine.messagecompositor.macro.Reader;
 
-public abstract class ColoredFormatter<T> extends AbstractFormatter<T>
+import static de.cubeisland.engine.core.util.ChatFormat.BASE_CHAR;
+import static de.cubeisland.engine.core.util.ChatFormat.RESET;
+
+public class ColorPostProcessor implements PostProcessor
 {
-    protected ColoredFormatter(Set<String> names)
+    private final ChatFormat defaultColor;
+
+    public ColorPostProcessor()
     {
-        super(names);
+        this(ChatFormat.GOLD);
+    }
+
+    public ColorPostProcessor(ChatFormat defaultColor)
+    {
+        this.defaultColor = defaultColor;
     }
 
     @Override
-    public String process(T object, MacroContext context)
+    public String process(String object, MacroContext context)
     {
-        return this.process(context.readMapped("color", ChatFormat.class), object, context);
+        ChatFormat color = context.readMapped("color", ChatFormat.class);
+        if (color == null)
+        {
+            color = defaultColor;
+        }
+        String source = context.getSourceMessage();
+        if (source.length() > 2 && source.charAt(0) == BASE_CHAR)
+        {
+            ChatFormat byChar = ChatFormat.getByChar(source.charAt(1));
+            if (byChar != null)
+            {
+                return color + object + byChar;
+            }
+        }
+        return color + object + RESET;
     }
-
-    public abstract String process(ChatFormat color, T object, MacroContext context);
 
     public static class ColorReader implements Reader<ChatFormat>
     {

@@ -17,15 +17,16 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import org.bukkit.ChatColor;
-
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.math.BlockVector2;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
+
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_AQUA;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.WHITE;
 
 @Names("vector")
 public class VectorFormatter extends ReflectedFormatter
@@ -37,11 +38,11 @@ public class VectorFormatter extends ReflectedFormatter
         String arg1 = context.getArg(1);
         if (arg0 != null && arg1 != null)
         {
-            return ChatFormat.DARK_AQUA + "[" + ChatColor.WHITE + arg0 + ChatColor.GOLD + v.x +
-                   ChatFormat.DARK_AQUA + "," + ChatColor.WHITE + arg1 + ChatColor.GOLD + v.z + ChatFormat.DARK_AQUA + "]";
+            return DARK_AQUA + "[" + WHITE + arg0 + GOLD + v.x +
+                   DARK_AQUA + "," + WHITE + arg1 + GOLD + v.z + DARK_AQUA + "]";
         }
-        return ChatFormat.DARK_AQUA + "[" + ChatColor.GOLD + v.x +
-               ChatFormat.DARK_AQUA + "," + ChatColor.GOLD + v.z + ChatFormat.DARK_AQUA + "]";
+        return DARK_AQUA + "[" + GOLD + v.x +
+               DARK_AQUA + "," + GOLD + v.z + DARK_AQUA + "]";
     }
 
     @Format
@@ -52,13 +53,13 @@ public class VectorFormatter extends ReflectedFormatter
         String arg2 = context.getArg(2);
         if (arg0 != null && arg1 != null && arg2 != null)
         {
-            return ChatFormat.DARK_AQUA + "[" + ChatColor.WHITE + arg0 + ChatColor.GOLD + v.x +
-                   ChatFormat.DARK_AQUA + "," + ChatColor.WHITE + arg1 + ChatColor.GOLD + v.y + ChatFormat.DARK_AQUA +
-                   ChatFormat.DARK_AQUA + "," + ChatColor.WHITE + arg2 + ChatColor.GOLD + v.z + ChatFormat.DARK_AQUA + "]";
+            return DARK_AQUA + "[" + WHITE + arg0 + GOLD + v.x +
+                   DARK_AQUA + "," + WHITE + arg1 + GOLD + v.y + DARK_AQUA +
+                   DARK_AQUA + "," + WHITE + arg2 + GOLD + v.z + DARK_AQUA + "]";
         }
-        return ChatFormat.DARK_AQUA + "[" + ChatColor.GOLD + v.x +
-               ChatFormat.DARK_AQUA + "," + ChatColor.GOLD + v.y +
-               ChatFormat.DARK_AQUA + "," + ChatColor.GOLD + v.z + ChatFormat.DARK_AQUA + "]";
+        return DARK_AQUA + "[" + GOLD + v.x +
+               DARK_AQUA + "," + GOLD + v.y +
+               DARK_AQUA + "," + GOLD + v.z + DARK_AQUA + "]";
     }
 
 }

@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import de.cubeisland.engine.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 
-public class BooleanFormatter extends ColoredFormatter<Boolean>
+public class BooleanFormatter extends AbstractFormatter<Boolean>
 {
     public BooleanFormatter()
     {
@@ -28,12 +28,8 @@ public class BooleanFormatter extends ColoredFormatter<Boolean>
     }
 
     @Override
-    public String process(ChatFormat color, Boolean object, MacroContext context)
+    public String process(Boolean object, MacroContext context)
     {
-        if (color == null)
-        {
-            color = ChatFormat.GOLD;
-        }
-        return color + String.valueOf(object);
+        return String.valueOf(object); // TODO translation ?
     }
 }

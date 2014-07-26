@@ -295,8 +295,7 @@ public abstract class AbstractUserManager implements UserManager
         String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(NONE, starColor
-                .toString() + "* {user} {input#message:color=WHITE}", name, message);
+            user.sendTranslated(NONE, starColor + "* {user} {input#message:color=WHITE}", name, message);
         }
     }
 
