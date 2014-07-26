@@ -31,7 +31,6 @@ import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
-import de.cubeisland.engine.core.bukkit.command.WrappedCubeCommandHelpTopic.Factory;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.module.Module;
@@ -53,7 +52,6 @@ public class CommandInjector
     {
         this.core = core;
         this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
-        core.getServer().getHelpMap().registerHelpTopicFactory(WrappedCubeCommand.class, new Factory());
     }
 
     @SuppressWarnings("unchecked")
@@ -105,14 +103,15 @@ public class CommandInjector
                 newCommand.register(commandMap);
             }// sometimes they are not :(
         }
-
-        Command wrappedCommand = wrapCommand(command);
+        WrappedCubeCommand wrappedCommand = wrapCommand(command);
         commandMap.register(command.getModule().getId(), wrappedCommand);
+
+        core.getServer().getHelpMap().addTopic(new WrappedCubeCommandHelpTopic(wrappedCommand));
     }
 
-    private Command wrapCommand(CubeCommand command)
+    private WrappedCubeCommand wrapCommand(CubeCommand command)
     {
-        Command cmd = new WrappedCubeCommand(command);
+        WrappedCubeCommand cmd = new WrappedCubeCommand(command);
         // TODO why got this set: ?
         //cmd.setAliases(new ArrayList<>(command.getAliases()));
         //cmd.setUsage(command.getUsage());
