@@ -76,7 +76,7 @@ public class CommandInjector
         expectNotNull(command.getDescription(), command.getName() + " doesn't have a description!");
         expect(!command.getDescription().isEmpty(), command.getName() + " has an empty description!");
 
-        Command newCommand = wrapCommand(command);
+        WrappedCubeCommand newCommand = new WrappedCubeCommand(command);
         SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getName());
         if (old != null)
@@ -103,20 +103,8 @@ public class CommandInjector
                 newCommand.register(commandMap);
             }// sometimes they are not :(
         }
-        WrappedCubeCommand wrappedCommand = wrapCommand(command);
-        commandMap.register(command.getModule().getId(), wrappedCommand);
-
-        core.getServer().getHelpMap().addTopic(new WrappedCubeCommandHelpTopic(wrappedCommand));
-    }
-
-    private WrappedCubeCommand wrapCommand(CubeCommand command)
-    {
-        WrappedCubeCommand cmd = new WrappedCubeCommand(command);
-        // TODO why got this set: ?
-        //cmd.setAliases(new ArrayList<>(command.getAliases()));
-        //cmd.setUsage(command.getUsage());
-        //cmd.setDescription(command.getDescription());
-        return cmd;
+        commandMap.register(command.getModule().getId(), newCommand);
+        core.getServer().getHelpMap().addTopic(new WrappedCubeCommandHelpTopic(newCommand));
     }
 
     public Command getCommand(String name)
