@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.List;
 
@@ -84,18 +84,5 @@ public class ArgBounds
     public int getMax()
     {
         return max;
-    }
-
-    public boolean inBounds(int n)
-    {
-        if (n < this.min)
-        {
-            return false;
-        }
-        if (this.max > NO_MAX && n > this.max)
-        {
-            return false;
-        }
-        return true;
     }
 }

@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
 import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
 import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.reflected.Alias;

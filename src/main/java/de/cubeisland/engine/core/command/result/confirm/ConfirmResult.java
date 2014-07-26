@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command.result.confirm;
 
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;

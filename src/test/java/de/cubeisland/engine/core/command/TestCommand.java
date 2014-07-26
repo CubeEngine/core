@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core.command;
 
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.module.Module;
 
 public class TestCommand extends CubeCommand

@@ -103,7 +103,6 @@ public class BukkitCommandManager implements CommandManager
         {
             throw new IllegalArgumentException("The given command is already registered!");
         }
-        command.getContextFactory().calculateArgBounds();
         CubeCommand parentCommand = null;
         for (String parent : parents)
         {

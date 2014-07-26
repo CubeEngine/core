@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.List;
 import java.util.Map;
@@ -24,11 +24,18 @@ import java.util.Set;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 
-import static de.cubeisland.engine.core.command.ContextParser.Type.*;
+import static de.cubeisland.engine.core.command.context.ContextParser.Type.*;
 import static java.util.Locale.ENGLISH;
 
-public class ContextParser extends ContextDescriptor
+public class ContextParser
 {
+    protected final ContextDescriptor descriptor;
+
+    public ContextParser(ContextDescriptor descriptor)
+    {
+        this.descriptor = descriptor;
+    }
+
     public Type parse(String[] rawArgs, List<String> indexed, Map<String, String> named, Set<String> flags)
     {
         if (rawArgs.length < 1)
@@ -80,7 +87,7 @@ public class ContextParser extends ContextDescriptor
 
         flag = flag.toLowerCase(ENGLISH); // lowercase flag
 
-        CommandFlag cmdFlag = this.flagMap.get(flag);
+        CommandFlag cmdFlag = this.descriptor.flagMap.get(flag);
         if (cmdFlag != null) // has flag ?
         {
             flags.add(cmdFlag.getName()); // added flag
@@ -99,7 +106,7 @@ public class ContextParser extends ContextDescriptor
     {
         String paramName = rawArgs[offset].toLowerCase(ENGLISH);
         // has alias named Param ?
-        CommandParameter param = this.namedMap.get(paramName);
+        CommandParameter param = this.descriptor.namedMap.get(paramName);
         // is named Param?
         if (param != null && offset + 1 < rawArgs.length)
         {
@@ -179,5 +186,10 @@ public class ContextParser extends ContextDescriptor
     public static class LastType
     {
         public Type last;
+    }
+
+    public ContextDescriptor descriptor()
+    {
+        return descriptor;
     }
 }

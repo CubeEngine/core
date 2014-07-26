@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.cubeisland.engine.core.command.ContextParser.Type;
+import de.cubeisland.engine.core.command.context.ContextParser.Type;
 
 import static java.util.Locale.ENGLISH;
 

@@ -22,8 +22,8 @@ import java.lang.reflect.Method;
 
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.CubeContext;
-import de.cubeisland.engine.core.command.CubeContextFactory;
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.exception.CommandException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;

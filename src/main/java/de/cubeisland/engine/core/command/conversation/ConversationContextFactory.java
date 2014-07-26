@@ -23,22 +23,23 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.ContextParser;
+import de.cubeisland.engine.core.command.context.ContextBuilder;
+import de.cubeisland.engine.core.command.context.ContextDescriptor;
+import de.cubeisland.engine.core.command.context.ContextParser;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.CubeContext;
-import de.cubeisland.engine.core.command.CubeContextFactory;
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 
-import static de.cubeisland.engine.core.command.ContextParser.Type.*;
+import static de.cubeisland.engine.core.command.context.ContextParser.Type.*;
 
 public class ConversationContextFactory extends CubeContextFactory
 {
-    public ConversationContextFactory()
+    public ConversationContextFactory(ContextDescriptor descriptor)
     {
-        this.addIndexed(CommandParameterIndexed.greedyIndex());
-        // TODO ensure flags & named are all diff names or else named cannot be used
+        super(descriptor);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ConversationContextFactory extends CubeContextFactory
             else
             {
                 rawArg = rawArg.toLowerCase();
-                CommandFlag flag = this.flagMap.get(rawArg);
+                CommandFlag flag = this.descriptor.getFlag(rawArg);
                 if (flag != null)
                 {
                     offset++;
@@ -75,7 +76,7 @@ public class ConversationContextFactory extends CubeContextFactory
                 else
                 {
                     type.last = FLAG_OR_PARAM;
-                    CommandParameter param = this.namedMap.get(rawArg);
+                    CommandParameter param = this.descriptor.getParameter(rawArg);
                     if (param != null)
                     {
                         StringBuilder paramValue = new StringBuilder();
@@ -101,7 +102,7 @@ public class ConversationContextFactory extends CubeContextFactory
     public CubeContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
         CubeContext parse = super.parse(command, sender, labels, rawArgs);
-        this.readContext(parse, sender.getLocale()); // TODO catch exception and print instead of failing the command
+        this.readContext(parse, sender.getLocale());
         return parse;
     }
 }

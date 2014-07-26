@@ -147,7 +147,7 @@ public class BukkitUtils
         org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
         if (commandFilter == null)
         {
-            commandFilter = new CommandLogFilter(); // TODO configurable filter
+            commandFilter = new CommandLogFilter(); //  TODO configurable filter
         }
         logger.addFilter(commandFilter);
     }

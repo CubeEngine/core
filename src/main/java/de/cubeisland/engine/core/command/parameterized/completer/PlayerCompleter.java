@@ -22,7 +22,7 @@ import java.util.List;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.user.User;
 

@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command.parameterized;
 
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 
 public interface Completer
 {

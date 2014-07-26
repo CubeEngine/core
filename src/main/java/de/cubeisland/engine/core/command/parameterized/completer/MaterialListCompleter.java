@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.util.StringUtils;
 

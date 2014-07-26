@@ -22,6 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import de.cubeisland.engine.core.command.context.ContextBuilder;
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
@@ -56,8 +59,7 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
 
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
-        super(module, name, description, new CubeContextFactory(), null, false);
-        this.getContextFactory().addIndexed(CommandParameterIndexed.emptyIndex("action"));
+        super(module, name, description, new CubeContextFactory(ContextBuilder.build().add(CommandParameterIndexed.emptyIndex("action")).get()), null, false);
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;

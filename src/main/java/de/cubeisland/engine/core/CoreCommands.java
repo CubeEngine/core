@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.TooFewArgumentsException;
 import de.cubeisland.engine.core.command.reflected.CallAsync;
 import de.cubeisland.engine.core.command.reflected.Command;

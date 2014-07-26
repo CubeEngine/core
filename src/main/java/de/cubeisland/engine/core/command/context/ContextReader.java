@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.cubeisland.engine.core.command.ArgumentReader;
 import de.cubeisland.engine.core.command.exception.IncorrectArgumentException;
 import de.cubeisland.engine.core.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
@@ -31,6 +32,11 @@ import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
 
 public class ContextReader extends ContextParser
 {
+    public ContextReader(ContextDescriptor descriptor)
+    {
+        super(descriptor);
+    }
+
     public void readContext(ReadContext ctx, Locale locale)
     {
         if (!ctx.rawIndexed.isEmpty())
@@ -52,7 +58,7 @@ public class ContextReader extends ContextParser
         int i = 0;
         for (String arg : rawIndexed)
         {
-            CommandParameterIndexed indexed = this.indexedMap.get(i++);
+            CommandParameterIndexed indexed = this.descriptor.indexedMap.get(i++);
             if (indexed == null)
             {
                 result.add(arg); // handle OOB somewhere else
@@ -102,7 +108,7 @@ public class ContextReader extends ContextParser
 
         for (Entry<String, String> entry : rawNamed.entrySet())
         {
-            CommandParameter param = this.namedMap.get(entry.getKey());
+            CommandParameter param = this.descriptor.namedMap.get(entry.getKey());
             try
             {
                 readParams.put(entry.getKey(), ArgumentReader.read(param.getType(), entry.getValue(), locale));

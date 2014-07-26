@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command.result;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 
 public abstract class AsyncResult implements CommandResult
 {

@@ -23,15 +23,16 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.TestCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.CubeContext;
-import de.cubeisland.engine.core.command.CubeContextFactory;
+import de.cubeisland.engine.core.command.context.ContextBuilder;
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.TestCommand;
 import de.cubeisland.engine.core.command.sender.TestConsoleSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleManager;
 import junit.framework.TestCase;
 
-import static de.cubeisland.engine.core.command.ContextParser.readString;
+import static de.cubeisland.engine.core.command.context.ContextParser.readString;
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 
 public class CubeContextFactoryTest extends TestCase
@@ -75,9 +76,7 @@ public class CubeContextFactoryTest extends TestCase
 
     public void testContextFactory()
     {
-        CubeContextFactory factory = new CubeContextFactory();
-        factory.addFlag(new CommandFlag("a", "all", null));
-        factory.addNamed(new CommandParameter("test", "label", String.class, null));
+        CubeContextFactory factory = new CubeContextFactory(ContextBuilder.build().add(new CommandParameter("test", "label", String.class, null)).add(new CommandFlag("a", "all", null)).get());
 
         Stack<String> labels = new Stack<>();
         labels.add("testCommand");

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -24,10 +24,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.CubeCommand;
 import gnu.trove.set.hash.THashSet;
 
 public class CubeContextFactory extends ContextReader
 {
+    public CubeContextFactory(ContextDescriptor descriptor)
+    {
+        super(descriptor);
+    }
+
+    public CubeContextFactory()
+    {
+        this(ContextBuilder.build().get());
+    }
+
     public CubeContext parse(CubeCommand command, CommandSender sender, Stack<String> labels, String[] rawArgs)
     {
         final List<String> indexed = new LinkedList<>();

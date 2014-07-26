@@ -27,8 +27,9 @@ import java.util.List;
 import java.util.Set;
 
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.CubeContext;
-import de.cubeisland.engine.core.command.CubeContextFactory;
+import de.cubeisland.engine.core.command.context.ContextBuilder;
+import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
@@ -231,15 +232,9 @@ public class ReflectedCommandFactory
         }
     }
 
-    protected CubeContextFactory createContextFactory(List<CommandParameterIndexed> indexed,
-                                                      Set<CommandParameter> named, Set<CommandFlag> flags)
+    protected CubeContextFactory createContextFactory(List<CommandParameterIndexed> indexed, Set<CommandParameter> named, Set<CommandFlag> flags)
     {
-        CubeContextFactory ctxFactory = new CubeContextFactory();
-        ctxFactory.addIndexed(indexed);
-        ctxFactory.addNamed(named);
-        ctxFactory.addFlags(flags);
-        ctxFactory.calculateArgBounds();
-        return ctxFactory;
+        return new CubeContextFactory(ContextBuilder.build().addIndexed(indexed).addNamed(named).addFlags(flags).get());
     }
 
     public List<CubeCommand> parseCommands(Module module, Object holder)

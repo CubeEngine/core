@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import org.bukkit.permissions.Permissible;
 
+import de.cubeisland.engine.core.command.context.ContextDescriptor;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
@@ -29,12 +30,12 @@ import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class UsageGenerator
 {
-    public static String generateUsage(CubeContextFactory contextFactory, Locale locale, Permissible permissible)
+    public static String generateUsage(ContextDescriptor descriptor, Locale locale, Permissible permissible)
     {
         // TODO translate labels
         StringBuilder sb = new StringBuilder();
         int inGroup = 0;
-        for (CommandParameterIndexed iParam : contextFactory.getIndexedParameters())
+        for (CommandParameterIndexed iParam : descriptor.getIndexedParameters())
         {
             if (iParam.getCount() == 1 || iParam.getCount() < 0)
             {
@@ -60,7 +61,7 @@ public class UsageGenerator
                 sb.append(' ');
             }
         }
-        for (CommandParameter nParam : contextFactory.getParameters())
+        for (CommandParameter nParam : descriptor.getParameters())
         {
             if (nParam.checkPermission(permissible))
             {
@@ -74,7 +75,7 @@ public class UsageGenerator
                 }
             }
         }
-        for (CommandFlag flag : contextFactory.getFlags())
+        for (CommandFlag flag : descriptor.getFlags())
         {
             if (flag.checkPermission(permissible))
             {

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.cubeisland.engine.core.command.CommandResult;
-import de.cubeisland.engine.core.command.CubeContext;
+import de.cubeisland.engine.core.command.context.CubeContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;

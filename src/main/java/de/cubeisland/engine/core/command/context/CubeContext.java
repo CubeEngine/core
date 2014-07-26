@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command;
+package de.cubeisland.engine.core.command.context;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +24,9 @@ import java.util.Set;
 import java.util.Stack;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.ContextParser.Type;
+import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.context.ContextParser.Type;
+import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
