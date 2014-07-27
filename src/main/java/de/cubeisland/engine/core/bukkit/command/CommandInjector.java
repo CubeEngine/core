@@ -111,7 +111,10 @@ public class CommandInjector
         commandMap.register(command.getModule().getId(), newCommand);
         WrappedCubeCommandHelpTopic topic = new WrappedCubeCommandHelpTopic(newCommand);
         newCommand.setHelpTopic(topic);
-        this.helpTopicMap.put(topic.getName(), topic);
+        if (helpTopicMap != null)
+        {
+            this.helpTopicMap.put(topic.getName(), topic);
+        }
     }
 
     public Command getCommand(String name)
@@ -153,7 +156,10 @@ public class CommandInjector
 
         if (removed instanceof WrappedCubeCommand)
         {
-            this.helpTopicMap.values().remove(((WrappedCubeCommand)removed).getHelpTopic());
+            if (helpTopicMap != null)
+            {
+                this.helpTopicMap.values().remove(((WrappedCubeCommand)removed).getHelpTopic());
+            }
         }
     }
 
