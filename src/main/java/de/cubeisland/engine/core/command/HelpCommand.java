@@ -28,9 +28,6 @@ import static de.cubeisland.engine.core.util.ChatFormat.YELLOW;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
-/**
-* Created by Anselm on 20.07.2014.
-*/
 public class HelpCommand extends CubeCommand
 {
     protected CubeCommand target;

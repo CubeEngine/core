@@ -20,19 +20,25 @@ package de.cubeisland.engine.core.util.formatter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.AnimalTamer;
 
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
 
+import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
+
 @Names({"user","sender","tamer"})
 public class CommandSenderFormatter extends ReflectedFormatter
 {
+    public CommandSenderFormatter()
+    {
+        this.addPostProcessor(new ColorPostProcessor(DARK_GREEN));
+    }
+
     @Format
     public String format(String string, MacroContext context)
     {
-        return ChatFormat.DARK_GREEN + string;
+        return string;
     }
 
     @Format

@@ -53,7 +53,7 @@ public class ColorPostProcessor implements PostProcessor
             ChatFormat byChar = ChatFormat.getByChar(source.charAt(1));
             if (byChar != null)
             {
-                return color + object + byChar;
+                return color + ChatFormat.stripFormats(object) + byChar;
             }
         }
         return color + object + RESET;
