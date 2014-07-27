@@ -56,7 +56,7 @@ public class CommandInjector
 
         this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
 
-        this.helpTopicMap = getFieldValue(core.getServer().getHelpMap(), "helptopics", Map.class);
+        this.helpTopicMap = getFieldValue(core.getServer().getHelpMap(), "helpTopics", Map.class);
     }
 
     @SuppressWarnings("unchecked")
