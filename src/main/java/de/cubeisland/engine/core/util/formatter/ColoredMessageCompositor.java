@@ -57,8 +57,21 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 
     public String getColorString(MessageType type)
     {
+        if (type == null)
+        {
+            return "";
+        }
         ChatFormat chatFormat = this.colorConfiguration.colorMap.get(type);
-        return chatFormat == null ? "" : chatFormat.toString();
+        if (chatFormat == null)
+        {
+            try
+            {
+                chatFormat = ChatFormat.valueOf(type.getName());
+            }
+            catch (IllegalArgumentException ignored)
+            {}
+        }
+        return (chatFormat == null ? "" : chatFormat.toString()) + this.getColorString(type.getAdditional());
     }
 
 

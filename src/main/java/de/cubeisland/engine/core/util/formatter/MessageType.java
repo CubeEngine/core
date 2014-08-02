@@ -20,6 +20,8 @@ package de.cubeisland.engine.core.util.formatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.cubeisland.engine.core.util.ChatFormat;
+
 public class MessageType
 {
     private static final Map<String,MessageType> messageTypes = new HashMap<>();
@@ -37,6 +39,8 @@ public class MessageType
 
     private final String name;
 
+    private MessageType additional = null;
+
     private MessageType(String name)
     {
         this.name = name;
@@ -46,5 +50,27 @@ public class MessageType
     public final String getName()
     {
         return name;
+    }
+
+    public MessageType getAdditional()
+    {
+        return additional;
+    }
+
+    public MessageType and(MessageType additional)
+    {
+        MessageType type = new MessageType(this.name);
+        type.additional = additional;
+        return additional;
+    }
+
+    public MessageType and(ChatFormat cf)
+    {
+        return this.and(of(cf));
+    }
+
+    public static MessageType of(ChatFormat cf)
+    {
+        return new MessageType(cf.name());
     }
 }
