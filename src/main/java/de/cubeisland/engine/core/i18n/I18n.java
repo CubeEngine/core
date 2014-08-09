@@ -150,7 +150,12 @@ public class I18n
         {
             return null;
         }
-        return this.compositor.composeMessage(type, locale, this.translate(locale, message), args);
+        return composeMessage(locale, type, this.translate(locale, message), args);
+    }
+
+    public String composeMessage(Locale locale, MessageType type, String message, Object[] args)
+    {
+        return this.compositor.composeMessage(type, locale, message, args);
     }
 
     public String translateN(MessageType type, int n, String singular, String plural, Object... args)

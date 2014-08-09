@@ -42,6 +42,7 @@ import org.bukkit.Bukkit;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -254,22 +255,26 @@ public abstract class AbstractUserManager implements UserManager
         user.detachAll();
     }
 
+    @Override
     public synchronized Set<User> getOnlineUsers()
     {
         return new THashSet<>(this.onlineUsers); // TODO this is not working as it should
     }
 
+    @Override
     public synchronized Set<User> getLoadedUsers()
     {
         return new THashSet<>(this.cachedUserByUUID.values());
     }
 
-    public void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params)
+    @Override
+    public void broadcastTranslatedWithPerm(MessageType messageType, String message, Permission perm, Object... params)
     {
         if (message.isEmpty())
         {
             return;
         }
+
         for (User user : this.onlineUsers)
         {
             if (perm == null || perm.isAuthorized(user))
@@ -280,28 +285,59 @@ public abstract class AbstractUserManager implements UserManager
         this.core.getCommandManager().getConsoleSender().sendTranslated(messageType, message, params);
     }
 
-    public void broadcastMessage(MessageType messageType, String message, Object... args)
+    @Override
+    public void broadcastMessageWithPerm(MessageType type, String message, Permission perm, Object... params)
     {
-        this.broadcastMessageWithPerm(messageType, message, null, args);
-    }
-
-    public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args)
-    {
-        message = ChatFormat.parseFormats(message);
-        if (args != null && args.length != 0)
+        if (message.isEmpty())
         {
-            message = String.format(message, args);
+            return;
         }
-        String name = sender.getDisplayName();
         for (User user : this.onlineUsers)
         {
-            user.sendTranslated(NONE, starColor + "* {user} {input#message:color=WHITE}", name, message);
+            if (perm == null || perm.isAuthorized(user))
+            {
+                user.sendMessage(NONE, message, params);
+            }
+        }
+        ConsoleCommandSender cSender = this.core.getCommandManager().getConsoleSender();
+        cSender.sendMessage(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params));
+    }
+
+    @Override
+    public void broadcastTranslated(MessageType messageType, String message, Object... params)
+    {
+        this.broadcastTranslatedWithPerm(messageType, message, null, params);
+    }
+
+    @Override
+    public void broadcastMessage(MessageType messageType, String message, Object... params)
+    {
+        this.broadcastMessageWithPerm(messageType, message, null, params);
+    }
+
+    @Override
+    public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... params)
+    {
+        for (User user : this.onlineUsers)
+        {
+            user.sendMessage(MessageType.of(starColor), "* {user} {input#message:color=WHITE}", sender.getDisplayName(), message);
         }
     }
 
-    public void broadcastStatus(String message, CommandSender sender, Object... args)
+    @Override
+    public void broadcastTranslatedStatus(ChatFormat starColor, String message, CommandSender sender, Object... params)
     {
-        this.broadcastStatus(WHITE, message, sender, args);
+        for (User user : this.onlineUsers)
+        {
+            user.sendMessage(MessageType.of(starColor), "* {user} {input#message:color=WHITE}", sender.getDisplayName(),
+                             user.getTranslation(NONE, message, params));
+        }
+    }
+
+    @Override
+    public void broadcastStatus(String message, CommandSender sender, Object... params)
+    {
+        this.broadcastStatus(WHITE, message, sender, params);
     }
 
     private void loadSalt()

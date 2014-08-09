@@ -123,13 +123,70 @@ public interface UserManager extends Cleanable
      */
     User findUser(String name, boolean database);
 
+    /**
+     * Broadcasts a translated message
+     * @param messageType the messageType
+     * @param message the message to broadcast
+     * @param perm the permission to check
+     * @param params the parameters
+     */
+    void broadcastTranslatedWithPerm(MessageType messageType, String message, Permission perm, Object... params);
+
+    /**
+     * Broadcasts a message (not translated)
+     *
+     * @param message the message to broadcast
+     * @param perm the permission to check
+     * @param params the parameters
+     */
     void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params);
 
-    void broadcastMessage(MessageType messageType, String message, Object... args);
+    /**
+     * Broadcasts a translated message
+     *
+     * @param messageType the messageType
+     * @param message the message to broadcast
+     * @param params the parameters
+     */
+    void broadcastTranslated(MessageType messageType, String message, Object... params);
 
-    void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... args);
+    /**
+     * Broadcasts a message (not translated)
+     *
+     * @param messageType the messageType
+     * @param message the message to broadcast
+     * @param params the parameters
+     */
+    void broadcastMessage(MessageType messageType, String message, Object... params);
 
-    void broadcastStatus(String message, CommandSender sender, Object... args);
+    /**
+     * Broadcasts a status message (not translated)
+     *
+     * @param starColor the color of the prepended star
+     * @param message the message
+     * @param sender the sender
+     * @param params the parameters
+     */
+    void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... params);
+
+    /**
+     * Broadcasts a translated status message
+     *
+     * @param starColor the color of the prepended star
+     * @param message the message
+     * @param sender the sender
+     * @param params the parameters
+     */
+    void broadcastTranslatedStatus(ChatFormat starColor, String message, CommandSender sender, Object... params);
+
+    /**
+     * Broadcasts a status message (not translated)
+     *
+     * @param message the message
+     * @param sender the sender
+     * @param params the parameters
+     */
+    void broadcastStatus(String message, CommandSender sender, Object... params);
 
     Triplet<Long, String, Integer> getFailedLogin(User user);
 

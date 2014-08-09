@@ -254,6 +254,11 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
     }
 
+    public void sendMessage(MessageType type, String message, Object... params)
+    {
+        this.sendMessage(this.getCore().getI18n().composeMessage(this.getLocale(), type, message, params));
+    }
+
     @Override
     public boolean isAuthorized(de.cubeisland.engine.core.permission.Permission perm)
     {
