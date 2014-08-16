@@ -15,17 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.reflected;
+package de.cubeisland.engine.core.command.reflected.commandparameter;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import de.cubeisland.engine.core.permission.PermDefault;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface OnlyIngame
+import static de.cubeisland.engine.core.permission.PermDefault.OP;
+
+public @interface Permission
 {
     String value() default "";
-    // TODO replace with @Restrict to Class[]
+    PermDefault permDefault() default OP;
 }

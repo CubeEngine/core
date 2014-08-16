@@ -17,24 +17,27 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
+import java.util.Arrays;
+import java.util.List;
+
 import de.cubeisland.engine.core.command.ArgumentReader;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
-public class CommandParameterIndexed
+public class CommandParameterIndexed implements CommandParametersIndexed
 {
     /**
      * The display label for the indexed parameter
      */
     private final String[] labels;
     private final Class<?>[] types;
-    private final int count;
-    private final boolean groupRequired;
+    private final int greed;
     private final boolean required;
 
     private Completer completer;
 
-    public CommandParameterIndexed(String[] labels, Class<?>[] types, boolean groupRequiered, boolean required, int count)
+
+    public CommandParameterIndexed(String[] labels, Class<?>[] types, boolean required, int greed)
     {
         int i = 0;
         for (Class<?> type : types)
@@ -44,14 +47,13 @@ public class CommandParameterIndexed
         }
         this.labels = labels;
         this.types = types;
-        this.groupRequired = groupRequiered;
         this.required = required;
-        this.count = count;
+        this.greed = greed;
     }
 
-    public int getCount()
+    public int getGreed()
     {
-        return count;
+        return greed;
     }
 
     public String[] getLabels()
@@ -74,11 +76,6 @@ public class CommandParameterIndexed
         this.completer = completer;
     }
 
-    public boolean isGroupRequired()
-    {
-        return groupRequired;
-    }
-
     public boolean isRequired()
     {
         return required;
@@ -86,11 +83,23 @@ public class CommandParameterIndexed
 
     public static CommandParameterIndexed greedyIndex()
     {
-        return new CommandParameterIndexed(new String[]{"0"}, new Class[]{String.class}, false, false, -1);
+        return new CommandParameterIndexed(new String[]{"0"}, new Class[]{String.class}, false, -1);
     }
 
     public static CommandParameterIndexed emptyIndex(String label)
     {
-        return new CommandParameterIndexed(new String[]{label}, new Class[]{String.class}, false, false, 1);
+        return new CommandParameterIndexed(new String[]{label}, new Class[]{String.class}, false, 1);
+    }
+
+    @Override
+    public List<CommandParameterIndexed> getAll()
+    {
+        return Arrays.asList(this);
+    }
+
+    @Override
+    public List<CommandParametersIndexed> get()
+    {
+        return Arrays.asList((CommandParametersIndexed)this);
     }
 }

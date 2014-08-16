@@ -15,17 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.reflected;
+package de.cubeisland.engine.core.command.reflected.commandparameter;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface OnlyIngame
+public @interface ParamFlag
 {
-    String value() default "";
-    // TODO replace with @Restrict to Class[]
+    /**
+     * Returns the short flag name
+     * @return the short flag name
+     */
+    public String value();
+
+    /**
+     * By default the long name is the fields name
+     * @return the long flag name
+     */
+    public String longName() default "";
 }

@@ -28,6 +28,7 @@ import java.util.Set;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
 
 import static java.util.Locale.ENGLISH;
 
@@ -35,6 +36,7 @@ public class ContextDescriptor
 {
     protected ArgBounds bounds;
 
+    protected final List<CommandParametersIndexed> indexedGroups;
     protected final LinkedHashMap<Integer, CommandParameterIndexed> indexedMap;
     protected final LinkedHashMap<String, CommandParameter> namedMap;
     protected final Map<String, CommandFlag> flagMap;
@@ -42,11 +44,20 @@ public class ContextDescriptor
     /**
      * Do not call except from @link{de.cubeisland.engine.core.command.context.ContextBuilder}
      */
-    ContextDescriptor(LinkedHashMap<Integer, CommandParameterIndexed> indexedMap, LinkedHashMap<String, CommandParameter> namedMap, Map<String, CommandFlag> flagMap)
+    ContextDescriptor(List<CommandParametersIndexed> indexedGroups, LinkedHashMap<String, CommandParameter> namedMap, Map<String, CommandFlag> flagMap)
     {
-        this.indexedMap = indexedMap;
+        this.indexedGroups = indexedGroups;
+        this.indexedMap = new LinkedHashMap<>();
+        for (CommandParametersIndexed indexedGroup : indexedGroups)
+        {
+            for (CommandParameterIndexed parameterIndexed : indexedGroup.getAll())
+            {
+                indexedMap.put(indexedMap.size(), parameterIndexed);
+            }
+        }
         this.namedMap = namedMap;
         this.flagMap = flagMap;
+
     }
 
     public ArgBounds getArgBounds()
@@ -82,5 +93,10 @@ public class ContextDescriptor
     public Set<CommandFlag> getFlags()
     {
         return new HashSet<>(this.flagMap.values());
+    }
+
+    public List<CommandParametersIndexed> getIndexedGroups()
+    {
+        return indexedGroups;
     }
 }

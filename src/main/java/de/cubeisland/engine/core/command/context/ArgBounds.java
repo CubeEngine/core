@@ -20,6 +20,8 @@ package de.cubeisland.engine.core.command.context;
 import java.util.List;
 
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexedGroup;
+import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
 
 public class ArgBounds
 {
@@ -42,35 +44,49 @@ public class ArgBounds
         this.max = max;
     }
 
-    public ArgBounds(List<CommandParameterIndexed> indexed)
+    public ArgBounds(List<CommandParametersIndexed> indexed)
     {
         int tMin = 0;
         int tMax = 0;
-        for (int i = 0; i < indexed.size(); i++)
+        int n = 0;
+        for (CommandParametersIndexed iParams : indexed)
         {
-            CommandParameterIndexed indexedParam = indexed.get(i);
-            if (indexedParam.getCount() == -1)
+            n++;
+            if (iParams instanceof CommandParameterIndexedGroup)
             {
-                if (i + 1 == indexed.size())
+                ArgBounds argBounds = new ArgBounds(iParams.get());
+                tMin += ((CommandParameterIndexedGroup)iParams).isGroupRequired() ? argBounds.getMin() : 0;
+                tMax += argBounds.getMax();
+                if (argBounds.getMax() == NO_MAX)
                 {
                     tMax = NO_MAX;
-                    if (indexedParam.isGroupRequired())
-                    {
-                        tMin++;
-                    }
-                    break;
                 }
-                throw new IllegalArgumentException("Greedy arguments are only allowed at the end!");
             }
-            if (indexedParam.isGroupRequired())
+            else if (iParams instanceof CommandParameterIndexed)
             {
-                tMin += indexedParam.getCount();
-                if (!indexedParam.isRequired())
+                if (((CommandParameterIndexed)iParams).getGreed() == -1)
                 {
-                    tMin -= 1;
+                    if (n == indexed.size())
+                    {
+                        tMax = NO_MAX;
+                        if (((CommandParameterIndexed)iParams).isRequired())
+                        {
+                            tMin++;
+                        }
+                        break;
+                    }
+                    throw new IllegalArgumentException("Greedy arguments are only allowed at the end!");
                 }
+                else if (((CommandParameterIndexed)iParams).isRequired())
+                {
+                    tMin += ((CommandParameterIndexed)iParams).getGreed();
+                }
+                tMax += ((CommandParameterIndexed)iParams).getGreed();
             }
-            tMax += indexedParam.getCount();
+            else
+            {
+                throw new IllegalArgumentException();
+            }
         }
         this.min = tMin;
         this.max = tMax;

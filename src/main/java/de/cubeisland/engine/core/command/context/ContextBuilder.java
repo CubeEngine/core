@@ -25,13 +25,13 @@ import java.util.Map;
 
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
 
 import static java.util.Locale.ENGLISH;
 
 public class ContextBuilder
 {
-    private final LinkedHashMap<Integer, CommandParameterIndexed> indexedMap = new LinkedHashMap<>();
+    private final List<CommandParametersIndexed> indexedGroups = new ArrayList<>();
     private final LinkedHashMap<String, CommandParameter> namedMap = new LinkedHashMap<>();
     private final Map<String, CommandFlag> flagMap = new LinkedHashMap<>();
 
@@ -44,21 +44,21 @@ public class ContextBuilder
 
     protected ContextDescriptor newDescriptor()
     {
-        return new ContextDescriptor(indexedMap, namedMap, flagMap);
+        return new ContextDescriptor(indexedGroups, namedMap, flagMap);
     }
 
-    public ContextBuilder addIndexed(List<CommandParameterIndexed> params)
+    public ContextBuilder addIndexed(List<CommandParametersIndexed> params)
     {
-        for (CommandParameterIndexed param : params)
+        for (CommandParametersIndexed param : params)
         {
             this.add(param);
         }
         return this;
     }
 
-    public ContextBuilder add(CommandParameterIndexed param)
+    public ContextBuilder add(CommandParametersIndexed param)
     {
-        indexedMap.put(indexedMap.size(), param);
+        indexedGroups.add(param);
         return this;
     }
 
@@ -108,7 +108,7 @@ public class ContextBuilder
     public ContextDescriptor get()
     {
         ContextDescriptor descriptor = this.descriptor;
-        descriptor.bounds = new ArgBounds(new ArrayList<>(this.indexedMap.values()));
+        descriptor.bounds = new ArgBounds(indexedGroups);
         this.descriptor = null;
         return descriptor;
     }

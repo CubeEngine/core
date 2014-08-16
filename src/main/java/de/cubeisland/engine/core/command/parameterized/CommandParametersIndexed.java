@@ -15,17 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.reflected;
+package de.cubeisland.engine.core.command.parameterized;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface OnlyIngame
+public interface CommandParametersIndexed
 {
-    String value() default "";
-    // TODO replace with @Restrict to Class[]
+    List<CommandParameterIndexed> getAll();
+
+    List<CommandParametersIndexed> get();
 }

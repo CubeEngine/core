@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import java.util.Locale;
+import java.util.Stack;
 
 import org.bukkit.permissions.Permissible;
 
@@ -25,6 +26,8 @@ import de.cubeisland.engine.core.command.context.ContextDescriptor;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
 import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexedGroup;
+import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
 
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 
@@ -34,32 +37,12 @@ public class UsageGenerator
     {
         // TODO translate labels
         StringBuilder sb = new StringBuilder();
+        Stack<Integer> groups = new Stack<>();
         int inGroup = 0;
-        for (CommandParameterIndexed iParam : descriptor.getIndexedParameters())
+        for (CommandParametersIndexed iParam : descriptor.getIndexedGroups())
         {
-            if (iParam.getCount() == 1 || iParam.getCount() < 0)
-            {
-                sb.append(convertLabel(iParam.isGroupRequired(), implode("|", convertLabels(iParam))));
-                sb.append(' ');
-                inGroup = 0;
-            }
-            else if (iParam.getCount() > 1)
-            {
-                sb.append(iParam.isGroupRequired() ? '<' : '[');
-                sb.append(convertLabel(iParam.isRequired(), implode("|", convertLabels(iParam))));
-                sb.append(' ');
-                inGroup = iParam.getCount() - 1;
-            }
-            else if (iParam.getCount() == 0)
-            {
-                sb.append(convertLabel(iParam.isRequired(), implode("|", convertLabels(iParam))));
-                inGroup--;
-                if (inGroup == 0)
-                {
-                    sb.append(iParam.isGroupRequired() ? '>' : ']');
-                }
-                sb.append(' ');
-            }
+            generateIndexedUsage(sb, locale, permissible, iParam);
+
         }
         for (CommandParameter nParam : descriptor.getParameters())
         {
@@ -83,6 +66,28 @@ public class UsageGenerator
             }
         }
         return sb.toString().trim();
+    }
+
+    private static void generateIndexedUsage(StringBuilder sb, Locale locale, Permissible permissible,
+                                             CommandParametersIndexed iParam)
+    {
+        if (iParam instanceof CommandParameterIndexedGroup)
+        {
+            boolean groupRequired = ((CommandParameterIndexedGroup)iParam).isGroupRequired();
+            sb.append(groupRequired ? '<' : '[');
+            for (CommandParametersIndexed subIParam : iParam.get())
+            {
+                generateIndexedUsage(sb, locale, permissible, subIParam);
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append(groupRequired ? '>' : ']');
+        }
+        else if (iParam instanceof CommandParameterIndexed)
+        {
+            CommandParameterIndexed indexed = (CommandParameterIndexed)iParam;
+            sb.append(convertLabel(indexed.isRequired(), implode("|", convertLabels(indexed))));
+        }
+        sb.append(' ');
     }
 
     private static String convertLabel(boolean req, String label)
