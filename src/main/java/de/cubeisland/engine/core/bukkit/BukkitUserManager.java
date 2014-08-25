@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.user.AbstractUserManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.util.Profiler;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -219,7 +220,9 @@ public class BukkitUserManager extends AbstractUserManager
                 {
                     scheduledForRemoval.remove(user.getUniqueId());
                     user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+                    Profiler.startProfiling("removalTask");
                     user.getEntity().update();
+                    core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling("removalTask", TimeUnit.MILLISECONDS));
                     if (user.isOnline())
                     {
                         removeCachedUser(user);
