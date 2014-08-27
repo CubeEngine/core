@@ -140,4 +140,6 @@ public interface Database
     <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query);
 
     String getTablePrefix();
+
+    java.util.concurrent.ExecutorService getExecutor();
 }

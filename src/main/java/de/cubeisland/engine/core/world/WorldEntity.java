@@ -22,12 +22,12 @@ import javax.persistence.Transient;
 
 import org.bukkit.World;
 
-import org.jooq.impl.UpdatableRecordImpl;
+import de.cubeisland.engine.core.storage.database.AsyncRecord;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 
-public class WorldEntity extends UpdatableRecordImpl<WorldEntity>
+public class WorldEntity extends AsyncRecord<WorldEntity>
 {
     @Transient
     private UUID uid = null;
