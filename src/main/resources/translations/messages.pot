@@ -16,532 +16,472 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: de.cubeisland.engine:cubeengine:1.0.0-SNAPSHOT\n"
+"Project-Id-Version: de.cubeisland.engine:core:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2014-05-18 05:00:13+0200\n"
+"POT-Creation-Date: 2014-08-28 00:35:59+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:406
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:364
 msgid "Adds a player to the whitelist."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:261
+#: de/cubeisland/engine/core/CoreCommands.java:241
 msgid "Changes or displays the log level of the server."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:119
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:124
 msgid "Changes the difficulty level of the server"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:132
+#: de/cubeisland/engine/core/CoreCommands.java:128
 msgid "Clears your password."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:130
+#: de/cubeisland/engine/core/module/ModuleCommands.java:122
 msgid "Disables a module"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:490
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:451
 msgid "Disables the whitelisting"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:338
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:303
 msgid "Displays the version of the server or a given plugin"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:116
+#: de/cubeisland/engine/core/module/ModuleCommands.java:108
 msgid "Enables a module"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:477
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:438
 msgid "Enables the whitelisting"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:224
+#: de/cubeisland/engine/core/module/ModuleCommands.java:206
 msgid "Get info about a module"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:277
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:250
 msgid "Lists all loaded plugins"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:87
+#: de/cubeisland/engine/core/module/ModuleCommands.java:84
 msgid "Lists all the loaded modules"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:448
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:402
 msgid "Lists all the whitelisted players"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:180
+#: de/cubeisland/engine/core/module/ModuleCommands.java:166
 msgid "Loads a module from the modules directory."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:173
+#: de/cubeisland/engine/core/CoreCommands.java:160
 msgid "Logs you in with your password!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:222
+#: de/cubeisland/engine/core/CoreCommands.java:209
 msgid "Logs you out!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:157
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:154
 msgid "Makes a player an operator"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:154
+#: de/cubeisland/engine/core/module/ModuleCommands.java:140
 msgid "Reloads a module"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:80
+#: de/cubeisland/engine/core/CoreCommands.java:85
 msgid "Reloads all of the modules!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:91
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:95
 msgid "Reloads the server."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:68
+#: de/cubeisland/engine/core/CoreCommands.java:74
 msgid "Reloads the whole CubeEngine"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:428
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:383
 msgid "Removes a player from the whitelist."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:227
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:212
 msgid "Revokes the operator status of a player"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:304
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:276
 msgid "Saves all or a specific world to disk."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:276
+#: de/cubeisland/engine/core/CoreCommands.java:255
 msgid "Searches for a user in the database"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:90
+#: de/cubeisland/engine/core/CoreCommands.java:97
 msgid "Sets your password."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:76
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:80
 msgid "Shuts down the server"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:245
+#: de/cubeisland/engine/core/CoreCommands.java:223
 msgid "Toggles the online mode"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:145
+#: de/cubeisland/engine/core/module/ModuleCommands.java:131
 msgid "Unloaded a module and all the modules that depend on it"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:503
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:464
 msgid "Wipes the whitelist completely"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:145
+#: de/cubeisland/engine/core/CoreCommands.java:139
 msgid "All passwords reset!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:333
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:299
 msgid "All worlds have been saved to disk!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:126
+#: de/cubeisland/engine/core/module/ModuleCommands.java:118
 msgid "An error occurred while enabling the module!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:399
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:388
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:349
 msgid "An unknown error occurred while executing this command!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:367
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:328
 msgid "Authors:"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:377
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:336
 msgid "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:175
+#: de/cubeisland/engine/core/module/ModuleCommands.java:161
 msgid "Check the server log for info."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:393
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:371
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:332
 msgid "Contact an administrator if you think this is a mistake!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:77
+#: de/cubeisland/engine/core/CoreCommands.java:82
 msgid "CubeEngine Reload completed in {integer#time}ms!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:148
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:147
 msgid "Current difficulty level: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:365
-#: de/cubeisland/engine/core/module/ModuleCommands.java:231
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:326
+#: de/cubeisland/engine/core/module/ModuleCommands.java:214
 msgid "Description: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:379
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:338
 msgid ""
 "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version "
 "{input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:174
+#: de/cubeisland/engine/core/module/ModuleCommands.java:160
 msgid "Failed to reload the module!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:192
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:234
 msgid "Flags:"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:190
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:181
 msgid "If you still want to op him, use the -force flag."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/conversation/ConversationContextFactory.java:84
-#: de/cubeisland/engine/core/command/parameterized/ParameterizedContextFactory.java:307
-msgid "Invalid argument for {input}: {}"
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:179
-msgid "Last seen: {input#date}"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:294
+#: de/cubeisland/engine/core/CoreCommands.java:273
 msgid "Matched exactly! User: {user}"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:298
+#: de/cubeisland/engine/core/CoreCommands.java:276
 msgid "Matched not exactly! User: {user}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:253
+#: de/cubeisland/engine/core/module/ModuleCommands.java:237
 msgid "Module dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:269
+#: de/cubeisland/engine/core/module/ModuleCommands.java:253
 msgid "Module soft-dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:87
-msgid "Modules Reload completed in {integer#time}ms!"
-msgstr ""
-
-#: de/cubeisland/engine/core/module/ModuleCommands.java:230
+#: de/cubeisland/engine/core/module/ModuleCommands.java:213
 msgid "Name: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:268
+#: de/cubeisland/engine/core/CoreCommands.java:248
 msgid "New log level successfully set!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:290
+#: de/cubeisland/engine/core/CoreCommands.java:268
 msgid "No match found for {input}!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:112
-msgid "No player given!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:218
+#: de/cubeisland/engine/core/CoreCommands.java:205
 msgid "Only players can log in!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:199
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:241
 msgid "Parameters:"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:102
-#: de/cubeisland/engine/core/CoreCommands.java:163
+#: de/cubeisland/engine/core/command/readers/UserReader.java:48
 msgid "Player {user} not found!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:400
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:389
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:350
 msgid "Please report this error to an administrator."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:285
+#: de/cubeisland/engine/core/module/ModuleCommands.java:269
 msgid "Plugin dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:245
+#: de/cubeisland/engine/core/module/ModuleCommands.java:229
 msgid "Provided services:"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:71
+#: de/cubeisland/engine/core/CoreCommands.java:77
 msgid "Reloading CubeEngine! This may take some time..."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:83
+#: de/cubeisland/engine/core/CoreCommands.java:89
 msgid "Reloading all modules! This may take some time..."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:102
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:108
 msgid "Reloading the modules..."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:108
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:114
 msgid "Reloading the whole server... this may take some time."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:316
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:326
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:283
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:292
 msgid "Saving..."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:301
+#: de/cubeisland/engine/core/module/ModuleCommands.java:285
 msgid "Service dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:390
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:348
 msgid "Source Version: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:391
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:349
 msgid "Source link: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:104
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:110
 msgid "Successfully reloaded {amount} modules!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:272
-msgid "The current log level: {input#loglevel}"
 msgstr ""
 
 #: de/cubeisland/engine/core/bukkit/VanillaCommands.java:144
 msgid "The difficulty has been successfully set!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/ContainerCommand.java:119
+#: de/cubeisland/engine/core/command/ContainerCommand.java:140
 msgid "The following actions are available:"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:467
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:421
 msgid "The following players are whitelisted:"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:521
+#: de/cubeisland/engine/core/command/HelpCommand.java:65
 msgid "The following subcommands are available:"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:173
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:168
 msgid "The following users are operators:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:186
+#: de/cubeisland/engine/core/module/ModuleCommands.java:173
 msgid "The given file name is invalid!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:136
+#: de/cubeisland/engine/core/module/ModuleCommands.java:77
 msgid "The given module could not be found!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:195
+#: de/cubeisland/engine/core/module/ModuleCommands.java:180
 msgid "The given module file was not found! The name might be case sensitive."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:122
+#: de/cubeisland/engine/core/module/ModuleCommands.java:114
 msgid "The given module was successfully enabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:353
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:315
 msgid ""
 "The given plugin doesn't seem to be loaded, have you typed it correctly "
 "(casing does matter)?"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:312
-msgid "The given world was not found!"
-msgstr ""
-
-#: de/cubeisland/engine/core/module/ModuleCommands.java:201
+#: de/cubeisland/engine/core/module/ModuleCommands.java:185
 msgid "The module exists, but cannot be read! Check the file permissions."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:219
+#: de/cubeisland/engine/core/module/ModuleCommands.java:201
 msgid "The module failed to load! Check the server log for info."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:211
+#: de/cubeisland/engine/core/module/ModuleCommands.java:193
 msgid "The module {name#module} has been successfully loaded and enabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:141
+#: de/cubeisland/engine/core/module/ModuleCommands.java:128
 msgid "The module {name#module} was successfully disabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:165
+#: de/cubeisland/engine/core/module/ModuleCommands.java:151
 msgid "The module {name#module} was successfully reloaded from file!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:169
+#: de/cubeisland/engine/core/module/ModuleCommands.java:155
 msgid "The module {name#module} was successfully reloaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:151
+#: de/cubeisland/engine/core/module/ModuleCommands.java:137
 msgid "The module {name#module} was successfully unloaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:251
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:224
 msgid "The player you tried to deop is not an operator."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:160
-msgid "The player's password has been reset!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:124
-msgid "The player's password has been set!"
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:334
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:300
 msgid "The saving took {integer#time} milliseconds."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:257
-msgid "The server is not in offline-mode."
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:253
-msgid "The server is now in online-mode."
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:495
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:456
 msgid "The whitelist is already disabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:482
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:443
 msgid "The whitelist is already enabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:454
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:408
 msgid "The whitelist is currently disabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:458
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:412
 msgid "The whitelist is enabled!."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:500
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:461
 msgid "The whitelist is now disabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:487
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:448
 msgid "The whitelist is now enabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:513
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:473
 msgid "The whitelist was successfully wiped!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:169
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:165
 msgid "There are currently no operators!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:463
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:417
 msgid "There are currently no whitelisted players!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:112
+#: de/cubeisland/engine/core/module/ModuleCommands.java:90
 msgid "There are no modules loaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:283
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:256
 msgid "There are {amount} plugins and {amount} CubeEngine modules loaded:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:94
+#: de/cubeisland/engine/core/module/ModuleCommands.java:93
 msgid "These are the loaded modules."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:508
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:469
 msgid "This command is too dangerous for users!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:215
+#: de/cubeisland/engine/core/module/ModuleCommands.java:197
 msgid "This module is already loaded, try reloading it."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:376
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:335
 msgid ""
 "This server is running {name#server} in version {input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:201
+#: de/cubeisland/engine/core/CoreCommands.java:188
 msgid ""
 "Too many wrong passwords! \n"
 "For your security you were banned 10 seconds."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:221
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:271
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:206
 msgid "User {user} has been opped by {sender}!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:232
+#: de/cubeisland/engine/core/module/ModuleCommands.java:215
 msgid "Version: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:366
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:327
 msgid "Website: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:322
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:289
 msgid "World {world} has been saved to disk!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:194
+#: de/cubeisland/engine/core/CoreCommands.java:181
 msgid "Wrong password!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:184
+#: de/cubeisland/engine/core/CoreCommands.java:171
 msgid "You are already logged in!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:118
-msgid "You are not allowed to change the password of an other player!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:148
-msgid "You are not allowed to clear all passwords!"
-msgstr ""
-
-#: de/cubeisland/engine/core/CoreCommands.java:153
-msgid "You are not allowed to clear the password of other players!"
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:245
-msgid "You are not allowed to deop others!"
 msgstr ""
 
 #: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:45
 msgid "You don't have any pending confirmations!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:135
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:138
 msgid "You have to specify a world!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:239
-msgid "You have to specify an operator!"
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:412
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:370
 msgid "You have to specify the player to add to the whitelist!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:434
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:389
 msgid "You have to specify the player to remove from the whitelist!"
 msgstr ""
 
@@ -549,172 +489,363 @@ msgstr ""
 msgid "You have {amount} pending confirmations"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:190
+#: de/cubeisland/engine/core/CoreCommands.java:177
 msgid "You logged in successfully!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:241
-msgid "You might use /stop for this."
-msgstr ""
-
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:260
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:233
 msgid "You were deopped by {user}."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:210
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:195
 msgid "You were opped by {sender}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:392
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:370
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:331
 msgid "You're not allowed to do this!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:231
+#: de/cubeisland/engine/core/CoreCommands.java:220
 msgid "You're not logged in!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:236
+#: de/cubeisland/engine/core/CoreCommands.java:217
 msgid "You're now logged out."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/confirm/ConfirmManager.java:144
+#: de/cubeisland/engine/core/command/result/confirm/ConfirmManager.java:143
 msgid "Your confirmation timed out...."
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:169
+#: de/cubeisland/engine/core/CoreCommands.java:156
 msgid "Your password has been reset!"
 msgstr ""
 
-#: de/cubeisland/engine/core/CoreCommands.java:128
+#: de/cubeisland/engine/core/CoreCommands.java:124
 msgid "Your password has been set!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:151
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:150
 msgid "Your server has the hardcore mode enabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:357
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:318
 msgid ""
 "{name#plugin} is currently running in version {input#version:color=INDIGO}."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:515
+#: de/cubeisland/engine/core/command/HelpCommand.java:59
 msgid "{text:Description:color=GREY}: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/ContainerCommand.java:127
-#: de/cubeisland/engine/core/command/CubeCommand.java:534
+#: de/cubeisland/engine/core/command/ContainerCommand.java:148
+#: de/cubeisland/engine/core/command/HelpCommand.java:82
 msgid "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:95
+#: de/cubeisland/engine/core/module/ModuleCommands.java:94
 msgid ""
 "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color="
 "RED} for disabled."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:516
+#: de/cubeisland/engine/core/command/HelpCommand.java:60
 msgid "{text:Usage:color=GREY}: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/ContainerCommand.java:101
+#: de/cubeisland/engine/core/command/ContainerCommand.java:118
 msgid "{text:Usage:color=INDIGO}: {input#usage}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:263
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:236
 msgid "{user} is no longer an operator!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:445
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:399
 msgid "{user} is not whitelisted anymore."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:213
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:198
 msgid "{user} is now an operator!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:423
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:380
 msgid "{user} is now whitelisted."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:380
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:358
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:319
 msgid "Invalid Argument..."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:395
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:373
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:334
 msgid "Missing permission: {name}"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/ContainerCommand.java:115
+#: de/cubeisland/engine/core/command/ContainerCommand.java:136
 msgid "No actions are available"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:368
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:346
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:307
 msgid "Proper usage: {message}"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:354
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:332
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:293
 msgid "That seems wrong..."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:343
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:316
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:277
 msgid "The parameter {name#parameter} is missing!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:577
+#: de/cubeisland/engine/core/command/CubeCommand.java:600
 msgid "This command can only be used ingame!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:562
+#: de/cubeisland/engine/core/command/exception/TooFewArgumentsException.java:28
 msgid "You've given too few arguments."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeCommand.java:566
+#: de/cubeisland/engine/core/command/exception/TooManyArgumentsException.java:28
 msgid "You've given too many arguments."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:189
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:180
 msgid "{user} has never played on this server!"
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:201
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:186
 msgid "{user} is already an operator."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:418
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:376
 msgid "{user} is already whitelisted."
 msgstr ""
 
-#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:440
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:395
 msgid "{user} is not whitelisted."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:71
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:72
 msgid "Display the given page of your previous command."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:45
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:46
 msgid "Display the next page of your previous command."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:58
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:59
 msgid "Display the previous page of your previous command."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/CubeContextFactory.java:131
-msgid "Invalid argument at {}: {}"
-msgstr ""
-
-#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:99
+#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:100
 msgid "The page you want to see is out of bounds."
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:54
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:67
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:89
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:55
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:68
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:90
 msgid "You don't have any results to show!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:84
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:85
 msgid "You have to call the command with a numeric parameter."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:173
+#| msgid "The following users are operators:"
+msgid " - {user} (Last seen: {input#date})"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:129
+msgid "!*"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:359
+msgid "Allows you to manage your whitelist"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:35
+msgid "Confirm a command"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/ByteReader.java:40
+msgid "Could not parse {input} to a byte!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/DoubleReader.java:47
+msgid "Could not parse {input} to double!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/FloatReader.java:47
+msgid "Could not parse {input} to float!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/IntReader.java:40
+msgid "Could not parse {input} to integer!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/LongReader.java:39
+msgid "Could not parse {input} to long!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/ShortReader.java:39
+msgid "Could not parse {input} to short!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:82
+msgid "Couldn't find {input#command}. Did you mean {input#command}?"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:87
+msgid "Did you mean one of these: {input#command}?"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/HelpCommand.java:37
+msgid "Displays Help"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/command/PreCommandListener.java:92
+msgid "I couldn't find any command for {input#command} ..."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:383
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:344
+msgid "Invalid Argument at {integer#index}: {input#reason}"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/command/CubeCommandExecutor.java:379
+#: de/cubeisland/engine/core/command/conversation/ConversationCommand.java:340
+msgid "Invalid Argument for {input#named}: {input#reason}"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/ItemStackReader.java:39
+msgid "Item {input#item} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:93
+msgid "Modules Reload completed in {integer#time}s!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:226
+msgid "Not working!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:320
+msgid "Plugin information:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:57
+msgid "Provides ingame module plugin management functionality"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:293
+msgid "Service soft dependencies"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:251
+msgid "The current log level is: {input#loglevel}"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:430
+msgid "The following players are OP and can bypass the whitelist"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/DifficultyReader.java:40
+msgid "The given difficulty level is unknown!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/LogLevelReader.java:37
+msgid "The given log level is unknown."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:120
+msgid "The reload is completed after {amount} seconds"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:67
+msgid "These are the basic commands of the CubeEngine."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:244
+msgid "User {user} has been deopped by {sender}!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/WorldReader.java:46
+msgid "World {input} not found!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:125
+msgid "difficulty"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:167
+msgid "file name"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:242
+msgid "loglevel"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:81
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:96
+msgid "message"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:109
+#: de/cubeisland/engine/core/module/ModuleCommands.java:123
+#: de/cubeisland/engine/core/module/ModuleCommands.java:132
+#: de/cubeisland/engine/core/module/ModuleCommands.java:141
+#: de/cubeisland/engine/core/module/ModuleCommands.java:207
+#| msgid "The module {name#module} was successfully disabled!"
+msgid "module"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:256
+msgid "name"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:73
+msgid "pageNumber"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:161
+msgid "password"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:155
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:213
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:365
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:384
+#: de/cubeisland/engine/core/CoreCommands.java:129
+#| msgid "{user} is now an operator!"
+msgid "player"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:304
+#| msgid "Saves all or a specific world to disk."
+msgid "plugin"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:277
+#| msgid "Lists all loaded plugins"
+msgid "world"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/readers/DifficultyReader.java:52
+msgid "{input} is not a known difficulty!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:148
+#| msgid "You are not allowed to clear all passwords!"
+msgid "{user}'s password has been reset!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:119
+msgid "{user}'s password has been set!"
 msgstr ""
