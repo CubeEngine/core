@@ -38,12 +38,15 @@ public abstract class AbstractPooledDatabase implements Database
     private final ExecutorService executorService;
     private final AsyncTaskQueue taskQueue;
 
+    private final ExecutorService executor;
+
     protected final Core core;
 
     protected AbstractPooledDatabase(Core core)
     {
         this.core = core;
         this.executorService = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
+        this.executor = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
         this.taskQueue = new AsyncTaskQueue(this.executorService);
     }
 
@@ -169,5 +172,11 @@ public abstract class AbstractPooledDatabase implements Database
     {
         expectNotNull(statement, "The statement must not be null!");
         return withConnection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
+    }
+
+    @Override
+    public ExecutorService getExecutor()
+    {
+        return this.executor;
     }
 }

@@ -82,7 +82,7 @@ public abstract class AbstractWorldManager implements WorldManager
             if (worldEntity == null)
             {
                 worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);
-                worldEntity.insert();
+                worldEntity.asyncInsert();
             }
             this.worlds.put(world.getName(), worldEntity);
             this.worldIds.put(worldEntity.getValue(TABLE_WORLD.KEY), world);
