@@ -17,50 +17,43 @@
  */
 package de.cubeisland.engine.core.command;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Stack;
 
 import org.bukkit.permissions.Permissible;
 
-import de.cubeisland.engine.core.command.context.ContextDescriptor;
+import de.cubeisland.engine.command.context.BaseParameter;
+import de.cubeisland.engine.command.context.CtxDescriptor;
+import de.cubeisland.engine.command.context.Flag;
+import de.cubeisland.engine.command.context.Group;
+import de.cubeisland.engine.command.context.IndexedParameter;
+import de.cubeisland.engine.command.context.NamedParameter;
+import de.cubeisland.engine.command.context.ParameterGroup;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
-import de.cubeisland.engine.core.command.parameterized.CommandParameter;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexedGroup;
-import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterNamed;
 
+import static de.cubeisland.engine.command.context.BaseParameter.STATIC_LABEL;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class UsageGenerator
 {
-    public static String generateUsage(ContextDescriptor descriptor, Locale locale, Permissible permissible)
+    public static String generateUsage(CtxDescriptor descriptor, Locale locale, Permissible permissible)
     {
         // TODO translate labels
         StringBuilder sb = new StringBuilder();
-        Stack<Integer> groups = new Stack<>();
-        int inGroup = 0;
-        for (CommandParametersIndexed iParam : descriptor.getIndexedGroups())
+        for (Group<? extends IndexedParameter> group : descriptor.getIndexedGroups().list())
         {
-            generateIndexedUsage(sb, locale, permissible, iParam);
+            generateIndexedUsage(sb, locale, permissible, group);
+        }
+        for (Group<? extends NamedParameter> group : descriptor.getNamedGroups().list())
+        {
+            generateNamedUsage(sb, locale, permissible, group);
+        }
 
-        }
-        for (CommandParameter nParam : descriptor.getParameters())
+        for (Flag flag : descriptor.getFlags())
         {
-            if (nParam.checkPermission(permissible))
-            {
-                if (nParam.isRequired())
-                {
-                    sb.append('<').append(nParam.getName()).append(" <").append(nParam.getLabel()).append(">> ");
-                }
-                else
-                {
-                    sb.append('[').append(nParam.getName()).append(" <").append(nParam.getLabel()).append(">] ");
-                }
-            }
-        }
-        for (CommandFlag flag : descriptor.getFlags())
-        {
-            if (flag.checkPermission(permissible))
+            if (!(flag instanceof CommandFlag) || ((CommandFlag)flag).checkPermission(permissible))
             {
                 sb.append("[-").append(flag.getLongName()).append("] ");
             }
@@ -68,23 +61,58 @@ public class UsageGenerator
         return sb.toString().trim();
     }
 
-    private static void generateIndexedUsage(StringBuilder sb, Locale locale, Permissible permissible,
-                                             CommandParametersIndexed iParam)
+    private static void generateNamedUsage(StringBuilder sb, Locale locale, Permissible permissible,
+                                           Group<? extends NamedParameter> group)
     {
-        if (iParam instanceof CommandParameterIndexedGroup)
+        if (group instanceof ParameterGroup)
         {
-            boolean groupRequired = ((CommandParameterIndexedGroup)iParam).isGroupRequired();
+            boolean groupRequired = group.isRequired();
             sb.append(groupRequired ? '<' : '[');
-            for (CommandParametersIndexed subIParam : iParam.get())
+            for (Group<? extends NamedParameter> subGroup : group.list())
             {
-                generateIndexedUsage(sb, locale, permissible, subIParam);
+                generateNamedUsage(sb, locale, permissible, subGroup);
             }
             sb.deleteCharAt(sb.length() - 1);
             sb.append(groupRequired ? '>' : ']');
         }
-        else if (iParam instanceof CommandParameterIndexed)
+        else if (group instanceof NamedParameter)
         {
-            CommandParameterIndexed indexed = (CommandParameterIndexed)iParam;
+            NamedParameter named = (NamedParameter)group;
+            if ((!(named instanceof CommandParameterNamed)) || ((CommandParameterNamed)named).checkPermission(permissible))
+            {
+                return;
+            }
+            if (group.isRequired())
+            {
+                sb.append('<').append(named.getName()).append(" <")
+                  .append(implode("|", convertLabels(named))).append(">> ");
+            }
+            else
+            {
+                sb.append('[').append(named.getName()).append(" <")
+                  .append(implode("|", convertLabels(named))).append(">] ");
+            }
+        }
+        sb.append(' ');
+    }
+
+    private static void generateIndexedUsage(StringBuilder sb, Locale locale, Permissible permissible,
+                                             Group<? extends IndexedParameter> group)
+    {
+        if (group instanceof ParameterGroup)
+        {
+            boolean groupRequired = group.isRequired();
+            sb.append(groupRequired ? '<' : '[');
+            for (Group<? extends IndexedParameter> subGroup : group.list())
+            {
+                generateIndexedUsage(sb, locale, permissible, subGroup);
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append(groupRequired ? '>' : ']');
+        }
+        else if (group instanceof IndexedParameter)
+        {
+            IndexedParameter indexed = (IndexedParameter)group;
             sb.append(convertLabel(indexed.isRequired(), implode("|", convertLabels(indexed))));
         }
         sb.append(' ');
@@ -110,21 +138,17 @@ public class UsageGenerator
         }
     }
 
-    private static String[] convertLabels(CommandParameterIndexed indexedParam)
+    private static String[] convertLabels(BaseParameter<?> indexedParam)
     {
-        String[] labels = indexedParam.getLabels().clone();
-        String[] rawLabels = indexedParam.getLabels();
-        for (int i = 0; i < rawLabels.length; i++)
+        List<String> list = new ArrayList<>();
+        for (String staticValue : indexedParam.getStaticValues())
         {
-            if (rawLabels.length == 1)
-            {
-                labels[i] = convertLabel(true, "#" + rawLabels[i]);
-            }
-            else
-            {
-                labels[i] = convertLabel(true, rawLabels[i]);
-            }
+            list.add(convertLabel(true, "!" + staticValue));
         }
-        return labels;
+        if (!STATIC_LABEL.equals(indexedParam.getValueLabel())) // only static labels -> skip
+        {
+            list.add(convertLabel(true, (list.isEmpty() ? "" : "#") + indexedParam.getValueLabel()));
+        }
+        return list.toArray(new String[list.size()]);
     }
 }

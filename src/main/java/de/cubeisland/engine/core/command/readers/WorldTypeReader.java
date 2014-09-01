@@ -21,13 +21,13 @@ import java.util.Locale;
 
 import org.bukkit.WorldType;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 
 public class WorldTypeReader extends ArgumentReader
 {
     @Override
-    public WorldType read(String arg, Locale locale) throws ReaderException
+    public WorldType read(Class type, String arg, Locale locale) throws ReaderException
     {
         return WorldType.valueOf(arg);
     }

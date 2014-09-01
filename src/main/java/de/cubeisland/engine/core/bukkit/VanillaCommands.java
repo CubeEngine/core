@@ -36,7 +36,7 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
@@ -152,7 +152,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Makes a player an operator")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = {User.class, OfflinePlayer.class})))
+    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
     @Flags(@Flag(name = "f", longName = "force"))
     @CommandPermission(permDefault = FALSE)
     public void op(CubeContext context)
@@ -175,7 +175,7 @@ public class VanillaCommands implements CommandHolder
             return;
         }
         OfflinePlayer user = context.getArg(0, null);
-        if (!(user instanceof User) && !context.hasFlag("f"))
+        if (!(user.hasPlayedBefore() || user.isOnline()) && !context.hasFlag("f"))
         {
             context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getArg(0));
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");

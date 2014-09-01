@@ -23,14 +23,14 @@ import java.util.List;
 
 import org.bukkit.Material;
 
-import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.core.util.StringUtils;
 
 public class MaterialListCompleter implements Completer
 {
     @Override
-    public List<String> complete(CubeContext context, String token)
+    public List<String> complete(CommandContext context, String token)
     {
         List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
         String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();

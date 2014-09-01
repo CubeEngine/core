@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command.exception;
 
+import de.cubeisland.engine.command.exception.CommandException;
 import de.cubeisland.engine.core.permission.Permission;
 
 /**

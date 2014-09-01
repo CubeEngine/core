@@ -21,16 +21,15 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
-
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class FloatReader extends ArgumentReader
 {
     @Override
-    public Float read(String arg, Locale locale) throws ReaderException
+    public Float read(Class type, String arg, Locale locale) throws ReaderException
     {
         try
         {
@@ -44,7 +43,7 @@ public class FloatReader extends ArgumentReader
             }
             catch (ParseException e1)
             {
-                throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Could not parse {input} to float!", arg));
+                throw new ReaderException(CubeEngine.getI18n().translate(locale, MessageType.NEGATIVE, "Could not parse {input} to float!", arg));
             }
         }
     }

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;

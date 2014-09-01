@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -45,7 +45,7 @@ public class Parameters
         String value = values.get(index);
         if (type != String.class)
         {
-            return ArgumentReader.read(type, value, Locale.getDefault());
+            return (T)ArgumentReader.read(type, type, value, Locale.getDefault());
         }
         return (T)value;
     }

@@ -22,5 +22,5 @@ package de.cubeisland.engine.core.command.reflected.commandparameter;
  */
 public @interface ValueLabel
 {
-    String[] value();
+    String value();
 }

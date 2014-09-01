@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
-import de.cubeisland.engine.core.command.exception.CommandException;
+import de.cubeisland.engine.command.exception.CommandException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 
 import static de.cubeisland.engine.core.util.ChatFormat.GREY;
@@ -41,7 +41,7 @@ public class HelpCommand extends CubeCommand
     @Override
     public CubeContextFactory getContextFactory()
     {
-        return target.getContextFactory();
+        return (CubeContextFactory)target.getContextFactory();
     }
 
     @Override

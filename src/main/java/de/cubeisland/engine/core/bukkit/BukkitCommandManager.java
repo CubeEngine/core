@@ -32,8 +32,9 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
+import de.cubeisland.engine.core.command.parameterized.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
@@ -70,6 +71,8 @@ public class BukkitCommandManager implements CommandManager
 
         this.registerDefaultCompleter(new PlayerCompleter(), User.class);
         this.registerDefaultCompleter(new WorldCompleter(), World.class);
+
+        this.registerDefaultCompleter(new PlayerListCompleter(core), PlayerListCompleter.class);
     }
 
     public CommandInjector getInjector()

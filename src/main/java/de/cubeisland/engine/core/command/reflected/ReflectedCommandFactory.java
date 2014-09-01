@@ -20,33 +20,37 @@ package de.cubeisland.engine.core.command.reflected;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.TreeMap;
 
+import de.cubeisland.engine.command.context.CtxBuilder;
+import de.cubeisland.engine.command.context.Group;
+import de.cubeisland.engine.command.context.IndexedParameter;
+import de.cubeisland.engine.command.context.NamedParameter;
+import de.cubeisland.engine.command.context.ParameterGroup;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.context.ContextBuilder;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.CommandFlag;
-import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexedGroup;
-import de.cubeisland.engine.core.command.parameterized.CommandParametersIndexed;
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.core.command.parameterized.CommandParameterNamed;
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.command.reflected.commandparameter.CommandParameters;
+import de.cubeisland.engine.core.command.reflected.commandparameter.Description;
 import de.cubeisland.engine.core.command.reflected.commandparameter.Optional;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ParamFlag;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ParamGroup;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ParamIndexed;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ParamNamed;
+import de.cubeisland.engine.core.command.reflected.commandparameter.Required;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ValueLabel;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
@@ -58,7 +62,6 @@ import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.util.Pair;
 
 import static de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory.SignatureType.*;
 
@@ -94,45 +97,20 @@ public class ReflectedCommandFactory
     protected CubeCommand buildCommandWithParameter(Module module, Object holder, Method method, Command annotation)
     {
         Class<? extends CommandParameters> paramClass = (Class<? extends CommandParameters>)method.getParameterTypes()[1];
-        Map<Integer, Field> indexedFields = new TreeMap<>();
-        List<Field> namedFields = new ArrayList<>();
-        List<Field> flags = new ArrayList<>();
-        Map<Field, Pair<Integer, Field>> groupStarters = new HashMap<>();
-        this.findParameters(paramClass, indexedFields, namedFields, flags, groupStarters);
 
-        ContextBuilder builder = ContextBuilder.build();
-        Stack<CommandParameterIndexedGroup> groupStack = new Stack<>();
-        for (Field field : indexedFields.values())
+        FieldGroup index = new FieldGroup();
+        FieldGroup named = new FieldGroup();
+        FieldGroup flags = new FieldGroup();
+
+        this.findParameters(paramClass, index, named, flags);
+
+        CtxBuilder builder = new CtxBuilder().addIndexed(readIndexed(null, index)).addNamed(readNamed(null, named));
+        for (Field field : flags.fieldMap.values())
         {
-            // TODO description annotation
-            ParamIndexed iAnnot = field.getAnnotation(ParamIndexed.class);
-            ValueLabel lAnnot = field.getAnnotation(ValueLabel.class);
-            String[] labels = lAnnot == null ? new String[]{field.getName()} : lAnnot.value();
-            boolean required = !field.isAnnotationPresent(Optional.class);
-            Pair<Integer, Field> groupStarter = groupStarters.get(field);
-            if (groupStarter != null)
-            {
-                CommandParameterIndexedGroup group = new CommandParameterIndexedGroup(groupStarter.getRight().isAnnotationPresent(Optional.class), groupStarter.getLeft());
-                if (groupStack.isEmpty())
-                {
-                    builder.add(group); // Only add if group at rootlevel
-                }
-                groupStack.push(group);
-            }
-            CommandParameterIndexed parameterIndexed = new CommandParameterIndexed(labels, new Class[]{field.getType()}, required, iAnnot.greed());
-            // TODO Reader / Tabcompleter
-            if (groupStack.isEmpty())
-            {
-                builder.add(parameterIndexed);
-            }
-            else
-            {
-                groupStack.peek().get().add(parameterIndexed);
-                while (!groupStack.isEmpty() && groupStack.peek().isFull())
-                {
-                    groupStack.pop();
-                }
-            }
+            ParamFlag fAnnot = field.getAnnotation(ParamFlag.class);
+            // TODO perm
+            CommandFlag commandFlag = new CommandFlag(fAnnot.value(), fAnnot.longName());
+            builder.addFlag(commandFlag);
         }
 
         // TODO build cmd with CommandParameter in method signature
@@ -140,14 +118,98 @@ public class ReflectedCommandFactory
         return null;
     }
 
-    private void findParameters(Class paramClass, Map<Integer, Field> indexedFields,
-                                List<Field> namedFields, List<Field> flags, Map<Field, Pair<Integer, Field>> groupStarters)
+    private Group<NamedParameter> readNamed(Field aField, FieldGroup named)
+    {
+        ParameterGroup<NamedParameter> group = new ParameterGroup<>(aField == null || !aField.isAnnotationPresent(Optional.class));
+        Group<NamedParameter> param;
+        for (Field field : named.fieldMap.values())
+        {
+            if (named.subGroups.get(field) != null)
+            {
+                // Group
+                param = readNamed(field, named.subGroups.get(field));
+            }
+            else
+            {
+                ParamNamed nAnnot = field.getAnnotation(ParamNamed.class);
+                ValueLabel lAnnot = field.getAnnotation(ValueLabel.class);
+                Description desc = field.getAnnotation(Description.class);
+                boolean required = field.isAnnotationPresent(Required.class);
+
+                Class type = field.getType();
+                Class reader = field.getType();
+                Type genericType = field.getGenericType();
+                if (genericType instanceof ParameterizedType && List.class.isAssignableFrom((Class)((ParameterizedType)genericType).getRawType()))
+                {
+                    reader = List.class;
+                    type = (Class)((ParameterizedType)genericType).getActualTypeArguments()[0];
+                }
+
+                // TODO perm
+                param = new CommandParameterNamed(nAnnot.value().isEmpty() ? field.getName() : nAnnot.value(), type, reader, 1,
+                          required, lAnnot == null ? field.getName() : lAnnot.value(), desc == null ? null : desc.value(), null);
+
+            }
+            group.list().add(param);
+        }
+        return group;
+    }
+
+    private Group<IndexedParameter> readIndexed(Field aField, FieldGroup index)
+    {
+        ParameterGroup<IndexedParameter> group = new ParameterGroup<>(aField == null || !aField.isAnnotationPresent(Optional.class));
+        Group<IndexedParameter> param;
+        for (Field field : index.fieldMap.values())
+        {
+            if (index.subGroups.get(field) != null)
+            {
+                // Group
+                param = readIndexed(field, index.subGroups.get(field));
+            }
+            else
+            {
+                // IndexedParameter
+                // TODO Collection Fields extract GenericType for Type + set Reader to SimpleListReader by Default
+                // TODO perm
+                ParamIndexed iAnnot = field.getAnnotation(ParamIndexed.class);
+                ValueLabel lAnnot = field.getAnnotation(ValueLabel.class);
+                Description desc = field.getAnnotation(Description.class);
+                String label = lAnnot == null ? field.getName() : lAnnot.value();
+                boolean required = !field.isAnnotationPresent(Optional.class);
+                Class type = field.getType();
+                Class reader = field.getType();
+                Type genericType = field.getGenericType();
+                if (genericType instanceof ParameterizedType && List.class.isAssignableFrom((Class)((ParameterizedType)genericType).getRawType()))
+                {
+                    reader = List.class;
+                    type = (Class)((ParameterizedType)genericType).getActualTypeArguments()[0];
+                }
+                param = new CommandParameterIndexed(type, reader, iAnnot.greed(), required,
+                                    label, desc == null ? null : desc.value(), null);
+                // TODO Reader / Tabcompleter
+            }
+            group.list().add(param);
+        }
+        return group;
+    }
+
+    private void findParameters(Class paramClass, FieldGroup index, FieldGroup named, FieldGroup flags)
     {
         for (Field field : paramClass.getFields())
         {
             if (field.isAnnotationPresent(ParamIndexed.class))
             {
-                Field old = indexedFields.put(field.getAnnotation(ParamIndexed.class).value(), field);
+                if (ParamGroup.class.isAssignableFrom(field.getType()))
+                {
+                    FieldGroup indexSub = new FieldGroup();
+                    this.findParameters(field.getType(), indexSub, null, null);
+                    if (indexSub.fieldMap.isEmpty())
+                    {
+                        throw new IllegalArgumentException("Empty SubGroups are not allowed");
+                    }
+                    index.subGroups.put(field, indexSub);
+                }
+                Field old = index.fieldMap.put(field.getAnnotation(ParamIndexed.class).value(), field);
                 if (old != null)
                 {
                     throw new IllegalArgumentException("Duplicated order value in " + paramClass.getName());
@@ -155,27 +217,29 @@ public class ReflectedCommandFactory
             }
             else if (field.isAnnotationPresent(ParamNamed.class))
             {
-                namedFields.add(field);
+                if (ParamGroup.class.isAssignableFrom(field.getType()))
+                {
+                    FieldGroup namedSub = new FieldGroup();
+                    this.findParameters(field.getType(), null, namedSub, null);
+                    if (namedSub.fieldMap.isEmpty())
+                    {
+                        throw new IllegalArgumentException("Empty SubGroups are not allowed");
+                    }
+                    named.subGroups.put(field, namedSub);
+                }
+                named.fieldMap.put(named.fieldMap.size(), field);
             }
             else if (field.isAnnotationPresent(ParamFlag.class))
             {
-                if (field.getType().equals(Boolean.class) || field.getType().equals(boolean.class))
-                {
-                    flags.add(field);
-                }
-                else
-                {
-                    throw new IllegalArgumentException("Flags can only be Boolean! " + paramClass.getName());
-                }
-            }
-            else if (ParamGroup.class.isAssignableFrom(field.getType()))
-            {
-                Map<Integer, Field> tmpIndexedFields = new TreeMap<>();
-                this.findParameters(field.getType(), tmpIndexedFields, namedFields, flags, groupStarters);
-                groupStarters.put(tmpIndexedFields.values().iterator().next(), new Pair<Integer, Field>(tmpIndexedFields.size(), field));
-                indexedFields.putAll(tmpIndexedFields);
+                flags.fieldMap.put(flags.fieldMap.size(), field);
             }
         }
+    }
+
+    public static class FieldGroup
+    {
+        public Map<Integer, Field> fieldMap = new TreeMap<>();
+        public Map<Field, FieldGroup> subGroups = new HashMap<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -208,10 +272,9 @@ public class ReflectedCommandFactory
         }
         Permission cmdPermission = Permission.detachedPermission(permNode, permDefault);
 
-        List<CommandParametersIndexed> indexedParams = new ArrayList<>();
+        ParameterGroup<IndexedParameter> indexedParams = new ParameterGroup<>();
         if (method.isAnnotationPresent(IParams.class))
         {
-            int index = 0;
             for (Grouped arg : method.getAnnotation(IParams.class).value())
             {
                 Indexed[] indexed = arg.value();
@@ -220,56 +283,37 @@ public class ReflectedCommandFactory
                     throw new IllegalArgumentException("You have to define at least one Indexed!");
                 }
                 Indexed aIndexed = indexed[0];
-                String[] labels = aIndexed.label();
-                if (labels.length == 0)
-                {
-                    labels = new String[]{String.valueOf(index)};
-                }
-
-                CommandParameterIndexed indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), aIndexed.req(), arg.greedy() ? -1 : 1);
+                CommandParameterIndexed indexedParam = new CommandParameterIndexed(aIndexed.type(), aIndexed.reader(),
+                                                                                   arg.greedy() ? -1 : 1, aIndexed.req(),
+                                                                                   aIndexed.label(), null, null);
                 indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
-                Set<String> staticLabels = new HashSet<>();
-                for (String label : labels)
-                {
-                    if (label.startsWith("!"))
-                    {
-                        staticLabels.add(label.substring(1));
-                    }
-                }
-
-                if (!staticLabels.isEmpty())
-                {
-                    indexedParam.setCompleter(new IndexedParameterCompleter(indexedParam.getCompleter(), staticLabels));
-                }
 
                 if (indexed.length > 1)
                 {
-                    CommandParameterIndexedGroup group = new CommandParameterIndexedGroup(arg.req(), indexed.length);
-                    group.get().add(indexedParam);
+                    ParameterGroup<IndexedParameter> group = new ParameterGroup<>(arg.req());
+                    group.list().add(indexedParam);
                     for (int i = 1; i < indexed.length; i++)
                     {
-                        index++;
                         aIndexed = indexed[i];
-                        labels = aIndexed.label();
-                        if (labels.length == 0)
+                        indexedParam = new CommandParameterIndexed(aIndexed.type(), aIndexed.reader(), 1, aIndexed.req(),
+                                                                   aIndexed.label(), null, null);
+                        for (String staticValue : aIndexed.staticValues())
                         {
-                            labels = new String[]{String.valueOf(index)};
+                            indexedParam.addStaticReader(staticValue, aIndexed.staticReader());
                         }
-                        indexedParam = new CommandParameterIndexed(labels, aIndexed.type(), aIndexed.req(), 1);
                         indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
-                        group.get().add(indexedParam);
+                        group.list().add(indexedParam);
                     }
-                    indexedParams.add(group);
+                    indexedParams.list().add(group);
                 }
                 else
                 {
-                    indexedParams.add(indexedParam);
+                    indexedParams.list().add(indexedParam);
                 }
-                index++;
             }
         }
 
-        Set<CommandParameter> params = new LinkedHashSet<>();
+        ParameterGroup<NamedParameter> namedParams = new ParameterGroup<>();
         if (method.isAnnotationPresent(NParams.class))
         {
             for (Named param : method.getAnnotation(NParams.class).value())
@@ -297,14 +341,13 @@ public class ReflectedCommandFactory
                 {
                     paramPerm = cmdPermission.child(param.permission(), param.permDefault());
                 }
-                final CommandParameter cParam = new CommandParameter(names[0], param.label(), param.type(), paramPerm);
+                final CommandParameterNamed cParam = new CommandParameterNamed(names[0], param.type(), param.reader(), 1, param.required(), param.label(), null, paramPerm);
                 cParam.addAliases(paramAliases);
-                cParam.setRequired(param.required());
-                cParam.setCompleter(getCompleter(module, param.completer(), param.type()));
-                params.add(cParam);
+                cParam.withCompleter(getCompleter(module, param.completer(), param.type()));
+                namedParams.list().add(cParam);
             }
         }
-        Set<CommandFlag> flags = new HashSet<>();
+        Set<de.cubeisland.engine.command.context.Flag> flags = new HashSet<>();
         if (method.isAnnotationPresent(Flags.class))
         {
             for (Flag flag : method.getAnnotation(Flags.class).value())
@@ -318,8 +361,8 @@ public class ReflectedCommandFactory
             }
         }
 
-        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, cmdAnnot.desc(),
-                this.createContextFactory(indexedParams, params, flags), cmdPermission, checkPermission);
+        CubeContextFactory ctxFactory = new CubeContextFactory(new CtxBuilder().addIndexed(indexedParams).addNamed(namedParams).addFlags(flags).get());
+        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, cmdAnnot.desc(), ctxFactory, cmdPermission, checkPermission);
 
         cmd.setAliases(aliases);
         cmd.setLoggable(!method.isAnnotationPresent(Unloggable.class));
@@ -348,11 +391,6 @@ public class ReflectedCommandFactory
             module.getLog().error(ex, "Failed to create the completer '{}'", completerClass.getName());
             return null;
         }
-    }
-
-    protected CubeContextFactory createContextFactory(List<CommandParametersIndexed> indexed, Set<CommandParameter> named, Set<CommandFlag> flags)
-    {
-        return new CubeContextFactory(ContextBuilder.build().addIndexed(indexed).addNamed(named).addFlags(flags).get());
     }
 
     public List<CubeCommand> parseCommands(Module module, Object holder)

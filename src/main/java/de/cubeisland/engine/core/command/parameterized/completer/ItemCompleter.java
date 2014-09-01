@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.Arrays;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class ItemCompleter implements Completer
 {
     @Override
-    public List<String> complete(CubeContext context, String token)
+    public List<String> complete(CommandContext context, String token)
     {
         return Arrays.asList(String.valueOf(Match.material().material(token).getId()));
     }

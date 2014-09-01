@@ -42,11 +42,11 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.ContainerCommand.DelegatingContextFilter;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.exception.CommandException;
-import de.cubeisland.engine.core.command.exception.IncorrectArgumentException;
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.exception.ReaderException;
-import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.command.exception.CommandException;
+import de.cubeisland.engine.command.exception.IncorrectArgumentException;
+import de.cubeisland.engine.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.command.exception.ReaderException;
+import de.cubeisland.engine.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
@@ -109,7 +109,8 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             args = newArgs;
         }
 
-        CubeContext ctx = command.getContextFactory().parse(command, sender, labels, args);
+        CubeContext ctx = command.getContextFactory().parse(command, labels, args);
+        ctx.setSender(sender);
         if (command instanceof ContainerCommand && (ctx.getIndexedCount() != 1 || !tabComplete))
         {
             DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
@@ -122,7 +123,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                     if (target != null)
                     {
                         // TODO delegation.filterContext()
-                        return target.getContextFactory().parse(target, sender, labels, args);
+                        return (CubeContext)target.getContextFactory().parse(target, labels, args);
                     }
                     command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                 }

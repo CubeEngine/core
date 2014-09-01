@@ -17,14 +17,13 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
-
-import gnu.trove.set.hash.THashSet;
 
 public class BooleanReader extends ArgumentReader
 {
@@ -35,13 +34,13 @@ public class BooleanReader extends ArgumentReader
     public BooleanReader(Core core)
     {
         this.core = core;
-        this.yesStrings = new THashSet<>();
+        this.yesStrings = new HashSet<>();
         this.yesStrings.add("yes");
         this.yesStrings.add("+");
         this.yesStrings.add("1");
         this.yesStrings.add("true");
 
-        this.noStrings = new THashSet<>();
+        this.noStrings = new HashSet<>();
         this.noStrings.add("no");
         this.noStrings.add("-");
         this.noStrings.add("0");
@@ -49,7 +48,7 @@ public class BooleanReader extends ArgumentReader
     }
 
     @Override
-    public Boolean read(String arg, Locale locale) throws ReaderException
+    public Boolean read(Class type, String arg, Locale locale) throws ReaderException
     {
         arg = arg.trim().toLowerCase(locale);
         if (this.yesStrings.contains(arg))

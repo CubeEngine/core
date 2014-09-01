@@ -22,8 +22,8 @@ import java.util.Locale;
 import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -31,7 +31,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 public class ItemStackReader extends ArgumentReader
 {
     @Override
-    public ItemStack read(String arg, Locale locale)
+    public ItemStack read(Class type, String arg, Locale locale)
     {
         ItemStack item = Match.material().itemStack(arg);
         if (item == null)

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 
@@ -55,7 +55,7 @@ public final class ReflectedApiHandler extends ApiHandler
             list.add(request);
             for (Entry<String, Class> entry : this.getParameters().entrySet())
             {
-                list.add(ArgumentReader.read(entry.getValue(), params.getString(entry.getKey()), Locale.getDefault()));
+                list.add(ArgumentReader.read(entry.getValue(), entry.getValue(), params.getString(entry.getKey()), Locale.getDefault()));
             }
             return (ApiResponse)this.method.invoke(this.holder, list.toArray(new Object[list.size()]));
         }

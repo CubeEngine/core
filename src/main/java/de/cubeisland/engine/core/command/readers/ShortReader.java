@@ -19,16 +19,15 @@ package de.cubeisland.engine.core.command.readers;
 
 import java.util.Locale;
 
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
-
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ShortReader extends ArgumentReader
 {
     @Override
-    public Short read(String arg, Locale locale) throws ReaderException
+    public Short read(Class type, String arg, Locale locale) throws ReaderException
     {
         try
         {
@@ -36,7 +35,7 @@ public class ShortReader extends ArgumentReader
         }
         catch (NumberFormatException e)
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(locale, NEGATIVE, "Could not parse {input} to short!", arg));
+            throw new ReaderException(CubeEngine.getI18n().translate(locale, MessageType.NEGATIVE, "Could not parse {input} to short!", arg));
         }
     }
 }

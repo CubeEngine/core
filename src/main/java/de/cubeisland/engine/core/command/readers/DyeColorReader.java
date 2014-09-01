@@ -21,14 +21,14 @@ import java.util.Locale;
 
 import org.bukkit.DyeColor;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class DyeColorReader extends ArgumentReader
 {
     @Override
-    public DyeColor read(String arg, Locale locale) throws ReaderException
+    public DyeColor read(Class type, String arg, Locale locale) throws ReaderException
     {
         return Match.materialData().colorData(arg);
     }

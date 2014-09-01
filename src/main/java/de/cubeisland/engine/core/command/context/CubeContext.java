@@ -23,49 +23,41 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.context.ContextParser.Type;
+import de.cubeisland.engine.command.context.ContextParser.Type;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
-public class CubeContext extends ReadContext
+public class CubeContext extends CommandContext<CubeCommand>
 {
-    private final CubeCommand command;
-    private final CommandSender sender;
-    private final Stack<String> labels;
-
+    private CommandSender sender;
     private final Core core;
 
     public CubeContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags,
-                       Type last, CubeCommand command, CommandSender sender, Stack<String> labels)
+                       Type last, CubeCommand command, List<String> labels)
     {
-        super(rawArgs, rawIndexed, rawNamed, flags, last);
-        this.command = command;
-        this.sender = sender;
-        this.labels = labels;
+        super(rawArgs, rawIndexed, rawNamed, flags, last, command, labels);
         this.core = command.getModule().getCore();
     }
 
     public CubeContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags,
-                       CubeCommand command, CommandSender sender, Stack<String> labels)
+                       CubeCommand command, List<String> labels)
     {
-        this(rawArgs, rawIndexed, rawNamed, flags, Type.ANY, command, sender, labels);
+        this(rawArgs, rawIndexed, rawNamed, flags, Type.ANY, command, labels);
     }
 
 
-    public CubeContext(String[] strings, CubeCommand command, CommandSender sender, Stack<String> labels)
+    public CubeContext(String[] strings, CubeCommand command, Stack<String> labels)
     {
         this(strings, Collections.<String>emptyList(), Collections.<String, String>emptyMap(),
-             Collections.<String>emptySet(), Type.ANY, command, sender, labels);
+             Collections.<String>emptySet(), Type.ANY, command, labels);
     }
 
-    public CubeCommand getCommand()
-    {
-        return command;
-    }
+
 
     public boolean isSender(Class<? extends CommandSender> type)
     {
@@ -77,17 +69,8 @@ public class CubeContext extends ReadContext
         return this.sender;
     }
 
-    public String getLabel()
-    {
-        return this.labels.peek();
-    }
 
-    public Stack<String> getLabels()
-    {
-        Stack<String> newStack = new Stack<>();
-        newStack.addAll(this.labels);
-        return newStack;
-    }
+
 
     public Core getCore()
     {
@@ -115,5 +98,10 @@ public class CubeContext extends ReadContext
         {
             throw new PermissionDeniedException(permission);
         }
+    }
+
+    public void setSender(CommandSender sender) // TODO prevent this beeing public
+    {
+        this.sender = sender;
     }
 }

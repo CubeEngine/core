@@ -17,14 +17,14 @@
  */
 package de.cubeisland.engine.core.command.exception;
 
+import de.cubeisland.engine.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.core.command.CommandSender;
-
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class TooFewArgumentsException extends IncorrectUsageException
 {
     public TooFewArgumentsException(CommandSender sender)
     {
-        super(sender.getTranslation(NEGATIVE, "You've given too few arguments."));
+        super(sender.getTranslation(MessageType.NEGATIVE, "You've given too few arguments.")); // TODO move message to exception handler
     }
 }

@@ -21,13 +21,13 @@ import java.util.Locale;
 
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class EnchantmentReader extends ArgumentReader
 {
     @Override
-    public Enchantment read(String arg, Locale locale)
+    public Enchantment read(Class type, String arg, Locale locale)
     {
         return Match.enchant().enchantment(arg);
     }

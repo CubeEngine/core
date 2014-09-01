@@ -24,8 +24,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
-import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.CommandContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -34,7 +34,7 @@ public class WorldCompleter implements Completer
     private final Server server = Bukkit.getServer();
 
     @Override
-    public List<String> complete(CubeContext context, String token)
+    public List<String> complete(CommandContext context, String token)
     {
         List<String> offers = new ArrayList<>();
         for (World world : this.server.getWorlds())

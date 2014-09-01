@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.reflected.context;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.permission.PermDefault;
 
 import static de.cubeisland.engine.core.permission.PermDefault.OP;
@@ -29,6 +29,8 @@ public @interface Named
     String label() default "";
 
     Class type() default String.class;
+
+    Class reader() default String.class;
 
     boolean required() default false;
 

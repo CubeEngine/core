@@ -31,19 +31,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
+import de.cubeisland.engine.command.context.Flag;
+import de.cubeisland.engine.command.context.NamedParameter;
+import de.cubeisland.engine.command.exception.IncorrectArgumentException;
+import de.cubeisland.engine.command.exception.IncorrectUsageException;
+import de.cubeisland.engine.command.exception.MissingParameterException;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.HelpCommand;
-import de.cubeisland.engine.core.command.exception.IncorrectArgumentException;
-import de.cubeisland.engine.core.command.exception.IncorrectUsageException;
-import de.cubeisland.engine.core.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.core.command.exception.ReaderException;
-import de.cubeisland.engine.core.command.parameterized.CommandFlag;
-import de.cubeisland.engine.core.command.parameterized.CommandParameter;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -51,9 +51,7 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.TLongHashSet;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public abstract class ConversationCommand extends CubeCommand implements Listener
 {
@@ -88,7 +86,8 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             CubeContext context = null;
             try
             {
-                context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
+                context = this.getContextFactory().parse(this, labels, StringUtils.explode(" ", event.getMessage()));
+                this.getContextFactory().readContext(context, user.getLocale());
                 if (event.getMessage().startsWith("?"))
                 {
                     this.getChild("?").run(context);
@@ -116,8 +115,8 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
 
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ",
-                                                                                                         event.getChatMessage()));
+            CubeContext context = this.getContextFactory().parse(this, labels, StringUtils.explode(" ", event.getChatMessage()));
+            this.getContextFactory().readContext(context, user.getLocale());
             event.getTabCompletions().addAll(this.tabComplete(context));
         }
     }
@@ -128,11 +127,11 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
         Set<String> params = new HashSet<>();
-        for (CommandFlag flag : this.getContextFactory().descriptor().getFlags())
+        for (Flag flag : this.getContextFactory().descriptor().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
         }
-        for (CommandParameter param : this.getContextFactory().descriptor().getParameters())
+        for (NamedParameter param : this.getContextFactory().descriptor().getNamedGroups().listAll())
         {
             params.add(param.getName().toLowerCase());
         }
@@ -152,7 +151,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
                 //check for named
                 if (beforeLastArg != null && params.contains(beforeLastArg.toLowerCase()))
                 {
-                    return this.getContextFactory().descriptor().getParameter(beforeLastArg).getCompleter().complete(context, lastArg);
+                    return this.getContextFactory().descriptor().getNamed(beforeLastArg).getCompleter().complete(context, lastArg);
                 }
                 else
                 {
@@ -165,7 +164,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
                 //check for named
                 if (beforeLastArg != null && params.contains(beforeLastArg.toLowerCase()))
                 {
-                    return this.getContextFactory().descriptor().getParameter(beforeLastArg).getCompleter().complete(context, lastArg);
+                    return this.getContextFactory().descriptor().getNamed(beforeLastArg).getCompleter().complete(context, lastArg);
                 }
                 else // check starting
                 {
@@ -233,14 +232,14 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         {
             context.sendTranslated(NEUTRAL, "Flags:");
             Set<String> flags = new HashSet<>();
-            for (CommandFlag flag : target.getContextFactory().descriptor().getFlags())
+            for (Flag flag : target.getContextFactory().descriptor().getFlags())
             {
                 flags.add(flag.getLongName().toLowerCase());
             }
             context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, flags));
             context.sendTranslated(NEUTRAL, "Parameters:");
             Set<String> params  = new HashSet<>();
-            for (CommandParameter param : target.getContextFactory().descriptor().getParameters())
+            for (NamedParameter param : target.getContextFactory().descriptor().getNamedGroups().listAll())
             {
                 params.add(param.getName().toLowerCase());
             }

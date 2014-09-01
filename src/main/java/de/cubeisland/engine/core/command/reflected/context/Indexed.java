@@ -17,12 +17,15 @@
  */
 package de.cubeisland.engine.core.command.reflected.context;
 
-import de.cubeisland.engine.core.command.parameterized.Completer;
+import de.cubeisland.engine.command.Completer;
 
 public @interface Indexed
 {
-    String[] label();
-    Class[] type() default String.class;
+    String label();
+    String[] staticValues() default {};
+    Class staticReader() default String.class;
+    Class type() default String.class;
+    Class reader() default String.class;
     Class<? extends Completer> completer() default Completer.class;
     boolean req() default true;
 }

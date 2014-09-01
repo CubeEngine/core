@@ -17,7 +17,23 @@
  */
 package de.cubeisland.engine.core.command.reflected.commandparameter;
 
+/**
+ * Annotates a named Parameter.
+ * <p>Named Parameters are by default optional use {@link Required} to make it required
+ */
 public @interface ParamNamed
 {
-    String[] value() default {};
+    /**
+     * By default the parameters name will be fields name but can be overridden here
+     *
+     * @return the parameters name
+     */
+    String value() default "";
+
+    /**
+     * Optional possible parameter names
+     *
+     * @return the aliases
+     */
+    String[] alias() default {};
 }

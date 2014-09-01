@@ -20,10 +20,11 @@ package de.cubeisland.engine.core.command.parameterized.completer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.parameterized.Completer;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
@@ -43,20 +44,22 @@ public class PlayerCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(CubeContext context, String token)
+    public List<String> complete(CommandContext context, String token)
     {
-        final CommandSender sender = context.getSender();
         List<String> playerNames = new ArrayList<>();
-        for (User player : CubeEngine.getUserManager().getOnlineUsers())
+        if (context instanceof CubeContext)
         {
-            String name = player.getName();
-            if (canSee(sender,  player) && startsWithIgnoreCase(name, token))
+            final CommandSender sender = ((CubeContext)context).getSender();
+            for (User player : CubeEngine.getUserManager().getOnlineUsers())
             {
-                playerNames.add(name);
+                String name = player.getName();
+                if (canSee(sender,  player) && startsWithIgnoreCase(name, token))
+                {
+                    playerNames.add(name);
+                }
             }
+            playerNames.remove(sender.getName());
         }
-        playerNames.remove(sender.getName());
-
         return playerNames;
     }
 }

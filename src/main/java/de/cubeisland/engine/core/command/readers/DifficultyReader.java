@@ -22,15 +22,15 @@ import java.util.Locale;
 import org.bukkit.Difficulty;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 public class DifficultyReader extends ArgumentReader
 {
     @Override
-    public Difficulty read(String arg, Locale locale) throws ReaderException
+    public Difficulty read(Class type, String arg, Locale locale) throws ReaderException
     {
         try
         {

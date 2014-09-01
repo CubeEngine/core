@@ -126,7 +126,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    @IParams(@Grouped(value = @Indexed(label = {"player","!*"}, type = User.class), req = false))
+    @IParams(@Grouped(value = @Indexed(label = "player", staticValues = "*", type = User.class), req = false))
     public void clearPassword(CubeContext context)
     {
         CommandSender sender = context.getSender();

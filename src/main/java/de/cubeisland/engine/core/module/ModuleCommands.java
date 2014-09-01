@@ -29,11 +29,11 @@ import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
-import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.reflected.Alias;
 import de.cubeisland.engine.core.command.reflected.Command;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
@@ -69,7 +69,7 @@ public class ModuleCommands extends ContainerCommand
         }
 
         @Override
-        public Module read(String arg, Locale locale) throws ReaderException
+        public Module read(Class type, String arg, Locale locale) throws ReaderException
         {
             Module module = this.mm.getModule(arg);
             if (module == null)

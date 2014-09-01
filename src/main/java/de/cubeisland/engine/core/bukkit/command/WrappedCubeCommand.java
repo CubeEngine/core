@@ -67,7 +67,6 @@ public class WrappedCubeCommand extends Command
     @Override
     public Command setDescription(String description)
     {
-        this.command.setDescription(description);
         return this;
     }
 

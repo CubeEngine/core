@@ -21,13 +21,13 @@ import java.util.Locale;
 
 import org.bukkit.entity.EntityType;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class EntityTypeReader extends ArgumentReader
 {
     @Override
-    public EntityType read(String arg, Locale locale)
+    public EntityType read(Class type, String arg, Locale locale)
     {
         return Match.entity().any(arg);
     }

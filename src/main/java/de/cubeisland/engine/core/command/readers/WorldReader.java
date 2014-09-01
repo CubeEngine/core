@@ -23,8 +23,8 @@ import org.bukkit.World;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
@@ -38,7 +38,7 @@ public class WorldReader extends ArgumentReader
     }
 
     @Override
-    public World read(String arg, Locale locale) throws ReaderException
+    public World read(Class type, String arg, Locale locale) throws ReaderException
     {
         World world = this.core.getWorldManager().getWorld(arg);
         if (world == null)

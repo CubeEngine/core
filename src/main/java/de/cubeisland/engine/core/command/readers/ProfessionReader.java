@@ -21,14 +21,14 @@ import java.util.Locale;
 
 import org.bukkit.entity.Villager;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class ProfessionReader extends ArgumentReader
 {
     @Override
-    public Villager.Profession read(String arg, Locale locale) throws ReaderException
+    public Villager.Profession read(Class type, String arg, Locale locale) throws ReaderException
     {
         return Match.profession().profession(arg);
     }

@@ -23,8 +23,8 @@ import org.bukkit.OfflinePlayer;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 
 public class OfflinePlayerReader extends ArgumentReader
 {
@@ -36,7 +36,7 @@ public class OfflinePlayerReader extends ArgumentReader
     }
 
     @Override
-    public OfflinePlayer read(String arg, Locale locale) throws ReaderException
+    public OfflinePlayer read(Class type, String arg, Locale locale) throws ReaderException
     {
         return ((BukkitCore)this.core).getServer().getOfflinePlayer(arg);
     }

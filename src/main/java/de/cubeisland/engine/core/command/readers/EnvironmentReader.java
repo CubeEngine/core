@@ -21,13 +21,13 @@ import java.util.Locale;
 
 import org.bukkit.World.Environment;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
-import de.cubeisland.engine.core.command.exception.ReaderException;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 
 public class EnvironmentReader extends ArgumentReader
 {
     @Override
-    public Environment read(String arg, Locale locale) throws ReaderException
+    public Environment read(Class type, String arg, Locale locale) throws ReaderException
     {
         return Environment.valueOf(arg.toUpperCase());
     }

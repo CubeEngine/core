@@ -17,89 +17,27 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
-import java.util.Arrays;
-import java.util.List;
+import de.cubeisland.engine.command.context.IndexedParameter;
+import de.cubeisland.engine.core.permission.Permission;
 
-import de.cubeisland.engine.core.command.ArgumentReader;
-
-import static de.cubeisland.engine.core.contract.Contract.expect;
-
-public class CommandParameterIndexed implements CommandParametersIndexed
+public class CommandParameterIndexed extends IndexedParameter
 {
-    /**
-     * The display label for the indexed parameter
-     */
-    private final String[] labels;
-    private final Class<?>[] types;
-    private final int greed;
-    private final boolean required;
+    protected final Permission permission;
 
-    private Completer completer;
-
-
-    public CommandParameterIndexed(String[] labels, Class<?>[] types, boolean required, int greed)
+    public CommandParameterIndexed(Class<?> type, Class<?> reader, int greed, boolean required, String valueLabel,
+                                   String description, Permission permission)
     {
-        int i = 0;
-        for (Class<?> type : types)
-        {
-            expect(ArgumentReader.hasReader(type), "The indexed parameter '" + labels[0] + "(" + i + ")' has an unreadable type: " + type.getName());
-            i++;
-        }
-        this.labels = labels;
-        this.types = types;
-        this.required = required;
-        this.greed = greed;
-    }
-
-    public int getGreed()
-    {
-        return greed;
-    }
-
-    public String[] getLabels()
-    {
-        return labels;
-    }
-
-    public Class<?>[] getType()
-    {
-        return types;
-    }
-
-    public Completer getCompleter()
-    {
-        return completer;
-    }
-
-    public void setCompleter(Completer completer)
-    {
-        this.completer = completer;
-    }
-
-    public boolean isRequired()
-    {
-        return required;
+        super(type, reader, greed, required, valueLabel, description);
+        this.permission = permission;
     }
 
     public static CommandParameterIndexed greedyIndex()
     {
-        return new CommandParameterIndexed(new String[]{"0"}, new Class[]{String.class}, false, -1);
+        return new CommandParameterIndexed(String.class, String.class, -1, false, "0", null, null);
     }
 
     public static CommandParameterIndexed emptyIndex(String label)
     {
-        return new CommandParameterIndexed(new String[]{label}, new Class[]{String.class}, false, 1);
-    }
-
-    @Override
-    public List<CommandParameterIndexed> getAll()
-    {
-        return Arrays.asList(this);
-    }
-
-    @Override
-    public List<CommandParametersIndexed> get()
-    {
-        return Arrays.asList((CommandParametersIndexed)this);
+        return new CommandParameterIndexed(String.class, String.class, 1, false, label, null, null);
     }
 }
