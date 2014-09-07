@@ -44,7 +44,7 @@ public class WrappedCommandSender implements CommandSender
     }
 
     @Override
-    public UUID getUniqueId()
+    public UUID getUUID()
     {
         if (wrapped instanceof Player)
         {

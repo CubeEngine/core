@@ -23,8 +23,8 @@ import java.util.Set;
 
 import de.cubeisland.engine.command.context.ContextParser;
 import de.cubeisland.engine.command.context.CtxDescriptor;
-import de.cubeisland.engine.command.context.Flag;
-import de.cubeisland.engine.command.context.NamedParameter;
+import de.cubeisland.engine.command.context.parameter.FlagParameter;
+import de.cubeisland.engine.command.context.parameter.NamedParameter;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
 
 import static de.cubeisland.engine.command.context.ContextParser.Type.*;
@@ -60,7 +60,7 @@ public class ConversationContextFactory extends CubeContextFactory
             else
             {
                 rawArg = rawArg.toLowerCase();
-                Flag flag = this.descriptor.getFlag(rawArg);
+                FlagParameter flag = this.descriptor.getFlag(rawArg);
                 if (flag != null)
                 {
                     offset++;

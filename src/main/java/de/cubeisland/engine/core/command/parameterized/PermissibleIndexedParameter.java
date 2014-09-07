@@ -15,19 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.reflected.context;
+package de.cubeisland.engine.core.command.parameterized;
 
-import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.command.context.parameter.IndexedParameter;
+import de.cubeisland.engine.core.permission.Permission;
 
-import static de.cubeisland.engine.core.permission.PermDefault.OP;
-
-public @interface Flag
+public class PermissibleIndexedParameter extends IndexedParameter
 {
-    String name();
+    Permission permission;
 
-    String longName() default "";
+    public static PermissibleIndexedParameter greedyIndex()
+    {
+        return new PermissibleIndexedParameter(String.class, String.class, -1, false, "0", null, null);
+    }
 
-    String permission() default "";
-
-    PermDefault permDefault() default OP;
+    public static PermissibleIndexedParameter emptyIndex(String label)
+    {
+        return new PermissibleIndexedParameter(String.class, String.class, 1, false, label, null, null);
+    }
 }

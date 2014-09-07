@@ -32,45 +32,29 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
-public class CubeContext extends CommandContext<CubeCommand>
+public class CubeContext extends CommandContext<CubeCommand, CommandSender>
 {
-    private CommandSender sender;
     private final Core core;
 
     public CubeContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags,
-                       Type last, CubeCommand command, List<String> labels)
+                       Type last, CubeCommand command, List<String> labels, CommandSender sender)
     {
-        super(rawArgs, rawIndexed, rawNamed, flags, last, command, labels);
+        super(rawArgs, rawIndexed, rawNamed, flags, last, command, labels, sender);
         this.core = command.getModule().getCore();
     }
 
     public CubeContext(String[] rawArgs, List<String> rawIndexed, Map<String, String> rawNamed, Set<String> flags,
-                       CubeCommand command, List<String> labels)
+                       CubeCommand command, List<String> labels, CommandSender sender)
     {
-        this(rawArgs, rawIndexed, rawNamed, flags, Type.ANY, command, labels);
+        this(rawArgs, rawIndexed, rawNamed, flags, Type.ANY, command, labels, sender);
     }
 
 
-    public CubeContext(String[] strings, CubeCommand command, Stack<String> labels)
+    public CubeContext(String[] strings, CubeCommand command, Stack<String> labels, CommandSender sender)
     {
         this(strings, Collections.<String>emptyList(), Collections.<String, String>emptyMap(),
-             Collections.<String>emptySet(), Type.ANY, command, labels);
+             Collections.<String>emptySet(), Type.ANY, command, labels, sender);
     }
-
-
-
-    public boolean isSender(Class<? extends CommandSender> type)
-    {
-        return type.isAssignableFrom(this.sender.getClass());
-    }
-
-    public CommandSender getSender()
-    {
-        return this.sender;
-    }
-
-
-
 
     public Core getCore()
     {
@@ -79,29 +63,24 @@ public class CubeContext extends CommandContext<CubeCommand>
 
     public void sendMessage(String message)
     {
-        this.sender.sendMessage(message);
+        this.getSource().sendMessage(message);
     }
 
     public void sendTranslated(MessageType type, String message, Object... args)
     {
-        this.sender.sendTranslated(type, message, args);
+        this.getSource().sendTranslated(type, message, args);
     }
 
     public void sendTranslatedN(MessageType type, int count, String sMessage, String pMessage, Object... args)
     {
-        this.sender.sendTranslatedN(type, count, sMessage, pMessage, args);
+        this.getSource().sendTranslatedN(type, count, sMessage, pMessage, args);
     }
 
     public void ensurePermission(Permission permission) throws PermissionDeniedException
     {
-        if (!permission.isAuthorized(this.getSender()))
+        if (!permission.isAuthorized(this.getSource()))
         {
             throw new PermissionDeniedException(permission);
         }
-    }
-
-    public void setSender(CommandSender sender) // TODO prevent this beeing public
-    {
-        this.sender = sender;
     }
 }

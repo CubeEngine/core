@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.command.result;
 
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 
-public abstract class LongRunningResult implements CommandResult
+public abstract class LongRunningResult implements CommandResult<CubeContext>
 {
     private boolean isDone = false;
     private int taskId = -1;

@@ -35,11 +35,11 @@ import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
 import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexeds;
 import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -106,7 +106,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Enables a module")
-    @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     public void enable(CubeContext context)
     {
         if (this.mm.enableModule(context.<Module>getArg(0)))
@@ -120,7 +120,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Disables a module")
-    @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     public void disable(CubeContext context)
     {
         Module module = context.getArg(0);
@@ -129,7 +129,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
-    @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     public void unload(CubeContext context)
     {
         Module module = context.getArg(0);
@@ -138,7 +138,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Reloads a module")
-    @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     @Flags(@Flag(name = "f", longName = "file"))
     public void reload(CubeContext context)
     {
@@ -164,7 +164,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    @IParams(@Grouped(@Indexed(label = "file name")))
+    @Indexeds(@Grouped(@Indexed(label = "file name")))
     public void load(CubeContext context)
     {
         String moduleFileName = context.getArg(0);
@@ -204,7 +204,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Get info about a module")
-    @IParams(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
     @Flags(@Flag(name = "s", longName = "source"))
     public void info(CubeContext context)
     {

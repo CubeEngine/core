@@ -23,26 +23,26 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.command.context.CtxBuilder;
 import de.cubeisland.engine.command.context.Group;
-import de.cubeisland.engine.command.context.IndexedParameter;
-import de.cubeisland.engine.command.context.NamedParameter;
-import de.cubeisland.engine.command.context.ParameterGroup;
+import de.cubeisland.engine.command.context.parameter.IndexedParameter;
+import de.cubeisland.engine.command.context.parameter.NamedParameter;
+import de.cubeisland.engine.command.context.parameter.ParameterGroup;
+import de.cubeisland.engine.command.methodbased.Command;
+import de.cubeisland.engine.command.methodbased.Restricted;
 import de.cubeisland.engine.core.command.CubeCommand;
+import de.cubeisland.engine.core.command.ReflectedMethodCommandFactory;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
-import de.cubeisland.engine.core.command.parameterized.CommandFlag;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterNamed;
-import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.core.command.parameterized.PermissibleFlag;
+import de.cubeisland.engine.core.command.parameterized.PermissibleIndexedParameter;
+import de.cubeisland.engine.core.command.parameterized.PermissibleNamedParameter;
 import de.cubeisland.engine.core.command.reflected.commandparameter.CommandParameters;
 import de.cubeisland.engine.core.command.reflected.commandparameter.Description;
 import de.cubeisland.engine.core.command.reflected.commandparameter.Optional;
@@ -52,20 +52,12 @@ import de.cubeisland.engine.core.command.reflected.commandparameter.ParamIndexed
 import de.cubeisland.engine.core.command.reflected.commandparameter.ParamNamed;
 import de.cubeisland.engine.core.command.reflected.commandparameter.Required;
 import de.cubeisland.engine.core.command.reflected.commandparameter.ValueLabel;
-import de.cubeisland.engine.core.command.reflected.context.Flag;
-import de.cubeisland.engine.core.command.reflected.context.Flags;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.IParams;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.reflected.context.NParams;
-import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.permission.PermDefault;
-import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory.SignatureType.*;
 
 public class ReflectedCommandFactory
+
 {
     protected enum SignatureType
     {
@@ -109,7 +101,7 @@ public class ReflectedCommandFactory
         {
             ParamFlag fAnnot = field.getAnnotation(ParamFlag.class);
             // TODO perm
-            CommandFlag commandFlag = new CommandFlag(fAnnot.value(), fAnnot.longName());
+            PermissibleFlag commandFlag = new PermissibleFlag(fAnnot.value(), fAnnot.longName());
             builder.addFlag(commandFlag);
         }
 
@@ -146,7 +138,7 @@ public class ReflectedCommandFactory
                 }
 
                 // TODO perm
-                param = new CommandParameterNamed(nAnnot.value().isEmpty() ? field.getName() : nAnnot.value(), type, reader, 1,
+                param = new PermissibleNamedParameter(nAnnot.value().isEmpty() ? field.getName() : nAnnot.value(), type, reader, 1,
                           required, lAnnot == null ? field.getName() : lAnnot.value(), desc == null ? null : desc.value(), null);
 
             }
@@ -184,7 +176,7 @@ public class ReflectedCommandFactory
                     reader = List.class;
                     type = (Class)((ParameterizedType)genericType).getActualTypeArguments()[0];
                 }
-                param = new CommandParameterIndexed(type, reader, iAnnot.greed(), required,
+                param = new PermissibleIndexedParameter(type, reader, iAnnot.greed(), required,
                                     label, desc == null ? null : desc.value(), null);
                 // TODO Reader / Tabcompleter
             }
@@ -240,140 +232,6 @@ public class ReflectedCommandFactory
     {
         public Map<Integer, Field> fieldMap = new TreeMap<>();
         public Map<Field, FieldGroup> subGroups = new HashMap<>();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected CubeCommand buildCommand(Module module, Object holder, Method method, Command cmdAnnot)
-    {
-        String name = method.getName();
-        if (!cmdAnnot.name().isEmpty())
-        {
-            name = cmdAnnot.name();
-        }
-        name = name.trim().toLowerCase();
-        Set<String> aliases = new HashSet<>();
-        for (String alias : cmdAnnot.alias())
-        {
-            aliases.add(alias.trim().toLowerCase());
-        }
-
-        String permNode = name;
-        PermDefault permDefault = PermDefault.DEFAULT;
-        boolean checkPermission = true;
-        if (method.isAnnotationPresent(CommandPermission.class))
-        {
-            CommandPermission permAnnot = method.getAnnotation(CommandPermission.class);
-            if (!permAnnot.value().isEmpty())
-            {
-                permNode = permAnnot.value();
-            }
-            permDefault = permAnnot.permDefault();
-            checkPermission = permAnnot.checkPermission();
-        }
-        Permission cmdPermission = Permission.detachedPermission(permNode, permDefault);
-
-        ParameterGroup<IndexedParameter> indexedParams = new ParameterGroup<>();
-        if (method.isAnnotationPresent(IParams.class))
-        {
-            for (Grouped arg : method.getAnnotation(IParams.class).value())
-            {
-                Indexed[] indexed = arg.value();
-                if (indexed.length == 0)
-                {
-                    throw new IllegalArgumentException("You have to define at least one Indexed!");
-                }
-                Indexed aIndexed = indexed[0];
-                CommandParameterIndexed indexedParam = new CommandParameterIndexed(aIndexed.type(), aIndexed.reader(),
-                                                                                   arg.greedy() ? -1 : 1, aIndexed.req(),
-                                                                                   aIndexed.label(), null, null);
-                indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
-
-                if (indexed.length > 1)
-                {
-                    ParameterGroup<IndexedParameter> group = new ParameterGroup<>(arg.req());
-                    group.list().add(indexedParam);
-                    for (int i = 1; i < indexed.length; i++)
-                    {
-                        aIndexed = indexed[i];
-                        indexedParam = new CommandParameterIndexed(aIndexed.type(), aIndexed.reader(), 1, aIndexed.req(),
-                                                                   aIndexed.label(), null, null);
-                        for (String staticValue : aIndexed.staticValues())
-                        {
-                            indexedParam.addStaticReader(staticValue, aIndexed.staticReader());
-                        }
-                        indexedParam.setCompleter(getCompleter(module, aIndexed.completer(), aIndexed.type()));
-                        group.list().add(indexedParam);
-                    }
-                    indexedParams.list().add(group);
-                }
-                else
-                {
-                    indexedParams.list().add(indexedParam);
-                }
-            }
-        }
-
-        ParameterGroup<NamedParameter> namedParams = new ParameterGroup<>();
-        if (method.isAnnotationPresent(NParams.class))
-        {
-            for (Named param : method.getAnnotation(NParams.class).value())
-            {
-                // TODO multivalue param
-                // TODO greedy param (take args until next keyword)
-
-                String[] names = param.names();
-                if (names.length < 1)
-                {
-                    continue;
-                }
-                String[] paramAliases;
-                if (names.length > 1)
-                {
-                    paramAliases = Arrays.copyOfRange(names, 1, names.length);
-                }
-                else
-                {
-                    paramAliases = new String[0];
-                }
-
-                Permission paramPerm = null;
-                if (!param.permission().isEmpty())
-                {
-                    paramPerm = cmdPermission.child(param.permission(), param.permDefault());
-                }
-                final CommandParameterNamed cParam = new CommandParameterNamed(names[0], param.type(), param.reader(), 1, param.required(), param.label(), null, paramPerm);
-                cParam.addAliases(paramAliases);
-                cParam.withCompleter(getCompleter(module, param.completer(), param.type()));
-                namedParams.list().add(cParam);
-            }
-        }
-        Set<de.cubeisland.engine.command.context.Flag> flags = new HashSet<>();
-        if (method.isAnnotationPresent(Flags.class))
-        {
-            for (Flag flag : method.getAnnotation(Flags.class).value())
-            {
-                Permission flagPerm = null;
-                if (!flag.permission().isEmpty())
-                {
-                    flagPerm = cmdPermission.child(flag.permission(), flag.permDefault());
-                }
-                flags.add(new CommandFlag(flag.name(), flag.longName(), flagPerm));
-            }
-        }
-
-        CubeContextFactory ctxFactory = new CubeContextFactory(new CtxBuilder().addIndexed(indexedParams).addNamed(namedParams).addFlags(flags).get());
-        ReflectedCommand cmd = new ReflectedCommand(module, holder, method, name, cmdAnnot.desc(), ctxFactory, cmdPermission, checkPermission);
-
-        cmd.setAliases(aliases);
-        cmd.setLoggable(!method.isAnnotationPresent(Unloggable.class));
-        cmd.setAsynchronous(method.isAnnotationPresent(CallAsync.class));
-
-        if (method.isAnnotationPresent(OnlyIngame.class))
-        {
-            cmd.setOnlyIngame(method.getAnnotation(OnlyIngame.class).value());
-        }
-
-        return cmd;
     }
 
     private Completer getCompleter(Module module, Class<? extends Completer> completerClass, Class... types)

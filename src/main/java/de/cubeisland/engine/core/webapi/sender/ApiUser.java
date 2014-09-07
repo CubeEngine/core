@@ -81,9 +81,9 @@ public class ApiUser extends ApiCommandSender
     }
 
     @Override
-    public UUID getUniqueId()
+    public UUID getUUID()
     {
-        return user.getUniqueId();
+        return user.getUUID();
     }
 
     @Override

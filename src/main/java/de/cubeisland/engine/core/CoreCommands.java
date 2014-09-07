@@ -30,20 +30,20 @@ import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.exception.TooFewArgumentsException;
+import de.cubeisland.engine.command.exception.TooFewArgumentsException;
 import de.cubeisland.engine.core.command.reflected.CallAsync;
-import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
-import de.cubeisland.engine.core.command.reflected.OnlyIngame;
+import de.cubeisland.engine.command.methodbased.Restricted;
 import de.cubeisland.engine.core.command.reflected.Unloggable;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexeds;
 import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
@@ -95,7 +95,7 @@ public class CoreCommands extends ContainerCommand
 
     @Unloggable
     @Command(alias = "setpw", desc = "Sets your password.")
-    @IParams({@Grouped(@Indexed(label = "password")),
+    @Indexeds({@Grouped(@Indexed(label = "password")),
               @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
     public void setPassword(CubeContext context)
     {
@@ -104,15 +104,15 @@ public class CoreCommands extends ContainerCommand
         {
             target = context.getArg(1);
         }
-        else if (context.getSender() instanceof User)
+        else if (context.getSource() instanceof User)
         {
-            target = (User)context.getSender();
+            target = (User)context.getSource();
         }
         else
         {
-            throw new TooFewArgumentsException(context.getSender());
+            throw new TooFewArgumentsException();
         }
-        if (!context.getSender().equals(target))
+        if (!context.getSource().equals(target))
         {
             context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
             um.setPassword(target, context.getString(0));
@@ -126,10 +126,10 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    @IParams(@Grouped(value = @Indexed(label = "player", staticValues = "*", type = User.class), req = false))
+    @Indexeds(@Grouped(value = @Indexed(label = "player", staticValues = "*", type = User.class), req = false))
     public void clearPassword(CubeContext context)
     {
-        CommandSender sender = context.getSender();
+        CommandSender sender = context.getSource();
         if (context.hasIndexed(0))
         {
             if ("*".equals(context.getString(0)))
@@ -140,7 +140,7 @@ public class CoreCommands extends ContainerCommand
                 return;
             }
             User target = context.getArg(0);
-            if (!target.equals(context.getSender()))
+            if (!target.equals(context.getSource()))
             {
                 context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
             }
@@ -150,7 +150,7 @@ public class CoreCommands extends ContainerCommand
         }
         if (!(sender instanceof User))
         {
-            throw new TooFewArgumentsException(context.getSender());
+            throw new TooFewArgumentsException();
         }
         this.um.resetPassword((User)sender);
         sender.sendTranslated(POSITIVE, "Your password has been reset!");
@@ -158,11 +158,11 @@ public class CoreCommands extends ContainerCommand
 
     @Unloggable
     @Command(desc = "Logs you in with your password!")
-    @IParams(@Grouped(@Indexed(label = "password")))
+    @Indexeds(@Grouped(@Indexed(label = "password")))
     @CommandPermission(permDefault = TRUE)
     public void login(CubeContext context)
     {
-        CommandSender sender = context.getSender();
+        CommandSender sender = context.getSource();
         if (sender instanceof User)
         {
             User user = (User)sender;
@@ -181,9 +181,9 @@ public class CoreCommands extends ContainerCommand
                 user.sendTranslated(NEGATIVE, "Wrong password!");
                 if (this.core.getConfiguration().security.fail2ban)
                 {
-                    if (fails.get(user.getUniqueId()) != null)
+                    if (fails.get(user.getUUID()) != null)
                     {
-                        if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                        if (fails.get(user.getUUID()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                         {
                             String msg = user.getTranslation(NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
                             this.banManager.addBan(new UserBan(user.getName(),user.getName(), msg,
@@ -196,7 +196,7 @@ public class CoreCommands extends ContainerCommand
                             user.kickPlayer(msg);
                         }
                     }
-                    fails.put(user.getUniqueId(),System.currentTimeMillis());
+                    fails.put(user.getUUID(),System.currentTimeMillis());
                 }
             }
         }
@@ -207,10 +207,10 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Logs you out!")
-    @OnlyIngame("You might use /stop for this.")
+    @Restricted(msg = "You might use /stop for this.")
     public void logout(CubeContext context)
     {
-        User sender = (User)context.getSender();
+        User sender = (User)context.getSource();
         if (sender.isLoggedIn())
         {
             sender.logout();
@@ -239,7 +239,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    @IParams(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
+    @Indexeds(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
     public void loglevel(CubeContext context)
     {
         if (context.hasIndexed(0))
@@ -253,12 +253,12 @@ public class CoreCommands extends ContainerCommand
 
     @CallAsync
     @Command(alias = "finduser", desc = "Searches for a user in the database")
-    @IParams(@Grouped(@Indexed(label = "name")))
+    @Indexeds(@Grouped(@Indexed(label = "name")))
     public CommandResult searchuser(CubeContext context)
     {
         final boolean exact = um.findExactUser(context.getString(0)) != null;
         final User user = um.findUser(context.getString(0), true);
-        return new CommandResult()
+        return new CommandResult<CubeContext>()
         {
             @Override
             public void show(CubeContext context)

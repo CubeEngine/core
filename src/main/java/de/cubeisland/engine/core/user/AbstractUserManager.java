@@ -232,7 +232,7 @@ public abstract class AbstractUserManager implements UserManager
     protected synchronized void cacheUser(User user)
     {
         updateLastName(user);
-        this.cachedUserByUUID.put(user.getUniqueId(), user);
+        this.cachedUserByUUID.put(user.getUUID(), user);
         this.cachedUserByDbId.put(user.getEntity().getKey(), user);
         this.core.getLog().debug("User {} cached!", user.getName());
         this.attachDefaults(user);
@@ -249,7 +249,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void removeCachedUser(User user)
     {
-        this.cachedUserByUUID.remove(user.getUniqueId());
+        this.cachedUserByUUID.remove(user.getUUID());
         this.cachedUserByDbId.remove(user.getEntity().getKey());
         this.core.getLog().debug("Removed cached user {}!", user.getName());
         user.detachAll();
@@ -510,7 +510,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             if (name.equals(onlineUser.getName()))
             {
-                return this.getExactUser(onlineUser.getUniqueId());
+                return this.getExactUser(onlineUser.getUUID());
             }
         }
         // Find Online Players with similar name
@@ -522,7 +522,7 @@ public abstract class AbstractUserManager implements UserManager
         String foundUser = Match.string().matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
-            return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());
+            return this.getExactUser(onlinePlayerMap.get(foundUser).getUUID());
         }
         // Lookup in saved users
         UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name))

@@ -17,27 +17,33 @@
  */
 package de.cubeisland.engine.core.command.parameterized;
 
-import de.cubeisland.engine.command.context.IndexedParameter;
+import org.bukkit.permissions.Permissible;
+
+import de.cubeisland.engine.command.context.parameter.FlagParameter;
 import de.cubeisland.engine.core.permission.Permission;
 
-public class CommandParameterIndexed extends IndexedParameter
+public class PermissibleFlag extends FlagParameter
 {
-    protected final Permission permission;
+    private final Permission permission;
 
-    public CommandParameterIndexed(Class<?> type, Class<?> reader, int greed, boolean required, String valueLabel,
-                                   String description, Permission permission)
+    public PermissibleFlag(String name, String longName, Permission permission)
     {
-        super(type, reader, greed, required, valueLabel, description);
+        super(name, longName);
         this.permission = permission;
     }
 
-    public static CommandParameterIndexed greedyIndex()
+    public PermissibleFlag(String name, String longName)
     {
-        return new CommandParameterIndexed(String.class, String.class, -1, false, "0", null, null);
+        this(name, longName, null);
     }
 
-    public static CommandParameterIndexed emptyIndex(String label)
+    public boolean checkPermission(Permissible permissible)
     {
-        return new CommandParameterIndexed(String.class, String.class, 1, false, label, null, null);
+        return this.permission == null || permissible == null || this.permission.isAuthorized(permissible);
+    }
+
+    public Permission getPermission()
+    {
+        return permission;
     }
 }

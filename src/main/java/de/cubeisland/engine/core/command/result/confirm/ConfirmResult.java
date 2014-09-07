@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.module.Module;
@@ -27,7 +27,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 /**
  * A result that should be confirmed via the /confirm command
  */
-public class ConfirmResult implements CommandResult
+public class ConfirmResult implements CommandResult<CubeContext>
 {
     private final Runnable runnable;
     private final CommandSender sender;
@@ -37,7 +37,7 @@ public class ConfirmResult implements CommandResult
     public ConfirmResult(Runnable runnable, CubeContext context)
     {
         this.runnable = runnable;
-        this.sender = context.getSender();
+        this.sender = context.getSource();
         this.module = context.getCommand().getModule();
     }
 

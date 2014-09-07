@@ -20,13 +20,13 @@ package de.cubeisland.engine.core.command.result.paginated;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
-public class PaginatedResult implements CommandResult
+public class PaginatedResult implements CommandResult<CubeContext>
 {
     private final CubeContext context;
     private final PaginationIterator iterator;
@@ -38,14 +38,14 @@ public class PaginatedResult implements CommandResult
         this.context = context;
         this.iterator = new StringListIterator(lines);
 
-        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSender(), this);
+        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
     }
     public PaginatedResult(CubeContext context, PaginationIterator iterator)
     {
         this.context = context;
         this.iterator = iterator;
 
-        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSender(), this);
+        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
     }
 
     @Override

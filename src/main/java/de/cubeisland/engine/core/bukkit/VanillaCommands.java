@@ -39,15 +39,15 @@ import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.command.exception.MissingParameterException;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.command.reflected.context.Flag;
 import de.cubeisland.engine.core.command.reflected.context.Flags;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexeds;
 import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.reflected.context.NParams;
+import de.cubeisland.engine.core.command.reflected.context.Nameds;
 import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
@@ -78,7 +78,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
     public void stop(CubeContext context)
     {
         String message = context.getStrings(0);
@@ -93,7 +93,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Reloads the server.")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
     @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(CubeContext context)
     {
@@ -113,7 +113,7 @@ public class VanillaCommands implements CommandHolder
         {
             context.sendTranslated(NEUTRAL, "Reloading the whole server... this may take some time.");
             // pre-translate to avoid a NPE
-            Locale locale = context.getSender().getLocale();
+            Locale locale = context.getSource().getLocale();
             long time = System.currentTimeMillis();
             this.core.getServer().reload();
             // TODO NPE here fix me!!!
@@ -122,20 +122,20 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)))
-    @NParams(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)))
+    @Nameds(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
     public void difficulty(CubeContext context)
     {
         World world = context.getArg("world");
         if (world == null)
         {
-            if (context.getSender() instanceof User)
+            if (context.getSource() instanceof User)
             {
-                world = ((User)context.getSender()).getWorld();
+                world = ((User)context.getSource()).getWorld();
             }
             else
             {
-                throw new MissingParameterException("world", context.getSender().getTranslation(NEGATIVE, "You have to specify a world!"));
+                throw new MissingParameterException("world", context.getSource().getTranslation(NEGATIVE, "You have to specify a world!"));
             }
         }
         if (context.hasIndexed(0))
@@ -152,7 +152,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Makes a player an operator")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
     @Flags(@Flag(name = "f", longName = "force"))
     @CommandPermission(permDefault = FALSE)
     public void op(CubeContext context)
@@ -167,7 +167,7 @@ public class VanillaCommands implements CommandHolder
             }
             context.sendTranslated(NEUTRAL, "The following users are operators:");
             context.sendMessage(" ");
-            final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, context.getSender().getLocale());
+            final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, context.getSource().getLocale());
             for (OfflinePlayer player : ops)
             {
                 context.sendTranslated(POSITIVE, " - {user} (Last seen: {input#date})", player, dateFormat.format(new Date(player.getLastPlayed())));
@@ -192,30 +192,30 @@ public class VanillaCommands implements CommandHolder
             user = um.getExactUser(user.getUniqueId());
             if (user != null)
             {
-                ((User)user).sendTranslated(POSITIVE, "You were opped by {sender}", context.getSender());
+                ((User)user).sendTranslated(POSITIVE, "You were opped by {sender}", context.getSource());
             }
         }
         context.sendTranslated(POSITIVE, "{user} is now an operator!", user);
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUniqueId().equals(user.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUUID().equals(user.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", user, context.getSender());
+            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", user, context.getSource());
         }
 
-        this.core.getLog().info("Player {} has been opped by {}", user.getName(), context.getSender().getName());
+        this.core.getLog().info("Player {} has been opped by {}", user.getName(), context.getSource().getName());
     }
 
     @Command(desc = "Revokes the operator status of a player")
-    @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+    @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
     @CommandPermission(permDefault = FALSE)
     public void deop(CubeContext context)
     {
         OfflinePlayer offlinePlayer = context.getArg(0);
-        if (!context.getSender().getName().equals(offlinePlayer.getName()))
+        if (!context.getSource().getName().equals(offlinePlayer.getName()))
         {
             context.ensurePermission(core.perms().COMMAND_DEOP_OTHER);
         }
@@ -230,21 +230,21 @@ public class VanillaCommands implements CommandHolder
             User user = um.getExactUser(offlinePlayer.getUniqueId());
             if (user != null)
             {
-                user.sendTranslated(POSITIVE, "You were deopped by {user}.", context.getSender());
+                user.sendTranslated(POSITIVE, "You were deopped by {user}.", context.getSource());
             }
         }
         context.sendTranslated(POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSender() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUUID().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer, context.getSender());
+            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer, context.getSource());
         }
 
-        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSender().getName());
+        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSource().getName());
     }
 
     @Command(desc = "Lists all loaded plugins")
@@ -274,7 +274,7 @@ public class VanillaCommands implements CommandHolder
     // integrate /saveoff and /saveon and provide aliases
     @Alias(names = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
     public void saveall(CubeContext context)
     {
         if (context.hasIndexed(0))
@@ -301,7 +301,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
-    @IParams(@Grouped(req = false, value = @Indexed(label = "plugin")))
+    @Indexeds(@Grouped(req = false, value = @Indexed(label = "plugin")))
     @Flags(@Flag(name = "s", longName = "source"))
     public void version(CubeContext context)
     {
@@ -362,7 +362,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void add(CubeContext context)
         {
             if (!context.hasIndexed())
@@ -381,7 +381,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        @IParams(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
         public void remove(CubeContext context)
         {
             if (!context.hasIndexed())
@@ -464,7 +464,7 @@ public class VanillaCommands implements CommandHolder
         @Command(desc = "Wipes the whitelist completely")
         public void wipe(CubeContext context)
         {
-            if (context.isSender(User.class))
+            if (context.isSource(User.class))
             {
                 context.sendTranslated(NEGATIVE, "This command is too dangerous for users!");
                 return;

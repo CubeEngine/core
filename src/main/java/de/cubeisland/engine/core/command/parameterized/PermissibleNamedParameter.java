@@ -19,27 +19,42 @@ package de.cubeisland.engine.core.command.parameterized;
 
 import org.bukkit.permissions.Permissible;
 
-import de.cubeisland.engine.command.context.Flag;
+import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.parameter.NamedParameter;
 import de.cubeisland.engine.core.permission.Permission;
 
-public class CommandFlag extends Flag
+public class PermissibleNamedParameter extends NamedParameter
 {
-    private final Permission permission;
+    protected final Permission permission;
 
-    public CommandFlag(String name, String longName, Permission permission)
+    public PermissibleNamedParameter(String name, Class<?> type, Class<?> reader, int greed, boolean required,
+                                     String valueLabel, String description, Permission permission)
     {
-        super(name, longName);
+        super(name, type, reader, greed, required, valueLabel, description);
         this.permission = permission;
     }
 
-    public CommandFlag(String name, String longName)
+    public PermissibleNamedParameter(String name, Class<?> type, boolean required, String label, String description,
+                                     Permission permission)
     {
-        this(name, longName, null);
+        this(name, type, type, 1, required, label, description, permission);
+    }
+
+
+    public PermissibleNamedParameter(String name, String label, Class<?> type)
+    {
+        this(name, type, type, 1, false, label, null, null);
     }
 
     public boolean checkPermission(Permissible permissible)
     {
         return this.permission == null || permissible == null || this.permission.isAuthorized(permissible);
+    }
+
+    public PermissibleNamedParameter withCompleter(Completer completer)
+    {
+        this.setCompleter(completer);
+        return this;
     }
 
     public Permission getPermission()

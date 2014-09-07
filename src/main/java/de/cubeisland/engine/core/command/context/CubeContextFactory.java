@@ -24,30 +24,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import de.cubeisland.engine.command.ContextFactory;
-import de.cubeisland.engine.command.context.CtxBuilder;
+import de.cubeisland.engine.command.context.ContextFactory;
 import de.cubeisland.engine.command.context.CtxDescriptor;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import gnu.trove.set.hash.THashSet;
 
-public class CubeContextFactory extends ContextFactory<CubeCommand, CubeContext>
+public class CubeContextFactory extends ContextFactory<CubeCommand, CommandSender, CubeContext>
 {
     public CubeContextFactory(CtxDescriptor descriptor)
     {
         super(descriptor);
     }
 
-    public CubeContextFactory()
-    {
-        this(new CtxBuilder().get());
-    }
-
     @Override
-    public CubeContext parse(CubeCommand command, Stack<String> labels, String[] rawArgs)
+    public CubeContext parse(CubeCommand command, CommandSender source, Stack<String> labels, String[] rawArgs)
     {
         final List<String> indexed = new LinkedList<>();
         final Set<String> flags = new THashSet<>();
         final Map<String, String> named = new LinkedHashMap<>();
-        return new CubeContext(rawArgs, indexed, named, flags, this.parse(rawArgs, indexed, named, flags), command, labels);
+        return new CubeContext(rawArgs, indexed, named, flags, this.parse(rawArgs, indexed, named, flags), command, labels, source);
     }
 }

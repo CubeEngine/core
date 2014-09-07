@@ -17,12 +17,14 @@
  */
 package de.cubeisland.engine.core.command.result.paginated;
 
+import de.cubeisland.engine.command.methodbased.Indexed;
+import de.cubeisland.engine.command.methodbased.Indexeds;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.reflected.Command;
+import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.IParams;
+import de.cubeisland.engine.core.command.reflected.context.Indexeds;
 import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
@@ -40,15 +42,15 @@ public class PaginationCommands implements CommandHolder
     @Override
     public Class<? extends CubeCommand> getCommandType()
     {
-        return ReflectedCommand.class;
+        return CubeCommand.class;
     }
 
     @Command(desc = "Display the next page of your previous command.")
     public void next(CubeContext context)
     {
-        if (paginationManager.hasResult(context.getSender()))
+        if (paginationManager.hasResult(context.getSource()))
         {
-            paginationManager.getResult(context.getSender()).nextPage();
+            paginationManager.getResult(context.getSource()).nextPage();
         }
         else
         {
@@ -59,9 +61,9 @@ public class PaginationCommands implements CommandHolder
     @Command(desc = "Display the previous page of your previous command.")
     public void prev(CubeContext context)
     {
-        if (paginationManager.hasResult(context.getSender()))
+        if (paginationManager.hasResult(context.getSource()))
         {
-            paginationManager.getResult(context.getSender()).prevPage();
+            paginationManager.getResult(context.getSource()).prevPage();
         }
         else
         {
@@ -70,15 +72,15 @@ public class PaginationCommands implements CommandHolder
     }
 
     @Command(desc = "Display the given page of your previous command.")
-    @IParams(@Grouped(@Indexed(label = "pageNumber", type = Integer.class)))
+    @Indexeds(@Indexed(label = "pageNumber", type = Integer.class)))
     public void showpage(CubeContext context)
     {
-        if (paginationManager.hasResult(context.getSender()))
+        if (paginationManager.hasResult(context.getSource()))
         {
             Integer pageNumber = context.getArg(0);
             if (pageNumber != null)
             {
-                paginationManager.getResult(context.getSender()).showPage(pageNumber - 1);
+                paginationManager.getResult(context.getSource()).showPage(pageNumber - 1);
             }
             else
             {

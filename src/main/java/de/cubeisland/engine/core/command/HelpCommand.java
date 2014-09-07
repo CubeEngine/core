@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.command.exception.CommandException;
@@ -47,11 +48,13 @@ public class HelpCommand extends CubeCommand
     @Override
     public void checkContext(CubeContext ctx) throws CommandException
     {
-        if (this.target.isCheckperm() && !this.target.isAuthorized(ctx.getSender()))
+        if (this.target.isCheckperm() && !this.target.isAuthorized(ctx.getSource()))
         {
             throw new PermissionDeniedException(this.target.getPermission());
         }
     }
+
+
 
     @Override
     public CommandResult run(CubeContext context)
@@ -65,7 +68,7 @@ public class HelpCommand extends CubeCommand
             context.sendTranslated(NEUTRAL, "The following subcommands are available:");
             context.sendMessage(" ");
 
-            final CommandSender sender = context.getSender();
+            final CommandSender sender = context.getSource();
             for (CubeCommand command : target.getChildren())
             {
                 if (command == this)

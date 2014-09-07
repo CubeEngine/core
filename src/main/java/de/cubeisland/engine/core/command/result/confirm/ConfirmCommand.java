@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
@@ -39,14 +39,14 @@ public class ConfirmCommand extends CubeCommand
     @Override
     public CommandResult run(CubeContext context)
     {
-        int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
+        int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSource());
         if (pendingConfirmations < 1)
         {
             context.sendTranslated(NEGATIVE, "You don't have any pending confirmations!");
             return null;
         }
-        confirmManager.getLastPendingConfirmation(context.getSender()).run();
-        pendingConfirmations = confirmManager.countPendingConfirmations(context.getSender());
+        confirmManager.getLastPendingConfirmation(context.getSource()).run();
+        pendingConfirmations = confirmManager.countPendingConfirmations(context.getSource());
         if (pendingConfirmations > 0)
         {
             context.sendTranslated(NEUTRAL, "You have {amount} pending confirmations", pendingConfirmations);

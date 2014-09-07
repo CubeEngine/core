@@ -23,17 +23,17 @@ import java.util.Locale;
 
 import org.bukkit.permissions.Permissible;
 
-import de.cubeisland.engine.command.context.BaseParameter;
+import de.cubeisland.engine.command.context.parameter.BaseParameter;
 import de.cubeisland.engine.command.context.CtxDescriptor;
-import de.cubeisland.engine.command.context.Flag;
+import de.cubeisland.engine.command.context.parameter.FlagParameter;
 import de.cubeisland.engine.command.context.Group;
-import de.cubeisland.engine.command.context.IndexedParameter;
-import de.cubeisland.engine.command.context.NamedParameter;
-import de.cubeisland.engine.command.context.ParameterGroup;
-import de.cubeisland.engine.core.command.parameterized.CommandFlag;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterNamed;
+import de.cubeisland.engine.command.context.parameter.IndexedParameter;
+import de.cubeisland.engine.command.context.parameter.NamedParameter;
+import de.cubeisland.engine.command.context.parameter.ParameterGroup;
+import de.cubeisland.engine.core.command.parameterized.PermissibleFlag;
+import de.cubeisland.engine.core.command.parameterized.PermissibleNamedParameter;
 
-import static de.cubeisland.engine.command.context.BaseParameter.STATIC_LABEL;
+import static de.cubeisland.engine.command.context.parameter.BaseParameter.STATIC_LABEL;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 
 public class UsageGenerator
@@ -51,9 +51,9 @@ public class UsageGenerator
             generateNamedUsage(sb, locale, permissible, group);
         }
 
-        for (Flag flag : descriptor.getFlags())
+        for (FlagParameter flag : descriptor.getFlags())
         {
-            if (!(flag instanceof CommandFlag) || ((CommandFlag)flag).checkPermission(permissible))
+            if (!(flag instanceof PermissibleFlag) || ((PermissibleFlag)flag).checkPermission(permissible))
             {
                 sb.append("[-").append(flag.getLongName()).append("] ");
             }
@@ -78,7 +78,7 @@ public class UsageGenerator
         else if (group instanceof NamedParameter)
         {
             NamedParameter named = (NamedParameter)group;
-            if ((!(named instanceof CommandParameterNamed)) || ((CommandParameterNamed)named).checkPermission(permissible))
+            if ((!(named instanceof PermissibleNamedParameter)) || ((PermissibleNamedParameter)named).checkPermission(permissible))
             {
                 return;
             }
@@ -141,7 +141,7 @@ public class UsageGenerator
     private static String[] convertLabels(BaseParameter<?> indexedParam)
     {
         List<String> list = new ArrayList<>();
-        for (String staticValue : indexedParam.getStaticValues())
+        for (String staticValue : indexedParam.getStaticReaders())
         {
             list.add(convertLabel(true, "!" + staticValue));
         }

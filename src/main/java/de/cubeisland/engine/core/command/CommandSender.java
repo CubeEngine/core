@@ -20,11 +20,12 @@ package de.cubeisland.engine.core.command;
 import java.util.Locale;
 import java.util.UUID;
 
+import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
-public interface CommandSender extends org.bukkit.command.CommandSender
+public interface CommandSender extends org.bukkit.command.CommandSender, CommandSource
 {
     UUID NON_PLAYER_UUID = new UUID(0, 0);
 
@@ -48,5 +49,5 @@ public interface CommandSender extends org.bukkit.command.CommandSender
 
     String getTranslationN(MessageType type, int n, String singular, String plural, Object... params);
 
-    UUID getUniqueId();
+    UUID getUUID();
 }

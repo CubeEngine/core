@@ -23,9 +23,10 @@ import java.util.List;
 import java.util.Set;
 
 import de.cubeisland.engine.command.context.CtxBuilder;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
-import de.cubeisland.engine.core.command.parameterized.CommandParameterIndexed;
+import de.cubeisland.engine.core.command.parameterized.PermissibleIndexedParameter;
 import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
 
@@ -56,7 +57,7 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
     public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
     {
         super(module, name, description, new CubeContextFactory(
-            new CtxBuilder().addIndexed(CommandParameterIndexed.emptyIndex("action")).get()), null, false);
+            new CtxBuilder().addIndexed(PermissibleIndexedParameter.emptyIndex("action")).get()), null, false);
         this.setAliases(aliases);
         this.subCommandType = subCommandType;
         this.delegation = null;
@@ -85,7 +86,7 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
     }
 
     @Override
-    public CommandResult run(CubeContext context)
+    public CommandResult<CubeContext> run(CubeContext context)
     {
         return this.getChild("?").run(context);
     }
@@ -111,7 +112,7 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
         @Override
         public CommandResult run(CubeContext context)
         {
-            CommandSender sender = context.getSender();
+            CommandSender sender = context.getSource();
             context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", target.getUsage(context));
             context.sendMessage(" ");
 

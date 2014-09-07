@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.command;
 import java.util.List;
 import java.util.Set;
 
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;

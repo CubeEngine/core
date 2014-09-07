@@ -97,7 +97,7 @@ public class BukkitUserManager extends AbstractUserManager
             user = it.next();
             if (!user.isOnline())
             {
-                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUniqueId());
+                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUUID());
                 this.onlineUsers.remove(user);
                 it.remove();
             }
@@ -218,7 +218,7 @@ public class BukkitUserManager extends AbstractUserManager
                 @Override
                 public void run()
                 {
-                    scheduledForRemoval.remove(user.getUniqueId());
+                    scheduledForRemoval.remove(user.getUUID());
                     user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                     Profiler.startProfiling("removalTask");
                     user.getEntity().asyncUpdate();
@@ -237,7 +237,7 @@ public class BukkitUserManager extends AbstractUserManager
                 return;
             }
 
-            scheduledForRemoval.put(user.getUniqueId(), task.getTaskId());
+            scheduledForRemoval.put(user.getUUID(), task.getTaskId());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -258,7 +258,7 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 updateLastName(user);
                 user.refreshIP();
-                final int removalTask = scheduledForRemoval.get(user.getUniqueId());
+                final int removalTask = scheduledForRemoval.get(user.getUUID());
                 if (removalTask > -1)
                 {
                     user.getServer().getScheduler().cancelTask(removalTask);
@@ -274,7 +274,7 @@ public class BukkitUserManager extends AbstractUserManager
         {
             for (User user : cachedUserByUUID.values())
             {
-                if (!user.isOnline() && scheduledForRemoval.get(user.getUniqueId()) > -1) // Do not delete users that will be deleted anyway
+                if (!user.isOnline() && scheduledForRemoval.get(user.getUUID()) > -1) // Do not delete users that will be deleted anyway
                 {
                     removeCachedUser(user);
                 }

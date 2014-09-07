@@ -81,7 +81,7 @@ public class ApiServerSender extends ApiCommandSender
     }
 
     @Override
-    public UUID getUniqueId()
+    public UUID getUUID()
     {
         return NON_PLAYER_UUID;
     }

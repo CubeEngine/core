@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 
-public abstract class DelayedResult implements CommandResult
+public abstract class DelayedResult implements CommandResult<CubeContext>
 {
     private final long delay;
 

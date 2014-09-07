@@ -78,8 +78,8 @@ public class CubeContextFactoryTest extends TestCase
     {
 
         CtxBuilder ctxBuilder = new CtxBuilder().
-                        addNamed(new CommandParameterNamed("test", "label",String.class)).
-                        addFlag(new CommandFlag("a", "all", null));
+                        addNamed(new PermissibleNamedParameter("test", "label",String.class)).
+                        addFlag(new PermissibleFlag("a", "all", null));
         CubeContextFactory factory = new CubeContextFactory(ctxBuilder.get());
 
         Stack<String> labels = new Stack<>();
@@ -87,7 +87,7 @@ public class CubeContextFactoryTest extends TestCase
         CommandSender sender = new TestConsoleSender(this.core);
         Module module = this.mm.getModule("test");
         CubeCommand testCommand = new TestCommand(module, labels.get(0), "description", factory);
-        CubeContext ctx = factory.parse(testCommand, labels, new String[] {"-a", "test", "\"value\""});
+        CubeContext ctx = factory.parse(testCommand, sender, labels, new String[] {"-a", "test", "\"value\""});
         ctx.getCommand().getContextFactory().readContext(ctx, sender.getLocale());
 
         assertEquals(ctx.hasFlag("a"), true);

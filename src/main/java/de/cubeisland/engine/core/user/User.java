@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -618,7 +619,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         else if (o instanceof CommandSender)
         {
-            return ((CommandSender)o).getUniqueId().equals(this.getUniqueId());
+            return ((CommandSender)o).getUUID().equals(this.getUUID());
         }
         else if (o instanceof org.bukkit.command.CommandSender)
         {
@@ -730,5 +731,11 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             return this.entity.getValue(TABLE_USER.LASTNAME);
         }
         return name;
+    }
+
+    @Override
+    public UUID getUUID()
+    {
+        return this.getUniqueId();
     }
 }

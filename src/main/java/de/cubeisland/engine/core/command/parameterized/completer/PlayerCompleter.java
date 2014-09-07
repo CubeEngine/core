@@ -49,7 +49,7 @@ public class PlayerCompleter implements Completer
         List<String> playerNames = new ArrayList<>();
         if (context instanceof CubeContext)
         {
-            final CommandSender sender = ((CubeContext)context).getSender();
+            final CommandSender sender = ((CubeContext)context).getSource();
             for (User player : CubeEngine.getUserManager().getOnlineUsers())
             {
                 String name = player.getName();

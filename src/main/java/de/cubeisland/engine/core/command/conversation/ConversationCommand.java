@@ -31,14 +31,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-import de.cubeisland.engine.command.context.Flag;
-import de.cubeisland.engine.command.context.NamedParameter;
+import de.cubeisland.engine.command.context.parameter.FlagParameter;
+import de.cubeisland.engine.command.context.parameter.NamedParameter;
 import de.cubeisland.engine.command.exception.IncorrectArgumentException;
 import de.cubeisland.engine.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.command.exception.MissingParameterException;
 import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.HelpCommand;
@@ -86,7 +86,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
             CubeContext context = null;
             try
             {
-                context = this.getContextFactory().parse(this, labels, StringUtils.explode(" ", event.getMessage()));
+                context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getMessage()));
                 this.getContextFactory().readContext(context, user.getLocale());
                 if (event.getMessage().startsWith("?"))
                 {
@@ -115,7 +115,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
 
             Stack<String> labels = new Stack<>();
             labels.push(this.getLabel());
-            CubeContext context = this.getContextFactory().parse(this, labels, StringUtils.explode(" ", event.getChatMessage()));
+            CubeContext context = this.getContextFactory().parse(this, user, labels, StringUtils.explode(" ", event.getChatMessage()));
             this.getContextFactory().readContext(context, user.getLocale());
             event.getTabCompletions().addAll(this.tabComplete(context));
         }
@@ -127,7 +127,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
         Set<String> params = new HashSet<>();
-        for (Flag flag : this.getContextFactory().descriptor().getFlags())
+        for (FlagParameter flag : this.getContextFactory().descriptor().getFlags())
         {
             flags.add(flag.getLongName().toLowerCase());
         }
@@ -232,7 +232,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
         {
             context.sendTranslated(NEUTRAL, "Flags:");
             Set<String> flags = new HashSet<>();
-            for (Flag flag : target.getContextFactory().descriptor().getFlags())
+            for (FlagParameter flag : target.getContextFactory().descriptor().getFlags())
             {
                 flags.add(flag.getLongName().toLowerCase());
             }

@@ -37,7 +37,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.AliasCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.ContainerCommand.DelegatingContextFilter;
@@ -109,8 +109,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             args = newArgs;
         }
 
-        CubeContext ctx = command.getContextFactory().parse(command, labels, args);
-        ctx.setSender(sender);
+        CubeContext ctx = command.getContextFactory().parse(command, sender, labels, args);
         if (command instanceof ContainerCommand && (ctx.getIndexedCount() != 1 || !tabComplete))
         {
             DelegatingContextFilter delegation = ((ContainerCommand)command).getDelegation();
@@ -123,7 +122,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
                     if (target != null)
                     {
                         // TODO delegation.filterContext()
-                        return (CubeContext)target.getContextFactory().parse(target, labels, args);
+                        return target.getContextFactory().parse(target, sender, labels, args);
                     }
                     command.getModule().getLog().warn("Child delegation failed: child '{}' not found!", child);
                 }
@@ -225,7 +224,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
             List<String> actions = new ArrayList<>();
             String token = context.getString(0).toLowerCase(Locale.ENGLISH);
 
-            CommandSender sender = context.getSender();
+            CommandSender sender = context.getSource();
             Set<CubeCommand> names = command.getChildren();
             for (CubeCommand child : names)
             {
@@ -286,7 +285,7 @@ public class CubeCommandExecutor implements CommandExecutor, TabCompleter
         }
         catch (Exception e)
         {
-            handleCommandException(ctx, ctx.getSender(), e);
+            handleCommandException(ctx, ctx.getSource(), e);
         }
     }
 

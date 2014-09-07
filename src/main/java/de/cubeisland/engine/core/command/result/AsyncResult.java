@@ -18,10 +18,10 @@
 package de.cubeisland.engine.core.command.result;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.CommandResult;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
 
-public abstract class AsyncResult implements CommandResult
+public abstract class AsyncResult implements CommandResult<CubeContext>
 {
     public abstract void main(CubeContext context);
     public void onFinish(CubeContext context)

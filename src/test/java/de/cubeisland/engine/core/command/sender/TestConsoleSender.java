@@ -194,7 +194,7 @@ public class TestConsoleSender implements CommandSender
     }
 
     @Override
-    public UUID getUniqueId()
+    public UUID getUUID()
     {
         return null;
     }
