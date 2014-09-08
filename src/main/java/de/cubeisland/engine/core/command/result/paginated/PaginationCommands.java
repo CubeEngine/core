@@ -17,32 +17,20 @@
  */
 package de.cubeisland.engine.core.command.result.paginated;
 
-import de.cubeisland.engine.command.methodbased.Indexed;
-import de.cubeisland.engine.command.methodbased.Indexeds;
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.method.Indexed;
+import de.cubeisland.engine.command.base.method.Indexeds;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.CommandHolder;
-import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.command.methodbased.Command;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.Indexeds;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
-public class PaginationCommands implements CommandHolder
+public class PaginationCommands
 {
     private PaginationManager paginationManager;
 
     public PaginationCommands(PaginationManager paginationManager)
     {
         this.paginationManager = paginationManager;
-    }
-
-    @Override
-    public Class<? extends CubeCommand> getCommandType()
-    {
-        return CubeCommand.class;
     }
 
     @Command(desc = "Display the next page of your previous command.")
@@ -72,7 +60,7 @@ public class PaginationCommands implements CommandHolder
     }
 
     @Command(desc = "Display the given page of your previous command.")
-    @Indexeds(@Indexed(label = "pageNumber", type = Integer.class)))
+    @Indexeds(@Indexed(label = "pageNumber", type = Integer.class))
     public void showpage(CubeContext context)
     {
         if (paginationManager.hasResult(context.getSource()))

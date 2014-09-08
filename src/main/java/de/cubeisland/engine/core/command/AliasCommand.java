@@ -20,8 +20,7 @@ package de.cubeisland.engine.core.command;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.command.result.CommandResult;
-import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.command.context.CommandContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 
@@ -34,8 +33,7 @@ public final class AliasCommand extends CubeCommand
 
     public AliasCommand(CubeCommand target, String name, Set<String> aliases, String prefix, String suffix)
     {
-        super(target.getModule(), name, target.getDescription(), target.getContextFactory(), target.getPermission(), target.isCheckperm());
-        this.setAliases(aliases);
+        new AliasCommandBuilder(this, target, name, aliases);
         this.target = target;
         this.prefix = (prefix == null || prefix.isEmpty() ? NO_ADDITION : explode(" ", prefix));
         this.suffix = (suffix == null || suffix.isEmpty() ? NO_ADDITION : explode(" ", suffix));
@@ -63,13 +61,7 @@ public final class AliasCommand extends CubeCommand
     }
 
     @Override
-    public CommandResult run(CubeContext context)
-    {
-        return this.target.run(context);
-    }
-
-    @Override
-    public List<String> tabComplete(CubeContext context)
+    public List<String> tabComplete(CommandContext context)
     {
         return this.target.tabComplete(context);
     }
@@ -120,17 +112,5 @@ public final class AliasCommand extends CubeCommand
     public boolean isLoggable()
     {
         return target.isLoggable();
-    }
-
-    @Override
-    public void setAsynchronous(boolean asynchronous)
-    {
-        target.setAsynchronous(asynchronous);
-    }
-
-    @Override
-    public void setLoggable(boolean state)
-    {
-        target.setLoggable(state);
     }
 }

@@ -27,20 +27,19 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.method.Flag;
+import de.cubeisland.engine.command.base.method.Flags;
+import de.cubeisland.engine.command.base.method.Indexed;
+import de.cubeisland.engine.command.base.method.Indexeds;
+import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
-import de.cubeisland.engine.command.context.reader.ArgumentReader;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.ModuleAlreadyLoadedException;
-import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.command.methodbased.Command;
-import de.cubeisland.engine.core.command.reflected.context.Flag;
-import de.cubeisland.engine.core.command.reflected.context.Flags;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.Indexeds;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Version;
@@ -48,13 +47,14 @@ import de.cubeisland.engine.core.util.Version;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 
+@Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
 {
     private final ModuleManager mm;
 
     public ModuleCommands(ModuleManager mm)
     {
-        super(mm.getCoreModule(), "module", "Provides ingame module plugin management functionality");
+        super(mm.getCoreModule());
         this.mm = mm;
         ArgumentReader.registerReader(new ModuleReader(mm));
     }
@@ -106,7 +106,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Enables a module")
-    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Indexed(label = "module", type = ModuleReader.class))
     public void enable(CubeContext context)
     {
         if (this.mm.enableModule(context.<Module>getArg(0)))
@@ -120,7 +120,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Disables a module")
-    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Indexed(label = "module", type = ModuleReader.class))
     public void disable(CubeContext context)
     {
         Module module = context.getArg(0);
@@ -129,7 +129,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
-    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Indexed(label = "module", type = ModuleReader.class))
     public void unload(CubeContext context)
     {
         Module module = context.getArg(0);
@@ -138,7 +138,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Reloads a module")
-    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Indexed(label = "module", type = ModuleReader.class))
     @Flags(@Flag(name = "f", longName = "file"))
     public void reload(CubeContext context)
     {
@@ -164,7 +164,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    @Indexeds(@Grouped(@Indexed(label = "file name")))
+    @Indexeds(@Indexed(label = "file name"))
     public void load(CubeContext context)
     {
         String moduleFileName = context.getArg(0);
@@ -204,7 +204,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Get info about a module")
-    @Indexeds(@Grouped(@Indexed(label = "module", type = ModuleReader.class)))
+    @Indexeds(@Indexed(label = "module", type = ModuleReader.class))
     @Flags(@Flag(name = "s", longName = "source"))
     public void info(CubeContext context)
     {

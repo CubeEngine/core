@@ -23,14 +23,4 @@ import de.cubeisland.engine.core.permission.Permission;
 public class PermissibleIndexedParameter extends IndexedParameter
 {
     Permission permission;
-
-    public static PermissibleIndexedParameter greedyIndex()
-    {
-        return new PermissibleIndexedParameter(String.class, String.class, -1, false, "0", null, null);
-    }
-
-    public static PermissibleIndexedParameter emptyIndex(String label)
-    {
-        return new PermissibleIndexedParameter(String.class, String.class, 1, false, label, null, null);
-    }
 }

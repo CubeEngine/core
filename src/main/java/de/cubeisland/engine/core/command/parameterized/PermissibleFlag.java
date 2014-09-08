@@ -24,18 +24,7 @@ import de.cubeisland.engine.core.permission.Permission;
 
 public class PermissibleFlag extends FlagParameter
 {
-    private final Permission permission;
-
-    public PermissibleFlag(String name, String longName, Permission permission)
-    {
-        super(name, longName);
-        this.permission = permission;
-    }
-
-    public PermissibleFlag(String name, String longName)
-    {
-        this(name, longName, null);
-    }
+    Permission permission;
 
     public boolean checkPermission(Permissible permissible)
     {

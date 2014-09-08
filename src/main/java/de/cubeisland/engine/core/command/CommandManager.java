@@ -37,17 +37,13 @@ public interface CommandManager extends Cleanable
      */
     void registerCommand(CubeCommand command, String... parents);
 
-    void registerCommands(Module module, CommandHolder commandHolder, String... parents);
-
     /**
      * Registers all methods annotated as a command in the given command holder object
-     *
-     * @param module        the module to register them for
+     *  @param module        the module to register them for
      * @param commandHolder the command holder containing the commands
      * @param parents       the path under which the command should be registered
      */
-    void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType,
-                          String... parents);
+    void registerCommands(Module module, Object commandHolder, String... parents);
 
     /**
      * Gets a CubeCommand by its name

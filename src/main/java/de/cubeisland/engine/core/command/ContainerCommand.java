@@ -17,50 +17,16 @@
  */
 package de.cubeisland.engine.core.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import de.cubeisland.engine.command.context.CtxBuilder;
-import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.context.CubeContextFactory;
-import de.cubeisland.engine.core.command.parameterized.PermissibleIndexedParameter;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
 import de.cubeisland.engine.core.module.Module;
-
-import static de.cubeisland.engine.core.util.ChatFormat.*;
-import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public abstract class ContainerCommand extends CubeCommand implements CommandHolder
 {
-    private static final Set<String> NO_ALIASES = Collections.emptySet();
-    private final Class<? extends CubeCommand> subCommandType;
     private DelegatingContextFilter delegation;
 
-    public ContainerCommand(Module module, String name, String description)
+    public ContainerCommand(Module module)
     {
-        this(module, ReflectedCommand.class, name, description, NO_ALIASES);
-    }
-
-    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description)
-    {
-        this(module, subCommandType, name, description, NO_ALIASES);
-    }
-
-    public ContainerCommand(Module module, String name, String description, Set<String> aliases)
-    {
-        this(module, ReflectedCommand.class, name, description, aliases);
-    }
-
-    public ContainerCommand(Module module, Class<? extends CubeCommand> subCommandType, String name, String description, Set<String> aliases)
-    {
-        super(module, name, description, new CubeContextFactory(
-            new CtxBuilder().addIndexed(PermissibleIndexedParameter.emptyIndex("action")).get()), null, false);
-        this.setAliases(aliases);
-        this.subCommandType = subCommandType;
-        this.delegation = null;
+        new ContainerCommandBuilder(this).setModule(module);
     }
 
     public void delegateChild(final String name)
@@ -74,21 +40,10 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
             }
         };
     }
-    
+
     public void delegateChild(DelegatingContextFilter filter)
     {
         this.delegation = filter;
-    }
-
-    public Class<? extends CubeCommand> getCommandType()
-    {
-        return this.subCommandType;
-    }
-
-    @Override
-    public CommandResult<CubeContext> run(CubeContext context)
-    {
-        return this.getChild("?").run(context);
     }
 
     public DelegatingContextFilter getDelegation()
@@ -96,62 +51,10 @@ public abstract class ContainerCommand extends CubeCommand implements CommandHol
         return this.delegation;
     }
 
-    @Override
-    protected void addHelp()
-    {
-        this.addChild(new ContainerHelpCommand(this));
-    }
-
-    public static class ContainerHelpCommand extends HelpCommand
-    {
-        public ContainerHelpCommand(CubeCommand target)
-        {
-            super(target);
-        }
-
-        @Override
-        public CommandResult run(CubeContext context)
-        {
-            CommandSender sender = context.getSource();
-            context.sendTranslated(NONE, "{text:Usage:color=INDIGO}: {input#usage}", target.getUsage(context));
-            context.sendMessage(" ");
-
-            List<CubeCommand> commands = new ArrayList<>();
-            for (CubeCommand child : target.getChildren())
-            {
-                if (child == this)
-                {
-                    continue;
-                }
-                if (!child.isCheckperm() || child.isAuthorized(sender))
-                {
-                    commands.add(child);
-                }
-            }
-
-            if (commands.isEmpty())
-            {
-                context.sendTranslated(NEGATIVE, "No actions are available");
-            }
-            else
-            {
-                context.sendTranslated(NEUTRAL, "The following actions are available:");
-                context.sendMessage(" ");
-                for (CubeCommand command : commands)
-                {
-                    context.sendMessage(YELLOW + command.getName() + WHITE + ": "  + GREY + sender.getTranslation(NONE, command.getDescription()));
-                }
-            }
-            context.sendMessage(" ");
-            context.sendTranslated(NONE, "{text:Detailed help:color=GREY}: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + target.implodeCommandParentNames(
-                "/"));
-            return null;
-        }
-    }
-
     public static abstract class DelegatingContextFilter
     {
         public abstract String delegateTo(CubeContext context);
+
         public CubeContext filterContext(CubeContext context, String child)
         {
             return context;

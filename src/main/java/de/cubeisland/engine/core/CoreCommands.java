@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -26,25 +25,24 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.method.Flag;
+import de.cubeisland.engine.command.base.method.Flags;
+import de.cubeisland.engine.command.base.method.Indexed;
+import de.cubeisland.engine.command.base.method.Indexeds;
+import de.cubeisland.engine.command.base.method.Restricted;
+import de.cubeisland.engine.command.exception.TooFewArgumentsException;
+import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.command.exception.TooFewArgumentsException;
 import de.cubeisland.engine.core.command.reflected.CallAsync;
-import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
-import de.cubeisland.engine.command.methodbased.Restricted;
 import de.cubeisland.engine.core.command.reflected.Unloggable;
-import de.cubeisland.engine.core.command.reflected.context.Flag;
-import de.cubeisland.engine.core.command.reflected.context.Flags;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.Indexeds;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
@@ -52,8 +50,8 @@ import de.cubeisland.engine.logging.LogLevel;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
-import static java.util.Arrays.asList;
 
+@Command(name = "cubeengine", desc = "These are the basic commands of the CubeEngine.", alias = "ce")
 public class CoreCommands extends ContainerCommand
 {
 
@@ -64,8 +62,7 @@ public class CoreCommands extends ContainerCommand
 
     public CoreCommands(Core core)
     {
-        super(core.getModuleManager().getCoreModule(), "cubeengine", "These are the basic commands of the CubeEngine.");
-        this.setAliases(new HashSet<>(asList("ce")));
+        super(core.getModuleManager().getCoreModule());
         this.core = (BukkitCore)core;
         this.banManager = core.getBanManager();
         this.um = core.getUserManager();
@@ -95,8 +92,8 @@ public class CoreCommands extends ContainerCommand
 
     @Unloggable
     @Command(alias = "setpw", desc = "Sets your password.")
-    @Indexeds({@Grouped(@Indexed(label = "password")),
-              @Grouped(value = @Indexed(label = "player", type = User.class), req = false)})
+    @Indexeds({@Indexed(label = "password"),
+               @Indexed(label = "player", type = User.class, req = false)})
     public void setPassword(CubeContext context)
     {
         User target;
@@ -126,7 +123,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    @Indexeds(@Grouped(value = @Indexed(label = "player", staticValues = "*", type = User.class), req = false))
+    @Indexeds(@Indexed(label = "player", staticValues = "*", type = User.class, req = false))
     public void clearPassword(CubeContext context)
     {
         CommandSender sender = context.getSource();
@@ -158,7 +155,7 @@ public class CoreCommands extends ContainerCommand
 
     @Unloggable
     @Command(desc = "Logs you in with your password!")
-    @Indexeds(@Grouped(@Indexed(label = "password")))
+    @Indexeds(@Indexed(label = "password"))
     @CommandPermission(permDefault = TRUE)
     public void login(CubeContext context)
     {
@@ -207,7 +204,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Logs you out!")
-    @Restricted(msg = "You might use /stop for this.")
+    @Restricted(value = User.class, msg = "You might use /stop for this.")
     public void logout(CubeContext context)
     {
         User sender = (User)context.getSource();
@@ -239,7 +236,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    @Indexeds(@Grouped(value = @Indexed(label = "loglevel", type = LogLevel.class), req = false))
+    @Indexeds(@Indexed(label = "loglevel", type = LogLevel.class, req = false))
     public void loglevel(CubeContext context)
     {
         if (context.hasIndexed(0))
@@ -253,7 +250,7 @@ public class CoreCommands extends ContainerCommand
 
     @CallAsync
     @Command(alias = "finduser", desc = "Searches for a user in the database")
-    @Indexeds(@Grouped(@Indexed(label = "name")))
+    @Indexeds(@Indexed(label = "name"))
     public CommandResult searchuser(CubeContext context)
     {
         final boolean exact = um.findExactUser(context.getString(0)) != null;

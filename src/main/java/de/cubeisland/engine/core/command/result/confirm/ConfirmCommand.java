@@ -17,22 +17,25 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
+import de.cubeisland.engine.command.base.Command;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CubeCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
 
+@Command(name = "confirm", desc = "Confirm a command")
 public class ConfirmCommand extends CubeCommand
 {
     private final ConfirmManager confirmManager;
 
-    public ConfirmCommand(Module module, CubeContextFactory contextFactory, ConfirmManager confirmManager)
+    public ConfirmCommand(Module module, ConfirmManager confirmManager)
     {
-        super(module, "confirm", "Confirm a command", contextFactory, null, false);
+        super();
+        //new CubeContextFactory(emptyDescriptor()),
+            // module, contextFactory, null, false TODO initialize meeee
         this.confirmManager = confirmManager;
     }
 

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 
+import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
@@ -32,7 +33,6 @@ import de.cubeisland.engine.core.command.CommandHolder;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.command.Completer;
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerCompleter;
 import de.cubeisland.engine.core.command.parameterized.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
@@ -143,17 +143,12 @@ public class BukkitCommandManager implements CommandManager
             newParents[parents.length] = command.getName();
             System.arraycopy(parents, 0, newParents, 0, parents.length);
 
-            this.registerCommands(command.getModule(), (CommandHolder)command, newParents);
+            this.registerCommands(command.getModule(), command, newParents);
         }
     }
 
-    public void registerCommands(Module module, CommandHolder commandHolder, String... parents)
-    {
-        this.registerCommands(module, commandHolder, commandHolder.getCommandType(), parents);
-    }
-
     @SuppressWarnings("unchecked")
-    public void registerCommands(Module module, Object commandHolder, Class<? extends CubeCommand> commandType, String... parents)
+    public void registerCommands(Module module, Object commandHolder, String... parents)
     {
         for (CubeCommand command : commandFactory.parseCommands(module, commandHolder))
         {

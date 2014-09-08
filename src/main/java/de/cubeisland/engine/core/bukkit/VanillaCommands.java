@@ -31,37 +31,34 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.CommandHolder;
-import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.context.CubeContext;
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.method.Flag;
+import de.cubeisland.engine.command.base.method.Flags;
+import de.cubeisland.engine.command.base.method.Indexed;
+import de.cubeisland.engine.command.base.method.Indexeds;
+import de.cubeisland.engine.command.base.method.Named;
+import de.cubeisland.engine.command.base.method.Nameds;
 import de.cubeisland.engine.command.exception.MissingParameterException;
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.command.ContainerCommand;
+import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.command.methodbased.Command;
 import de.cubeisland.engine.core.command.reflected.CommandPermission;
-import de.cubeisland.engine.core.command.reflected.ReflectedCommand;
-import de.cubeisland.engine.core.command.reflected.context.Flag;
-import de.cubeisland.engine.core.command.reflected.context.Flags;
-import de.cubeisland.engine.core.command.reflected.context.Grouped;
-import de.cubeisland.engine.core.command.reflected.context.Indexeds;
-import de.cubeisland.engine.core.command.reflected.context.Indexed;
-import de.cubeisland.engine.core.command.reflected.context.Nameds;
-import de.cubeisland.engine.core.command.reflected.context.Named;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
+import static de.cubeisland.engine.command.context.parameter.BaseParameter.INFINITE_GREED;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 import static java.text.DateFormat.SHORT;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-public class VanillaCommands implements CommandHolder
+public class VanillaCommands
 {
     private final BukkitCore core;
     private final UserManager um;
@@ -72,13 +69,8 @@ public class VanillaCommands implements CommandHolder
         this.um = core.getUserManager();
     }
 
-    public Class<? extends CubeCommand> getCommandType()
-    {
-        return ReflectedCommand.class;
-    }
-
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
+    @Indexeds(@Indexed(label = "message", req = false, greed = INFINITE_GREED))
     public void stop(CubeContext context)
     {
         String message = context.getStrings(0);
@@ -93,7 +85,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Reloads the server.")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "message"), greedy = true))
+    @Indexeds(@Indexed(label = "message", req = false, greed = INFINITE_GREED))
     @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(CubeContext context)
     {
@@ -122,8 +114,8 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "difficulty", type = Difficulty.class)))
-    @Nameds(@Named(names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
+    @Indexeds(@Indexed(label = "difficulty", type = Difficulty.class, req = false))
+    @Nameds(@Named(name = "world", label = "world", alias = {"w", "in"}, type = World.class, completer = WorldCompleter.class))
     public void difficulty(CubeContext context)
     {
         World world = context.getArg("world");
@@ -152,7 +144,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Makes a player an operator")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "player", type = OfflinePlayer.class)))
+    @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class, req = false))
     @Flags(@Flag(name = "f", longName = "force"))
     @CommandPermission(permDefault = FALSE)
     public void op(CubeContext context)
@@ -210,7 +202,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Revokes the operator status of a player")
-    @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+    @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
     @CommandPermission(permDefault = FALSE)
     public void deop(CubeContext context)
     {
@@ -274,7 +266,7 @@ public class VanillaCommands implements CommandHolder
     // integrate /saveoff and /saveon and provide aliases
     @Alias(names = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "world", type = World.class)))
+    @Indexeds(@Indexed(label = "world", type = World.class, req = false))
     public void saveall(CubeContext context)
     {
         if (context.hasIndexed(0))
@@ -301,7 +293,7 @@ public class VanillaCommands implements CommandHolder
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
-    @Indexeds(@Grouped(req = false, value = @Indexed(label = "plugin")))
+    @Indexeds(@Indexed(label = "plugin", req = false))
     @Flags(@Flag(name = "s", longName = "source"))
     public void version(CubeContext context)
     {
@@ -350,19 +342,20 @@ public class VanillaCommands implements CommandHolder
         }
     }
 
+    @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
     public static class WhitelistCommand extends ContainerCommand
     {
         private final BukkitCore core;
 
         public WhitelistCommand(BukkitCore core)
         {
-            super(core.getModuleManager().getCoreModule(), "whitelist", "Allows you to manage your whitelist");
+            super(core.getModuleManager().getCoreModule());
             this.core = core;
             this.delegateChild("list");
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
         public void add(CubeContext context)
         {
             if (!context.hasIndexed())
@@ -381,7 +374,7 @@ public class VanillaCommands implements CommandHolder
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        @Indexeds(@Grouped(@Indexed(label = "player", type = OfflinePlayer.class)))
+        @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
         public void remove(CubeContext context)
         {
             if (!context.hasIndexed())

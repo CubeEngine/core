@@ -29,29 +29,24 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.cubeisland.engine.command.Completer;
-import de.cubeisland.engine.command.context.CtxBuilder;
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.field.CommandParameters;
+import de.cubeisland.engine.command.base.field.Description;
+import de.cubeisland.engine.command.base.field.Optional;
+import de.cubeisland.engine.command.base.field.ParamFlag;
+import de.cubeisland.engine.command.base.field.ParamIndexed;
+import de.cubeisland.engine.command.base.field.ParamNamed;
+import de.cubeisland.engine.command.base.field.Required;
+import de.cubeisland.engine.command.base.field.ValueLabel;
 import de.cubeisland.engine.command.context.Group;
 import de.cubeisland.engine.command.context.parameter.IndexedParameter;
 import de.cubeisland.engine.command.context.parameter.NamedParameter;
 import de.cubeisland.engine.command.context.parameter.ParameterGroup;
-import de.cubeisland.engine.command.methodbased.Command;
-import de.cubeisland.engine.command.methodbased.Restricted;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.ReflectedMethodCommandFactory;
 import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.parameterized.PermissibleFlag;
 import de.cubeisland.engine.core.command.parameterized.PermissibleIndexedParameter;
 import de.cubeisland.engine.core.command.parameterized.PermissibleNamedParameter;
-import de.cubeisland.engine.core.command.reflected.commandparameter.CommandParameters;
-import de.cubeisland.engine.core.command.reflected.commandparameter.Description;
-import de.cubeisland.engine.core.command.reflected.commandparameter.Optional;
-import de.cubeisland.engine.core.command.reflected.commandparameter.ParamFlag;
-import de.cubeisland.engine.core.command.reflected.commandparameter.ParamGroup;
-import de.cubeisland.engine.core.command.reflected.commandparameter.ParamIndexed;
-import de.cubeisland.engine.core.command.reflected.commandparameter.ParamNamed;
-import de.cubeisland.engine.core.command.reflected.commandparameter.Required;
-import de.cubeisland.engine.core.command.reflected.commandparameter.ValueLabel;
 import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.command.reflected.ReflectedCommandFactory.SignatureType.*;
@@ -270,9 +265,6 @@ public class ReflectedCommandFactory
             CubeCommand command;
             switch (this.validateSignature(module, holder, method))
             {
-                case CONTEXT:
-                    command = this.buildCommand(module, holder, method, annotation);
-                    break;
                 case CONTEXT_PARAMETER:
                     command = this.buildCommandWithParameter(module, holder, method, annotation);
                     break;

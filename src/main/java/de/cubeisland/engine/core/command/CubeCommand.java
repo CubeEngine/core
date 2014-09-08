@@ -32,8 +32,8 @@ import java.util.Stack;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.command.BaseCommand;
-import de.cubeisland.engine.command.CommandRunner;
 import de.cubeisland.engine.command.Completer;
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.command.context.ContextParser;
 import de.cubeisland.engine.command.context.CtxDescriptor;
 import de.cubeisland.engine.command.context.parameter.FlagParameter;
@@ -50,7 +50,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 
 import static de.cubeisland.engine.command.context.ContextParser.Type.*;
-import static de.cubeisland.engine.core.permission.PermDefault.OP;
+import static de.cubeisland.engine.core.command.HelpCommand.newHelpCommand;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -64,38 +64,16 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
     Module module;
     Permission permission;
     boolean checkperm;
-    boolean loggable;
+    boolean loggable = true;
     boolean asynchronous = false;
 
     private String label;
 
     private boolean permRegistered = false;
 
-
-
-    public CubeCommand(Module module, String name,
-                       Permission permission, boolean checkperm,)
+    public CubeCommand()
     {
-        this.checkperm = checkperm;
-        if ("?".equals(name) && !HelpCommand.class.isAssignableFrom(this.getClass()))
-        {
-            throw new IllegalArgumentException("Invalid command name: " + name);
-        }
-        this.module = module;
-
-        this.loggable = true;
-        this.permission = permission;
-
-        if (!HelpCommand.class.isAssignableFrom(this.getClass()))
-        {
-            this.addHelp();
-        }
-    }
-
-    public CubeCommand(Module module, String name, String description, CubeContextFactory cFactory,
-                       CommandRunner<CubeContext> runner)
-    {
-        this(module, name, description, cFactory, Permission.detachedPermission(name, OP), true, runner);
+        this.addHelp();
     }
 
     private static String replaceSemiOptionalArgs(CommandSender sender, String usage)
@@ -112,7 +90,10 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
 
     protected void addHelp()
     {
-        this.addChild(new HelpCommand(this));
+        if (!HelpCommand.class.isAssignableFrom(this.getClass()))
+        {
+            this.addChild(newHelpCommand(this));
+        }
     }
 
     public String getLabel()
@@ -122,7 +103,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
 
     public void setLabel(String label)
     {
-        this.label = label == null ? this.name : label;
+        this.label = label == null ? this.getName() : label;
     }
 
     public boolean isAuthorized(CommandSender sender)
@@ -173,19 +154,9 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         return this.asynchronous;
     }
 
-    public void setAsynchronous(boolean asynchronous)
-    {
-        this.asynchronous = asynchronous;
-    }
-
     public boolean isLoggable()
     {
         return this.loggable;
-    }
-
-    public void setLoggable(boolean state)
-    {
-        this.loggable = state;
     }
 
     protected void registerAlias(String[] names, String[] parents)
@@ -287,7 +258,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         return (sender instanceof User ? "/" : "") + implode(" ", parentLabels) + ' ' + usage;
     }
 
-    public List<String> tabComplete(CubeContext context)
+    public List<String> tabComplete(CommandContext context)
     {
         if (context.last == ContextParser.Type.NOTHING)
         {
@@ -320,7 +291,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         return result;
     }
 
-    private List<String> tabCompleteParamValue(CubeContext context, CtxDescriptor descriptor)
+    private List<String> tabCompleteParamValue(CommandContext context, CtxDescriptor descriptor)
     {
         Iterator<Entry<String, String>> iterator = context.getRawNamed().entrySet().iterator();
         Entry<String, String> lastParameter;
@@ -337,7 +308,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         return Collections.emptyList();
     }
 
-    private void tabCompleteParam(CubeContext context, CtxDescriptor descriptor, List<String> result, String last)
+    private void tabCompleteParam(CommandContext context, CtxDescriptor descriptor, List<String> result, String last)
     {
         for (NamedParameter parameter : descriptor.getNamedGroups().listAll())
         {
@@ -361,7 +332,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         }
     }
 
-    private void tabCompleteIndexed(CubeContext context, CtxDescriptor descriptor, List<String> result, int index,
+    private void tabCompleteIndexed(CommandContext context, CtxDescriptor descriptor, List<String> result, int index,
                                     String last)
     {
         IndexedParameter indexed = descriptor.getIndexed(index);
@@ -375,7 +346,7 @@ public class CubeCommand extends BaseCommand<CubeContext, CubeContextFactory, Cu
         }
     }
 
-    private void tabCompleteFlags(CubeContext context, CtxDescriptor descriptor, List<String> result, String last)
+    private void tabCompleteFlags(CommandContext context, CtxDescriptor descriptor, List<String> result, String last)
     {
         if (!last.isEmpty())
         {

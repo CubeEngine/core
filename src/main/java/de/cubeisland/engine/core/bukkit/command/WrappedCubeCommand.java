@@ -79,7 +79,6 @@ public class WrappedCubeCommand extends Command
     @Override
     public Command setAliases(List<String> aliases)
     {
-        this.command.setAliases(new HashSet<>(aliases));
         return this;
     }
 

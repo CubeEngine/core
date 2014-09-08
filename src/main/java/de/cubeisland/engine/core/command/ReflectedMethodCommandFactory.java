@@ -3,10 +3,10 @@ package de.cubeisland.engine.core.command;
 import java.lang.reflect.Method;
 
 import de.cubeisland.engine.command.CommandRunner;
+import de.cubeisland.engine.command.base.method.MethodCommandBuilder;
+import de.cubeisland.engine.command.base.method.MethodCommandRunner;
 import de.cubeisland.engine.command.context.ContextFactory;
 import de.cubeisland.engine.command.context.CtxDescriptor;
-import de.cubeisland.engine.command.methodbased.MethodCommandFactory;
-import de.cubeisland.engine.command.methodbased.MethodCommandRunner;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.context.CubeContextFactory;
 import de.cubeisland.engine.core.command.reflected.Alias;
@@ -19,21 +19,21 @@ import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.permission.Permission.detachedPermission;
 
-public class ReflectedMethodCommandFactory extends MethodCommandFactory<CubeCommand>
+public class ReflectedMethodCommandFactory<CmdT extends CubeCommand> extends MethodCommandBuilder<CmdT>
 {
-    public ReflectedMethodCommandFactory()
+    public ReflectedMethodCommandFactory(Class<CmdT> clazz)
     {
-        super(CubeCommand.class);
+        super(clazz);
     }
 
     @Override
-    public CubeContextFactory newCtxFactory(CtxDescriptor descriptor)
+    protected CubeContextFactory newCtxFactory(CtxDescriptor descriptor)
     {
         return new CubeContextFactory(descriptor);
     }
 
     @Override
-    public ReflectedMethodCommandFactory build(MethodCommandRunner runner)
+    public ReflectedMethodCommandFactory<CmdT> build(MethodCommandRunner runner)
     {
         super.build(runner);
         String permNode = cmd().getName();

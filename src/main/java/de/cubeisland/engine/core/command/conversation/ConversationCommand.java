@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.conversation;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
+import de.cubeisland.engine.command.base.Command;
+import de.cubeisland.engine.command.base.method.AnnotatedDescriptorBuilder;
+import de.cubeisland.engine.command.context.CommandContext;
 import de.cubeisland.engine.command.context.parameter.FlagParameter;
 import de.cubeisland.engine.command.context.parameter.NamedParameter;
 import de.cubeisland.engine.command.exception.IncorrectArgumentException;
@@ -38,10 +42,8 @@ import de.cubeisland.engine.command.exception.IncorrectUsageException;
 import de.cubeisland.engine.command.exception.MissingParameterException;
 import de.cubeisland.engine.command.exception.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommand;
-import de.cubeisland.engine.core.command.HelpCommand;
 import de.cubeisland.engine.core.command.context.CubeContext;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
@@ -53,13 +55,25 @@ import gnu.trove.set.hash.TLongHashSet;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
+@Command(desc = "")
 public abstract class ConversationCommand extends CubeCommand implements Listener
 {
     private final TLongHashSet usersInMode = new TLongHashSet();
 
-    protected ConversationCommand(Module module, ConversationContextFactory contextFactory)
+    protected ConversationCommand(Module module)
     {
-        super(module, "", "", contextFactory, null, false);
+        // TODO initialize
+        //super(module)
+        //contextFactory, null, false);
+        // TODO read from params from implemented run Method
+        try
+        {
+            new AnnotatedDescriptorBuilder<Method>().build(this.getClass().getMethod("run", CubeContext.class)); // TODO ConversationCommandBuilder
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
         module.getCore().getEventManager().registerListener(module, this);
     }
 
@@ -122,7 +136,7 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     }
 
     @Override
-    public List<String> tabComplete(CubeContext context)
+    public List<String> tabComplete(CommandContext context)
     {
         List<String> list = new ArrayList<>();
         Set<String> flags = new HashSet<>();
@@ -212,40 +226,6 @@ public abstract class ConversationCommand extends CubeCommand implements Listene
     public void removeUser(User user)
     {
         this.usersInMode.remove(user.getId());
-    }
-
-    @Override
-    protected void addHelp()
-    {
-        this.addChild(new ConversationHelpCommand(this));
-    }
-
-    public static class ConversationHelpCommand extends HelpCommand
-    {
-        public ConversationHelpCommand(CubeCommand target)
-        {
-            super(target);
-        }
-
-        @Override
-        public CommandResult run(CubeContext context)
-        {
-            context.sendTranslated(NEUTRAL, "Flags:");
-            Set<String> flags = new HashSet<>();
-            for (FlagParameter flag : target.getContextFactory().descriptor().getFlags())
-            {
-                flags.add(flag.getLongName().toLowerCase());
-            }
-            context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, flags));
-            context.sendTranslated(NEUTRAL, "Parameters:");
-            Set<String> params  = new HashSet<>();
-            for (NamedParameter param : target.getContextFactory().descriptor().getNamedGroups().listAll())
-            {
-                params.add(param.getName().toLowerCase());
-            }
-            context.sendMessage("    " + StringUtils.implode(ChatFormat.GREY + ", " + ChatFormat.WHITE, params));
-            return null;
-        }
     }
 
     // TODO REMOVE DUPLICATED CODE (CubeCommandExecuter)
