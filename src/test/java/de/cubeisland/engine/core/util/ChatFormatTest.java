@@ -17,22 +17,26 @@
  */
 package de.cubeisland.engine.core.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import static de.cubeisland.engine.core.util.ChatFormat.*;
+import static org.junit.Assert.assertEquals;
 
-public class ChatFormatTest extends TestCase
+public class ChatFormatTest
 {
+    @Test
     public void testStripFormats() throws Exception
     {
         assertEquals(stripFormats(GOLD + "Gold"), "Gold");
     }
 
+    @Test
     public void testStripRedundantFormats() throws Exception
     {
         assertEquals(stripRedundantFormats(WHITE + "" + GOLD + "Gold"), GOLD + "Gold");
     }
 
+    @Test
     public void testParseFormats() throws Exception
     {
         assertEquals(parseFormats('&', "&" + GOLD.getChar() + "Gold"), BASE_CHAR + "" + GOLD.getChar() + "Gold");

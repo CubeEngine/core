@@ -17,10 +17,13 @@
  */
 package de.cubeisland.engine.core.util;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class StringUtilsTest extends TestCase
+import static org.junit.Assert.assertEquals;
+
+public class StringUtilsTest
 {
+    @Test
     public void testTrim()
     {
         final String testString = "blabla";

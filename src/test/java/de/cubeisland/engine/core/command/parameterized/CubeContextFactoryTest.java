@@ -30,24 +30,26 @@ import de.cubeisland.engine.core.command.TestCommand;
 import de.cubeisland.engine.core.command.sender.TestConsoleSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleManager;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import static de.cubeisland.engine.core.command.context.ContextParser.readString;
 import static de.cubeisland.engine.core.util.StringUtils.explode;
+import static org.junit.Assert.assertEquals;
 
-public class CubeContextFactoryTest extends TestCase
+public class CubeContextFactoryTest
 {
     private Core core;
     private ModuleManager mm;
 
-    @Override
+    @Before
     public void setUp() throws Exception
     {
-        super.setUp();
         this.core = new TestCore();
         this.mm = this.core.getModuleManager();
     }
 
+    @Test
     public void testReadString()
     {
         StringBuilder sb;
@@ -74,6 +76,7 @@ public class CubeContextFactoryTest extends TestCase
         assertEquals("", sb.toString());
     }
 
+    @Test
     public void testContextFactory()
     {
         CubeContextFactory factory = new CubeContextFactory(ContextBuilder.build().add(new CommandParameter("test", "label", String.class, null)).add(new CommandFlag("a", "all", null)).get());

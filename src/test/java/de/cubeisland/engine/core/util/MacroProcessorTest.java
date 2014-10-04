@@ -20,10 +20,13 @@ package de.cubeisland.engine.core.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class MacroProcessorTest extends TestCase
+import static org.junit.Assert.assertEquals;
+
+public class MacroProcessorTest
 {
+    @Test
     public void testProcess() throws Exception
     {
         MacroProcessor processor = new MacroProcessor();
