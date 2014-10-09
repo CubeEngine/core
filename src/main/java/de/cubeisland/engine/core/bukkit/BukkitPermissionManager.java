@@ -213,10 +213,7 @@ public class BukkitPermissionManager implements PermissionManager
                 bParent = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
             }
             addParentIfNotExists(mainBPerm, bParent);
-            if (!module.getBasePermission().equals(parentPerm))
-            {
-                this.registerPermission(module, parentPerm);
-            }
+            this.registerPermission(module, parentPerm);
         }
         for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
         {
