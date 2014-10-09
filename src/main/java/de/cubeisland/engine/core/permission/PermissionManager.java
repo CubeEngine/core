@@ -40,10 +40,19 @@ public interface PermissionManager extends Cleanable
     void registerPermissions(Module module, Permission[] permissions);
 
     /**
+     * Calls a {@link NotifyPermissionRegistrationCompletedEvent}.
+     * Should be invoked manually after the registration of new permissions after {@link Module#onEnable()}
+     *
+     * @param module      the module
+     * @param permissions optionally specify the registered permissions
+     */
+    void notifyPermissionRegistrationCompleted(Module module, Permission... permissions);
+
+    /**
      * Removes a permission of a module
      *
      * @param module the module
-     * @param perm the permission
+     * @param perm   the permission
      */
     void removePermission(Module module, String perm);
 
@@ -63,6 +72,7 @@ public interface PermissionManager extends Cleanable
      * Returns the PermDefault for the given permission
      *
      * @param permission the permission to search for
+     *
      * @return the default value or null if the permission was not registered
      */
     PermDefault getDefaultFor(String permission);
@@ -70,7 +80,7 @@ public interface PermissionManager extends Cleanable
     /**
      * Removes a permission of a module
      *
-     * @param module the module
+     * @param module     the module
      * @param permission the permission
      */
     void removePermission(Module module, Permission permission);
