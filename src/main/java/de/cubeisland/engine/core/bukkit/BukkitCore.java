@@ -33,18 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import org.bukkit.Difficulty;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldType;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Villager.Profession;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -58,26 +52,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
-import de.cubeisland.engine.core.command.readers.BooleanReader;
-import de.cubeisland.engine.core.command.readers.ByteReader;
-import de.cubeisland.engine.core.command.readers.DifficultyReader;
-import de.cubeisland.engine.core.command.readers.DoubleReader;
-import de.cubeisland.engine.core.command.readers.DyeColorReader;
-import de.cubeisland.engine.core.command.readers.EnchantmentReader;
-import de.cubeisland.engine.core.command.readers.EntityTypeReader;
-import de.cubeisland.engine.core.command.readers.EnvironmentReader;
-import de.cubeisland.engine.core.command.readers.FloatReader;
-import de.cubeisland.engine.core.command.readers.IntReader;
-import de.cubeisland.engine.core.command.readers.ItemStackReader;
-import de.cubeisland.engine.core.command.readers.LogLevelReader;
-import de.cubeisland.engine.core.command.readers.LongReader;
-import de.cubeisland.engine.core.command.readers.OfflinePlayerReader;
-import de.cubeisland.engine.core.command.readers.ProfessionReader;
-import de.cubeisland.engine.core.command.readers.ShortReader;
-import de.cubeisland.engine.core.command.readers.UserReader;
-import de.cubeisland.engine.core.command.readers.WorldReader;
-import de.cubeisland.engine.core.command.readers.WorldTypeReader;
-import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
+import de.cubeisland.engine.core.command_old.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
@@ -123,7 +98,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
 
-import static de.cubeisland.engine.command.context.reader.ArgumentReader.registerReader;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 /**
@@ -284,30 +258,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
-        // depends on: user manager, world manager
-        // TODO Manager to unregister reader from modules
-        registerReader(new ByteReader(), Byte.class, byte.class);
-        registerReader(new ShortReader(), Short.class, short.class);
-        registerReader(new IntReader(), Integer.class, int.class);
-        registerReader(new LongReader(), Long.class, long.class);
-        registerReader(new FloatReader(), Float.class, float.class);
-        registerReader(new DoubleReader(), Double.class, double.class);
-
-        registerReader(new BooleanReader(this), Boolean.class, boolean.class);
-        registerReader(new EnchantmentReader(), Enchantment.class);
-        registerReader(new ItemStackReader(), ItemStack.class);
-        registerReader(new UserReader(this), User.class);
-        registerReader(new WorldReader(this), World.class);
-        registerReader(new EntityTypeReader(), EntityType.class);
-        registerReader(new DyeColorReader(), DyeColor.class);
-        registerReader(new ProfessionReader(), Profession.class);
-        registerReader(new OfflinePlayerReader(this), OfflinePlayer.class);
-        registerReader(new EnvironmentReader(), Environment.class);
-        registerReader(new WorldTypeReader(), WorldType.class);
-        registerReader(new DifficultyReader(), Difficulty.class);
-        registerReader(new LogLevelReader(), LogLevel.class);
-
-        // depends on: server, config
+        // depends on: user manager, world manager, server, config
         this.commandManager = new BukkitCommandManager(this, new CommandInjector(this));
         this.addInitHook(new Runnable() {
             @Override
@@ -324,18 +275,18 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.corePerms = new CorePerms(this.moduleManager.getCoreModule());
 
         // depends on: server, module manager
-        this.commandManager.registerCommand(new ModuleCommands(this.moduleManager));
-        this.commandManager.registerCommand(new CoreCommands(this));
+        this.commandManager.addCommand(new ModuleCommands(this.moduleManager));
+        this.commandManager.addCommand(new CoreCommands(this));
         if (this.config.improveVanilla)
         {
-            this.commandManager.registerCommands(this.getModuleManager().getCoreModule(), new VanillaCommands(this));
-            this.commandManager.registerCommand(new WhitelistCommand(this));
+            this.commandManager.addCommands(commandManager, this.getModuleManager().getCoreModule(), new VanillaCommands(this));
+            this.commandManager.addCommand(new WhitelistCommand(this));
         }
         this.addInitHook(new Runnable() {
             @Override
             public void run()
             {
-                commandManager.registerCommands(getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
+                commandManager.addCommands(commandManager, getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
                 eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
             }
         });

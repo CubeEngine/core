@@ -18,10 +18,10 @@
 package de.cubeisland.engine.core.webapi;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -45,7 +45,7 @@ public class Parameters
         String value = values.get(index);
         if (type != String.class)
         {
-            return (T)ArgumentReader.read(type, type, value, Locale.getDefault());
+            return (T)ReaderManager.MANAGER.read(type, type, new CommandInvocation(null, value, ReaderManager.MANAGER)); // TODO fix ME
         }
         return (T)value;
     }

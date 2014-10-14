@@ -49,5 +49,5 @@ public interface CommandSender extends org.bukkit.command.CommandSender, Command
 
     String getTranslationN(MessageType type, int n, String singular, String plural, Object... params);
 
-    UUID getUUID();
+    UUID getUniqueId();
 }

@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.command.context.reader.ArgumentReader;
+import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 
@@ -55,7 +55,8 @@ public final class ReflectedApiHandler extends ApiHandler
             list.add(request);
             for (Entry<String, Class> entry : this.getParameters().entrySet())
             {
-                list.add(ArgumentReader.read(entry.getValue(), entry.getValue(), params.getString(entry.getKey()), Locale.getDefault()));
+                // TODO fix ME
+                list.add(ReaderManager.MANAGER.read(entry.getValue(), entry.getValue(), new CommandInvocation(null, params.getString(entry.getKey()), ReaderManager.MANAGER)));
             }
             return (ApiResponse)this.method.invoke(this.holder, list.toArray(new Object[list.size()]));
         }

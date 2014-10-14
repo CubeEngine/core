@@ -61,7 +61,7 @@ public class UserEntity extends AsyncRecord<UserEntity>
         return getValue(TABLE_USER.KEY);
     }
 
-    public UUID getUUID()
+    public UUID getUniqueId()
     {
         if (uid == null)
         {

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.command.context.reader.ArgumentReader;
 
 /**
  * This is the ClassLoader used by modules
@@ -111,8 +110,8 @@ public class ModuleClassLoader extends URLClassLoader
         {
             clazz = it.next().getValue();
             this.moduleLoader.getCore().getConfigFactory().getDefaultConverterManager().removeConverter(clazz);
-            ArgumentReader.removeReader(clazz);
             it.remove();
+            // TODO remove ArgumentReaders
         }
 
         try

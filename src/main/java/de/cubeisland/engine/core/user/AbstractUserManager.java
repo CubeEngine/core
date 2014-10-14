@@ -42,7 +42,7 @@ import org.bukkit.Bukkit;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.command_old.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -232,7 +232,7 @@ public abstract class AbstractUserManager implements UserManager
     protected synchronized void cacheUser(User user)
     {
         updateLastName(user);
-        this.cachedUserByUUID.put(user.getUUID(), user);
+        this.cachedUserByUUID.put(user.getUniqueId(), user);
         this.cachedUserByDbId.put(user.getEntity().getKey(), user);
         this.core.getLog().debug("User {} cached!", user.getName());
         this.attachDefaults(user);
@@ -249,7 +249,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected synchronized void removeCachedUser(User user)
     {
-        this.cachedUserByUUID.remove(user.getUUID());
+        this.cachedUserByUUID.remove(user.getUniqueId());
         this.cachedUserByDbId.remove(user.getEntity().getKey());
         this.core.getLog().debug("Removed cached user {}!", user.getName());
         user.detachAll();
@@ -510,7 +510,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             if (name.equals(onlineUser.getName()))
             {
-                return this.getExactUser(onlineUser.getUUID());
+                return this.getExactUser(onlineUser.getUniqueId());
             }
         }
         // Find Online Players with similar name
@@ -522,7 +522,7 @@ public abstract class AbstractUserManager implements UserManager
         String foundUser = Match.string().matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
-            return this.getExactUser(onlinePlayerMap.get(foundUser).getUUID());
+            return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());
         }
         // Lookup in saved users
         UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name))

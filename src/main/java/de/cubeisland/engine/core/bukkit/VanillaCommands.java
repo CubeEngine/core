@@ -31,27 +31,25 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.command.base.Command;
-import de.cubeisland.engine.command.base.method.Flag;
-import de.cubeisland.engine.command.base.method.Flags;
-import de.cubeisland.engine.command.base.method.Indexed;
-import de.cubeisland.engine.command.base.method.Indexeds;
-import de.cubeisland.engine.command.base.method.Named;
-import de.cubeisland.engine.command.base.method.Nameds;
-import de.cubeisland.engine.command.exception.MissingParameterException;
+import de.cubeisland.engine.command.methodic.Command;
+import de.cubeisland.engine.command.methodic.Flag;
+import de.cubeisland.engine.command.methodic.Flags;
+import de.cubeisland.engine.command.methodic.Param;
+import de.cubeisland.engine.command.methodic.Params;
+import de.cubeisland.engine.command.old.MissingParameterException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.ContainerCommand;
-import de.cubeisland.engine.core.command.context.CubeContext;
-import de.cubeisland.engine.core.command.parameterized.completer.WorldCompleter;
-import de.cubeisland.engine.core.command.reflected.Alias;
-import de.cubeisland.engine.core.command.reflected.CommandPermission;
+import de.cubeisland.engine.core.command.CommandContainer;
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.annotation.CommandPermission;
+import de.cubeisland.engine.core.command_old.parameterized.completer.WorldCompleter;
+import de.cubeisland.engine.core.command_old.reflected.Alias;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
-import static de.cubeisland.engine.command.context.parameter.BaseParameter.INFINITE_GREED;
+import static de.cubeisland.engine.command.parameter.property.Greed.*;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -70,8 +68,8 @@ public class VanillaCommands
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    @Indexeds(@Indexed(label = "message", req = false, greed = INFINITE_GREED))
-    public void stop(CubeContext context)
+    @Params(positional = @Param(label = "message", req = false, greed = INFINITE_GREED))
+    public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
         if (message == null || message.isEmpty())
@@ -85,9 +83,9 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    @Indexeds(@Indexed(label = "message", req = false, greed = INFINITE_GREED))
+    @Params(positional = @Param(label = "message", req = false, greed = INFINITE_GREED))
     @Flags(@Flag(name = "m", longName = "modules"))
-    public void reload(CubeContext context)
+    public void reload(CommandContext context)
     {
         final String message = context.getStrings(0);
         if (message != null)
@@ -114,11 +112,11 @@ public class VanillaCommands
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    @Indexeds(@Indexed(label = "difficulty", type = Difficulty.class, req = false))
-    @Nameds(@Named(name = "world", label = "world", alias = {"w", "in"}, type = World.class, completer = WorldCompleter.class))
-    public void difficulty(CubeContext context)
+    @Params(positional = @Param(label = "difficulty", type = Difficulty.class, req = false),
+            nonpositional = @Param(label = "world", names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
+    public void difficulty(CommandContext context)
     {
-        World world = context.getArg("world");
+        World world = context.get("world");
         if (world == null)
         {
             if (context.getSource() instanceof User)
@@ -130,9 +128,9 @@ public class VanillaCommands
                 throw new MissingParameterException("world", context.getSource().getTranslation(NEGATIVE, "You have to specify a world!"));
             }
         }
-        if (context.hasIndexed(0))
+        if (context.hasPositional(0))
         {
-            world.setDifficulty(context.<Difficulty>getArg(0));
+            world.setDifficulty(context.<Difficulty>get(0));
             context.sendTranslated(POSITIVE, "The difficulty has been successfully set!");
             return;
         }
@@ -144,12 +142,12 @@ public class VanillaCommands
     }
 
     @Command(desc = "Makes a player an operator")
-    @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class, req = false))
+    @Params(positional = @Param(label = "player", type = OfflinePlayer.class, req = false))
     @Flags(@Flag(name = "f", longName = "force"))
     @CommandPermission(permDefault = FALSE)
-    public void op(CubeContext context)
+    public void op(CommandContext context)
     {
-        if (!context.hasIndexed())
+        if (!context.hasPositional())
         {
             Set<OfflinePlayer> ops = this.core.getServer().getOperators();
             if (ops.isEmpty())
@@ -166,10 +164,10 @@ public class VanillaCommands
             }
             return;
         }
-        OfflinePlayer user = context.getArg(0, null);
+        OfflinePlayer user = context.get(0, null);
         if (!(user.hasPlayedBefore() || user.isOnline()) && !context.hasFlag("f"))
         {
-            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.getArg(0));
+            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.get(0));
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
@@ -191,7 +189,7 @@ public class VanillaCommands
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUUID().equals(user.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(user.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
@@ -202,11 +200,11 @@ public class VanillaCommands
     }
 
     @Command(desc = "Revokes the operator status of a player")
-    @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
+    @Params(positional = @Param(label = "player", type = OfflinePlayer.class))
     @CommandPermission(permDefault = FALSE)
-    public void deop(CubeContext context)
+    public void deop(CommandContext context)
     {
-        OfflinePlayer offlinePlayer = context.getArg(0);
+        OfflinePlayer offlinePlayer = context.get(0);
         if (!context.getSource().getName().equals(offlinePlayer.getName()))
         {
             context.ensurePermission(core.perms().COMMAND_DEOP_OTHER);
@@ -229,7 +227,7 @@ public class VanillaCommands
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUUID().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
@@ -240,7 +238,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Lists all loaded plugins")
-    public void plugins(CubeContext context)
+    public void plugins(CommandContext context)
     {
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
@@ -266,12 +264,12 @@ public class VanillaCommands
     // integrate /saveoff and /saveon and provide aliases
     @Alias(names = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
-    @Indexeds(@Indexed(label = "world", type = World.class, req = false))
-    public void saveall(CubeContext context)
+    @Params(positional = @Param(label = "world", type = World.class, req = false))
+    public void saveall(CommandContext context)
     {
-        if (context.hasIndexed(0))
+        if (context.hasPositional(0))
         {
-            World world = context.getArg(0);
+            World world = context.get(0);
             context.sendTranslated(NEUTRAL, "Saving...");
             world.save();
             for(Player player : world.getPlayers())
@@ -293,12 +291,12 @@ public class VanillaCommands
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
-    @Indexeds(@Indexed(label = "plugin", req = false))
+    @Params(positional = @Param(label = "plugin", req = false))
     @Flags(@Flag(name = "s", longName = "source"))
-    public void version(CubeContext context)
+    public void version(CommandContext context)
     {
         Server server = this.core.getServer();
-        if (context.hasIndexed(0))
+        if (context.hasPositional(0))
         {
             context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
@@ -332,7 +330,7 @@ public class VanillaCommands
     }
 
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    public static void showSourceVersion(CubeContext context, String sourceVersion)
+    public static void showSourceVersion(CommandContext context, String sourceVersion)
     {
         if (context.hasFlag("s") && sourceVersion != null)
         {
@@ -343,7 +341,7 @@ public class VanillaCommands
     }
 
     @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
-    public static class WhitelistCommand extends ContainerCommand
+    public static class WhitelistCommand extends CommandContainer
     {
         private final BukkitCore core;
 
@@ -351,19 +349,19 @@ public class VanillaCommands
         {
             super(core.getModuleManager().getCoreModule());
             this.core = core;
-            this.delegateChild("list");
+            // TODO this.delegateChild("list");
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
-        public void add(CubeContext context)
+        @Params(positional = @Param(label = "player", type = OfflinePlayer.class))
+        public void add(CommandContext context)
         {
-            if (!context.hasIndexed())
+            if (!context.hasPositional())
             {
                 context.sendTranslated(NEGATIVE, "You have to specify the player to add to the whitelist!");
                 return;
             }
-            final OfflinePlayer player = context.getArg(0);
+            final OfflinePlayer player = context.get(0);
             if (player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
@@ -374,15 +372,15 @@ public class VanillaCommands
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        @Indexeds(@Indexed(label = "player", type = OfflinePlayer.class))
-        public void remove(CubeContext context)
+        @Params(positional = @Param(label = "player", type = OfflinePlayer.class))
+        public void remove(CommandContext context)
         {
-            if (!context.hasIndexed())
+            if (!context.hasPositional())
             {
                 context.sendTranslated(NEGATIVE, "You have to specify the player to remove from the whitelist!");
                 return;
             }
-            final OfflinePlayer player = context.getArg(0);
+            final OfflinePlayer player = context.get(0);
             if (!player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
@@ -393,7 +391,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Lists all the whitelisted players")
-        public void list(CubeContext context)
+        public void list(CommandContext context)
         {
             Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
@@ -429,7 +427,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Enables the whitelisting")
-        public void on(CubeContext context)
+        public void on(CommandContext context)
         {
             if (this.core.getServer().hasWhitelist())
             {
@@ -442,7 +440,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Disables the whitelisting")
-        public void off(CubeContext context)
+        public void off(CommandContext context)
         {
             if (!this.core.getServer().hasWhitelist())
             {
@@ -455,7 +453,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Wipes the whitelist completely")
-        public void wipe(CubeContext context)
+        public void wipe(CommandContext context)
         {
             if (context.isSource(User.class))
             {
