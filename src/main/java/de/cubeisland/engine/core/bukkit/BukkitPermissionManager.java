@@ -31,6 +31,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.NotifyPermissionRegistrationCompletedEvent;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
@@ -213,10 +214,7 @@ public class BukkitPermissionManager implements PermissionManager
                 bParent = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
             }
             addParentIfNotExists(mainBPerm, bParent);
-            if (!module.getBasePermission().equals(parentPerm))
-            {
-                this.registerPermission(module, parentPerm);
-            }
+            this.registerPermission(module, parentPerm);
         }
         for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
         {
@@ -245,6 +243,12 @@ public class BukkitPermissionManager implements PermissionManager
         {
             this.registerPermission(module, permission);
         }
+    }
+
+    @Override
+    public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
+    {
+        module.getCore().getEventManager().fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
     }
 
     public void removePermission(Module module, String perm)

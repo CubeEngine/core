@@ -74,7 +74,7 @@ public abstract class Module
             this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, this.getName()),
                                                    LoggingUtil.getFileFormat(true, true),
                                                    true, LoggingUtil.getCycler(),
-                                                   this.core.getTaskManager().getThreadFactory()));
+                                                   this.core.getTaskManager().getThreadFactory(this)));
             LogTarget parentTarget = this.log.addDelegate(logFactory.getParent());
             parentTarget.appendFilter(new PrefixFilter("[" + this.getName() + "] "));
         }

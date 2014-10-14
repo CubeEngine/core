@@ -3,6 +3,6 @@ host = https://www.transifex.com
 type = PO
 
 [cubeengine.core]
-file_filter = cubeengine/src/main/resources/translations/<lang>.po
-source_file = cubeengine/src/main/resources/translations/messages.pot
+file_filter = src/main/resources/translations/<lang>.po
+source_file = src/main/resources/translations/messages.pot
 source_lang = en_US
