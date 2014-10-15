@@ -170,7 +170,7 @@ public class Permission
             {
                 if (child.def != def)
                 {
-                    throw new IllegalArgumentException("Duplicate Permission with different PermDefault");
+                    throw new IllegalArgumentException("Duplicate Permission with different PermDefault: " + name);
                 }
                 return child;
             }

@@ -56,7 +56,7 @@ public class CommandContext extends ParameterizedContext
 
     public Core getCore()
     {
-        return this.getInvocation().valueFor(ModuleProvider.class).getCore();
+        return this.getCommand().getDescriptor().valueFor(ModuleProvider.class).getCore();
     }
 
     public Module getModule()

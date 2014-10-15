@@ -91,6 +91,7 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
     {
         ImmutableCommandDescriptor descriptor = buildCommandDescriptor(annotation, origin);
         descriptor.setProperty(buildParameters(descriptor, origin));
+        descriptor.setProperty(new ModuleProvider(origin.getModule()));
         ParametricCommand cmd = new ParametricCommand(descriptor);
         cmd.addCommand(new HelpCommand(cmd));
         return cmd;

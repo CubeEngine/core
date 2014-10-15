@@ -34,10 +34,13 @@ import org.bukkit.inventory.ItemStack;
 
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
+import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
+import de.cubeisland.engine.command.SelfDescribing;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
+import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
@@ -83,7 +86,8 @@ import de.cubeisland.engine.logging.LogLevel;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
-public class BukkitCommandManager extends DispatcherCommand implements CommandManager
+@Command(desc = "Base CommandDispatcher for CubeEngine")
+public class BukkitCommandManager extends DispatcherCommand implements CommandManager, SelfDescribing
 {
     private final CommandInjector injector;
     private final ConsoleCommandSender consoleSender;
@@ -135,6 +139,12 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         readerManager.registerReader(new WorldTypeReader(), WorldType.class);
         readerManager.registerReader(new DifficultyReader(), Difficulty.class);
         readerManager.registerReader(new LogLevelReader(), LogLevel.class);
+    }
+
+    @Override
+    public CommandDescriptor selfDescribe()
+    {
+        return null; // TODO proper descriptor
     }
 
     @Override
@@ -271,7 +281,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     {
         for (Method method : MethodicBuilder.getMethods(commandHolder.getClass()))
         {
-            BasicMethodicCommand cmd = module.getCore().getCommandManager().getCommandBuilder().buildCommand(
+            BasicMethodicCommand cmd = this.getCommandBuilder().buildCommand(
                 new CommandOrigin(method, commandHolder, module));
             if (cmd != null)
             {

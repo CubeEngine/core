@@ -18,9 +18,16 @@
 package de.cubeisland.engine.core.command;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
 
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.methodic.MethodicCommandContainer;
+import de.cubeisland.engine.command.parameter.Parameter;
+import de.cubeisland.engine.command.parameter.ParameterGroup;
+import de.cubeisland.engine.command.parameter.SimpleParameter;
+import de.cubeisland.engine.command.parameter.property.FixedPosition;
+import de.cubeisland.engine.command.parameter.property.ValueLabel;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
 import de.cubeisland.engine.core.command.property.Loggable;
@@ -50,6 +57,10 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
         descriptor.setProperty(new PermissionProvider(module.getBasePermission().childWildcard(permName, def)));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
         descriptor.setProperty(new ModuleProvider(module));
+        SimpleParameter actionParam = new SimpleParameter(String.class, String.class);
+        actionParam.setProperty(new ValueLabel("action"));
+        actionParam.setProperty(new FixedPosition(0));
+        descriptor.setProperty(new ParameterGroup(Collections.<Parameter>emptyList(), Collections.<Parameter>emptyList(), Arrays.asList((Parameter)actionParam)));
         this.addCommand(new HelpCommand(this));
     }
 

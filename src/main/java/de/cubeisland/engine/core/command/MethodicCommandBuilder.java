@@ -45,7 +45,7 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        descriptor.setProperty(new PermissionProvider(origin.getModule().getBasePermission().childWildcard(permName, def)));
+        descriptor.setProperty(new PermissionProvider(origin.getModule().getBasePermission().childWildcard("command").child(permName, def)));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
 
         return descriptor;
@@ -56,6 +56,7 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
     {
         ImmutableCommandDescriptor descriptor = buildCommandDescriptor(annotation, origin);
         descriptor.setProperty(buildParameters(descriptor, origin));
+        descriptor.setProperty(new ModuleProvider(origin.getModule()));
         MethodicCommand cmd = new MethodicCommand(descriptor);
         cmd.addCommand(new HelpCommand(cmd));
         return cmd;
