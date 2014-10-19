@@ -22,9 +22,9 @@ import java.util.Stack;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.property.AbstractProperty;
-import de.cubeisland.engine.command.property.Finalizable;
-import de.cubeisland.engine.command.property.PropertyHolder;
+import de.cubeisland.engine.command.util.property.AbstractProperty;
+import de.cubeisland.engine.command.util.property.Finalizable;
+import de.cubeisland.engine.command.util.property.PropertyHolder;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;

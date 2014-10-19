@@ -18,19 +18,22 @@
 package de.cubeisland.engine.core.command;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import de.cubeisland.engine.command.Alias;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.Dispatcher;
+import de.cubeisland.engine.command.DispatcherCommand;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.Name;
+import de.cubeisland.engine.command.alias.AliasConfiguration;
+import de.cubeisland.engine.command.alias.Aliases;
 import de.cubeisland.engine.command.methodic.MethodicCommandContainer;
 import de.cubeisland.engine.command.parameter.property.Description;
-import de.cubeisland.engine.command.DispatcherCommand;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -39,24 +42,24 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class HelpCommand implements CommandBase
 {
-    private CommandBase helpTarget;
+    private Dispatcher helpTarget;
 
     private static final ImmutableCommandDescriptor helpDescriptor = new ImmutableCommandDescriptor();
 
     static
     {
         helpDescriptor.setProperty(new Name("?"));
-        helpDescriptor.setProperty(new Alias(Collections.<String>emptySet()));
+        helpDescriptor.setProperty(new Aliases(Collections.<AliasConfiguration>emptyList()));
         helpDescriptor.setProperty(new Description("Displays Help"));
     }
 
-    public HelpCommand(CommandBase target)
+    public HelpCommand(Dispatcher target)
     {
         this.helpTarget = target;
     }
 
     @Override
-    public boolean run(CommandInvocation invocation)
+    public boolean execute(CommandInvocation invocation)
     {
         if (!(invocation.getCommandSource() instanceof CommandSender))
         {
@@ -64,14 +67,16 @@ public class HelpCommand implements CommandBase
         }
         CommandSender sender = (CommandSender)invocation.getCommandSource();
         MessageType grey = MessageType.of(GREY);
-        sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE,
-                                                                                  helpTarget.getDescriptor().getDescription()));
-        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(sender));
+        sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, helpTarget.getDescriptor().getDescription()));
+        ArrayList<String> labels = new ArrayList<>(invocation.getLabels());
+        labels.remove(labels.size() - 1);
+        CommandBase target = helpTarget.getBaseDispatcher().getCommand(labels.toArray(new String[labels.size()]));
+        sender.sendTranslated(grey, "Usage: {input}", target.getDescriptor().getUsage(sender));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)
         {
-            Set<CommandBase> commands = ((DispatcherCommand)helpTarget).getCommands();
+            Set<CommandBase> commands = helpTarget.getCommands();
             if (!commands.isEmpty() && (commands.size() != 1
                 || !(commands.iterator().next() instanceof HelpCommand))) // is Empty ignoring HelpCommand
             {

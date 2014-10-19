@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.old.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;

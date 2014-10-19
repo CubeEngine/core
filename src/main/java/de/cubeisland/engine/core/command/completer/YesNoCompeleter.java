@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.property;
+package de.cubeisland.engine.core.command.completer;
 
-import de.cubeisland.engine.command.util.property.AbstractProperty;
-import de.cubeisland.engine.command.util.property.Property;
-
-public class CheckPermission extends AbstractProperty<Boolean>
+public class YesNoCompeleter extends SimpleCompleter
 {
-    public static final Property CHECK = new CheckPermission(true);
-    public static final Property NOT_CHECK = new CheckPermission(false);
-
-    private CheckPermission(Boolean value)
+    public YesNoCompeleter()
     {
-        super(value);
+        super("yes", "no");
     }
 }

@@ -42,8 +42,7 @@ import de.cubeisland.engine.command.UsageProvider;
 import de.cubeisland.engine.command.old.IncorrectArgumentException;
 import de.cubeisland.engine.command.old.IncorrectUsageException;
 import de.cubeisland.engine.command.old.MissingParameterException;
-import de.cubeisland.engine.command.old.ReaderException;
-import de.cubeisland.engine.command.parameter.ParameterGroup;
+import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
@@ -300,8 +299,7 @@ public class CommandInjector
                 final String usage;
 
                 CommandDescriptor descriptor = command.getDescriptor();
-                ParameterGroup parameterGroup = descriptor.valueFor(ParameterGroup.class);
-                usage = descriptor.valueFor(UsageProvider.class).generateUsage(invocation.getCommandSource(), parameterGroup);
+                usage = descriptor.valueFor(UsageProvider.class).generateUsage(invocation.getCommandSource(), descriptor);
 
                 sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
             }

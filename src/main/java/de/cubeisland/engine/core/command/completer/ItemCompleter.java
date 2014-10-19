@@ -15,18 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.property;
+package de.cubeisland.engine.core.command.completer;
 
-import de.cubeisland.engine.command.util.property.AbstractProperty;
-import de.cubeisland.engine.command.util.property.Property;
+import java.util.Arrays;
+import java.util.List;
 
-public class CheckPermission extends AbstractProperty<Boolean>
+import de.cubeisland.engine.command.completer.Completer;
+import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
+import de.cubeisland.engine.core.util.matcher.Match;
+
+public class ItemCompleter implements Completer
 {
-    public static final Property CHECK = new CheckPermission(true);
-    public static final Property NOT_CHECK = new CheckPermission(false);
-
-    private CheckPermission(Boolean value)
+    @Override
+    public List<String> complete(BaseCommandContext context, String token)
     {
-        super(value);
+        return Arrays.asList(String.valueOf(Match.material().material(token).getId()));
     }
 }

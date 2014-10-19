@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command.property;
 
 import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.property.AbstractProperty;
+import de.cubeisland.engine.command.util.property.AbstractProperty;
 
 public class ParentCommand extends AbstractProperty<CommandBase>
 {

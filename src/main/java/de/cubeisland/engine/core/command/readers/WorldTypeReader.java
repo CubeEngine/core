@@ -15,18 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.property;
+package de.cubeisland.engine.core.command.readers;
 
-import de.cubeisland.engine.command.util.property.AbstractProperty;
-import de.cubeisland.engine.command.util.property.Property;
+import org.bukkit.WorldType;
 
-public class CheckPermission extends AbstractProperty<Boolean>
+import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.command.parameter.reader.ReaderException;
+import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+
+public class WorldTypeReader implements ArgumentReader<WorldType>
 {
-    public static final Property CHECK = new CheckPermission(true);
-    public static final Property NOT_CHECK = new CheckPermission(false);
-
-    private CheckPermission(Boolean value)
+    @Override
+    public WorldType read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
-        super(value);
+        String arg = invocation.consume(1);
+        //Locale locale = invocation.getLocale();
+        return WorldType.valueOf(arg); //TODO exceptionhandling
     }
 }

@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.command.property;
 
-import de.cubeisland.engine.command.property.AbstractProperty;
-import de.cubeisland.engine.command.property.Property;
+import de.cubeisland.engine.command.util.property.AbstractProperty;
+import de.cubeisland.engine.command.util.property.Property;
 
 public class Loggable extends AbstractProperty<Boolean>
 {

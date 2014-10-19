@@ -31,8 +31,8 @@ import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
-import de.cubeisland.engine.core.command_old.sender.BlockCommandSender;
-import de.cubeisland.engine.core.command_old.sender.WrappedCommandSender;
+import de.cubeisland.engine.core.command.sender.BlockCommandSender;
+import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -137,7 +137,21 @@ public class WrappedCommand extends Command
     @Override
     public boolean execute(CommandSender sender, String label, String[] args)
     {
-        return this.command.run(newInvocation(sender, label, args));
+        try
+        {
+            return this.command.execute(newInvocation(sender, label, args));
+        }
+        catch (Exception e) // TODO move exception handling into a property
+        {
+            String message = e.getMessage();
+            if (message == null)
+            {
+                message = "No message";
+            }
+            message = e.getClass().getName() + ": " + message;
+            sender.sendMessage(message);
+            return false;
+        }
     }
 
     private CommandInvocation newInvocation(CommandSender sender, String label, String[] args)
@@ -145,7 +159,7 @@ public class WrappedCommand extends Command
         // TODO include label
         CommandSource source = wrapSender(getModule().getCore(), sender);
         //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
-        return new CommandInvocation(source, StringUtils.implode(" ", args), getModule().getCore().getCommandManager().getReaderManager());
+        return new CommandInvocation(source, label + " " + StringUtils.implode(" ", args), getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
     }
 
     @Override

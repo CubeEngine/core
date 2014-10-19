@@ -40,7 +40,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     @Override
     protected String generateFlagUsage(CommandSource source, FlagParameter parameter)
     {
-        checkPermission(source, parameter);
+        checkPermission(source, parameter); // TODO instead return boolean
         return super.generateFlagUsage(source, parameter);
     }
 

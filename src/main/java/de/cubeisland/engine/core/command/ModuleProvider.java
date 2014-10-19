@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.property.AbstractProperty;
+import de.cubeisland.engine.command.util.property.AbstractProperty;
 import de.cubeisland.engine.core.module.Module;
 
 /**

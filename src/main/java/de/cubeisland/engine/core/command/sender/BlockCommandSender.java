@@ -15,18 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.property;
+package de.cubeisland.engine.core.command.sender;
 
-import de.cubeisland.engine.command.util.property.AbstractProperty;
-import de.cubeisland.engine.command.util.property.Property;
+import org.bukkit.block.Block;
 
-public class CheckPermission extends AbstractProperty<Boolean>
+import de.cubeisland.engine.core.Core;
+
+public class BlockCommandSender extends WrappedCommandSender
 {
-    public static final Property CHECK = new CheckPermission(true);
-    public static final Property NOT_CHECK = new CheckPermission(false);
-
-    private CheckPermission(Boolean value)
+    public BlockCommandSender(Core core, org.bukkit.command.BlockCommandSender sender)
     {
-        super(value);
+        super(core, sender);
+    }
+
+    public Block getBlock()
+    {
+        return ((org.bukkit.command.BlockCommandSender)this.getWrappedSender()).getBlock();
     }
 }

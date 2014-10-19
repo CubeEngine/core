@@ -66,7 +66,7 @@ public abstract class ConversationCommand extends CommandContainer implements Li
 
             String message = event.getMessage();
             CommandInvocation invocation = newInvocation(user, message);
-            this.run(invocation);
+            this.execute(invocation);
 
             event.setCancelled(true);
         }

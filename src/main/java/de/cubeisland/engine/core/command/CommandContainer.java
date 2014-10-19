@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.methodic.MethodicCommandContainer;
 import de.cubeisland.engine.command.parameter.Parameter;
@@ -76,5 +77,11 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
     protected CommandOrigin getSubOrigin(Method method, Module origin)
     {
         return new CommandOrigin(method, this, origin);
+    }
+
+    @Override
+    protected boolean selfExecute(CommandInvocation invocation)
+    {
+        return this.getCommand("?").execute(invocation);
     }
 }

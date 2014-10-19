@@ -52,32 +52,32 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.MethodicCommandBuilder;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.property.Loggable;
-import de.cubeisland.engine.core.command_old.CommandManager;
-import de.cubeisland.engine.core.command_old.parameterized.completer.PlayerCompleter;
-import de.cubeisland.engine.core.command_old.parameterized.completer.PlayerListCompleter;
-import de.cubeisland.engine.core.command_old.parameterized.completer.WorldCompleter;
-import de.cubeisland.engine.core.command_old.readers.BooleanReader;
-import de.cubeisland.engine.core.command_old.readers.ByteReader;
-import de.cubeisland.engine.core.command_old.readers.DifficultyReader;
-import de.cubeisland.engine.core.command_old.readers.DoubleReader;
-import de.cubeisland.engine.core.command_old.readers.DyeColorReader;
-import de.cubeisland.engine.core.command_old.readers.EnchantmentReader;
-import de.cubeisland.engine.core.command_old.readers.EntityTypeReader;
-import de.cubeisland.engine.core.command_old.readers.EnvironmentReader;
-import de.cubeisland.engine.core.command_old.readers.FloatReader;
-import de.cubeisland.engine.core.command_old.readers.IntReader;
-import de.cubeisland.engine.core.command_old.readers.ItemStackReader;
-import de.cubeisland.engine.core.command_old.readers.LogLevelReader;
-import de.cubeisland.engine.core.command_old.readers.LongReader;
-import de.cubeisland.engine.core.command_old.readers.OfflinePlayerReader;
-import de.cubeisland.engine.core.command_old.readers.ProfessionReader;
-import de.cubeisland.engine.core.command_old.readers.ShortReader;
-import de.cubeisland.engine.core.command_old.readers.UserReader;
-import de.cubeisland.engine.core.command_old.readers.WorldReader;
-import de.cubeisland.engine.core.command_old.readers.WorldTypeReader;
+import de.cubeisland.engine.core.command.CommandManager;
+import de.cubeisland.engine.core.command.completer.PlayerCompleter;
+import de.cubeisland.engine.core.command.completer.PlayerListCompleter;
+import de.cubeisland.engine.core.command.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.readers.BooleanReader;
+import de.cubeisland.engine.core.command.readers.ByteReader;
+import de.cubeisland.engine.core.command.readers.DifficultyReader;
+import de.cubeisland.engine.core.command.readers.DoubleReader;
+import de.cubeisland.engine.core.command.readers.DyeColorReader;
+import de.cubeisland.engine.core.command.readers.EnchantmentReader;
+import de.cubeisland.engine.core.command.readers.EntityTypeReader;
+import de.cubeisland.engine.core.command.readers.EnvironmentReader;
+import de.cubeisland.engine.core.command.readers.FloatReader;
+import de.cubeisland.engine.core.command.readers.IntReader;
+import de.cubeisland.engine.core.command.readers.ItemStackReader;
+import de.cubeisland.engine.core.command.readers.LogLevelReader;
+import de.cubeisland.engine.core.command.readers.LongReader;
+import de.cubeisland.engine.core.command.readers.OfflinePlayerReader;
+import de.cubeisland.engine.core.command.readers.ProfessionReader;
+import de.cubeisland.engine.core.command.readers.ShortReader;
+import de.cubeisland.engine.core.command.readers.UserReader;
+import de.cubeisland.engine.core.command.readers.WorldReader;
+import de.cubeisland.engine.core.command.readers.WorldTypeReader;
 import de.cubeisland.engine.core.command_old.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command_old.result.paginated.PaginationManager;
-import de.cubeisland.engine.core.command_old.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
@@ -281,8 +281,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     {
         for (Method method : MethodicBuilder.getMethods(commandHolder.getClass()))
         {
-            BasicMethodicCommand cmd = this.getCommandBuilder().buildCommand(
-                new CommandOrigin(method, commandHolder, module));
+            BasicMethodicCommand cmd = this.getCommandBuilder().buildCommand(new CommandOrigin(method, commandHolder, module));
             if (cmd != null)
             {
                 dispatcher.addCommand(cmd);

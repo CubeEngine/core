@@ -42,7 +42,7 @@ import org.bukkit.Bukkit;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command_old.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command_old.CommandManager;
+import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
