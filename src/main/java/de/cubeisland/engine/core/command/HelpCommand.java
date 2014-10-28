@@ -30,6 +30,7 @@ import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.Name;
+import de.cubeisland.engine.command.alias.AliasCommand;
 import de.cubeisland.engine.command.alias.AliasConfiguration;
 import de.cubeisland.engine.command.alias.Aliases;
 import de.cubeisland.engine.command.methodic.MethodicCommandContainer;
@@ -84,13 +85,14 @@ public class HelpCommand implements CommandBase
                 sender.sendMessage(" ");
                 for (CommandBase command : commands)
                 {
-                    if (command instanceof HelpCommand)
+                    if (command instanceof HelpCommand
+                     || command instanceof AliasCommand && commands.contains(((AliasCommand)command).getTarget()))
                     {
                         continue;
                     }
                     sender.sendMessage(YELLOW + command.getDescriptor().getName() + WHITE + ": " +
                                          GREY + sender.getTranslation(NONE, command.getDescriptor().getDescription()));
-                }
+            }
                 sender.sendMessage(" ");
             }
             else if (helpTarget instanceof MethodicCommandContainer)
