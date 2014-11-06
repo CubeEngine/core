@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -54,6 +55,8 @@ import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import gnu.trove.set.hash.THashSet;
+
+import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.PO;
 
 public class I18n
 {
@@ -85,7 +88,7 @@ public class I18n
     {
         if (Files.exists(translations))
         {
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, FileExtensionFilter.PO))
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, PO))
             {
                 for (Path path : directoryStream)
                 {
@@ -111,6 +114,16 @@ public class I18n
         try
         {
             URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+            List<URL> urls = new ArrayList<>();
+            Path directory = Paths.get(url.toURI()).resolve(path);
+            if (Files.isDirectory(directory))
+            {
+                for (Path file : Files.newDirectoryStream(directory, PO))
+                {
+                    urls.add(file.toUri().toURL());
+                }
+                return urls;
+            }
             Set<String> files = new LinkedHashSet<>();
             JarFile jarFile = new JarFile(new File(url.toURI()));
             Enumeration<JarEntry> entries = jarFile.entries();
@@ -122,7 +135,7 @@ public class I18n
                     files.add(name);
                 }
             }
-            List<URL> urls = new ArrayList<>();
+
             for (String file : files)
             {
                 urls.add(clazz.getResource("/" + file));
