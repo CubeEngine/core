@@ -70,9 +70,12 @@ public class HelpCommand implements CommandBase
         MessageType grey = MessageType.of(GREY);
         sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, helpTarget.getDescriptor().getDescription()));
         ArrayList<String> labels = new ArrayList<>(invocation.getLabels());
-        labels.remove(labels.size() - 1);
+        if ("?".equals(labels.get(labels.size() - 1)))
+        {
+            labels.remove(labels.size() - 1);
+        }
         CommandBase target = helpTarget.getBaseDispatcher().getCommand(labels.toArray(new String[labels.size()]));
-        sender.sendTranslated(grey, "Usage: {input}", target.getDescriptor().getUsage(sender));
+        sender.sendTranslated(grey, "Usage: {input}", target .getDescriptor().getUsage(sender));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)
@@ -104,7 +107,7 @@ public class HelpCommand implements CommandBase
 
         sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}",
                               "http://engine.cubeisland.de/c/" + helpTarget.getDescriptor().valueFor(
-                                  ModuleProvider.class).getId() + "/" + StringUtils.implode("/", invocation.getLabels()));
+                                  ModuleProvider.class).getId() + "/" + StringUtils.implode("/", labels));
         return true;
     }
 
