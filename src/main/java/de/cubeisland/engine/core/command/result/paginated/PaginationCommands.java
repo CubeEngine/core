@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command_old.result.paginated;
+package de.cubeisland.engine.core.command.result.paginated;
 
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
+import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.core.command.CommandContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -39,11 +40,9 @@ public class PaginationCommands
         if (paginationManager.hasResult(context.getSource()))
         {
             paginationManager.getResult(context.getSource()).nextPage();
+            return;
         }
-        else
-        {
-            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
-        }
+        context.sendTranslated(NEGATIVE, "You don't have any results to show!");
     }
 
     @Command(desc = "Display the previous page of your previous command.")
@@ -52,32 +51,19 @@ public class PaginationCommands
         if (paginationManager.hasResult(context.getSource()))
         {
             paginationManager.getResult(context.getSource()).prevPage();
+            return;
         }
-        else
-        {
-            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
-        }
+        context.sendTranslated(NEGATIVE, "You don't have any results to show!");
     }
 
     @Command(desc = "Display the given page of your previous command.")
-    @Params(positional = @Param(label = "pageNumber", type = Integer.class))
-    public void showpage(CommandContext context)
+    public void showpage(CommandContext context, @Label("page-number") Integer page)
     {
         if (paginationManager.hasResult(context.getSource()))
         {
-            Integer pageNumber = context.get(0);
-            if (pageNumber != null)
-            {
-                paginationManager.getResult(context.getSource()).showPage(pageNumber - 1);
-            }
-            else
-            {
-                context.sendTranslated(NEGATIVE, "You have to call the command with a numeric parameter.");
-            }
+            paginationManager.getResult(context.getSource()).showPage(page - 1);
+            return;
         }
-        else
-        {
-            context.sendTranslated(NEGATIVE, "You don't have any results to show!");
-        }
+        context.sendTranslated(NEGATIVE, "You don't have any results to show!");
     }
 }

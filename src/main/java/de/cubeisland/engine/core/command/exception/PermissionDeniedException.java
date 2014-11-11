@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command_old.exception;
+package de.cubeisland.engine.core.command.exception;
 
 import de.cubeisland.engine.command.CommandException;
 import de.cubeisland.engine.core.permission.Permission;
 
 /**
  * This exception is thrown when a user is not allowed to perform an action.
- * Use denyAccess to throw an exception insinde a command. The exception will be caught.
+ * Use denyAccess to throw an exception inside a command. The exception will be caught.
  */
 public class PermissionDeniedException extends CommandException
 {

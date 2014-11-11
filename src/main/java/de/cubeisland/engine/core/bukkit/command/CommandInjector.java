@@ -48,7 +48,7 @@ import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ModuleProvider;
-import de.cubeisland.engine.core.command_old.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.MessageType;

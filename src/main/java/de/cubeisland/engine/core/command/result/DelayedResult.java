@@ -15,41 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command_old.result;
+package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.ModuleProvider;
+import de.cubeisland.engine.core.module.Module;
 
-public abstract class LongRunningResult implements CommandResult<CommandContext>
+public abstract class DelayedResult implements CommandResult<CommandContext>
 {
-    private boolean isDone = false;
-    private int taskId = -1;
+    private final long delay;
+
+    protected DelayedResult(long delay)
+    {
+        this.delay = delay;
+    }
+
+    protected DelayedResult()
+    {
+        this(1);
+    }
 
     @Override
     public void process(final CommandContext context)
     {
-        this.taskId = context.getCore().getTaskManager().runTimer(context.getModule(), new Runnable()
+        Module module = context.getCommand().getDescriptor().valueFor(ModuleProvider.class);
+        final int taskId = context.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
         {
             @Override
             public void run()
             {
-                LongRunningResult.this.run(context);
-                if (isDone)
-                {
-                    context.getCore().getTaskManager()
-                           .cancelTask(context.getModule(), taskId);
-                }
+                DelayedResult.this.run(context);
             }
-        }, 0, 1);
-        if (this.taskId == -1)
-        {
-            throw new RuntimeException("Failed to schedule the task for the long running command result!");
-        }
-    }
+        }, this.delay);
 
-    protected final void setDone()
-    {
-        this.isDone = true;
+        if (taskId == -1)
+        {
+            throw new RuntimeException("Failed to schedule the task for the delayed command result!");
+        }
     }
 
     public abstract void run(CommandContext context);

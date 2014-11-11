@@ -22,8 +22,10 @@ import java.lang.annotation.Annotation;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.methodic.Command;
+import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
 import de.cubeisland.engine.command.methodic.parametric.ParametricBuilder;
+import de.cubeisland.engine.command.parameter.Parameter;
 import de.cubeisland.engine.command.parameter.SimpleParameter;
 import de.cubeisland.engine.command.parameter.property.Required;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
@@ -43,10 +45,10 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
     }
 
     @Override
-    protected SimpleParameter createParameter(CommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
+    protected Parameter createParameter(CommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
                                               CommandOrigin origin)
     {
-        SimpleParameter parameter = super.createParameter(descriptor, clazz, annotations, origin);
+        Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin);
 
         for (Annotation annotation : annotations)
         {

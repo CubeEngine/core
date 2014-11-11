@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command_old.result.confirm;
+package de.cubeisland.engine.core.command.result.confirm;
 
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.result.CommandResult;

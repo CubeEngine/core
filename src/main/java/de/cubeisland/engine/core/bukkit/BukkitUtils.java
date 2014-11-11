@@ -218,7 +218,7 @@ public class BukkitUtils
         getCraftServer().getServer().getPropertyManager().savePropertiesFile();
     }
 
-    public static void wipeWhiteliste()
+    public static void wipeWhitelist()
     {
         WhiteList whitelist = getCraftServer().getHandle().getWhitelist();
         new ClearJsonList(whitelist);

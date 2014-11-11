@@ -52,7 +52,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
-import de.cubeisland.engine.core.command_old.result.paginated.PaginationCommands;
+import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;

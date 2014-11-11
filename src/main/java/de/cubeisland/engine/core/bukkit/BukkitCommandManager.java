@@ -45,6 +45,7 @@ import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.CoreCommands.FindUserReader;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.CommandOrigin;
@@ -75,11 +76,12 @@ import de.cubeisland.engine.core.command.readers.ShortReader;
 import de.cubeisland.engine.core.command.readers.UserReader;
 import de.cubeisland.engine.core.command.readers.WorldReader;
 import de.cubeisland.engine.core.command.readers.WorldTypeReader;
-import de.cubeisland.engine.core.command_old.result.confirm.ConfirmManager;
-import de.cubeisland.engine.core.command_old.result.paginated.PaginationManager;
+import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
+import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserList.UserListReader;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
@@ -117,6 +119,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.registerDefaultCompleter(new PlayerListCompleter(core), PlayerListCompleter.class);
 
         this.readerManager = new ReaderManager();
+        this.readerManager.registerDefaultReader();
 
         // TODO Manager to unregister reader from modules
         readerManager.registerReader(new ByteReader(), Byte.class, byte.class);

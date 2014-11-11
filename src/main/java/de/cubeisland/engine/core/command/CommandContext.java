@@ -21,7 +21,7 @@ import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.methodic.context.ParameterizedContext;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command_old.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;

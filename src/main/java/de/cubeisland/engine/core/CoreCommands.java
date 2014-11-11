@@ -59,7 +59,8 @@ import de.cubeisland.engine.logging.LogLevel;
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-@Command(name = "cubeengine", desc = "These are the basic commands of the CubeEngine.", alias = "ce")
+@Command(name = "cubeengine", alias = "ce",
+         desc = "These are the basic commands of the CubeEngine.")
 public class CoreCommands extends CommandContainer
 {
     private final BukkitCore core;
@@ -73,6 +74,8 @@ public class CoreCommands extends CommandContainer
         this.core = (BukkitCore)core;
         this.banManager = core.getBanManager();
         this.um = core.getUserManager();
+
+        core.getCommandManager().getReaderManager().registerReader(new FindUserReader());
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
@@ -87,12 +90,11 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads all of the modules!")
-    @Flags(@Flag(name = "f", longName = "file"))
-    public void reloadmodules(CommandContext context)
+    public void reloadmodules(CommandContext context, @Flag(name = "f", longName = "file") boolean fromFile)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        context.getCore().getModuleManager().reloadModules(context.hasFlag("f"));
+        context.getCore().getModuleManager().reloadModules(fromFile);
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
@@ -131,7 +133,6 @@ public class CoreCommands extends CommandContainer
 
     @Command(alias = "clearpw", desc = "Clears your password.")
     public void clearPassword(CommandContext context,
-          @Index
           @Optional
           @Label("player")
           @Desc("A List of Players delimited by , or *")
@@ -168,49 +169,40 @@ public class CoreCommands extends CommandContainer
     @Command(desc = "Logs you in with your password!")
     @Params(positional = @Param(label = "password"))
     @CommandPermission(permDefault = TRUE)
+    @Restricted(value = User.class, msg = "Only players can log in!")
     public void login(CommandContext context)
     {
-        CommandSender sender = context.getSource();
-        if (sender instanceof User)
+        User user = (User)context.getSource();
+        if (user.isLoggedIn())
         {
-            User user = (User)sender;
-            if (user.isLoggedIn())
+            context.sendTranslated(POSITIVE, "You are already logged in!");
+            return;
+        }
+        boolean isLoggedIn = um.login(user, context.getString(0));
+        if (isLoggedIn)
+        {
+            user.sendTranslated(POSITIVE, "You logged in successfully!");
+        }
+        user.sendTranslated(NEGATIVE, "Wrong password!");
+        if (this.core.getConfiguration().security.fail2ban)
+        {
+            if (fails.get(user.getUniqueId()) != null)
             {
-                context.sendTranslated(POSITIVE, "You are already logged in!");
-                return;
-            }
-            boolean isLoggedIn = um.login(user, context.getString(0));
-            if (isLoggedIn)
-            {
-                user.sendTranslated(POSITIVE, "You logged in successfully!");
-            }
-            else
-            {
-                user.sendTranslated(NEGATIVE, "Wrong password!");
-                if (this.core.getConfiguration().security.fail2ban)
+                if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    if (fails.get(user.getUniqueId()) != null)
+                    String msg = user.getTranslation(NEGATIVE, "Too many wrong passwords!");
+                    msg += "\n" + user.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
+                    this.banManager.addBan(new UserBan(user.getName(),user.getName(), msg,
+                                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+                    if (!Bukkit.getServer().getOnlineMode())
                     {
-                        if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
-                        {
-                            String msg = user.getTranslation(NEGATIVE, "Too many wrong passwords! \nFor your security you were banned 10 seconds.");
-                            this.banManager.addBan(new UserBan(user.getName(),user.getName(), msg,
-                                 new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
-                            if (!Bukkit.getServer().getOnlineMode())
-                            {
-                                this.banManager.addBan(new IpBan(user.getAddress().getAddress(),user.getName(),msg,
-                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
-                            }
-                            user.kickPlayer(msg);
-                        }
+                        this.banManager.addBan(new IpBan(user.getAddress().getAddress(),user.getName(),msg,
+                                                         new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                     }
-                    fails.put(user.getUniqueId(),System.currentTimeMillis());
+                    user.kickPlayer(msg);
                 }
             }
-        }
-        else
-        {
-            sender.sendTranslated(NEGATIVE, "Only players can log in!");
+            fails.put(user.getUniqueId(),System.currentTimeMillis());
         }
     }
 
@@ -231,9 +223,13 @@ public class CoreCommands extends CommandContainer
     @Command(desc = "Toggles the online mode")
     public void onlinemode(CommandContext context)
     {
-        context.sendTranslated(NEGATIVE, "Not working!");
-        /*
-        final boolean newState = !this.core.getServer().getOnlineMode();
+        if (this.core.getServer().getOnlineMode())
+        {
+            context.sendTranslated(POSITIVE, "The Server is running in online mode");
+            return;
+        }
+        context.sendTranslated(POSITIVE, "The Server is running in offline mode");
+        /* TODO Does not work:
         BukkitUtils.setOnlineMode(newState);
         if (newState)
         {
@@ -247,12 +243,11 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    @Params(positional = @Param(label = "loglevel", type = LogLevel.class, req = false))
-    public void loglevel(CommandContext context)
+    public void loglevel(CommandContext context, @Optional @Label("loglevel") LogLevel level)
     {
-        if (context.hasPositional(0))
+        if (level != null)
         {
-            context.getCore().getLog().setLevel(context.<LogLevel>get(0));
+            context.getCore().getLog().setLevel(level);
             context.sendTranslated(POSITIVE, "New log level successfully set!");
             return;
         }
@@ -260,9 +255,7 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(alias = "finduser", desc = "Searches for a user in the database")
-    @Params(positional = @Param(label = "name"))
     public void searchuser(CommandContext context,
-        @Index
         @Reader(FindUserReader.class)
         @Label("name")
         @Desc("The name to search for")
@@ -271,11 +264,9 @@ public class CoreCommands extends CommandContainer
         if (user.getName().equalsIgnoreCase(context.getString(0)))
         {
             context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", user);
+            return;
         }
-        else
-        {
-            context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
-        }
+        context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
     }
 
     public static class FindUserReader implements ArgumentReader<User>
@@ -292,7 +283,7 @@ public class CoreCommands extends CommandContainer
             }
             if (found == null)
             {
-                throw new ReaderException(CubeEngine.getI18n().translate(NEGATIVE, "No match found for {input}!", name));
+                throw new ReaderException("No match found for {input}!", name);
             }
             return found;
         }

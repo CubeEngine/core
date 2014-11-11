@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -31,6 +29,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.Flags;
@@ -42,22 +42,22 @@ import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.completer.WorldCompleter;
-import de.cubeisland.engine.command.alias.Alias;
+import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
-import static de.cubeisland.engine.command.parameter.property.Greed.*;
+import static de.cubeisland.engine.command.parameter.property.Greed.INFINITE_GREED;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
-import static java.text.DateFormat.SHORT;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class VanillaCommands
 {
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
     private final BukkitCore core;
     private final UserManager um;
 
@@ -65,6 +65,24 @@ public class VanillaCommands
     {
         this.core = core;
         this.um = core.getUserManager();
+    }
+
+    public static void showSourceVersion(CommandContext context, String sourceVersion)
+    {
+        if (sourceVersion != null)
+        {
+            if (sourceVersion.contains("-") && sourceVersion.length() > 40)
+            {
+                final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1,
+                                                              sourceVersion.length() - 32);
+                context.sendTranslated(POSITIVE, "Source Version: {input}", sourceVersion);
+                context.sendTranslated(POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
+            }
+            else
+            {
+                context.sendTranslated(POSITIVE, "Source Version: unknown");
+            }
+        }
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
@@ -97,7 +115,8 @@ public class VanillaCommands
         {
             context.sendTranslated(NEUTRAL, "Reloading the modules...");
             this.core.getModuleManager().reloadModules();
-            context.sendTranslated(POSITIVE, "Successfully reloaded {amount} modules!", this.core.getModuleManager().getModules().size());
+            context.sendTranslated(POSITIVE, "Successfully reloaded {amount} modules!",
+                                   this.core.getModuleManager().getModules().size());
         }
         else
         {
@@ -105,27 +124,29 @@ public class VanillaCommands
             // pre-translate to avoid a NPE
             Locale locale = context.getSource().getLocale();
             long time = System.currentTimeMillis();
+            I18n i18n = this.core.getI18n();
             this.core.getServer().reload();
-            // TODO NPE here fix me!!!
-            context.sendMessage(this.core.getI18n().translate(locale, POSITIVE, "The reload is completed after {amount} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
+            context.sendMessage(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
+                                               MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
         }
     }
 
     @Command(desc = "Changes the difficulty level of the server")
     @Params(positional = @Param(label = "difficulty", type = Difficulty.class, req = false),
-            nonpositional = @Param(label = "world", names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
+        nonpositional = @Param(label = "world", names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
     public void difficulty(CommandContext context)
     {
         World world = context.get("world");
         if (world == null)
         {
-            if (context.getSource() instanceof User)
+            if (context.isSource(User.class))
             {
                 world = ((User)context.getSource()).getWorld();
             }
             else
             {
-                throw new MissingParameterException("world", context.getSource().getTranslation(NEGATIVE, "You have to specify a world!"));
+                throw new MissingParameterException("world", context.getSource().getTranslation(NEGATIVE,
+                                                                                                "You have to specify a world!"));
             }
         }
         if (context.hasPositional(0))
@@ -147,56 +168,57 @@ public class VanillaCommands
     @CommandPermission(permDefault = FALSE)
     public void op(CommandContext context)
     {
-        if (!context.hasPositional())
+        if (context.hasPositional())
         {
-            Set<OfflinePlayer> ops = this.core.getServer().getOperators();
-            if (ops.isEmpty())
+            OfflinePlayer player = context.get(0);
+            if (!(player.hasPlayedBefore() || player.isOnline()) && !context.hasFlag("f"))
             {
-                context.sendTranslated(NEUTRAL, "There are currently no operators!");
+                context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.get(0));
+                context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
                 return;
             }
-            context.sendTranslated(NEUTRAL, "The following users are operators:");
-            context.sendMessage(" ");
-            final DateFormat dateFormat = SimpleDateFormat.getDateInstance(SHORT, context.getSource().getLocale());
-            for (OfflinePlayer player : ops)
+            if (player.isOp())
             {
-                context.sendTranslated(POSITIVE, " - {user} (Last seen: {input#date})", player, dateFormat.format(new Date(player.getLastPlayed())));
+                context.sendTranslated(NEUTRAL, "{user} is already an operator.", player);
+                return;
             }
-            return;
-        }
-        OfflinePlayer user = context.get(0, null);
-        if (!(user.hasPlayedBefore() || user.isOnline()) && !context.hasFlag("f"))
-        {
-            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.get(0));
-            context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
-            return;
-        }
-        if (user.isOp())
-        {
-            context.sendTranslated(NEUTRAL, "{user} is already an operator.", user);
-            return;
-        }
-        user.setOp(true);
-        if (user.isOnline())
-        {
-            user = um.getExactUser(user.getUniqueId());
-            if (user != null)
+            player.setOp(true);
+            if (player.isOnline())
             {
-                ((User)user).sendTranslated(POSITIVE, "You were opped by {sender}", context.getSource());
+                um.getExactUser(player.getUniqueId()).sendTranslated(POSITIVE, "You were opped by {sender}",
+                                                                     context.getSource());
             }
-        }
-        context.sendTranslated(POSITIVE, "{user} is now an operator!", user);
+            context.sendTranslated(POSITIVE, "{user} is now an operator!", player);
 
-        for (User onlineUser : um.getOnlineUsers())
-        {
-            if (onlineUser.getUniqueId().equals(user.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+            for (User onlineUser : um.getOnlineUsers())
             {
-                continue;
+                if (onlineUser.getUniqueId().equals(player.getUniqueId()) ||
+                    onlineUser.getUniqueId().equals(context.getSource().getUniqueId()) ||
+                    !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
+                {
+                    continue;
+                }
+                onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", player,
+                                          context.getSource());
             }
-            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", user, context.getSource());
-        }
 
-        this.core.getLog().info("Player {} has been opped by {}", user.getName(), context.getSource().getName());
+            this.core.getLog().info("Player {} has been opped by {}", player.getName(), context.getSource().getName());
+            return;
+        }
+        // else list operators
+        Set<OfflinePlayer> ops = this.core.getServer().getOperators();
+        if (ops.isEmpty())
+        {
+            context.sendTranslated(NEUTRAL, "There are currently no operators!");
+            return;
+        }
+        context.sendTranslated(NEUTRAL, "The following users are operators:");
+        context.sendMessage(" ");
+        for (OfflinePlayer player : ops)
+        {
+            context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", player, new Date(
+                player.getLastPlayed())); // TODO locale dependent formatter for date
+        }
     }
 
     @Command(desc = "Revokes the operator status of a player")
@@ -205,7 +227,7 @@ public class VanillaCommands
     public void deop(CommandContext context)
     {
         OfflinePlayer offlinePlayer = context.get(0);
-        if (!context.getSource().getName().equals(offlinePlayer.getName()))
+        if (!context.getSource().getUniqueId().equals(offlinePlayer.getUniqueId()))
         {
             context.ensurePermission(core.perms().COMMAND_DEOP_OTHER);
         }
@@ -217,24 +239,25 @@ public class VanillaCommands
         offlinePlayer.setOp(false);
         if (offlinePlayer.isOnline())
         {
-            User user = um.getExactUser(offlinePlayer.getUniqueId());
-            if (user != null)
-            {
-                user.sendTranslated(POSITIVE, "You were deopped by {user}.", context.getSource());
-            }
+            um.getExactUser(offlinePlayer.getUniqueId()).sendTranslated(POSITIVE, "You were deopped by {user}.",
+                                                                        context.getSource());
         }
         context.sendTranslated(POSITIVE, "{user} is no longer an operator!", offlinePlayer);
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) || onlineUser == context.getSource() || !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
+            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) ||
+                onlineUser.getUniqueId().equals(context.getSource().getUniqueId()) ||
+                !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer, context.getSource());
+            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer,
+                                      context.getSource());
         }
 
-        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(), context.getSource().getName());
+        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(),
+                                context.getSource().getName());
     }
 
     @Command(desc = "Lists all loaded plugins")
@@ -243,20 +266,24 @@ public class VanillaCommands
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
-        context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:", plugins.length, modules.size());
+        context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
+                               plugins.length, modules.size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
+        context.sendMessage(
+            " - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
+            context.sendMessage(
+                "   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
         {
             if (p != this.core)
             {
-                context.sendMessage(" - " + (p.isEnabled() ? BRIGHT_GREEN : RED) + p.getName() + RESET + " (" + p.getDescription().getVersion() + ")");
+                context.sendMessage(" - " + (p.isEnabled() ? BRIGHT_GREEN : RED) + p.getName() + RESET + " ("
+                                        + p.getDescription().getVersion() + ")");
             }
         }
     }
@@ -267,19 +294,18 @@ public class VanillaCommands
     @Params(positional = @Param(label = "world", type = World.class, req = false))
     public void saveall(CommandContext context)
     {
+        context.sendTranslated(NEUTRAL, "Saving...");
         if (context.hasPositional(0))
         {
             World world = context.get(0);
-            context.sendTranslated(NEUTRAL, "Saving...");
             world.save();
-            for(Player player : world.getPlayers())
+            for (Player player : world.getPlayers())
             {
                 player.saveData();
             }
             context.sendTranslated(POSITIVE, "World {world} has been saved to disk!", world);
             return;
         }
-        context.sendTranslated(NEUTRAL, "Saving...");
         Profiler.startProfiling("save-worlds");
         for (World world : this.core.getServer().getWorlds())
         {
@@ -287,7 +313,8 @@ public class VanillaCommands
         }
         this.core.getServer().savePlayers();
         context.sendTranslated(POSITIVE, "All worlds have been saved to disk!");
-        context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
+        context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling(
+            "save-worlds", MILLISECONDS));
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
@@ -305,11 +332,13 @@ public class VanillaCommands
                 context.sendTranslated(NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
                 return;
             }
-            context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
+            context.sendTranslated(NEUTRAL,
+                                   "{name#plugin} is currently running in version {input#version:color=INDIGO}.",
+                                   plugin.getName(), plugin.getDescription().getVersion());
             context.sendMessage(" ");
             context.sendTranslated(NEUTRAL.and(UNDERLINE), "Plugin information:");
             context.sendMessage(" ");
-            if (plugin instanceof Core)
+            if (plugin instanceof Core && context.hasFlag("f"))
             {
                 showSourceVersion(context, core.getSourceVersion());
             }
@@ -322,21 +351,16 @@ public class VanillaCommands
             }
             return;
         }
-        context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
-        context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
+        context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}",
+                               server.getName(), server.getVersion());
+        context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}",
+                               server.getBukkitVersion());
         context.sendMessage(" ");
-        context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
-        showSourceVersion(context, core.getSourceVersion());
-    }
-
-    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    public static void showSourceVersion(CommandContext context, String sourceVersion)
-    {
-        if (context.hasFlag("s") && sourceVersion != null)
+        context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}",
+                               context.getCore().getVersion().toString());
+        if (context.hasFlag("f"))
         {
-            final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1, sourceVersion.length() - 32);
-            context.sendTranslated(POSITIVE, "Source Version: {input}", sourceVersion);
-            context.sendTranslated(POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
+            showSourceVersion(context, core.getSourceVersion());
         }
     }
 
@@ -349,7 +373,20 @@ public class VanillaCommands
         {
             super(core.getModuleManager().getCoreModule());
             this.core = core;
-            // TODO this.delegateChild("list");
+        }
+
+        @Override
+        protected boolean selfExecute(CommandInvocation invocation)
+        {
+            if (invocation.isConsumed())
+            {
+                return this.getCommand("list").execute(invocation);
+            }
+            else if (invocation.tokens().size() - invocation.consumed() == 1)
+            {
+                return this.getCommand("add").execute(invocation);
+            }
+            return super.execute(invocation);
         }
 
         @Command(desc = "Adds a player to the whitelist.")
@@ -393,7 +430,7 @@ public class VanillaCommands
         @Command(desc = "Lists all the whitelisted players")
         public void list(CommandContext context)
         {
-            Set<OfflinePlayer> whitelist = this.core.getServer ().getWhitelistedPlayers();
+            Set<OfflinePlayer> whitelist = this.core.getServer().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
             {
                 context.sendTranslated(NEUTRAL, "The whitelist is currently disabled.");
@@ -457,10 +494,10 @@ public class VanillaCommands
         {
             if (context.isSource(User.class))
             {
-                context.sendTranslated(NEGATIVE, "This command is too dangerous for users!");
+                context.sendTranslated(NEGATIVE, "This command is too dangerous for users!"); // TODO permission? config option?
                 return;
             }
-            BukkitUtils.wipeWhiteliste();
+            BukkitUtils.wipeWhitelist();
             context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");
         }
     }

@@ -15,44 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command_old.result;
+package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandContext;
-import de.cubeisland.engine.core.command.ModuleProvider;
-import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.command.result.CommandResult;
 
-public abstract class DelayedResult implements CommandResult<CommandContext>
+public abstract class LongRunningResult implements CommandResult<CommandContext>
 {
-    private final long delay;
-
-    protected DelayedResult(long delay)
-    {
-        this.delay = delay;
-    }
-
-    protected DelayedResult()
-    {
-        this(1);
-    }
+    private boolean isDone = false;
+    private int taskId = -1;
 
     @Override
     public void process(final CommandContext context)
     {
-        Module module = context.getCommand().getDescriptor().valueFor(ModuleProvider.class);
-        final int taskId = context.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+        this.taskId = context.getCore().getTaskManager().runTimer(context.getModule(), new Runnable()
         {
             @Override
             public void run()
             {
-                DelayedResult.this.run(context);
+                LongRunningResult.this.run(context);
+                if (isDone)
+                {
+                    context.getCore().getTaskManager()
+                           .cancelTask(context.getModule(), taskId);
+                }
             }
-        }, this.delay);
-
-        if (taskId == -1)
+        }, 0, 1);
+        if (this.taskId == -1)
         {
-            throw new RuntimeException("Failed to schedule the task for the delayed command result!");
+            throw new RuntimeException("Failed to schedule the task for the long running command result!");
         }
+    }
+
+    protected final void setDone()
+    {
+        this.isDone = true;
     }
 
     public abstract void run(CommandContext context);
