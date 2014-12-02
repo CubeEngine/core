@@ -36,7 +36,7 @@ import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.Flags;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
-import de.cubeisland.engine.command.old.MissingParameterException;
+import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -145,8 +145,8 @@ public class VanillaCommands
             }
             else
             {
-                throw new MissingParameterException("world", context.getSource().getTranslation(NEGATIVE,
-                                                                                                "You have to specify a world!"));
+                context.sendTranslated(NEGATIVE, "You have to specify a world");
+                throw new TooFewArgumentsException();
             }
         }
         if (context.hasPositional(0))

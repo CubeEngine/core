@@ -40,12 +40,14 @@ import de.cubeisland.engine.core.util.StringUtils;
 public class WrappedCommand extends Command
 {
     private final CommandBase command;
+    private final Core core;
     private HelpTopic helpTopic;
 
-    public WrappedCommand(CommandBase command)
+    public WrappedCommand(CommandBase command, Core core)
     {
         super(command.getDescriptor().getName());
         this.command = command;
+        this.core = core;
     }
 
     public Module getModule()
@@ -141,15 +143,9 @@ public class WrappedCommand extends Command
         {
             return this.command.execute(newInvocation(sender, label, args));
         }
-        catch (Exception e) // TODO move exception handling into a property
+        catch (Exception e)
         {
-            String message = e.getMessage();
-            if (message == null)
-            {
-                message = "No message";
-            }
-            message = e.getClass().getName() + ": " + message;
-            sender.sendMessage(message);
+            core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}", command.getDescriptor().getName());
             return false;
         }
     }

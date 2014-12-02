@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
+import de.cubeisland.engine.command.filter.CommandFilters;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
@@ -82,8 +83,13 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        descriptor.setProperty(new PermissionProvider(origin.getModule().getBasePermission().childWildcard(permName, def)));
+        Permission permission = origin.getModule().getBasePermission().childWildcard("command").child(permName, def);
+        descriptor.setProperty(new PermissionProvider(permission));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
+        if (checkPerm)
+        {
+            descriptor.valueFor(CommandFilters.class).addFilter(new PermissionFilter(permission));
+        }
 
         return descriptor;
     }

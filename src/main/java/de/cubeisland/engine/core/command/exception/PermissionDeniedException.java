@@ -21,37 +21,49 @@ import de.cubeisland.engine.command.CommandException;
 import de.cubeisland.engine.core.permission.Permission;
 
 /**
- * This exception is thrown when a user is not allowed to perform an action.
- * Use denyAccess to throw an exception inside a command. The exception will be caught.
+ * This exception is thrown when a CommandSource is not allowed to perform an action.
+ * If {@link #canCheck()} is false the CommandSource does not support checking permissions.
  */
 public class PermissionDeniedException extends CommandException
 {
-    private final String permission;
+    private final Permission permission;
+    private final boolean canCheck;
 
-    public PermissionDeniedException(String permission)
+    public PermissionDeniedException(Permission permission)
     {
-        this.permission = permission;
+        this(permission, true);
     }
-    
-    public PermissionDeniedException(String message, String permission)
+
+    public PermissionDeniedException(Permission permission, boolean canCheck)
     {
-        super(message);
         this.permission = permission;
+        this.canCheck = canCheck;
     }
 
     public PermissionDeniedException(String message, Permission permission)
     {
         super(message);
-        this.permission = permission.getName();
-    }
-    
-    public PermissionDeniedException(Permission permission)
-    {
-        this(permission.getName());
+        this.permission = permission;
+        this.canCheck = true;
     }
 
-    public String getPermission()
+    /**
+     * Returns the permission
+     *
+     * @return the permission
+     */
+    public Permission getPermission()
     {
         return permission;
+    }
+
+    /**
+     * Returns false if the CommandSource did not support checking permissions
+     *
+     * @return whether the permission could be checked
+     */
+    public boolean canCheck()
+    {
+        return canCheck;
     }
 }

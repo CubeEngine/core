@@ -26,14 +26,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.Restricted;
+import de.cubeisland.engine.command.filter.Restricted;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.Flags;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
 import de.cubeisland.engine.command.methodic.parametric.Desc;
-import de.cubeisland.engine.command.methodic.parametric.Index;
 import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Optional;
 import de.cubeisland.engine.command.methodic.parametric.Reader;

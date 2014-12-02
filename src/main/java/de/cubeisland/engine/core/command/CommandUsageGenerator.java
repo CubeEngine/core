@@ -27,6 +27,7 @@ import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.command.parameter.property.Required;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
@@ -73,5 +74,15 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
             return ((CommandSender)source).getTranslation(MessageType.NONE, valueLabel);
         }
         return valueLabel;
+    }
+
+    @Override
+    protected String getPrefix(CommandSource source)
+    {
+        if (source instanceof User)
+        {
+            return "/";
+        }
+        return "";
     }
 }

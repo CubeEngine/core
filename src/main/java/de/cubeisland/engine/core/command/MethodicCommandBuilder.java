@@ -18,18 +18,25 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
+import de.cubeisland.engine.command.filter.CommandFilters;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
+import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.core.command.property.CheckPermission.CHECK;
 import static de.cubeisland.engine.core.command.property.CheckPermission.NOT_CHECK;
 
 public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
 {
+    public MethodicCommandBuilder()
+    {
+        this.usageGenerator = new CommandUsageGenerator();
+    }
+
     @Override
     protected ImmutableCommandDescriptor buildCommandDescriptor(Command annotation, CommandOrigin origin)
     {
@@ -45,8 +52,13 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        descriptor.setProperty(new PermissionProvider(origin.getModule().getBasePermission().childWildcard("command").child(permName, def)));
+        Permission permission = origin.getModule().getBasePermission().childWildcard("command").child(permName, def);
+        descriptor.setProperty(new PermissionProvider(permission));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
+        if (checkPerm)
+        {
+            descriptor.valueFor(CommandFilters.class).addFilter(new PermissionFilter(permission));
+        }
 
         return descriptor;
     }

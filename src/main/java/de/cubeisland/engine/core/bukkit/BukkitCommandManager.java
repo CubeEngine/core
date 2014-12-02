@@ -37,19 +37,24 @@ import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
+import de.cubeisland.engine.command.ExceptionHandlerProperty;
+import de.cubeisland.engine.command.ImmutableCommandDescriptor;
+import de.cubeisland.engine.command.Name;
 import de.cubeisland.engine.command.SelfDescribing;
+import de.cubeisland.engine.command.UsageProvider;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
-import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
+import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
+import de.cubeisland.engine.command.parameter.property.Description;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CoreCommands.FindUserReader;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.CommandOrigin;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.ExceptionHandler;
 import de.cubeisland.engine.core.command.MethodicCommandBuilder;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.property.Loggable;
@@ -81,14 +86,12 @@ import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserList.UserListReader;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logging.Log;
 import de.cubeisland.engine.logging.LogLevel;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
-@Command(desc = "Base CommandDispatcher for CubeEngine")
 public class BukkitCommandManager extends DispatcherCommand implements CommandManager, SelfDescribing
 {
     private final CommandInjector injector;
@@ -100,6 +103,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     private final CommandBuilder<BasicMethodicCommand, CommandOrigin> builder;
 
     private Map<Class, Completer> completers = new HashMap<>();
+
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
@@ -142,12 +146,18 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         readerManager.registerReader(new WorldTypeReader(), WorldType.class);
         readerManager.registerReader(new DifficultyReader(), Difficulty.class);
         readerManager.registerReader(new LogLevelReader(), LogLevel.class);
+
+        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(core)));
     }
 
     @Override
     public CommandDescriptor selfDescribe()
     {
-        return null; // TODO proper descriptor
+        ImmutableCommandDescriptor descriptor = new ImmutableCommandDescriptor();
+        descriptor.setProperty(new Name(""));
+        descriptor.setProperty(new Description("Base CommandDispatcher for CubeEngine"));
+        descriptor.setProperty(new UsageProvider(new ParameterUsageGenerator()));
+        return descriptor;
     }
 
     @Override

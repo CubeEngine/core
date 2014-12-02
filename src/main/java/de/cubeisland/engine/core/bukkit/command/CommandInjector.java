@@ -18,14 +18,11 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
@@ -34,30 +31,16 @@ import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
-import de.cubeisland.engine.command.UsageProvider;
-import de.cubeisland.engine.command.old.IncorrectArgumentException;
-import de.cubeisland.engine.command.old.IncorrectUsageException;
-import de.cubeisland.engine.command.old.MissingParameterException;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ModuleProvider;
-import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.core.contract.NotNull;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
-import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
 /**
  * Injects CubeEngine commands directly into Bukkits CommandMap
@@ -99,7 +82,7 @@ public class CommandInjector
 
     public synchronized void registerCommand(CommandBase command)
     {
-        WrappedCommand newCommand = new WrappedCommand(command);
+        WrappedCommand newCommand = new WrappedCommand(command, core);
         SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getDescriptor().getName());
         if (old != null)
@@ -241,111 +224,5 @@ public class CommandInjector
         this.removeCommands();
         this.commandMap = null;
         this.knownCommandField = null;
-    }
-
-    // TODO handle in cmd via property
-    private void handleCommandException(@NotNull final CommandBase command, @NotNull final CommandInvocation invocation, Throwable t)
-    {
-        final CommandSource source = invocation.getCommandSource();
-        final Module module = command.getDescriptor().valueFor(ModuleProvider.class);
-        if (!(source instanceof CommandSender))
-        {
-            module.getLog().info("An unknown CommandSource ({}) caused an exception: {}", source.getClass().getName(), t.getMessage());
-            return;
-        }
-        final CommandSender sender = (CommandSender)source;
-        if (!CubeEngine.isMainThread())
-        {
-            final Throwable tmp = t;
-            module.getCore().getTaskManager().callSync(new Callable<Void>()
-            {
-                @Override
-                public Void call() throws Exception
-                {
-                    handleCommandException(command, invocation, tmp);
-                    return null;
-                }
-            });
-            return;
-        }
-        if (t instanceof InvocationTargetException || t instanceof ExecutionException)
-        {
-            t = t.getCause();
-        }
-        if (t instanceof MissingParameterException)
-        {
-            if (t.getMessage().isEmpty())
-            {
-                sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", ((MissingParameterException)t).getParamName());
-            }
-            else
-            {
-                sender.sendMessage(t.getMessage());
-            }
-        }
-        else if (t instanceof IncorrectUsageException)
-        {
-            IncorrectUsageException e = (IncorrectUsageException)t;
-            if (e.getMessage() != null)
-            {
-                sender.sendMessage(t.getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "That seems wrong...");
-            }
-            if (e.getDisplayUsage())
-            {
-                final String usage;
-
-                CommandDescriptor descriptor = command.getDescriptor();
-                usage = descriptor.valueFor(UsageProvider.class).generateUsage(invocation.getCommandSource(), descriptor);
-
-                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
-            }
-        }
-        else if (t instanceof ReaderException)
-        {
-            ReaderException e = (ReaderException)t;
-            if (e.getMessage() != null)
-            {
-                sender.sendMessage(t.getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument...");
-            }
-        }
-        else if (t instanceof PermissionDeniedException)
-        {
-            PermissionDeniedException e = (PermissionDeniedException)t;
-            if (e.getMessage() != null)
-            {
-                sender.sendMessage(e.getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "You're not allowed to do this!");
-                sender.sendTranslated(NEGATIVE, "Contact an administrator if you think this is a mistake!");
-            }
-            sender.sendTranslated(NEGATIVE, "Missing permission: {name}", e.getPermission());
-        }
-        else if (t instanceof IncorrectArgumentException)
-        {
-            if (((IncorrectArgumentException)t).isNamedArgument())
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument for {input#named}: {input#reason}", ((IncorrectArgumentException)t).getName(), t.getCause().getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument at {integer#index}: {input#reason}", ((IncorrectArgumentException)t).getIndex(), t.getCause().getMessage());
-            }
-        }
-        else
-        {
-            sender.sendTranslated(CRITICAL, "An unknown error occurred while executing this command!");
-            sender.sendTranslated(CRITICAL, "Please report this error to an administrator.");
-            module.getLog().debug(t, t.getLocalizedMessage());
-        }
     }
 }
