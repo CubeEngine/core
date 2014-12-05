@@ -24,8 +24,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -34,13 +34,13 @@ public class WorldCompleter implements Completer
     private final Server server = Bukkit.getServer();
 
     @Override
-    public List<String> complete(BaseCommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
         List<String> offers = new ArrayList<>();
         for (World world : this.server.getWorlds())
         {
             final String name = world.getName();
-            if (startsWithIgnoreCase(name, token))
+            if (startsWithIgnoreCase(name, invocation.currentToken()))
             {
                 offers.add(name);
             }

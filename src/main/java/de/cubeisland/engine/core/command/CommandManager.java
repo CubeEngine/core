@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.command;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.Dispatcher;
-import de.cubeisland.engine.command.completer.Completer;
+import de.cubeisland.engine.command.completer.CompleterProvider;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -32,7 +32,7 @@ import de.cubeisland.engine.core.util.Cleanable;
 /**
  * This class manages the registration of commands.
  */
-public interface CommandManager extends Cleanable, Dispatcher
+public interface CommandManager extends Cleanable, Dispatcher, CompleterProvider
 {
     ReaderManager getReaderManager();
 
@@ -67,16 +67,6 @@ public interface CommandManager extends Cleanable, Dispatcher
     ConfirmManager getConfirmManager();
 
     PaginationManager getPaginationManager();
-
-    /**
-     * Returns a completer for the first registered class
-     */
-    Completer getDefaultCompleter(Class... types);
-
-    /**
-     * Registers a completer for given classes
-     */
-    void registerDefaultCompleter(Completer completer, Class... types);
 
     CommandBuilder<BasicMethodicCommand, CommandOrigin> getCommandBuilder();
 

@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.command.completer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -31,22 +32,24 @@ import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 /**
  * A PlayerCompleter for the other online users but not the user sending the command
  */
-public class PlayerCompleter implements Completer<CommandContext>
+public class PlayerCompleter implements Completer
 {
     private static boolean canSee(CommandSender sender, User user)
     {
         return !(sender instanceof User) || ((User)sender).canSee(user);
     }
 
+
     @Override
-    public List<String> complete(CommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
+
         List<String> playerNames = new ArrayList<>();
-        final CommandSender sender = context.getSource();
+        final CommandSender sender = (CommandSender)invocation.getCommandSource(); // TODO prevent class cast exceptions
         for (User player : CubeEngine.getUserManager().getOnlineUsers())
         {
             String name = player.getName();
-            if (canSee(sender,  player) && startsWithIgnoreCase(name, token))
+            if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))
             {
                 playerNames.add(name);
             }

@@ -28,6 +28,7 @@ import org.bukkit.help.HelpTopic;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
+import de.cubeisland.engine.command.completer.CompleterProviderProperty;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
@@ -155,13 +156,22 @@ public class WrappedCommand extends Command
         // TODO include label
         CommandSource source = wrapSender(getModule().getCore(), sender);
         //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
-        return new CommandInvocation(source, label + " " + StringUtils.implode(" ", args), getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
+        CommandInvocation invocation = new CommandInvocation(source, label + " " + StringUtils.implode(" ", args), getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
+        invocation.setProperty(new CompleterProviderProperty(core.getCommandManager()));
+        return invocation;
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args) throws IllegalArgumentException
     {
-        return this.command.getSuggestions(newInvocation(sender, label, args));
+        CommandInvocation invocation = newInvocation(sender, label, args);
+        List<String> suggestions = this.command.getSuggestions(invocation);
+        for (String suggestion : suggestions)
+        {
+            System.out.println(invocation.getCommandLine() + ": " + suggestion);
+        }
+
+        return suggestions;
         // TODO if null do default completion (call super)?
     }
 

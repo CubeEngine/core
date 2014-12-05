@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Difficulty;
@@ -35,6 +36,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandDescriptor;
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
 import de.cubeisland.engine.command.ExceptionHandlerProperty;
@@ -43,12 +45,15 @@ import de.cubeisland.engine.command.Name;
 import de.cubeisland.engine.command.SelfDescribing;
 import de.cubeisland.engine.command.UsageProvider;
 import de.cubeisland.engine.command.completer.Completer;
+import de.cubeisland.engine.command.completer.CompleterProvider;
+import de.cubeisland.engine.command.completer.CompleterProviderProperty;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.command.parameter.property.Description;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.util.property.Property;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
@@ -103,7 +108,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     private final CommandBuilder<BasicMethodicCommand, CommandOrigin> builder;
 
     private Map<Class, Completer> completers = new HashMap<>();
-
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
@@ -235,7 +239,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     {
         if (command.getDescriptor().valueFor(Loggable.class))
         {
-            this.commandLogger.debug("complete {} {} {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("getSuggestions {} {} {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -279,7 +283,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     {
         return this;
     }
-
 
     /**
      * Creates {@link de.cubeisland.engine.command.methodic.BasicMethodicCommand} for all methods annotated as a command

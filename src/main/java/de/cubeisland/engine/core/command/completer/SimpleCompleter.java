@@ -20,8 +20,8 @@ package de.cubeisland.engine.core.command.completer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -35,12 +35,12 @@ public abstract class SimpleCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(BaseCommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
         List<String> offers = new ArrayList<>();
         for (String string : this.strings)
         {
-            if (startsWithIgnoreCase(string, token))
+            if (startsWithIgnoreCase(string, invocation.currentToken()))
             {
                 offers.add(string);
             }

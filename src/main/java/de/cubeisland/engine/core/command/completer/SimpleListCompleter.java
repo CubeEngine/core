@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 import de.cubeisland.engine.core.util.StringUtils;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
@@ -37,10 +37,11 @@ public abstract class SimpleListCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(BaseCommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
+        String token = invocation.currentToken();
         List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
-        String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();
+        String lastToken = token.substring(token.lastIndexOf(",") + 1, token.length()).toUpperCase();
         List<String> offers = new ArrayList<>();
         for (String string : this.strings)
         {

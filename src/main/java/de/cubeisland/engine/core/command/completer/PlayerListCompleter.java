@@ -20,8 +20,8 @@ package de.cubeisland.engine.core.command.completer;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
 
@@ -35,10 +35,10 @@ public class PlayerListCompleter implements Completer
     }
 
     @Override
-    public List<String> complete(BaseCommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
         List<String> result = new ArrayList<>();
-        String lastToken = token;
+        String lastToken = invocation.currentToken();
         String firstTokens = "";
         if (lastToken.contains(","))
         {
@@ -55,7 +55,7 @@ public class PlayerListCompleter implements Completer
         {
             if (user.getName().startsWith(lastToken))
             {
-                if (!token.contains(user.getName()+","))
+                if (!invocation.currentToken().contains(user.getName()+","))
                 {
                     result.add(firstTokens + user.getName());
                 }

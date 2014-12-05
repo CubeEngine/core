@@ -20,15 +20,15 @@ package de.cubeisland.engine.core.command.completer;
 import java.util.Arrays;
 import java.util.List;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 import de.cubeisland.engine.core.util.matcher.Match;
 
 public class ItemCompleter implements Completer
 {
     @Override
-    public List<String> complete(BaseCommandContext context, String token)
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
-        return Arrays.asList(String.valueOf(Match.material().material(token).getId()));
+        return Arrays.asList(String.valueOf(Match.material().material(invocation.currentToken()).getId()));
     }
 }
