@@ -289,7 +289,7 @@ public class VanillaCommands
     }
 
     // integrate /saveoff and /saveon and provide aliases
-    @Alias(names = "save-all")
+    @Alias(value = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
     @Params(positional = @Param(label = "world", type = World.class, req = false))
     public void saveall(CommandContext context)

@@ -30,7 +30,6 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.Flags;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
 import de.cubeisland.engine.command.methodic.parametric.Label;
@@ -43,7 +42,6 @@ import de.cubeisland.engine.core.bukkit.VanillaCommands;
 import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.module.exception.ModuleException;
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Version;
 
 import static de.cubeisland.engine.core.util.ChatFormat.BRIGHT_GREEN;
@@ -84,7 +82,7 @@ public class ModuleCommands extends CommandContainer
         }
     }
 
-    @Alias(names = "modules")
+    @Alias(value = "modules")
     @Command(alias = "show", desc = "Lists all the loaded modules")
     public void list(CommandContext context)
     {
