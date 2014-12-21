@@ -53,7 +53,7 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
-import static de.cubeisland.engine.command.parameter.Parameter.GREED_INFINITE;
+import static de.cubeisland.engine.command.parameter.Parameter.INFINITE;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -90,7 +90,7 @@ public class VanillaCommands
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    @Params(positional = @Param(label = "message", req = false, greed = GREED_INFINITE))
+    @Params(positional = @Param(label = "message", req = false, greed = INFINITE))
     public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -105,7 +105,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    @Params(positional = @Param(label = "message", req = false, greed = GREED_INFINITE))
+    @Params(positional = @Param(label = "message", req = false, greed = INFINITE))
     @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(CommandContext context)
     {
