@@ -62,6 +62,7 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ExceptionHandler;
 import de.cubeisland.engine.core.command.MethodicCommandBuilder;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
+import de.cubeisland.engine.core.command.completer.ModuleCompleter;
 import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.completer.PlayerCompleter;
@@ -121,8 +122,9 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.confirmManager = new ConfirmManager(this, core);
         this.paginationManager = new PaginationManager(core);
 
-        this.registerDefaultCompleter(new PlayerCompleter(), User.class);
+        this.registerDefaultCompleter(new PlayerCompleter(), User.class, OfflinePlayer.class);
         this.registerDefaultCompleter(new WorldCompleter(), World.class);
+        this.registerDefaultCompleter(new ModuleCompleter(core), Module.class);
 
         this.registerDefaultCompleter(new PlayerListCompleter(core), PlayerListCompleter.class);
 
@@ -275,6 +277,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         for (Class type : types)
         {
             this.completers.put(type, completer);
+            this.completers.put(completer.getClass(), completer);
         }
     }
 

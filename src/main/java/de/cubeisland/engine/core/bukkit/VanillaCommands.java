@@ -31,17 +31,21 @@ import org.bukkit.plugin.Plugin;
 
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
+import de.cubeisland.engine.command.filter.Restricted;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.Flags;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
+import de.cubeisland.engine.command.methodic.parametric.Label;
+import de.cubeisland.engine.command.methodic.parametric.Named;
+import de.cubeisland.engine.command.methodic.parametric.Optional;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
-import de.cubeisland.engine.core.command.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
@@ -49,7 +53,7 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 
-import static de.cubeisland.engine.command.parameter.property.Greed.INFINITE_GREED;
+import static de.cubeisland.engine.command.parameter.Parameter.GREED_INFINITE;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -86,7 +90,7 @@ public class VanillaCommands
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    @Params(positional = @Param(label = "message", req = false, greed = INFINITE_GREED))
+    @Params(positional = @Param(label = "message", req = false, greed = GREED_INFINITE))
     public void stop(CommandContext context)
     {
         String message = context.getStrings(0);
@@ -101,7 +105,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    @Params(positional = @Param(label = "message", req = false, greed = INFINITE_GREED))
+    @Params(positional = @Param(label = "message", req = false, greed = GREED_INFINITE))
     @Flags(@Flag(name = "m", longName = "modules"))
     public void reload(CommandContext context)
     {
@@ -132,11 +136,8 @@ public class VanillaCommands
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    @Params(positional = @Param(label = "difficulty", type = Difficulty.class, req = false),
-        nonpositional = @Param(label = "world", names = {"world", "w", "in"}, type = World.class, completer = WorldCompleter.class))
-    public void difficulty(CommandContext context)
+    public void difficulty(CommandContext context, @Optional @Label("difficulty") Difficulty difficulty, @Named({"world", "w", "in"}) World world)
     {
-        World world = context.get("world");
         if (world == null)
         {
             if (context.isSource(User.class))
@@ -149,9 +150,9 @@ public class VanillaCommands
                 throw new TooFewArgumentsException();
             }
         }
-        if (context.hasPositional(0))
+        if (difficulty != null)
         {
-            world.setDifficulty(context.<Difficulty>get(0));
+            world.setDifficulty(difficulty);
             context.sendTranslated(POSITIVE, "The difficulty has been successfully set!");
             return;
         }
@@ -490,13 +491,9 @@ public class VanillaCommands
         }
 
         @Command(desc = "Wipes the whitelist completely")
+        @Restricted(value = ConsoleCommandSender.class, msg = "This command is too dangerous for users!")
         public void wipe(CommandContext context)
         {
-            if (context.isSource(User.class))
-            {
-                context.sendTranslated(NEGATIVE, "This command is too dangerous for users!"); // TODO permission? config option?
-                return;
-            }
             BukkitUtils.wipeWhitelist();
             context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");
         }

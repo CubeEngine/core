@@ -58,7 +58,7 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
         descriptor.setProperty(new PermissionProvider(module.getBasePermission().childWildcard(permName, def)));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
         descriptor.setProperty(new ModuleProvider(module));
-        SimpleParameter actionParam = new SimpleParameter(String.class, String.class);
+        SimpleParameter actionParam = new SimpleParameter(String.class, String.class, 1);
         actionParam.setProperty(new ValueLabel("action"));
         actionParam.setProperty(new FixedPosition(0));
         descriptor.setProperty(new ParameterGroup(Collections.<Parameter>emptyList(), Collections.<Parameter>emptyList(), Arrays.asList((Parameter)actionParam)));

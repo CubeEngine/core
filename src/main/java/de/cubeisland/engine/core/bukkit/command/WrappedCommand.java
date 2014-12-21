@@ -156,7 +156,12 @@ public class WrappedCommand extends Command
         // TODO include label
         CommandSource source = wrapSender(getModule().getCore(), sender);
         //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
-        CommandInvocation invocation = new CommandInvocation(source, label + " " + StringUtils.implode(" ", args), getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
+        String commandLine = label;
+        if (args.length > 0)
+        {
+            commandLine += " " + StringUtils.implode(" ", args);
+        }
+        CommandInvocation invocation = new CommandInvocation(source, commandLine, getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
         invocation.setProperty(new CompleterProviderProperty(core.getCommandManager()));
         return invocation;
     }

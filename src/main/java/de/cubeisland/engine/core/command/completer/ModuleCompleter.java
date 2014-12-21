@@ -15,33 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.command.readers;
+package de.cubeisland.engine.core.command.completer;
 
-import org.bukkit.OfflinePlayer;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.module.Module;
 
-public class OfflinePlayerReader implements ArgumentReader<OfflinePlayer>
+public class ModuleCompleter implements Completer
 {
-    private final Core core;
+    private Core core;
 
-    public OfflinePlayerReader(Core core)
+    public ModuleCompleter(Core core)
     {
         this.core = core;
     }
 
     @Override
-    public OfflinePlayer read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public List<String> getSuggestions(CommandInvocation invocation)
     {
-        if (invocation.currentToken().startsWith("-"))
+        List<String> result = new ArrayList<>();
+        String token = invocation.currentToken();
+        for (Module module : core.getModuleManager().getModules())
         {
-            throw new ReaderException("Players do not start with -");
+            if (module.getId().startsWith(token))
+            {
+                result.add(module.getId());
+            }
         }
-        return ((BukkitCore)this.core).getServer().getOfflinePlayer(invocation.consume(1));
+        return result;
     }
 }
