@@ -161,7 +161,8 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                         responseNode.put("response", "Unknown route");
                         break;
                     }
-                    Parameters params = new Parameters(qsDecoder.parameters());
+                    Parameters params = new Parameters(qsDecoder.parameters(),
+                                                       core.getCommandManager().getReaderManager());
                     ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
                     ApiResponse response = handler.execute(request);
                     if (msgid != null)

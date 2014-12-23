@@ -153,7 +153,6 @@ public class WrappedCommand extends Command
 
     private CommandInvocation newInvocation(CommandSender sender, String label, String[] args)
     {
-        // TODO include label
         CommandSource source = wrapSender(getModule().getCore(), sender);
         //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
         String commandLine = label;
@@ -175,9 +174,7 @@ public class WrappedCommand extends Command
         {
             System.out.println(invocation.getCommandLine() + ": " + suggestion);
         }
-
         return suggestions;
-        // TODO if null do default completion (call super)?
     }
 
     public HelpTopic getHelpTopic()

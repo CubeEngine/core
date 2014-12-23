@@ -131,7 +131,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.readerManager = new ReaderManager();
         this.readerManager.registerDefaultReader();
 
-        // TODO Manager to unregister reader from modules
         readerManager.registerReader(new ByteReader(), Byte.class, byte.class);
         readerManager.registerReader(new ShortReader(), Short.class, short.class);
         readerManager.registerReader(new IntReader(), Integer.class, int.class);
@@ -209,7 +208,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         boolean b = super.addCommand(command);
         // TODO perm registration
         // TODO handle perm when removing cmd from parent
-        // TODO if container add subcmds (prob. not here)
         this.injector.registerCommand(command); // register at bukkit
         return b;
     }

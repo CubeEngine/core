@@ -217,8 +217,8 @@ public class VanillaCommands
         context.sendMessage(" ");
         for (OfflinePlayer player : ops)
         {
-            context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", player, new Date(
-                player.getLastPlayed())); // TODO locale dependent formatter for date
+            context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", player, new Date(player.getLastPlayed()));
+            // TODO locale dependent formatter for date
         }
     }
 

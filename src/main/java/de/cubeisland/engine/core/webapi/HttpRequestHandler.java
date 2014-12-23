@@ -94,7 +94,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         boolean authorized = this.server.isAuthorized(inetSocketAddress.getAddress());
         QueryStringDecoder qsDecoder = new QueryStringDecoder(message.getUri(), this.UTF8, true, 100);
-        final Parameters params = new Parameters(qsDecoder.parameters());
+        final Parameters params = new Parameters(qsDecoder.parameters(), core.getCommandManager().getReaderManager());
         User authUser = null;
         if (!authorized)
         {

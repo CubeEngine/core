@@ -30,8 +30,8 @@ public class MethodicCommand extends BasicMethodicCommand
     }
 
     @Override
-    protected BaseCommandContext buildContext(CommandInvocation call)
+    protected BaseCommandContext buildContext(CommandInvocation invocation)
     {
-        return new CommandContext(call, this);
+        return new CommandContext(invocation, this);
     }
 }

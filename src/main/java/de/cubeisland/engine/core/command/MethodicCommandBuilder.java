@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
-import de.cubeisland.engine.command.filter.CommandFilters;
+import de.cubeisland.engine.command.filter.Filters;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
@@ -57,7 +57,7 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
         if (checkPerm)
         {
-            descriptor.valueFor(CommandFilters.class).addFilter(new PermissionFilter(permission));
+            descriptor.valueFor(Filters.class).addFilter(new PermissionFilter(permission));
         }
 
         return descriptor;

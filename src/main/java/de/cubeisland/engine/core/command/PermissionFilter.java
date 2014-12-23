@@ -19,8 +19,8 @@ package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
-import de.cubeisland.engine.command.filter.CommandFilter;
-import de.cubeisland.engine.command.filter.CommandFilterException;
+import de.cubeisland.engine.command.filter.Filter;
+import de.cubeisland.engine.command.filter.FilterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 
@@ -28,7 +28,7 @@ import de.cubeisland.engine.core.permission.Permission;
  * A Filter checking a CommandSenders Permission.
  * If the CommandSource is not a CommandSender ... what to do what to do
  */
-public class PermissionFilter implements CommandFilter
+public class PermissionFilter implements Filter
 {
     private Permission permission;
 
@@ -38,7 +38,7 @@ public class PermissionFilter implements CommandFilter
     }
 
     @Override
-    public void run(CommandInvocation invocation) throws CommandFilterException
+    public void run(CommandInvocation invocation) throws FilterException
     {
         CommandSource source = invocation.getCommandSource();
         if (source instanceof CommandSender)

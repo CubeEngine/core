@@ -33,7 +33,7 @@ public final class ReflectedApiHandler extends ApiHandler
 {
     private final Method method;
     private final Object holder;
-
+    private final ReaderManager readerManager;
 
     public ReflectedApiHandler(Module module, String route, Permission permission,
                                LinkedHashMap<String, Class> params, RequestMethod reqMethod, Method method,
@@ -43,6 +43,7 @@ public final class ReflectedApiHandler extends ApiHandler
         this.method = method;
         this.method.setAccessible(true);
         this.holder = holder;
+        this.readerManager = module.getCore().getCommandManager().getReaderManager();
     }
 
     @Override
@@ -55,8 +56,7 @@ public final class ReflectedApiHandler extends ApiHandler
             list.add(request);
             for (Entry<String, Class> entry : this.getParameters().entrySet())
             {
-                // TODO fix ME
-                list.add(ReaderManager.MANAGER.read(entry.getValue(), entry.getValue(), new CommandInvocation(null, params.getString(entry.getKey()), ReaderManager.MANAGER)));
+                list.add(readerManager.read(entry.getValue(), entry.getValue(), new CommandInvocation(null, params.getString(entry.getKey()), readerManager)));
             }
             return (ApiResponse)this.method.invoke(this.holder, list.toArray(new Object[list.size()]));
         }

@@ -72,7 +72,6 @@ public class PreCommandListener implements Listener
         String label = explode(" ", message)[0].toLowerCase(Locale.ENGLISH);
         if (this.injector.getCommand(label) == null)
         {
-            final String prefix = (sender instanceof Player ? "/" : ""); // TODO fix prefix / maybe unify with commands to show same message on not found dispatcher sub cmd
             final Locale language = BukkitUtils.getLocaleFromSender(sender);
             List<String> matches = new LinkedList<>(Match.string().getBestMatches(label, injector.getKnownCommands().keySet(), 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
