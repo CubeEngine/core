@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command;
 
 import org.bukkit.permissions.Permissible;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.parameter.FlagParameter;
 import de.cubeisland.engine.command.parameter.Parameter;
@@ -33,16 +34,19 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {
     @Override
-    public String generateUsage(CommandSource source, ParameterGroup parameters)
+    public String generateParameterUsage(CommandInvocation invocation, ParameterGroup parameters)
     {
-        return super.generateUsage(source, parameters);
+        return super.generateParameterUsage(invocation, parameters);
     }
 
     @Override
-    protected String generateFlagUsage(CommandSource source, FlagParameter parameter)
+    protected String generateFlagUsage(CommandInvocation invocation, FlagParameter parameter)
     {
-        checkPermission(source, parameter); // TODO instead return boolean
-        return super.generateFlagUsage(source, parameter);
+        if (invocation != null)
+        {
+            checkPermission(invocation.getCommandSource(), parameter);
+        }
+        return super.generateFlagUsage(invocation, parameter);
     }
 
     private void checkPermission(CommandSource source, Parameter parameter)
@@ -57,29 +61,29 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     }
 
     @Override
-    protected String generateParameterUsage(CommandSource source, Parameter parameter)
+    protected String generateParameterUsage(CommandInvocation invocation, Parameter parameter)
     {
-        if (!parameter.valueFor(Required.class))
+        if (invocation != null && !parameter.valueFor(Required.class))
         {
-            checkPermission(source, parameter);
+            checkPermission(invocation.getCommandSource(), parameter);
         }
-        return super.generateParameterUsage(source, parameter);
+        return super.generateParameterUsage(invocation, parameter);
     }
 
     @Override
-    protected String valueLabel(CommandSource source, String valueLabel)
+    protected String valueLabel(CommandInvocation invocation, String valueLabel)
     {
-        if (source instanceof CommandSender)
+        if (invocation != null && invocation.getCommandSource() instanceof CommandSender)
         {
-            return ((CommandSender)source).getTranslation(MessageType.NONE, valueLabel);
+            return ((CommandSender)invocation.getCommandSource()).getTranslation(MessageType.NONE, valueLabel);
         }
         return valueLabel;
     }
 
     @Override
-    protected String getPrefix(CommandSource source)
+    protected String getPrefix(CommandInvocation invocation)
     {
-        if (source instanceof User)
+        if (invocation != null && invocation.getCommandSource() instanceof User)
         {
             return "/";
         }

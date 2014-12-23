@@ -79,13 +79,13 @@ public class ExceptionHandler extends de.cubeisland.engine.command.ExceptionHand
             else if (t instanceof TooFewArgumentsException)
             {
                 sender.sendTranslated(NEGATIVE, "You've given too few arguments.");
-                sender.sendTranslated(NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(sender));
+                sender.sendTranslated(NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
 
             }
             else if (t instanceof TooManyArgumentsException)
             {
                 sender.sendTranslated(NEGATIVE, "You've given too many arguments.");
-                sender.sendTranslated(NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(sender));
+                sender.sendTranslated(NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
             }
             else if (t instanceof ReaderException)
             {

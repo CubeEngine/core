@@ -74,7 +74,7 @@ public class HelpCommand implements CommandBase
         {
             labels.remove(labels.size() - 1);
         }
-        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(sender)); // TODO generate usage from labels in call
+        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(invocation));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)

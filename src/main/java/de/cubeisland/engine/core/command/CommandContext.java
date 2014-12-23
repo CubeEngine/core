@@ -86,4 +86,9 @@ public class CommandContext extends ParameterizedContext
             throw new PermissionDeniedException(permission);
         }
     }
+
+    public String getUsage()
+    {
+        return this.cmd.getDescriptor().getUsage(this.getInvocation());
+    }
 }
