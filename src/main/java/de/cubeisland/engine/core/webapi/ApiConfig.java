@@ -21,7 +21,7 @@ import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Set;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.annotations.Comment;
 

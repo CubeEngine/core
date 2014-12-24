@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 

@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.storage.database;
 
-import de.cubeisland.engine.reflect.ReflectedYaml;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
 /**
  * DatabaseConfiguration have to return their corresponding DatabaseClass.
