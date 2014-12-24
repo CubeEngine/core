@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -330,7 +332,23 @@ public class VanillaCommands
             Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
             if (plugin == null)
             {
+                List<Plugin> plugins = new ArrayList<>();
+                for (Plugin p : server.getPluginManager().getPlugins())
+                {
+                    if (p.getName().toLowerCase().startsWith(context.getString(0).toLowerCase()))
+                    {
+                        plugins.add(p);
+                    }
+                }
                 context.sendTranslated(NEGATIVE, "The given plugin doesn't seem to be loaded, have you typed it correctly (casing does matter)?");
+                if (!plugins.isEmpty())
+                {
+                    context.sendTranslated(NEGATIVE, "You might want to try one of these:");
+                    for (Plugin p : plugins)
+                    {
+                        context.sendMessage(" - " + p.getName());
+                    }
+                }
                 return;
             }
             context.sendTranslated(NEUTRAL,
