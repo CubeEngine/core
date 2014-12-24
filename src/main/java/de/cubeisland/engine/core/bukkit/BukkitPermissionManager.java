@@ -36,8 +36,8 @@ import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 

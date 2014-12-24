@@ -18,7 +18,7 @@
 
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import de.cubeisland.engine.reflect.codec.converter.Converter;
 import de.cubeisland.engine.reflect.exception.ConversionException;

@@ -20,10 +20,10 @@ package de.cubeisland.engine.core.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.logging.LogEntry;
-import de.cubeisland.engine.logging.LogLevel;
-import de.cubeisland.engine.logging.target.format.DefaultFormat;
-import de.cubeisland.engine.logging.target.proxy.ProxyTarget;
+import de.cubeisland.engine.logscribe.LogEntry;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.target.format.DefaultFormat;
+import de.cubeisland.engine.logscribe.target.proxy.ProxyTarget;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
@@ -36,7 +36,7 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
         levelMap.put(LogLevel.NONE, Level.OFF);
         //levelMap.put(LogLevel.FATAL, Level.FATAL);
         levelMap.put(LogLevel.ERROR, Level.ERROR);
-        levelMap.put(LogLevel.WARN, Level.WARN);
+        levelMap.put(LogLevel.WARNING, Level.WARN);
         levelMap.put(LogLevel.INFO, Level.INFO);
         levelMap.put(LogLevel.DEBUG, Level.DEBUG);
         levelMap.put(LogLevel.TRACE, Level.TRACE);

@@ -33,7 +33,7 @@ import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.reflect.Reflector;
 
 /**

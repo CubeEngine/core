@@ -30,7 +30,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.service.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.webapi.exception.ApiRequestException;
-import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logscribe.Log;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.reflect.Section;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Comment;
-import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logscribe.LogLevel;
 import org.joda.time.Duration;
 
 /**

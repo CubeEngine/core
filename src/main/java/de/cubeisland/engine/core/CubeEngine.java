@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.user.UserManager;
-import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logscribe.Log;
 
 /**
  * The CubeEngine provides static method to access all important Manager and the Core.

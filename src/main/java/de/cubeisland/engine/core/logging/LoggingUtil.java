@@ -21,9 +21,9 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.logging.target.file.cycler.FilesizeCycler;
-import de.cubeisland.engine.logging.target.file.format.FileFormat;
-import de.cubeisland.engine.logging.target.file.format.LogFileFormat;
+import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
+import de.cubeisland.engine.logscribe.target.file.format.FileFormat;
+import de.cubeisland.engine.logscribe.target.file.format.LogFileFormat;
 
 public class LoggingUtil
 {

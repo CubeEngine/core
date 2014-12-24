@@ -44,10 +44,10 @@ import de.cubeisland.engine.core.util.converter.VersionConverter;
 import de.cubeisland.engine.core.util.matcher.Match;
 import de.cubeisland.engine.core.webapi.ApiServer;
 import de.cubeisland.engine.core.world.WorldManager;
-import de.cubeisland.engine.logging.DefaultLogFactory;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.LogLevel;
-import de.cubeisland.engine.logging.target.PrintTarget;
+import de.cubeisland.engine.logscribe.DefaultLogFactory;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.target.PrintTarget;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.reflect.codec.ConverterManager;
 import org.joda.time.Duration;
@@ -64,7 +64,6 @@ public class TestCore implements Core
 
     {
         CubeEngine.initialize(this);
-        // TODO hope this isn't needed ArgumentReader.init(this);
     }
 
     private TaskManager taskManager = new TestTaskManager();

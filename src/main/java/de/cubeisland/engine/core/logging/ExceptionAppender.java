@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.logging;
 
 import java.util.Arrays;
 
-import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logscribe.Log;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;

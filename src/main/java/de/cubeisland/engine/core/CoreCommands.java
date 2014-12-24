@@ -52,7 +52,7 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
-import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logscribe.LogLevel;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -218,7 +218,7 @@ public class CoreCommands extends CommandContainer
         context.sendTranslated(NEUTRAL, "You're not logged in!");
     }
 
-    @Command(desc = "Toggles the online mode")
+    @Command(desc = "Shows the online mode")
     public void onlinemode(CommandContext context)
     {
         if (this.core.getServer().getOnlineMode())
@@ -227,7 +227,7 @@ public class CoreCommands extends CommandContainer
             return;
         }
         context.sendTranslated(POSITIVE, "The Server is running in offline mode");
-        /* TODO Does not work:
+        /* Changing online mode is no longer supported on a running server
         BukkitUtils.setOnlineMode(newState);
         if (newState)
         {

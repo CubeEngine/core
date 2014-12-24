@@ -19,11 +19,11 @@ package de.cubeisland.engine.core.logging;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.logging.DefaultLogFactory;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.LogLevel;
-import de.cubeisland.engine.logging.filter.PrefixFilter;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logscribe.DefaultLogFactory;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.filter.PrefixFilter;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 

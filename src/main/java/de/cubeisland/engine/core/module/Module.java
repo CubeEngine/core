@@ -30,10 +30,10 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.storage.ModuleRegistry;
 import de.cubeisland.engine.core.storage.SimpleModuleRegistry;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.LogTarget;
-import de.cubeisland.engine.logging.filter.PrefixFilter;
-import de.cubeisland.engine.logging.target.file.AsyncFileTarget;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogTarget;
+import de.cubeisland.engine.logscribe.filter.PrefixFilter;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.reflect.ReflectedFile;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

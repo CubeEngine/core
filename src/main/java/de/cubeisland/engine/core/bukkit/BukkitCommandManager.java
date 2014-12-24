@@ -93,8 +93,8 @@ import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.StringUtils;
-import de.cubeisland.engine.logging.Log;
-import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogLevel;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 

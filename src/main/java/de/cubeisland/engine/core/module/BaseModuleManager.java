@@ -51,7 +51,7 @@ import de.cubeisland.engine.core.module.service.ServiceManager;
 import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
-import de.cubeisland.engine.logging.Log;
+import de.cubeisland.engine.logscribe.Log;
 import gnu.trove.map.hash.THashMap;
 import gnu.trove.set.hash.THashSet;
 

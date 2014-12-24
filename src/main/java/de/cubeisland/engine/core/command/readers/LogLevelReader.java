@@ -22,7 +22,7 @@ import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.logging.LogLevel;
+import de.cubeisland.engine.logscribe.LogLevel;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
