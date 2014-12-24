@@ -147,7 +147,7 @@ public class BukkitUtils
         org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
         if (commandFilter == null)
         {
-            commandFilter = new CommandLogFilter(); //  TODO configurable filter
+            commandFilter = new CommandLogFilter(); // TODO configurable filter
         }
         logger.addFilter(commandFilter);
     }
@@ -157,7 +157,7 @@ public class BukkitUtils
         if (commandFilter != null)
         {
             org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger)LogManager.getLogger("Minecraft");
-            logger.getContext().removeFilter(commandFilter); // TODO test if this is working?
+            logger.getContext().removeFilter(commandFilter);
         }
     }
 
@@ -237,7 +237,6 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(ItemStack item)
     {
-        // TODO better check
         if (item.getType() == Material.RAW_FISH)
         {
             return item.getDurability() == 3; // pufferfish

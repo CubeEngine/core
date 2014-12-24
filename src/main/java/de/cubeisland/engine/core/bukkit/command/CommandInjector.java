@@ -32,6 +32,7 @@ import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.Dispatcher;
+import de.cubeisland.engine.command.util.property.PropertyHolder;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;

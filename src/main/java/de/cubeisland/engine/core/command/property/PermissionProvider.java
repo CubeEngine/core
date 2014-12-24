@@ -22,6 +22,8 @@ import java.util.Stack;
 import org.bukkit.permissions.Permissible;
 
 import de.cubeisland.engine.command.CommandBase;
+import de.cubeisland.engine.command.Dispatcher;
+import de.cubeisland.engine.command.DispatcherProperty;
 import de.cubeisland.engine.command.util.property.AbstractProperty;
 import de.cubeisland.engine.command.util.property.Finalizable;
 import de.cubeisland.engine.command.util.property.PropertyHolder;
@@ -55,17 +57,21 @@ public class PermissionProvider extends AbstractProperty<Permission> implements 
             throw new IllegalStateException("Property Holder is missing a ModuleProvider Property");
         }
         Stack<String> cmds = new Stack<>();
-        CommandBase parent = holder.valueFor(ParentCommand.class);
+        Dispatcher parent = holder.valueFor(DispatcherProperty.class).getDispatcher();
         while (parent != null)
         {
             cmds.push(parent.getDescriptor().getName());
-            parent = parent.getDescriptor().valueFor(ParentCommand.class);
+            parent = parent.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher();
         }
 
         Permission cmdPerm = module.getBasePermission().childWildcard("command");
         while (!cmds.isEmpty())
         {
-            cmdPerm = cmdPerm.childWildcard(cmds.pop());
+            String cmd = cmds.pop();
+            if (!cmd.isEmpty())
+            {
+                cmdPerm = cmdPerm.childWildcard(cmd);
+            }
         }
         this.value().setParent(cmdPerm);
         module.getCore().getPermissionManager().registerPermission(module, this.value());

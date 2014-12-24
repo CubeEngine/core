@@ -258,7 +258,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: database
         this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
 
-        // depends on: user manager, world manager, server, config
+        // depends on: plugin manager, module manager
+        this.permissionManager = new BukkitPermissionManager(this);
+
+        // depends on: user manager, world manager, server, config, permission manager
         this.commandManager = new BukkitCommandManager(this, new CommandInjector(this));
         this.addInitHook(new Runnable() {
             @Override
@@ -267,9 +270,6 @@ public final class BukkitCore extends JavaPlugin implements Core
                 pm.registerEvents(new PreCommandListener(BukkitCore.this), BukkitCore.this);
             }
         });
-
-        // depends on: plugin manager, module manager
-        this.permissionManager = new BukkitPermissionManager(this);
 
         // depends on: core module
         this.corePerms = new CorePerms(this.moduleManager.getCoreModule());

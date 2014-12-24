@@ -47,7 +47,7 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
         ImmutableCommandDescriptor descriptor = (ImmutableCommandDescriptor)this.getDescriptor();
         String permName = descriptor.getName();
         boolean checkPerm = true;
-        PermDefault def = PermDefault.DEFAULT;
+        PermDefault def = PermDefault.FALSE;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {

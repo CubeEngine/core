@@ -206,7 +206,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     public boolean addCommand(CommandBase command)
     {
         boolean b = super.addCommand(command);
-        // TODO perm registration
         // TODO handle perm when removing cmd from parent
         this.injector.registerCommand(command); // register at bukkit
         return b;
