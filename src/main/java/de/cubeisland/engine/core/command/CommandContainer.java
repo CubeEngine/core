@@ -47,7 +47,7 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
         ImmutableCommandDescriptor descriptor = (ImmutableCommandDescriptor)this.getDescriptor();
         String permName = descriptor.getName();
         boolean checkPerm = true;
-        PermDefault def = PermDefault.FALSE;
+        PermDefault def = PermDefault.DEFAULT;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
@@ -55,7 +55,7 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        descriptor.setProperty(new PermissionProvider(module.getBasePermission().childWildcard(permName, def)));
+        descriptor.setProperty(new PermissionProvider(module.getBasePermission().child(permName, def)));
         descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
         descriptor.setProperty(new ModuleProvider(module));
         SimpleParameter actionParam = new SimpleParameter(String.class, String.class, 1);

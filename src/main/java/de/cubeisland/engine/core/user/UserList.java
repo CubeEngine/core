@@ -67,19 +67,13 @@ public class UserList
 
     public static class UserListReader implements ArgumentReader<UserList>
     {
-        private final Core core;
-
-        public UserListReader(Core core)
-        {
-            this.core = core;
-        }
-
         @Override
         @SuppressWarnings("unchecked")
         public UserList read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
         {
             if ("*".equals(invocation.currentToken()))
             {
+                invocation.consume(1);
                 return new UserList(null);
             }
             return new UserList((List<User>)manager.read(List.class, User.class, invocation));

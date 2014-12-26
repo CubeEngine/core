@@ -92,6 +92,8 @@ import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserList;
+import de.cubeisland.engine.core.user.UserList.UserListReader;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
@@ -152,7 +154,10 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         readerManager.registerReader(new DifficultyReader(), Difficulty.class);
         readerManager.registerReader(new LogLevelReader(), LogLevel.class);
 
-        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(core)));
+        readerManager.registerReader(new UserListReader(), UserList.class);
+
+        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(
+            core)));
     }
 
     @Override
