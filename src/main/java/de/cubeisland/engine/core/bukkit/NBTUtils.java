@@ -21,21 +21,22 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.minecraft.server.v1_7_R4.NBTBase;
-import net.minecraft.server.v1_7_R4.NBTTagByte;
-import net.minecraft.server.v1_7_R4.NBTTagByteArray;
-import net.minecraft.server.v1_7_R4.NBTTagCompound;
-import net.minecraft.server.v1_7_R4.NBTTagDouble;
-import net.minecraft.server.v1_7_R4.NBTTagEnd;
-import net.minecraft.server.v1_7_R4.NBTTagFloat;
-import net.minecraft.server.v1_7_R4.NBTTagInt;
-import net.minecraft.server.v1_7_R4.NBTTagIntArray;
-import net.minecraft.server.v1_7_R4.NBTTagList;
-import net.minecraft.server.v1_7_R4.NBTTagLong;
-import net.minecraft.server.v1_7_R4.NBTTagShort;
-import net.minecraft.server.v1_7_R4.NBTTagString;
-import net.minecraft.server.v1_7_R4.TileEntity;
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import net.minecraft.server.v1_8_R1.BlockPosition;
+import net.minecraft.server.v1_8_R1.NBTBase;
+import net.minecraft.server.v1_8_R1.NBTTagByte;
+import net.minecraft.server.v1_8_R1.NBTTagByteArray;
+import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NBTTagDouble;
+import net.minecraft.server.v1_8_R1.NBTTagEnd;
+import net.minecraft.server.v1_8_R1.NBTTagFloat;
+import net.minecraft.server.v1_8_R1.NBTTagInt;
+import net.minecraft.server.v1_8_R1.NBTTagIntArray;
+import net.minecraft.server.v1_8_R1.NBTTagList;
+import net.minecraft.server.v1_8_R1.NBTTagLong;
+import net.minecraft.server.v1_8_R1.NBTTagShort;
+import net.minecraft.server.v1_8_R1.NBTTagString;
+import net.minecraft.server.v1_8_R1.TileEntity;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
 import org.bukkit.Location;
 
@@ -57,7 +58,7 @@ public class NBTUtils
     {
         NBTTagCompound result = new NBTTagCompound();
         TileEntity tileEntity = ((CraftWorld)location.getWorld()).getHandle()
-             .getTileEntity(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+             .getTileEntity(new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         if (tileEntity == null) return null;
         tileEntity.b(result);
         return result;
@@ -66,7 +67,7 @@ public class NBTUtils
     public static void setTileEntityNBTAt(Location location, NBTTagCompound nbtData)
     {
         TileEntity tileEntity =  ((CraftWorld)location.getWorld()).getHandle()
-                      .getTileEntity(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                      .getTileEntity(new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
         tileEntity.a(nbtData);
     }
 
@@ -120,7 +121,7 @@ public class NBTUtils
             ListNode list = ListNode.emptyList();
             for (int i = 0; i < ((NBTTagList)nbtBase).size(); i++)
             {
-                switch (((NBTTagList)nbtBase).d())
+                switch (((NBTTagList)nbtBase).f())
                 {
                 case 0:
                     //return new net.minecraft.server.NBTTagEnd();
