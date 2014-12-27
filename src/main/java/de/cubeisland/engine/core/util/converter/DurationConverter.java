@@ -17,17 +17,16 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.IntNode;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.IntNode;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-public class DurationConverter implements Converter<Duration>
+public class DurationConverter extends SimpleConverter<Duration>
 {
     private final PeriodFormatter formatter;
 
@@ -43,13 +42,13 @@ public class DurationConverter implements Converter<Duration>
     }
 
     @Override
-    public Node toNode(Duration object, ConverterManager manager) throws ConversionException
+    public Node toNode(Duration object) throws ConversionException
     {
         return StringNode.of(this.formatter.print(object.toPeriod()));
     }
 
     @Override
-    public Duration fromNode(Node node, ConverterManager manager) throws ConversionException
+    public Duration fromNode(Node node) throws ConversionException
     {
         try
         {

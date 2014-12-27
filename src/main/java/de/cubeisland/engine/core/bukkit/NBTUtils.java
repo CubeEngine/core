@@ -40,17 +40,17 @@ import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
 import org.bukkit.Location;
 
-import de.cubeisland.engine.reflect.node.ByteNode;
-import de.cubeisland.engine.reflect.node.DoubleNode;
-import de.cubeisland.engine.reflect.node.FloatNode;
-import de.cubeisland.engine.reflect.node.IntNode;
-import de.cubeisland.engine.reflect.node.ListNode;
-import de.cubeisland.engine.reflect.node.LongNode;
-import de.cubeisland.engine.reflect.node.MapNode;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.NullNode;
-import de.cubeisland.engine.reflect.node.ShortNode;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.node.ByteNode;
+import de.cubeisland.engine.converter.node.DoubleNode;
+import de.cubeisland.engine.converter.node.FloatNode;
+import de.cubeisland.engine.converter.node.IntNode;
+import de.cubeisland.engine.converter.node.ListNode;
+import de.cubeisland.engine.converter.node.LongNode;
+import de.cubeisland.engine.converter.node.MapNode;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.NullNode;
+import de.cubeisland.engine.converter.node.ShortNode;
+import de.cubeisland.engine.converter.node.StringNode;
 
 public class NBTUtils
 {

@@ -17,24 +17,23 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
+import de.cubeisland.engine.converter.converter.BasicConverter;
 import de.cubeisland.engine.core.util.ChatFormat;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.NullNode;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.NullNode;
+import de.cubeisland.engine.converter.node.StringNode;
 
-public class ChatFormatConverter implements Converter<ChatFormat>
+public class ChatFormatConverter extends BasicConverter<ChatFormat>
 {
     @Override
-    public Node toNode(ChatFormat object, ConverterManager manager) throws ConversionException
+    public Node toNode(ChatFormat object) throws ConversionException
     {
         return StringNode.of(object.name());
     }
 
     @Override
-    public ChatFormat fromNode(Node node, ConverterManager manager) throws ConversionException
+    public ChatFormat fromNode(Node node) throws ConversionException
     {
         if (node instanceof NullNode)
         {

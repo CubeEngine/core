@@ -93,7 +93,7 @@ import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.converter.ConverterManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
@@ -152,18 +152,18 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         this.configFactory = new Reflector();
         ConverterManager manager = this.configFactory.getDefaultConverterManager();
-        manager.registerConverter(LogLevel.class, new LevelConverter());
-        manager.registerConverter(ItemStack.class, new ItemStackConverter());
-        manager.registerConverter(Material.class, new MaterialConverter());
-        manager.registerConverter(Enchantment.class, new EnchantmentConverter());
-        manager.registerConverter(User.class, new UserConverter());
-        manager.registerConverter(World.class, new WorldConverter());
-        manager.registerConverter(Duration.class, new DurationConverter());
-        manager.registerConverter(Version.class, new VersionConverter());
-        manager.registerConverter(OfflinePlayer.class, new PlayerConverter(this));
-        manager.registerConverter(Location.class, new LocationConverter(this));
-        manager.registerConverter(WorldLocation.class, new WorldLocationConverter());
-        manager.registerConverter(BlockVector3.class, new BlockVector3Converter());
+        manager.registerConverter(new LevelConverter(), LogLevel.class);
+        manager.registerConverter(new ItemStackConverter(), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(), Material.class);
+        manager.registerConverter(new EnchantmentConverter(), Enchantment.class);
+        manager.registerConverter(new UserConverter(), User.class);
+        manager.registerConverter(new WorldConverter(), World.class);
+        manager.registerConverter(new DurationConverter(), Duration.class);
+        manager.registerConverter(new VersionConverter(), Version.class);
+        manager.registerConverter(new PlayerConverter(this), OfflinePlayer.class);
+        manager.registerConverter(new LocationConverter(this), Location.class);
+        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
+        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
@@ -208,7 +208,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         // depends on: object mapper, logger
         this.apiServer = new ApiServer(this);
-        configFactory.getDefaultConverterManager().registerConverter(InetAddress.class, new InetAddressConverter());
+        configFactory.getDefaultConverterManager().registerConverter(new InetAddressConverter(), InetAddress.class);
         this.apiServer.configure(configFactory.load(ApiConfig.class, this.fileManager.getDataPath().resolve(
             "webapi.yml").toFile()));
 
@@ -297,7 +297,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on loaded worlds
         this.worldManager = new BukkitWorldManager(BukkitCore.this);
         // depends on worldManager
-        this.getConfigFactory().getDefaultConverterManager().registerConverter(ConfigWorld.class, new ConfigWorldConverter(worldManager));
+        this.getConfigFactory().getDefaultConverterManager().registerConverter(new ConfigWorldConverter(worldManager),
+                                                                               ConfigWorld.class);
 
         // depends on: file manager
         this.moduleManager.loadModules(this.fileManager.getModulesPath());

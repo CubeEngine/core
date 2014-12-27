@@ -49,7 +49,7 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.PrintTarget;
 import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
+import de.cubeisland.engine.converter.ConverterManager;
 import org.joda.time.Duration;
 
 public class TestCore implements Core
@@ -71,10 +71,10 @@ public class TestCore implements Core
     public TestCore()
     {
         ConverterManager manager = this.configFactory.getDefaultConverterManager();
-        manager.registerConverter(LogLevel.class, new LevelConverter());
-        manager.registerConverter(User.class, new UserConverter());
-        manager.registerConverter(Duration.class, new DurationConverter());
-        manager.registerConverter(Version.class, new VersionConverter());
+        manager.registerConverter(new LevelConverter(), LogLevel.class);
+        manager.registerConverter(new UserConverter(), User.class);
+        manager.registerConverter(new DurationConverter(), Duration.class);
+        manager.registerConverter(new VersionConverter(), Version.class);
 
         this.logFactory = new LogFactory(this, Logger.getLogger(TestCore.class.getName()));
         DefaultLogFactory factory = new DefaultLogFactory();

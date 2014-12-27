@@ -20,23 +20,22 @@ package de.cubeisland.engine.core.webapi;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 
-public class InetAddressConverter implements Converter<InetAddress>
+public class InetAddressConverter extends SimpleConverter<InetAddress>
 {
     @Override
-    public Node toNode(InetAddress object, ConverterManager manager) throws ConversionException
+    public Node toNode(InetAddress object) throws ConversionException
     {
         String hostName = object.getHostName();
         return StringNode.of(hostName == null ? object.getHostAddress() : hostName);
     }
 
     @Override
-    public InetAddress fromNode(Node node, ConverterManager manager) throws ConversionException
+    public InetAddress fromNode(Node node) throws ConversionException
     {
         try
         {

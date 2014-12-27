@@ -40,7 +40,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
@@ -73,7 +72,8 @@ public class I18n
 
     public I18n(Core core)
     {
-        core.getConfigFactory().getDefaultConverterManager().registerConverter(PluralExpr.class, new PluralExprConverter());
+        core.getConfigFactory().getDefaultConverterManager().registerConverter(new PluralExprConverter(),
+                                                                               PluralExpr.class);
 
         this.core = core;
         this.addPoFilesFromDirectory(this.core.getFileManager().getTranslationPath());

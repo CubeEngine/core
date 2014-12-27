@@ -20,14 +20,15 @@ package de.cubeisland.engine.core.util.converter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.MapNode;
-import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.converter.converter.ClassedConverter;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SingleClassConverter;
+import de.cubeisland.engine.converter.node.MapNode;
+import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.core.util.WorldLocation;
 
-public class WorldLocationConverter implements Converter<WorldLocation>
+public class WorldLocationConverter extends SingleClassConverter<WorldLocation>
 {
     @Override
     public Node toNode(WorldLocation location, ConverterManager manager) throws ConversionException
