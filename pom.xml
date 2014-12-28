@@ -93,9 +93,9 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
-      <version>5.0.0.Alpha1</version>
+      <version>4.0.20.Final</version>
       <type>jar</type>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ocpsoft.prettytime</groupId>

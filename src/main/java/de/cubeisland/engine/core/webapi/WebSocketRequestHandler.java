@@ -98,7 +98,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     }
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception
     {
         this.last = ctx;
         if (frame instanceof CloseWebSocketFrame)

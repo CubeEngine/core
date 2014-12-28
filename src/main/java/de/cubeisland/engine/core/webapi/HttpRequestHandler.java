@@ -75,7 +75,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     }
 
     @Override
-    protected void messageReceived(ChannelHandlerContext ctx, FullHttpRequest message) throws Exception
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest message) throws Exception
     {
         InetSocketAddress inetSocketAddress = (InetSocketAddress)ctx.channel().remoteAddress();
         this.log.info("{} connected...", inetSocketAddress.getAddress().getHostAddress());
