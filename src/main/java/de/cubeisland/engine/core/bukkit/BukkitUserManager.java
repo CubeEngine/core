@@ -254,8 +254,8 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 updateLastName(user);
                 user.refreshIP();
-                final int removalTask = scheduledForRemoval.get(user.getUniqueId());
-                if (removalTask > -1)
+                final Integer removalTask = scheduledForRemoval.get(user.getUniqueId());
+                if (removalTask != null)
                 {
                     user.getServer().getScheduler().cancelTask(removalTask);
                 }

@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
+import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.completer.CompleterProvider;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
@@ -60,9 +61,9 @@ public interface CommandManager extends Cleanable, Dispatcher, CompleterProvider
 
     ConsoleCommandSender getConsoleSender();
 
-    void logExecution(CommandSender sender, CommandBase cubeCommand, String[] args);
+    void logExecution(CommandSource sender, boolean ran, CommandBase cubeCommand, String[] args);
 
-    void logTabCompletion(CommandSender sender, CommandBase cubeCommand, String[] args);
+    void logTabCompletion(CommandSource sender, CommandBase cubeCommand, String[] args);
 
     ConfirmManager getConfirmManager();
 

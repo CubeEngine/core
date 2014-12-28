@@ -29,6 +29,8 @@ import de.cubeisland.engine.command.parameter.Parameter;
 import de.cubeisland.engine.command.parameter.property.Required;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.ParameterPermission;
+import de.cubeisland.engine.core.command.annotation.Unloggable;
+import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
@@ -88,6 +90,8 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
         {
             descriptor.valueFor(Filters.class).addFilter(new PermissionFilter(permission));
         }
+
+        descriptor.setProperty(Loggable.of(!origin.getMethod().isAnnotationPresent(Unloggable.class)));
 
         return descriptor;
     }
