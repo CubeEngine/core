@@ -39,18 +39,16 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TShortObjectHashMap;
 
 /**
  * This Matcher provides methods to match Material or Items.
  */
 public class MaterialMatcher
 {
-    private final THashMap<String, ImmutableItemStack> items;
-    private final THashMap<Material, TShortObjectHashMap<String>> itemnames;
+    private final HashMap<String, ImmutableItemStack> items;
+    private final HashMap<Material, Map<Short, String>> itemnames;
 
-    private final THashMap<String, ImmutableItemStack> bukkitnames;
+    private final HashMap<String, ImmutableItemStack> bukkitnames;
 
     private final MaterialDataMatcher materialDataMatcher;
 
@@ -74,9 +72,9 @@ public class MaterialMatcher
     MaterialMatcher(MaterialDataMatcher materialDataMatcher)
     {
         this.materialDataMatcher = materialDataMatcher;
-        this.items = new THashMap<>();
-        this.itemnames = new THashMap<>();
-        this.bukkitnames = new THashMap<>();
+        this.items = new HashMap<>();
+        this.itemnames = new HashMap<>();
+        this.bukkitnames = new HashMap<>();
         // Read Bukkit names
         for (Material mat : Material.values())
         {
@@ -108,10 +106,10 @@ public class MaterialMatcher
         try
         {
             Material material = Material.valueOf(materialName);
-            TShortObjectHashMap<String> dataMap = this.itemnames.get(material);
+            Map<Short, String> dataMap = this.itemnames.get(material);
             if (dataMap == null)
             {
-                dataMap = new TShortObjectHashMap<>();
+                dataMap = new HashMap<>();
                 this.itemnames.put(material, dataMap);
             }
             dataMap.put(data, names.get(0));
@@ -484,7 +482,7 @@ public class MaterialMatcher
 
     public String getNameForItem(Material mat, short data)
     {
-        TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
+        Map<Short, String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
             CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
@@ -506,7 +504,7 @@ public class MaterialMatcher
 
     public String getNameForBlock(Material mat, Byte blockData)
     {
-        TShortObjectHashMap<String> dataMap = this.itemnames.get(mat);
+        Map<Short, String> dataMap = this.itemnames.get(mat);
         if (dataMap == null)
         {
             CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, blockData);

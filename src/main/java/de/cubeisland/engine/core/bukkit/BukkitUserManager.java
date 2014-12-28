@@ -18,7 +18,10 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -45,10 +48,6 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.util.Profiler;
-import gnu.trove.impl.Constants;
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectIntProcedure;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;
@@ -58,7 +57,7 @@ public class BukkitUserManager extends AbstractUserManager
 {
     private final BukkitCore core;
     protected ScheduledExecutorService nativeScheduler;
-    protected TObjectIntMap<UUID> scheduledForRemoval;
+    protected Map<UUID, Integer> scheduledForRemoval;
 
     public BukkitUserManager(final BukkitCore core)
     {
@@ -68,7 +67,7 @@ public class BukkitUserManager extends AbstractUserManager
         final long delay = (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+        this.scheduledForRemoval = new HashMap<>();
 
         this.core.addInitHook(new Runnable() {
             @Override
@@ -110,14 +109,11 @@ public class BukkitUserManager extends AbstractUserManager
     {
         super.shutdown();
 
-        this.scheduledForRemoval.forEachEntry(new TObjectIntProcedure<UUID>() {
-            @Override
-            public boolean execute(UUID a, int b)
-            {
-                core.getServer().getScheduler().cancelTask(b);
-                return true;
-            }
-        });
+        for (Integer id : this.scheduledForRemoval.values())
+        {
+            core.getServer().getScheduler().cancelTask(id);
+        }
+
         this.scheduledForRemoval.clear();
         this.scheduledForRemoval = null;
 

@@ -34,7 +34,6 @@ import org.bukkit.generator.ChunkGenerator;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
-import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 
@@ -54,10 +53,10 @@ public abstract class AbstractWorldManager implements WorldManager
     public AbstractWorldManager(Core core)
     {
         this.database = core.getDB();
-        this.worlds = new THashMap<>();
+        this.worlds = new HashMap<>();
         this.worldIds = new HashMap<>();
         this.worldUUIDs = new HashSet<>();
-        this.generatorMap = new THashMap<>();
+        this.generatorMap = new HashMap<>();
     }
 
     public synchronized UInteger getWorldId(World world)
@@ -127,7 +126,7 @@ public abstract class AbstractWorldManager implements WorldManager
         Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
         if (moduleGenerators == null)
         {
-            this.generatorMap.put(module.getId(), moduleGenerators = new THashMap<>(1));
+            this.generatorMap.put(module.getId(), moduleGenerators = new HashMap<>(1));
         }
         moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
     }

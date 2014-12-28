@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.util.matcher;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
@@ -31,27 +32,25 @@ import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
 
-import gnu.trove.map.hash.THashMap;
-
 /**
  * This Matcher provides methods to match Enchantments.
  */
 public class EnchantMatcher
 {
-    private final THashMap<String, Enchantment> enchantments;
-    private final THashMap<String, Enchantment> bukkitnames;
-    private final THashMap<Enchantment, String> enchantmentName;
+    private final HashMap<String, Enchantment> enchantments;
+    private final HashMap<String, Enchantment> bukkitnames;
+    private final HashMap<Enchantment, String> enchantmentName;
 
     EnchantMatcher()
     {
-        this.bukkitnames = new THashMap<>();
+        this.bukkitnames = new HashMap<>();
         for (Enchantment enchantment : Enchantment.values())
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
         }
 
-        this.enchantments = new THashMap<>();
-        this.enchantmentName = new THashMap<>();
+        this.enchantments = new HashMap<>();
+        this.enchantmentName = new HashMap<>();
 
         TreeMap<String, List<String>> enchs = this.readEnchantments();
         for (String bukkitName : enchs.keySet())

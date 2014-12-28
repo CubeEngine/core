@@ -52,8 +52,6 @@ import de.cubeisland.engine.core.util.Pair;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.logscribe.Log;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.contract.Contract.expect;
@@ -80,8 +78,8 @@ public abstract class BaseModuleManager implements ModuleManager
         this.logger = core.getLog();
         this.loader = loader;
         this.modules = new LinkedHashMap<>();
-        this.moduleInfoMap = new THashMap<>();
-        this.classMap = new THashMap<>();
+        this.moduleInfoMap = new HashMap<>();
+        this.classMap = new HashMap<>();
         this.coreModule = new CoreModule();
         this.serviceProviders = new HashMap<>();
         this.coreModule.initialize(core, new ModuleInfo(core), core.getFileManager().getDataPath(), null, null);
@@ -576,7 +574,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
         LinkedList<Pair<Module, Boolean>> unloadModules = new LinkedList<>();
 
-        this.resolveModulesForUnload(module, reload, new THashSet<>(this.modules.values()), unloadModules);
+        this.resolveModulesForUnload(module, reload, new HashSet<>(this.modules.values()), unloadModules);
         unloadModules.addLast(new Pair<>(module, false));
 
         List<ModuleInfo> reloadModules = new ArrayList<>();
@@ -710,7 +708,7 @@ public abstract class BaseModuleManager implements ModuleManager
 
     public synchronized void unloadModules()
     {
-        Set<Module> moduleSet = new THashSet<>(this.modules.values());
+        Set<Module> moduleSet = new HashSet<>(this.modules.values());
         for (Module module : moduleSet)
         {
             if (!this.modules.containsValue(module))

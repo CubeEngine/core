@@ -17,10 +17,12 @@
  */
 package de.cubeisland.engine.core.storage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.util.Version;
-import gnu.trove.map.hash.THashMap;
 import org.jooq.DSLContext;
 import org.jooq.TableField;
 
@@ -32,7 +34,7 @@ public class TableRegistry extends Table<RegistryModel>
     public final TableField<RegistryModel, String> KEY = createField("key", VARCHAR.length(16).nullable(false), this);
     public final TableField<RegistryModel, String> MODULE = createField("module", VARCHAR.length(16).nullable(false), this);
     public final TableField<RegistryModel, String> VALUE = createField("value", VARCHAR.length(256).nullable(false), this);
-    private final THashMap<String, THashMap<String, String>> data = new THashMap<>();
+    private final Map<String, Map<String, String>> data = new HashMap<>();
 
     private DSLContext dsl;
 
@@ -64,7 +66,7 @@ public class TableRegistry extends Table<RegistryModel>
     {
         if (this.data.get(module.getId()) == null)
         {
-            THashMap<String, String> map = this.data.get(module.getId());
+            Map<String, String> map = this.data.get(module.getId());
             this.data.put(module.getId(), map);
             for (RegistryModel registryModel : this.dsl.selectFrom(this).where(MODULE.eq(module.getId())).fetch())
             {

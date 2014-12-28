@@ -19,10 +19,10 @@ package de.cubeisland.engine.core.permission;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Set;
 
 import de.cubeisland.engine.core.module.Module;
-import gnu.trove.set.hash.THashSet;
 
 public abstract class PermissionContainer<T extends Module>
 {
@@ -35,7 +35,7 @@ public abstract class PermissionContainer<T extends Module>
 
     private Set<Permission> getPermissions()
     {
-        THashSet<Permission> perms = new THashSet<>();
+        HashSet<Permission> perms = new HashSet<>();
         for (Field field : this.getClass().getFields())
         {
             int mask = field.getModifiers();

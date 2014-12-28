@@ -18,6 +18,8 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,8 +40,6 @@ import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -81,8 +81,8 @@ public class BukkitPermissionManager implements PermissionManager
             core.getLog().info("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
             this.startup = false;
         }
-        this.wildcards = new THashMap<>(0);
-        this.modulePermissionMap = new THashMap<>(0);
+        this.wildcards = new HashMap<>(0);
+        this.modulePermissionMap = new HashMap<>(0);
         this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
@@ -146,7 +146,7 @@ public class BukkitPermissionManager implements PermissionManager
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms == null)
         {
-            this.modulePermissionMap.put(module, perms = new THashSet<>(1));
+            this.modulePermissionMap.put(module, perms = new HashSet<>(1));
         }
         return perms;
     }
