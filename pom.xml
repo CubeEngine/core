@@ -65,7 +65,7 @@
     </dependency>
     <dependency>
       <groupId>de.cubeisland.engine</groupId>
-      <artifactId>logscribe-core</artifactId>
+      <artifactId>logscribe-syslog</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -95,31 +95,31 @@
       <artifactId>netty-codec-http</artifactId>
       <version>4.0.20.Final</version>
       <type>jar</type>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.ocpsoft.prettytime</groupId>
       <artifactId>prettytime</artifactId>
-      <version>3.2.5.Final</version>
+      <version>3.2.7.Final</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
-      <version>2.3</version>
+      <version>2.6</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.3.3</version>
+      <version>2.4.4</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>17.0</version>
+      <version>18.0</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -160,12 +160,13 @@
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq</artifactId>
-      <version>3.3.2</version>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
-      <groupId>com.mchange</groupId>
-      <artifactId>c3p0</artifactId>
-      <version>0.9.5-pre8</version>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP-java6</artifactId>
+      <version>2.2.5</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.spout</groupId>
@@ -177,21 +178,21 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
-      <version>1.5.4</version>
+      <version>1.6.0</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
-      <version>1.5.4</version>
+      <version>1.6.0</version>
       <type>jar</type>
       <scope>test</scope>
     </dependency>
@@ -263,10 +264,6 @@
             <relocation>
               <pattern>com.fasterxml.jackson</pattern>
               <shadedPattern>${externalPackage}.jackson</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>org.apache.commons.lang</pattern>
-              <shadedPattern>${externalPackage}.apachecommons</shadedPattern>
             </relocation>
             -->
             <relocation>

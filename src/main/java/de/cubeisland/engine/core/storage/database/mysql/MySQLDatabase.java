@@ -24,11 +24,13 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import com.avaje.ebean.config.MatchingNamingConvention;
 import com.avaje.ebean.config.TableName;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
@@ -61,7 +63,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     private static String tableprefix;
 
     private final ListenableExecutorService fetchExecutorService;
-    private final ComboPooledDataSource cpds;
+    private final HikariDataSource dataSource;
 
     private final Settings settings;
 
@@ -71,46 +73,41 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         super(core);
         this.fetchExecutorService = new ListenableExecutorService();
-
-        try
-        {
-            Class.forName("com.mysql.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
-            throw new IllegalStateException(e);
-        }
         this.config = config;
 
-
-        cpds = new ComboPooledDataSource();
-        cpds.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
-        cpds.setUser(config.user);
-        cpds.setPassword(config.password);
-        cpds.setMinPoolSize(5);
-        cpds.setMaxPoolSize(20);
-        cpds.setAcquireIncrement(5);
-        cpds.setDataSourceName("CubeEngine");
-        cpds.setInitialPoolSize(3);
-        cpds.setMaxStatements(0); // No Caching jOOQ will do this if needed
-        cpds.setMaxStatementsPerConnection(0); // No Caching jOOQ will do this if needed
-        Connection connection = cpds.getConnection();
+        HikariConfig dsConf = new HikariConfig();
+        dsConf.setPoolName("CubeEngine");
+        dsConf.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        dsConf.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
+        dsConf.setUsername(config.user);
+        dsConf.setPassword(config.password);
+        dsConf.addDataSourceProperty("cachePrepStmts", "true");
+        dsConf.addDataSourceProperty("prepStmtCacheSize", "250");
+        dsConf.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        dsConf.addDataSourceProperty("useServerPrepStmts", "true");
+        dsConf.setMinimumIdle(5);
+        dsConf.setMaximumPoolSize(20);
+        dsConf.setThreadFactory(core.getTaskManager().getThreadFactory());
+        dataSource = new HikariDataSource(dsConf);
+        Connection connection = dataSource.getConnection();
         ResultSet resultSet = connection.prepareStatement("SHOW variables where Variable_name='wait_timeout'").executeQuery();
         if (resultSet.next())
         {
-            int second = resultSet.getInt("Value") - 5;
+            final int TIMEOUT_DELTA = 60;
+            int second = resultSet.getInt("Value") - TIMEOUT_DELTA;
             if (second <= 0)
             {
-                second += 5;
+                second += TIMEOUT_DELTA;
             }
-            cpds.setMaxIdleTime(second);
+            dataSource.setIdleTimeout(second);
+            dataSource.setMaxLifetime(second);
         }
         connection.close();
         this.schema = new DatabaseSchema(config.database);
-        tableprefix = this.config.tablePrefix;
+        this.tableprefix = this.config.tablePrefix;
 
-        settings = new Settings();
-        settings.setExecuteLogging(false);
+        this.settings = new Settings();
+        this.settings.setExecuteLogging(false);
     }
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
@@ -217,7 +214,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public Connection getConnection() throws SQLException
     {
-        return this.cpds.getConnection();
+        return this.dataSource.getConnection();
     }
 
     @Override
@@ -230,7 +227,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public DSLContext getDSL()
     {
         return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL)
-                                                   .set(new DataSourceConnectionProvider(this.cpds))
+                                                   .set(new DataSourceConnectionProvider(this.dataSource))
                                                    .set(new JooqLogger())
                                                    .set(settings));
     }
@@ -322,6 +319,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public void shutdown()
     {
         super.shutdown();
+        this.dataSource.shutdown();
     }
 
     @Override
