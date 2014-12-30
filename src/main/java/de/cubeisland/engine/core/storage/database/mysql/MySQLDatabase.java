@@ -81,10 +81,14 @@ public class MySQLDatabase extends AbstractPooledDatabase
         dsConf.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
         dsConf.setUsername(config.user);
         dsConf.setPassword(config.password);
+        dsConf.addDataSourceProperty("databaseName", config.database);
         dsConf.addDataSourceProperty("cachePrepStmts", "true");
         dsConf.addDataSourceProperty("prepStmtCacheSize", "250");
         dsConf.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         dsConf.addDataSourceProperty("useServerPrepStmts", "true");
+        dsConf.addDataSourceProperty("useUnicode", "yes");
+        dsConf.addDataSourceProperty("characterEncoding", "UTF-8");
+        dsConf.addDataSourceProperty("connectionCollation", "utf8_general_ci");
         dsConf.setMinimumIdle(5);
         dsConf.setMaximumPoolSize(20);
         dsConf.setThreadFactory(core.getTaskManager().getThreadFactory());
