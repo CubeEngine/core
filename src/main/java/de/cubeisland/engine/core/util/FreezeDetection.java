@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.util;
 
 
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

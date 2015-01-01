@@ -25,11 +25,12 @@ import de.cubeisland.engine.command.parameter.FlagParameter;
 import de.cubeisland.engine.command.parameter.Parameter;
 import de.cubeisland.engine.command.parameter.ParameterGroup;
 import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
-import de.cubeisland.engine.command.parameter.property.Required;
-import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+
+import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {
@@ -63,7 +64,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     @Override
     protected String generateParameterUsage(CommandInvocation invocation, Parameter parameter)
     {
-        if (invocation != null && !parameter.valueFor(Required.class))
+        if (invocation != null && !isRequired(parameter))
         {
             checkPermission(invocation.getCommandSource(), parameter);
         }

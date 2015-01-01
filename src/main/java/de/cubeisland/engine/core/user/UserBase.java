@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.server.v1_8_R1.EntityPlayer;
 import net.minecraft.server.v1_8_R1.NBTTagCompound;
 import net.minecraft.server.v1_8_R1.NBTTagDouble;
 import net.minecraft.server.v1_8_R1.NBTTagFloat;
@@ -32,7 +33,6 @@ import net.minecraft.server.v1_8_R1.NBTTagList;
 import net.minecraft.server.v1_8_R1.PlayerInteractManager;
 import net.minecraft.server.v1_8_R1.WorldNBTStorage;
 import net.minecraft.server.v1_8_R1.WorldServer;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
 import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
 
 import org.bukkit.Achievement;

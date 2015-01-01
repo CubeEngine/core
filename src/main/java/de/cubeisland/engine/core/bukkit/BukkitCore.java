@@ -44,6 +44,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CoreCommands;
 import de.cubeisland.engine.core.CorePerms;
@@ -93,7 +94,6 @@ import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.converter.ConverterManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;

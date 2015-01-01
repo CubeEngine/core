@@ -21,7 +21,6 @@ import java.util.Stack;
 
 import org.bukkit.permissions.Permissible;
 
-import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherProperty;
 import de.cubeisland.engine.command.util.property.AbstractProperty;

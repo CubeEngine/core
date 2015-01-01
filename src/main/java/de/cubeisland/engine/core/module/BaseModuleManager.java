@@ -53,8 +53,8 @@ import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.core.util.Version;
 import de.cubeisland.engine.logscribe.Log;
 
-import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.contract.Contract.expect;
+import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.JAR;
 import static java.util.Map.Entry;
 

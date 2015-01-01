@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.storage.database.mysql;
 
-import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
+import de.cubeisland.engine.reflect.annotations.Comment;
 
 /**
  * MySQLDatabaseConfig containing all needed information to connect to a MySQLDatabase

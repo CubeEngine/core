@@ -17,9 +17,8 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.converter.ConverterManager;
-import de.cubeisland.engine.converter.converter.ClassedConverter;
 import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.SingleClassConverter;
 import de.cubeisland.engine.converter.node.IntNode;
 import de.cubeisland.engine.converter.node.MapNode;

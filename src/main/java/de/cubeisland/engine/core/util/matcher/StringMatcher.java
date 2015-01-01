@@ -25,10 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.cubeisland.engine.core.CubeEngine;
-
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
+import de.cubeisland.engine.core.CubeEngine;
 
 public class StringMatcher
 {

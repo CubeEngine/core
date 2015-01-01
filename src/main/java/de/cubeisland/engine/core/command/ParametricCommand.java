@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
+import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
 
 public class ParametricCommand extends BasicParametricCommand
 {

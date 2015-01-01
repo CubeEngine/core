@@ -26,7 +26,6 @@ import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
 import de.cubeisland.engine.command.methodic.parametric.ParametricBuilder;
 import de.cubeisland.engine.command.parameter.Parameter;
-import de.cubeisland.engine.command.parameter.property.Required;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.ParameterPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
@@ -35,6 +34,7 @@ import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 
+import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
 import static de.cubeisland.engine.core.command.property.CheckPermission.CHECK;
 import static de.cubeisland.engine.core.command.property.CheckPermission.NOT_CHECK;
 
@@ -47,7 +47,7 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
 
     @Override
     protected Parameter createParameter(CommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
-                                              CommandOrigin origin)
+                                        CommandOrigin origin)
     {
         Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin);
 
@@ -55,9 +55,10 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
         {
             if (annotation instanceof ParameterPermission)
             {
-                if (parameter.valueFor(Required.class))
+                if (isRequired(parameter))
                 {
-                    throw new IllegalArgumentException("A Parameter cannot be required and have a permission"); // TODO custom execption
+                    throw new IllegalArgumentException(
+                        "A Parameter cannot be required and have a permission"); // TODO custom execption
                 }
                 Permission paramPerm = descriptor.valueFor(PermissionProvider.class).child(
                     ((ParameterPermission)annotation).value(), ((ParameterPermission)annotation).permDefault());

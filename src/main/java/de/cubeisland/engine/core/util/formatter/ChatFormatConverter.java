@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import de.cubeisland.engine.converter.converter.BasicConverter;
-import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.BasicConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
+import de.cubeisland.engine.core.util.ChatFormat;
 
 public class ChatFormatConverter extends BasicConverter<ChatFormat>
 {

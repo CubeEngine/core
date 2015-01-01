@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.cubeisland.engine.reflect.Reflected;
-import de.cubeisland.engine.reflect.codec.FileCodec;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.node.BooleanNode;
 import de.cubeisland.engine.converter.node.ByteNode;
@@ -41,6 +39,8 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.ShortNode;
 import de.cubeisland.engine.converter.node.StringNode;
+import de.cubeisland.engine.reflect.Reflected;
+import de.cubeisland.engine.reflect.codec.FileCodec;
 import org.spout.nbt.ByteTag;
 import org.spout.nbt.CompoundMap;
 import org.spout.nbt.CompoundTag;

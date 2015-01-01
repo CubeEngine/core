@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 import de.cubeisland.engine.reflect.annotations.Name;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
 /**
  * Configuration class to parse the custom CubeEngine values of plugin.yml

@@ -30,9 +30,7 @@ import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.CRITICAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class ExceptionHandler extends de.cubeisland.engine.command.ExceptionHandler
 {

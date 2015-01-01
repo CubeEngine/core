@@ -20,6 +20,7 @@ package de.cubeisland.engine.core;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.bukkit.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
@@ -49,7 +50,6 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.PrintTarget;
 import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.converter.ConverterManager;
 import org.joda.time.Duration;
 
 public class TestCore implements Core
