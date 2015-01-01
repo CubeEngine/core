@@ -274,23 +274,6 @@ public final class BukkitCore extends JavaPlugin implements Core
         // depends on: core module
         this.corePerms = new CorePerms(this.moduleManager.getCoreModule());
 
-        // depends on: server, module manager
-        this.commandManager.addCommand(new ModuleCommands(this.moduleManager));
-        this.commandManager.addCommand(new CoreCommands(this));
-        if (this.config.improveVanilla)
-        {
-            this.commandManager.addCommands(commandManager, this.getModuleManager().getCoreModule(), new VanillaCommands(this));
-            this.commandManager.addCommand(new WhitelistCommand(this));
-        }
-        this.addInitHook(new Runnable() {
-            @Override
-            public void run()
-            {
-                commandManager.addCommands(commandManager, getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
-                eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
-            }
-        });
-
         this.matcherManager = new Match();
         this.inventoryGuard = new InventoryGuardFactory(this);
 
@@ -336,6 +319,17 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         this.banManager = new BukkitBanManager(this);
+
+        // depends on: server, module manager, ban manager
+        this.commandManager.addCommand(new ModuleCommands(this.moduleManager));
+        this.commandManager.addCommand(new CoreCommands(this));
+        if (this.config.improveVanilla)
+        {
+            this.commandManager.addCommands(commandManager, this.getModuleManager().getCoreModule(), new VanillaCommands(this));
+            this.commandManager.addCommand(new WhitelistCommand(this));
+        }
+        commandManager.addCommands(commandManager, getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
+        eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
 
         if (this.config.preventSpamKick)
         {

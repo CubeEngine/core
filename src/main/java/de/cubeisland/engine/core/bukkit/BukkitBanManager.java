@@ -65,11 +65,6 @@ public class BukkitBanManager implements BanManager
         expectNotNull(ban, "Ban must not be null!");
         expect(isMainThread());
 
-        if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
-        {
-            throw new IllegalArgumentException("The ban reason my not contain line breaks (LF or CR)!");
-        }
-
         if (ban instanceof UserBan)
         {
             Bukkit.getBanList(NAME).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
