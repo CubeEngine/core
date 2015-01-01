@@ -31,6 +31,7 @@ import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.Param;
 import de.cubeisland.engine.command.methodic.Params;
+import de.cubeisland.engine.command.methodic.parametric.Default;
 import de.cubeisland.engine.command.methodic.parametric.Desc;
 import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Optional;
@@ -99,76 +100,55 @@ public class CoreCommands extends CommandContainer
 
     @Unloggable
     @Command(alias = "setpw", desc = "Sets your password.")
-    @Params(positional = {@Param(label = "password"),
-                          @Param(label = "player", type = User.class, req = false)})
-    public void setPassword(CommandContext context)
+    public void setPassword(CommandContext context, @Label("password") String password, @Default @Label("player") User target)
     {
-        User target;
-        if (context.hasPositional(1))
-        {
-            target = context.get(1);
-        }
-        else if (context.getSource() instanceof User)
-        {
-            target = (User)context.getSource();
-        }
-        else
-        {
-            throw new TooFewArgumentsException();
-        }
-        if (!(context.getSource() == target))
-        {
-            context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
-            um.setPassword(target, context.getString(0));
-            context.sendTranslated(POSITIVE, "{user}'s password has been set!", target);
-        }
-        else
+        if ((context.getSource().equals(target)))
         {
             um.setPassword(target, context.getString(0));
             context.sendTranslated(POSITIVE, "Your password has been set!");
+            return;
         }
+        context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
+        um.setPassword(target, context.getString(0));
+        context.sendTranslated(POSITIVE, "{user}'s password has been set!", target);
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
     public void clearPassword(CommandContext context,
-          @Optional
-          @Label("player")
-          @Desc("A List of Players delimited by , or *")
-          UserList users)
+          @Optional @Label("players") @Desc("* or a list of Players delimited by ,") UserList users)
     {
         CommandSender sender = context.getSource();
-        if (users != null)
+        if (users == null)
         {
-            if (users.isAll())
+            if (!(sender instanceof User))
             {
-                context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
-                um.resetAllPasswords();
-                sender.sendTranslated(POSITIVE, "All passwords reset!");
-                return;
+                throw new TooFewArgumentsException();
             }
-            User target = context.get(0);
-            if (!target.equals(context.getSource()))
-            {
-                context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
-            }
-            this.um.resetPassword(target);
-            sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", target.getName());
+            this.um.resetPassword((User)sender);
+            sender.sendTranslated(POSITIVE, "Your password has been reset!");
             return;
         }
-        if (!(sender instanceof User))
+        if (users.isAll())
         {
-            throw new TooFewArgumentsException();
+            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
+            um.resetAllPasswords();
+            sender.sendTranslated(POSITIVE, "All passwords reset!");
+            return;
         }
-        this.um.resetPassword((User)sender);
-        sender.sendTranslated(POSITIVE, "Your password has been reset!");
+        User target = context.get(0);
+        if (!target.equals(context.getSource()))
+        {
+            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
+        }
+        this.um.resetPassword(target);
+        sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", target.getName());
     }
 
     @Unloggable
     @Command(desc = "Logs you in with your password!")
-    @Params(positional = @Param(label = "password"))
     @CommandPermission(permDefault = TRUE)
     @Restricted(value = User.class, msg = "Only players can log in!")
-    public void login(CommandContext context)
+    public void login(CommandContext context, @Label("password") String password)
     {
         User user = (User)context.getSource();
         if (user.isLoggedIn())
@@ -176,7 +156,7 @@ public class CoreCommands extends CommandContainer
             context.sendTranslated(POSITIVE, "You are already logged in!");
             return;
         }
-        boolean isLoggedIn = um.login(user, context.getString(0));
+        boolean isLoggedIn = um.login(user, password);
         if (isLoggedIn)
         {
             user.sendTranslated(POSITIVE, "You logged in successfully!");

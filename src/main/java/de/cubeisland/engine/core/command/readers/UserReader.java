@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command.readers;
 
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.command.parameter.reader.DefaultProvider;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
@@ -30,7 +31,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 /**
  * This argument is used to get users
  */
-public class UserReader implements ArgumentReader<User>
+public class UserReader implements ArgumentReader<User>, DefaultProvider<User>
 {
     private final Core core;
 
@@ -49,5 +50,15 @@ public class UserReader implements ArgumentReader<User>
             throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", arg));
         }
         return user;
+    }
+
+    @Override
+    public User getDefault(CommandInvocation invocation)
+    {
+        if (invocation.getCommandSource() instanceof User)
+        {
+            return (User)invocation.getCommandSource();
+        }
+        throw new ReaderException("You need to provide a player");
     }
 }

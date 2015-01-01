@@ -69,12 +69,13 @@ public class HelpCommand implements CommandBase
         CommandSender sender = (CommandSender)invocation.getCommandSource();
         MessageType grey = MessageType.of(GREY);
         sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, helpTarget.getDescriptor().getDescription()));
-        ArrayList<String> labels = new ArrayList<>(invocation.getLabels());
+
+        List<String> labels = new ArrayList<>(invocation.getLabels());
         if ("?".equals(labels.get(labels.size() - 1)))
         {
             labels.remove(labels.size() - 1);
         }
-        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(invocation));
+        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(invocation, labels.toArray(new String[labels.size()])));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)

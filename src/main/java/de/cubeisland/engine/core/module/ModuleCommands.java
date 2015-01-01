@@ -134,7 +134,6 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads a module")
-    @Params(positional = @Param(label = "module", type = ModuleReader.class))
     public void reload(CommandContext context,
                        @Label("module") @Reader(ModuleReader.class) Module module,
                        @Flag(name = "f", longName = "file") boolean fromFile)
