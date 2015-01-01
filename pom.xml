@@ -245,20 +245,6 @@
               <exclude>org.bukkit:*</exclude>
             </excludes>
           </artifactSet>
-          <filters>
-            <filter>
-              <artifact>*:*</artifact>
-              <excludes>
-                <exclude>lib/**</exclude>
-                <exclude>templates/**</exclude>
-                <exclude>META-INF/native/**</exclude>
-                <exclude>**/*.java</exclude>
-                <exclude>META-INF/*.SF</exclude>
-                <exclude>META-INF/*.DSA</exclude>
-                <exclude>META-INF/*.RSA</exclude>
-              </excludes>
-            </filter>
-          </filters>
           <relocations>
             <!--
             <relocation>
