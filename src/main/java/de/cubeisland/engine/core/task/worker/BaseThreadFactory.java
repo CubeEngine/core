@@ -47,18 +47,28 @@ public abstract class BaseThreadFactory implements ThreadFactory
 
     private String getSource(int skip)
     {
-        for (StackTraceElement e : Thread.currentThread().getStackTrace())
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        if (trace.length > 0)
         {
-            if (skip-- > 0)
+            for (StackTraceElement e : trace)
             {
-                continue;
+                if (skip-- > 0)
+                {
+                    continue;
+                }
+                if (e.getClassName().startsWith(this.basePackage))
+                {
+                    return stackTraceElementToString(e);
+                }
             }
-            if (e.getClassName().startsWith(this.basePackage))
-            {
-                return e.getClassName() + '.' + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")";
-            }
+            return stackTraceElementToString(trace[0]);
         }
         return "unknown source";
+    }
+
+    private static String stackTraceElementToString(StackTraceElement e)
+    {
+        return e.getClassName() + '.' + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")";
     }
 
     @Override
