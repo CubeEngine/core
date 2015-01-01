@@ -158,6 +158,7 @@ public class CoreCommands extends CommandContainer
         if (isLoggedIn)
         {
             user.sendTranslated(POSITIVE, "You logged in successfully!");
+            return;
         }
         user.sendTranslated(NEGATIVE, "Wrong password!");
         if (this.core.getConfiguration().security.fail2ban)
