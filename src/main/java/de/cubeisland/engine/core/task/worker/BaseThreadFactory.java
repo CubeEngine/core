@@ -50,9 +50,10 @@ public abstract class BaseThreadFactory implements ThreadFactory
         StackTraceElement[] trace = Thread.currentThread().getStackTrace();
         if (trace.length > 0)
         {
+            int i = 0;
             for (StackTraceElement e : trace)
             {
-                if (skip-- > 0)
+                if (i++ < skip)
                 {
                     continue;
                 }
@@ -61,7 +62,7 @@ public abstract class BaseThreadFactory implements ThreadFactory
                     return stackTraceElementToString(e);
                 }
             }
-            return stackTraceElementToString(trace[0]);
+            return stackTraceElementToString(trace[skip]);
         }
         return "unknown source";
     }
