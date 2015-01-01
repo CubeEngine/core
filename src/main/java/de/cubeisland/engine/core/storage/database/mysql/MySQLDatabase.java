@@ -24,7 +24,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import com.avaje.ebean.config.MatchingNamingConvention;
@@ -60,7 +59,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     private static final char NAME_QUOTE = '`';
     private static final char STRING_QUOTE = '\'';
-    private static String tableprefix;
+    private static String tablePrefix;
 
     private final ListenableExecutorService fetchExecutorService;
     private final HikariDataSource dataSource;
@@ -108,7 +107,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         }
         connection.close();
         this.schema = new DatabaseSchema(config.database);
-        this.tableprefix = this.config.tablePrefix;
+        this.tablePrefix = this.config.tablePrefix;
 
         this.settings = new Settings();
         this.settings.setExecuteLogging(false);
@@ -121,7 +120,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             return new MySQLDatabase(core, config);
         }
-        catch (SQLException ex)
+        catch (RuntimeException | SQLException ex)
         {
             core.getLog().error(ex, "Could not establish connection with the database!");
         }
@@ -287,7 +286,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
     {
         expectNotNull(name, "The name must not be null!");
 
-        return NAME_QUOTE + tableprefix + name + NAME_QUOTE;
+        return NAME_QUOTE + tablePrefix + name + NAME_QUOTE;
     }
 
     /**
