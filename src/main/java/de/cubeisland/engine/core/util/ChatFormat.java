@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.core.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
-
-import gnu.trove.map.TCharObjectMap;
-import gnu.trove.map.hash.TCharObjectHashMap;
 
 /**
  * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.
@@ -52,7 +51,7 @@ public enum ChatFormat
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     public static final char BASE_CHAR = '\u00A7';
-    private static final TCharObjectMap<ChatFormat> FORMAT_CHARS_MAP;
+    private static final Map<Character, ChatFormat> FORMAT_CHARS_MAP;
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
     private static final Pattern STRIP_REDUNDANT_FORMATS = Pattern.compile("(?:[&§][0-9a-fk-r])+([&§][0-9a-fk-r])");
@@ -161,7 +160,7 @@ public enum ChatFormat
     static
     {
         ChatFormat[] values = values();
-        FORMAT_CHARS_MAP = new TCharObjectHashMap<>(values.length);
+        FORMAT_CHARS_MAP = new HashMap<>(values.length);
         for (ChatFormat format : values)
         {
             FORMAT_CHARS_MAP.put(format.getChar(), format);

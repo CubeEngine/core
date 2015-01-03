@@ -19,10 +19,10 @@ package de.cubeisland.engine.core.webapi;
 
 import java.net.InetSocketAddress;
 
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class IpFilter extends ChannelHandlerAdapter
+public class IpFilter extends ChannelInboundHandlerAdapter
 {
     private final ApiServer server;
 

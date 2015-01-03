@@ -20,11 +20,14 @@ package de.cubeisland.engine.core.module;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.task.worker.BaseThreadFactory;
+import de.cubeisland.engine.core.task.thread.BaseThreadFactory;
+import de.cubeisland.engine.core.task.thread.LoggingThread;
+import de.cubeisland.engine.logscribe.LogLevel;
 
 public class ModuleThreadFactory extends BaseThreadFactory
 {
     private final Module module;
+    private final UncaughtExceptionHandler exceptionHandler;
 
     public ModuleThreadFactory(Module module)
     {
@@ -33,6 +36,7 @@ public class ModuleThreadFactory extends BaseThreadFactory
             CubeEngine.class.getSimpleName() + " - " + module.getName()), module.getClass().getPackage().getName()
         );
         this.module = module;
+        this.exceptionHandler = new UncaughtModuleExceptionHandler(module);
     }
 
     @Override
@@ -46,35 +50,9 @@ public class ModuleThreadFactory extends BaseThreadFactory
     @Override
     protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        return new ModuleThread(threadGroup, r, name, this.module);
-    }
-
-    private static class ModuleThread extends Thread
-    {
-        private final Module module;
-
-        public ModuleThread(ThreadGroup threadGroup, Runnable r, String name, Module module)
-        {
-            super(threadGroup, r, name);
-            this.setUncaughtExceptionHandler(new UncaughtModuleExceptionHandler(module));
-            this.module = module;
-            this.module.getLog().debug("Creating thread: {}", name);
-        }
-
-        @Override
-        public synchronized void start()
-        {
-            super.start();
-            this.module.getLog().debug("Started thread: {}", this.getName());
-        }
-
-
-        @Override
-        public void interrupt()
-        {
-            super.interrupt();
-            this.module.getLog().debug("Interrupted thread: {}", this.getName());
-        }
+        final LoggingThread thread = new LoggingThread(threadGroup, r, name, this.module.getLog(), LogLevel.TRACE);
+        thread.setUncaughtExceptionHandler(this.exceptionHandler);
+        return thread;
     }
 
 

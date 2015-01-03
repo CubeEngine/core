@@ -18,8 +18,8 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.methodic.context.ParameterizedContext;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.methodic.context.ParameterizedContext;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;

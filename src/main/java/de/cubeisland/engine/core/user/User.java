@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -64,8 +65,6 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.BlockUtil;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -93,7 +92,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     {
         super(player.getUniqueId());
         this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
-        this.attachments = new THashMap<>();
+        this.attachments = new HashMap<>();
         this.core = core;
     }
 
@@ -107,7 +106,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         super(entity.getUniqueId());
         this.core = CubeEngine.getCore();
         this.entity = entity;
-        this.attachments = new THashMap<>();
+        this.attachments = new HashMap<>();
     }
 
     public Core getCore()
@@ -156,7 +155,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public synchronized Set<UserAttachment> getAll()
     {
-        return new THashSet<>(this.attachments.values());
+        return new HashSet<>(this.attachments.values());
     }
 
     @Override

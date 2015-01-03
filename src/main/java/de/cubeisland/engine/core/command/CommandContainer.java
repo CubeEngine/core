@@ -28,6 +28,7 @@ import de.cubeisland.engine.command.parameter.Parameter;
 import de.cubeisland.engine.command.parameter.ParameterGroup;
 import de.cubeisland.engine.command.parameter.SimpleParameter;
 import de.cubeisland.engine.command.parameter.property.FixedPosition;
+import de.cubeisland.engine.command.parameter.property.Requirement;
 import de.cubeisland.engine.command.parameter.property.ValueLabel;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
@@ -61,6 +62,7 @@ public class CommandContainer extends MethodicCommandContainer<Module, CommandOr
         SimpleParameter actionParam = new SimpleParameter(String.class, String.class, 1);
         actionParam.setProperty(new ValueLabel("action"));
         actionParam.setProperty(new FixedPosition(0));
+        actionParam.setProperty(Requirement.REQUIRED);
         descriptor.setProperty(new ParameterGroup(Collections.<Parameter>emptyList(), Collections.<Parameter>emptyList(), Arrays.asList((Parameter)actionParam)));
         this.addCommand(new HelpCommand(this));
     }

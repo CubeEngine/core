@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -40,7 +41,6 @@ import de.cubeisland.engine.core.module.exception.MissingDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.module.exception.ModuleLoadException;
 import de.cubeisland.engine.core.storage.TableRegistry;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -292,7 +292,7 @@ public class ModuleLoader
             return clazz;
         }
 
-        Set<String> alreadyChecked = new THashSet<>(this.classLoaders.size() / 2);
+        Set<String> alreadyChecked = new HashSet<>(this.classLoaders.size() / 2);
         alreadyChecked.add(info.getId());
 
         for (String dep : info.getSoftDependencies().keySet())

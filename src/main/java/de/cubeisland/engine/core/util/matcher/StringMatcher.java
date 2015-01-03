@@ -19,17 +19,15 @@ package de.cubeisland.engine.core.util.matcher;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import de.cubeisland.engine.core.CubeEngine;
-
-import gnu.trove.map.hash.THashMap;
-
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
+import de.cubeisland.engine.core.CubeEngine;
 
 public class StringMatcher
 {
@@ -51,7 +49,7 @@ public class StringMatcher
             CubeEngine.getLog().warn(new Throwable(), "Checking EditDistance lower than 1!");
             return new TreeMap<>();
         }
-        THashMap<String, Integer> matches = new THashMap<>();
+        Map<String, Integer> matches = new HashMap<>();
         Ordering<String> comparator = Ordering.natural().onResultOf(Functions.forMap(matches)).compound(Ordering.natural());
         for (String target : in)
         {

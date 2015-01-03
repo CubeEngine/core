@@ -23,16 +23,16 @@ import java.util.Map;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.MapNode;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.converter.converter.SingleClassConverter;
+import de.cubeisland.engine.converter.node.MapNode;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.world.WorldManager;
 
-public class LocationConverter implements Converter<Location>
+public class LocationConverter extends SingleClassConverter<Location>
 {
     private final WorldManager wm;
 

@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import de.cubeisland.engine.core.CoreConfiguration;
 import de.cubeisland.engine.reflect.annotations.Comment;
 import de.cubeisland.engine.reflect.annotations.Name;
-import de.cubeisland.engine.core.CoreConfiguration;
 
 public class BukkitCoreConfiguration extends CoreConfiguration
 {

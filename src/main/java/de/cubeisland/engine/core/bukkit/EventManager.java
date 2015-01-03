@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -30,8 +31,6 @@ import org.bukkit.plugin.PluginManager;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -63,7 +62,7 @@ public class EventManager
         Set<Listener> listeners = this.listenerMap.get(module);
         if (listeners == null)
         {
-            this.listenerMap.put(module, listeners = new THashSet<>(1));
+            this.listenerMap.put(module, listeners = new HashSet<>());
         }
         listeners.add(listener);
 

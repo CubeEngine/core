@@ -52,8 +52,6 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.hash.THashSet;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
 
@@ -85,7 +83,7 @@ public abstract class AbstractUserManager implements UserManager
 
         this.onlineUsers = new CopyOnWriteArrayList<>();
 
-        this.defaultAttachments = new THashSet<>();
+        this.defaultAttachments = new HashSet<>();
 
         this.loadSalt();
 
@@ -258,13 +256,13 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public synchronized Set<User> getOnlineUsers()
     {
-        return new THashSet<>(this.onlineUsers); // TODO this is not working as it should
+        return new HashSet<>(this.onlineUsers); // TODO this is not working as it should
     }
 
     @Override
     public synchronized Set<User> getLoadedUsers()
     {
-        return new THashSet<>(this.cachedUserByUUID.values());
+        return new HashSet<>(this.cachedUserByUUID.values());
     }
 
     @Override
@@ -370,7 +368,7 @@ public abstract class AbstractUserManager implements UserManager
         FileUtil.setReadOnly(file);
     }
 
-    private final TLongObjectHashMap<Triplet<Long, String, Integer>> failedLogins = new TLongObjectHashMap<>();
+    private final Map<Long, Triplet<Long, String, Integer>> failedLogins = new HashMap<>();
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {

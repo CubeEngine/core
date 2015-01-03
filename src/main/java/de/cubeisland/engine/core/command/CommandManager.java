@@ -19,13 +19,14 @@ package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
+import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.completer.CompleterProvider;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
-import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
+import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
 
@@ -60,9 +61,9 @@ public interface CommandManager extends Cleanable, Dispatcher, CompleterProvider
 
     ConsoleCommandSender getConsoleSender();
 
-    void logExecution(CommandSender sender, CommandBase cubeCommand, String[] args);
+    void logExecution(CommandSource sender, boolean ran, CommandBase cubeCommand, String[] args);
 
-    void logTabCompletion(CommandSender sender, CommandBase cubeCommand, String[] args);
+    void logTabCompletion(CommandSource sender, CommandBase cubeCommand, String[] args);
 
     ConfirmManager getConfirmManager();
 

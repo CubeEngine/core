@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Difficulty;
@@ -36,7 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
 import de.cubeisland.engine.command.ExceptionHandlerProperty;
@@ -45,29 +44,26 @@ import de.cubeisland.engine.command.Name;
 import de.cubeisland.engine.command.SelfDescribing;
 import de.cubeisland.engine.command.UsageProvider;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.completer.CompleterProvider;
-import de.cubeisland.engine.command.completer.CompleterProviderProperty;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.command.parameter.property.Description;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
-import de.cubeisland.engine.command.util.property.Property;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
+import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandOrigin;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ExceptionHandler;
 import de.cubeisland.engine.core.command.MethodicCommandBuilder;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.completer.ModuleCompleter;
-import de.cubeisland.engine.core.command.property.Loggable;
-import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.completer.PlayerCompleter;
 import de.cubeisland.engine.core.command.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.completer.WorldCompleter;
+import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.readers.BooleanReader;
 import de.cubeisland.engine.core.command.readers.ByteReader;
 import de.cubeisland.engine.core.command.readers.DifficultyReader;
@@ -230,20 +226,27 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    public void logExecution(CommandSender sender, CommandBase command, String[] args)
+    public void logExecution(CommandSource sender, boolean ran, CommandBase command, String[] args)
     {
         if (command.getDescriptor().valueFor(Loggable.class))
         {
-            this.commandLogger.debug("execute {} {} {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            if (ran)
+            {
+                this.commandLogger.debug("execute {} {}: {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            }
+            else
+            {
+                this.commandLogger.debug("failed {} {}; {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            }
         }
     }
 
     @Override
-    public void logTabCompletion(CommandSender sender, CommandBase command, String[] args)
+    public void logTabCompletion(CommandSource sender, CommandBase command, String[] args)
     {
         if (command.getDescriptor().valueFor(Loggable.class))
         {
-            this.commandLogger.debug("getSuggestions {} {} {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("getSuggestions {} {}: {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
         }
     }
 

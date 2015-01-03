@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.core.world;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 
-public class ConfigWorldConverter implements Converter<ConfigWorld>
+public class ConfigWorldConverter extends SimpleConverter<ConfigWorld>
 {
     private final WorldManager wm;
 
@@ -33,13 +32,13 @@ public class ConfigWorldConverter implements Converter<ConfigWorld>
     }
 
     @Override
-    public Node toNode(ConfigWorld configWorld, ConverterManager converterManager) throws ConversionException
+    public Node toNode(ConfigWorld configWorld) throws ConversionException
     {
         return StringNode.of(configWorld.getName());
     }
 
     @Override
-    public ConfigWorld fromNode(Node node, ConverterManager converterManager) throws ConversionException
+    public ConfigWorld fromNode(Node node) throws ConversionException
     {
         String name = node.asText();
         if (name.contains("{"))

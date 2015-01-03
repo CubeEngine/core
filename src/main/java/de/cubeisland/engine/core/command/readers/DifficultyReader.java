@@ -21,10 +21,10 @@ import java.util.Locale;
 
 import org.bukkit.Difficulty;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
-import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.core.CubeEngine;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;

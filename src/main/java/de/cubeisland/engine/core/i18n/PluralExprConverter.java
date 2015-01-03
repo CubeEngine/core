@@ -20,17 +20,16 @@ package de.cubeisland.engine.core.i18n;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.i18n.plural.ComplexExpr;
 import de.cubeisland.engine.i18n.plural.GreaterThanOneExpr;
 import de.cubeisland.engine.i18n.plural.NotOneExpr;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.plural.ZeroExpr;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
 
-public class PluralExprConverter implements Converter<PluralExpr>
+public class PluralExprConverter extends SimpleConverter<PluralExpr>
 {
     private final Map<String,PluralExpr> pluralExpressions = new HashMap<>();
 
@@ -42,13 +41,13 @@ public class PluralExprConverter implements Converter<PluralExpr>
     }
 
     @Override
-    public Node toNode(PluralExpr object, ConverterManager manager) throws ConversionException
+    public Node toNode(PluralExpr object) throws ConversionException
     {
         throw new UnsupportedOperationException("Cannot convert PluralExpr back into String!");
     }
 
     @Override
-    public PluralExpr fromNode(Node node, ConverterManager manager) throws ConversionException
+    public PluralExpr fromNode(Node node) throws ConversionException
     {
         String expr = node.asText().replaceAll("\\s", "").replaceAll("[a-zA-Z]", "n");
         PluralExpr pluralExpr = this.pluralExpressions.get(expr);

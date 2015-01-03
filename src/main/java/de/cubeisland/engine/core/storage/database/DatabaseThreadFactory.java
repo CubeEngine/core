@@ -15,29 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.converter;
+package de.cubeisland.engine.core.storage.database;
 
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.task.thread.BaseThreadFactory;
 
-public class VersionConverter extends SimpleConverter<Version>
+public class DatabaseThreadFactory extends BaseThreadFactory
 {
-    @Override
-    public Node toNode(Version version) throws ConversionException
+    public DatabaseThreadFactory()
     {
-        return new StringNode(version.toString());
+        super(CubeEngine.class.getSimpleName() + " - " + Database.class.getSimpleName(), Database.class.getPackage().getName());
     }
 
     @Override
-    public Version fromNode(Node node) throws ConversionException
+    protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        if (node instanceof StringNode)
-        {
-            return Version.fromString(((StringNode)node).getValue());
-        }
-        throw ConversionException.of(this, node, "Node is not a StringNode!");
+        return new Thread(threadGroup, r, name);
     }
 }

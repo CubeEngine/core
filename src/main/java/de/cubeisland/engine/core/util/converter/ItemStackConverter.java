@@ -19,18 +19,17 @@ package de.cubeisland.engine.core.util.converter;
 
 import org.bukkit.inventory.ItemStack;
 
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.NullNode;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.NullNode;
-import de.cubeisland.engine.reflect.node.StringNode;
 
-public class ItemStackConverter implements Converter<ItemStack>
+public class ItemStackConverter extends SimpleConverter<ItemStack>
 {
     @Override
-    public Node toNode(ItemStack object, ConverterManager manager) throws ConversionException
+    public Node toNode(ItemStack object) throws ConversionException
     {
         if (object == null)
         {
@@ -40,7 +39,7 @@ public class ItemStackConverter implements Converter<ItemStack>
     }
 
     @Override
-    public ItemStack fromNode(Node node, ConverterManager manager) throws ConversionException
+    public ItemStack fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

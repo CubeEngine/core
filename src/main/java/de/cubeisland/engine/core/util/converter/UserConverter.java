@@ -17,24 +17,23 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
 
-public class UserConverter implements Converter<User>
+public class UserConverter extends SimpleConverter<User>
 {
     @Override
-    public Node toNode(User user, ConverterManager manager) throws ConversionException
+    public Node toNode(User user) throws ConversionException
     {
         return StringNode.of(user.getName());
     }
 
     @Override
-    public User fromNode(Node node, ConverterManager manager) throws ConversionException
+    public User fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

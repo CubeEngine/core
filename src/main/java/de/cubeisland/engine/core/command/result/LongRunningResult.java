@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.command.result;
 
-import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.core.command.CommandContext;
 
 public abstract class LongRunningResult implements CommandResult<CommandContext>
 {

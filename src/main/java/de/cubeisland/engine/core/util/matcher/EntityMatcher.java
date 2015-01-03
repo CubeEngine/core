@@ -21,13 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.minecraft.server.v1_7_R4.EntityTypes;
-import net.minecraft.server.v1_7_R4.NPC;
+import net.minecraft.server.v1_8_R1.EntityTypes;
+import net.minecraft.server.v1_8_R1.NPC;
 
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
@@ -37,7 +38,6 @@ import org.bukkit.entity.Projectile;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
-import gnu.trove.map.hash.THashMap;
 
 /**
  * This Matcher provides methods to match Entities.
@@ -45,7 +45,7 @@ import gnu.trove.map.hash.THashMap;
 public class EntityMatcher
 {
     private final Map<EntityType, String> reverseNameMap = new EnumMap<>(EntityType.class);
-    private final Map<String, EntityType> nameMap = new THashMap<>();
+    private final Map<String, EntityType> nameMap = new HashMap<>();
 
     EntityMatcher()
     {

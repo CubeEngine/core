@@ -21,14 +21,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.Core;
 
-public class PlayerConverter implements Converter<OfflinePlayer>
+public class PlayerConverter extends SimpleConverter<OfflinePlayer>
 {
     private final Server server;
 
@@ -38,13 +37,13 @@ public class PlayerConverter implements Converter<OfflinePlayer>
     }
 
     @Override
-    public Node toNode(OfflinePlayer object, ConverterManager manager)
+    public Node toNode(OfflinePlayer object)
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public OfflinePlayer fromNode(Node node, ConverterManager manager) throws ConversionException
+    public OfflinePlayer fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

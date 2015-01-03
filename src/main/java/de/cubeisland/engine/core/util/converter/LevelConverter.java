@@ -18,24 +18,23 @@
 
 package de.cubeisland.engine.core.util.converter;
 
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.BooleanNode;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.BooleanNode;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
 
-public class LevelConverter implements Converter<LogLevel>
+public class LevelConverter extends SimpleConverter<LogLevel>
 {
     @Override
-    public Node toNode(LogLevel object, ConverterManager manager) throws ConversionException
+    public Node toNode(LogLevel object) throws ConversionException
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public LogLevel fromNode(Node node, ConverterManager manager) throws ConversionException
+    public LogLevel fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
@@ -48,7 +47,7 @@ public class LevelConverter implements Converter<LogLevel>
         }
         else if (node instanceof BooleanNode && !((BooleanNode)node).getValue())
         { // OFF is interpreted as a boolean false
-            return fromNode(new StringNode("OFF"), manager);
+            return fromNode(new StringNode("OFF"));
         }
         throw ConversionException.of(this, node, "Node is not a StringNode OR BooleanNode!");
     }

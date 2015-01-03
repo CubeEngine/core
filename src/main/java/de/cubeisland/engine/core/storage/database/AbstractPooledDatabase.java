@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.task.worker.AsyncTaskQueue;
@@ -41,6 +42,7 @@ public abstract class AbstractPooledDatabase implements Database
     private final ExecutorService executor;
 
     protected final Core core;
+    protected final ThreadFactory threadFactory;
 
     protected AbstractPooledDatabase(Core core)
     {
@@ -48,6 +50,7 @@ public abstract class AbstractPooledDatabase implements Database
         this.executorService = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
         this.executor = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
         this.taskQueue = new AsyncTaskQueue(this.executorService);
+        this.threadFactory = new DatabaseThreadFactory();
     }
 
     @Override

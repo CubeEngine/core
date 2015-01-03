@@ -17,15 +17,15 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.IntNode;
-import de.cubeisland.engine.reflect.node.MapNode;
-import de.cubeisland.engine.reflect.node.Node;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.converter.converter.SingleClassConverter;
+import de.cubeisland.engine.converter.node.IntNode;
+import de.cubeisland.engine.converter.node.MapNode;
+import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 
-public class BlockVector3Converter implements Converter<BlockVector3>
+public class BlockVector3Converter extends SingleClassConverter<BlockVector3>
 {
     @Override
     public Node toNode(BlockVector3 blockVector3, ConverterManager converterManager) throws ConversionException

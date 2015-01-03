@@ -18,11 +18,12 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R4.RegionFileCache;
+import net.minecraft.server.v1_8_R1.RegionFileCache;
 
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -32,7 +33,6 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
-import gnu.trove.set.hash.THashSet;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 
@@ -146,6 +146,6 @@ public class BukkitWorldManager extends AbstractWorldManager
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
 
-        return new THashSet<>(this.server.getWorlds());
+        return new HashSet<>(this.server.getWorlds());
     }
 }

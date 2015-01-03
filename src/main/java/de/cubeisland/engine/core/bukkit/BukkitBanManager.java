@@ -25,21 +25,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R4.DedicatedPlayerList;
-import net.minecraft.server.v1_7_R4.GameProfileBanEntry;
-import net.minecraft.server.v1_7_R4.GameProfileBanList;
-import net.minecraft.server.v1_7_R4.IpBanEntry;
-import net.minecraft.server.v1_7_R4.IpBanList;
-import net.minecraft.server.v1_7_R4.JsonListEntry;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
+import net.minecraft.server.v1_8_R1.DedicatedPlayerList;
+import net.minecraft.server.v1_8_R1.GameProfileBanEntry;
+import net.minecraft.server.v1_8_R1.GameProfileBanList;
+import net.minecraft.server.v1_8_R1.IpBanEntry;
+import net.minecraft.server.v1_8_R1.IpBanList;
+import net.minecraft.server.v1_8_R1.JsonListEntry;
+import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
 
 import org.bukkit.Bukkit;
 
+import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
@@ -64,11 +64,6 @@ public class BukkitBanManager implements BanManager
     {
         expectNotNull(ban, "Ban must not be null!");
         expect(isMainThread());
-
-        if (ban.getReason().contains("\n") || ban.getReason().contains("\r"))
-        {
-            throw new IllegalArgumentException("The ban reason my not contain line breaks (LF or CR)!");
-        }
 
         if (ban instanceof UserBan)
         {

@@ -19,12 +19,12 @@ package de.cubeisland.engine.core.webapi;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.cubeisland.engine.core.user.User;
-import gnu.trove.map.hash.THashMap;
 import io.netty.handler.codec.http.HttpHeaders;
 
 /**
@@ -50,7 +50,7 @@ public final class ApiRequest
         this.method = method;
         this.urlParams = params;
         this.authUser = authUser;
-        this.headers = new THashMap<>();
+        this.headers = new HashMap<>();
         this.data = data;
 
         List<String> list;

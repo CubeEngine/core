@@ -22,10 +22,10 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class IpLimiter extends ChannelHandlerAdapter
+public class IpLimiter extends ChannelInboundHandlerAdapter
 {
     private final int maxConnectionCount;
     private Map<InetAddress, Integer> connections = new HashMap<>();

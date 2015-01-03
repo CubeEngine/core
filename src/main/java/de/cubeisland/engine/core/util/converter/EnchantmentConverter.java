@@ -19,23 +19,22 @@ package de.cubeisland.engine.core.util.converter;
 
 import org.bukkit.enchantments.Enchantment;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 
-public class EnchantmentConverter implements Converter<Enchantment>
+public class EnchantmentConverter extends SimpleConverter<Enchantment>
 {
     @Override
-    public Node toNode(Enchantment object, ConverterManager manager) throws ConversionException
+    public Node toNode(Enchantment object) throws ConversionException
     {
         return StringNode.of(Match.enchant().nameFor(object));
     }
 
     @Override
-    public Enchantment fromNode(Node node, ConverterManager manager) throws ConversionException
+    public Enchantment fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

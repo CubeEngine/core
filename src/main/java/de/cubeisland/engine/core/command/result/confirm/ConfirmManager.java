@@ -71,8 +71,7 @@ public class ConfirmManager
         {
             confirmationTimeoutTasks = new LinkedList<>();
         }
-        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager()
-                                                                                .runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
+        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager().runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
 

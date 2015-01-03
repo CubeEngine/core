@@ -447,7 +447,7 @@ public class InventoryGuard implements Listener
                 case SWAP_WITH_CURSOR:
                 case HOTBAR_SWAP:
                 case DROP_ALL_SLOT:
-                case MOVE_TO_OTHER_INVENTORY: // assume the getSuggestions stack
+                case MOVE_TO_OTHER_INVENTORY: // assume the complete stack
                     return amountIn - itemStackToOut.getAmount() >= guardedItem.amount;
                 case PICKUP_SOME:
                     if (item == null)

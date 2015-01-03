@@ -17,22 +17,21 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 
-public class MessageTypeConverter implements Converter<MessageType>
+public class MessageTypeConverter extends SimpleConverter<MessageType>
 {
     @Override
-    public Node toNode(MessageType object, ConverterManager manager) throws ConversionException
+    public Node toNode(MessageType object) throws ConversionException
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public MessageType fromNode(Node node, ConverterManager manager) throws ConversionException
+    public MessageType fromNode(Node node) throws ConversionException
     {
         MessageType messageType = MessageType.valueOf(node.asText());
         if (messageType == null)

@@ -15,31 +15,58 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.util.converter;
+package de.cubeisland.engine.core.task.thread;
 
-import org.bukkit.Material;
-
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.core.util.matcher.Match;
-
-public class MaterialConverter extends SimpleConverter<Material>
+/**
+ * This thread tracks its lifecycle.
+ */
+public class TrackedThread extends Thread
 {
-    @Override
-    public Node toNode(Material object) throws ConversionException
+    public TrackedThread(ThreadGroup group, Runnable target, String name)
     {
-        return StringNode.of(object.name());
+        super(group, target, name);
     }
 
     @Override
-    public Material fromNode(Node node) throws ConversionException
+    public synchronized void start()
     {
-        if (node instanceof StringNode)
-        {
-            return Match.material().material(node.asText());
-        }
-        throw ConversionException.of(this, node, "Node is not a StringNode!");
+        onStart();
+        super.start();
+        onStarted();
+    }
+
+    @Override
+    public void run()
+    {
+        onBeginExecution();
+        super.run();
+        onExecutionComplete();
+    }
+
+    @Override
+    public void interrupt()
+    {
+        onInterrupted();
+        super.interrupt();
+    }
+
+    public void onStart()
+    {
+    }
+
+    public void onStarted()
+    {
+    }
+
+    public void onBeginExecution()
+    {
+    }
+
+    public void onExecutionComplete()
+    {
+    }
+
+    public void onInterrupted()
+    {
     }
 }

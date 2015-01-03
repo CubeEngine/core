@@ -18,6 +18,8 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -142,7 +144,10 @@ public class WrappedCommand extends Command
     {
         try
         {
-            return this.command.execute(newInvocation(sender, label, args));
+            CommandSource source = wrapSender(getModule().getCore(), sender);
+            boolean ran = this.command.execute(newInvocation(source, label, args));
+            core.getCommandManager().logExecution(source, ran, this.command, args);
+            return ran;
         }
         catch (Exception e)
         {
@@ -151,9 +156,8 @@ public class WrappedCommand extends Command
         }
     }
 
-    private CommandInvocation newInvocation(CommandSender sender, String label, String[] args)
+    private CommandInvocation newInvocation(CommandSource source, String label, String[] args)
     {
-        CommandSource source = wrapSender(getModule().getCore(), sender);
         //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
         String commandLine = label;
         if (args.length > 0)
@@ -168,12 +172,11 @@ public class WrappedCommand extends Command
     @Override
     public List<String> tabComplete(CommandSender sender, String label, String[] args) throws IllegalArgumentException
     {
-        CommandInvocation invocation = newInvocation(sender, label, args);
+        CommandSource source = wrapSender(getModule().getCore(), sender);
+        CommandInvocation invocation = newInvocation(source, label, args);
         List<String> suggestions = this.command.getSuggestions(invocation);
-        for (String suggestion : suggestions)
-        {
-            System.out.println(invocation.getCommandLine() + ": " + suggestion);
-        }
+        core.getCommandManager().logTabCompletion(source, command, args);
+        Collections.sort(suggestions);
         return suggestions;
     }
 

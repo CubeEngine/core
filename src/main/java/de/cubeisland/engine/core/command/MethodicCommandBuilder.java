@@ -23,6 +23,8 @@ import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
+import de.cubeisland.engine.core.command.annotation.Unloggable;
+import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
@@ -42,10 +44,12 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
     {
         ImmutableCommandDescriptor descriptor = super.buildCommandDescriptor(annotation, origin);
 
+
+
         String permName = descriptor.getName();
         boolean checkPerm = true;
         PermDefault def = PermDefault.DEFAULT;
-        CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
+        CommandPermission perm = origin.getMethod().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
@@ -59,6 +63,8 @@ public class MethodicCommandBuilder extends MethodicBuilder<CommandOrigin>
         {
             descriptor.valueFor(Filters.class).addFilter(new PermissionFilter(permission));
         }
+
+        descriptor.setProperty(Loggable.of(!origin.getMethod().isAnnotationPresent(Unloggable.class)));
 
         return descriptor;
     }

@@ -22,22 +22,21 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import de.cubeisland.engine.reflect.codec.ConverterManager;
-import de.cubeisland.engine.reflect.codec.converter.Converter;
-import de.cubeisland.engine.reflect.exception.ConversionException;
-import de.cubeisland.engine.reflect.node.Node;
-import de.cubeisland.engine.reflect.node.StringNode;
+import de.cubeisland.engine.converter.ConversionException;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.StringNode;
 
-public class WorldConverter implements Converter<World>
+public class WorldConverter extends SimpleConverter<World>
 {
     @Override
-    public Node toNode(World object, ConverterManager manager) throws ConversionException
+    public Node toNode(World object) throws ConversionException
     {
         return StringNode.of(object.getName() + "(" + object.getUID().toString() + ")");
     }
 
     @Override
-    public World fromNode(Node node, ConverterManager manager) throws ConversionException
+    public World fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

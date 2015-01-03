@@ -20,8 +20,8 @@ package de.cubeisland.engine.core.module;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 import de.cubeisland.engine.core.util.Version;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
 /**
  * This configuration is used to parse the module.yml file.

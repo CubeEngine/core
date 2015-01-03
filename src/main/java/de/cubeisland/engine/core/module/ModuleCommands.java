@@ -30,8 +30,6 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.Param;
-import de.cubeisland.engine.command.methodic.Params;
 import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Reader;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
@@ -134,7 +132,6 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads a module")
-    @Params(positional = @Param(label = "module", type = ModuleReader.class))
     public void reload(CommandContext context,
                        @Label("module") @Reader(ModuleReader.class) Module module,
                        @Flag(name = "f", longName = "file") boolean fromFile)

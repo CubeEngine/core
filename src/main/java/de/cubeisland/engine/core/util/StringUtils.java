@@ -134,17 +134,14 @@ public final class StringUtils
         {
             return "";
         }
-        else
+        StringBuilder sb = new StringBuilder(iterator.next().toString());
+
+        while (iterator.hasNext())
         {
-            StringBuilder sb = new StringBuilder(iterator.next().toString());
-
-            while (iterator.hasNext())
-            {
-                sb.append(delimiter).append(iterator.next());
-            }
-
-            return sb.toString();
+            sb.append(delimiter).append(iterator.next());
         }
+
+        return sb.toString();
     }
 
     /**

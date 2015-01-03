@@ -18,15 +18,22 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandDescriptor;
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
-import de.cubeisland.engine.command.CommandInvocation;
 
 public class MethodicCommand extends BasicMethodicCommand
 {
     public MethodicCommand(CommandDescriptor descriptor)
     {
         super(descriptor);
+    }
+
+    @Override
+    protected boolean run(BaseCommandContext commandContext)
+    {
+        commandContext.getInvocation().setProperty(new ModuleProvider(this.getDescriptor().valueFor(ModuleProvider.class)));
+        return super.run(commandContext);
     }
 
     @Override

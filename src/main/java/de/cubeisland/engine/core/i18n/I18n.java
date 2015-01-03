@@ -40,7 +40,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.core.util.formatter.MessageType;
@@ -54,7 +53,6 @@ import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.filesystem.FileExtensionFilter.PO;
 
@@ -73,7 +71,8 @@ public class I18n
 
     public I18n(Core core)
     {
-        core.getConfigFactory().getDefaultConverterManager().registerConverter(PluralExpr.class, new PluralExprConverter());
+        core.getConfigFactory().getDefaultConverterManager().registerConverter(new PluralExprConverter(),
+                                                                               PluralExpr.class);
 
         this.core = core;
         this.addPoFilesFromDirectory(this.core.getFileManager().getTranslationPath());
@@ -236,7 +235,7 @@ public class I18n
     public Set<Language> getLanguages()
     {
         // TODO this does no longer returns all languages available but only all currently loaded languages!
-        return new THashSet<>(this.service.getLoadedLanguages());
+        return new HashSet<>(this.service.getLoadedLanguages());
     }
 
     public Set<Language> searchLanguages(String name, int maxDistance)
@@ -251,7 +250,7 @@ public class I18n
         }
 
         Set<String> matches = Match.string().getBestMatches(name.toLowerCase(), this.languageLookupMap.keySet(), maxDistance);
-        Set<Language> languages = new THashSet<>(matches.size());
+        Set<Language> languages = new HashSet<>(matches.size());
 
         for (String match : matches)
         {

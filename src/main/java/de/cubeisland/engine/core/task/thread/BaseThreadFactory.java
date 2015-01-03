@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.task.worker;
+package de.cubeisland.engine.core.task.thread;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,18 +47,29 @@ public abstract class BaseThreadFactory implements ThreadFactory
 
     private String getSource(int skip)
     {
-        for (StackTraceElement e : Thread.currentThread().getStackTrace())
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+        if (trace.length > 0)
         {
-            if (skip-- > 0)
+            int i = 0;
+            for (StackTraceElement e : trace)
             {
-                continue;
+                if (i++ < skip)
+                {
+                    continue;
+                }
+                if (e.getClassName().startsWith(this.basePackage))
+                {
+                    return stackTraceElementToString(e);
+                }
             }
-            if (e.getClassName().startsWith(this.basePackage))
-            {
-                return e.getClassName() + '.' + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")";
-            }
+            return stackTraceElementToString(trace[skip]);
         }
         return "unknown source";
+    }
+
+    private static String stackTraceElementToString(StackTraceElement e)
+    {
+        return e.getClassName() + '.' + e.getMethodName() + "(" + e.getFileName() + ":" + e.getLineNumber() + ")";
     }
 
     @Override

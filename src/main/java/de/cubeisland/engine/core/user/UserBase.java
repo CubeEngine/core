@@ -25,15 +25,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.NBTTagCompound;
-import net.minecraft.server.v1_7_R4.NBTTagDouble;
-import net.minecraft.server.v1_7_R4.NBTTagFloat;
-import net.minecraft.server.v1_7_R4.NBTTagList;
-import net.minecraft.server.v1_7_R4.PlayerInteractManager;
-import net.minecraft.server.v1_7_R4.WorldNBTStorage;
-import net.minecraft.server.v1_7_R4.WorldServer;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
+import net.minecraft.server.v1_8_R1.EntityPlayer;
+import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NBTTagDouble;
+import net.minecraft.server.v1_8_R1.NBTTagFloat;
+import net.minecraft.server.v1_8_R1.NBTTagList;
+import net.minecraft.server.v1_8_R1.PlayerInteractManager;
+import net.minecraft.server.v1_8_R1.WorldNBTStorage;
+import net.minecraft.server.v1_8_R1.WorldServer;
+import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -79,9 +79,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
+import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 

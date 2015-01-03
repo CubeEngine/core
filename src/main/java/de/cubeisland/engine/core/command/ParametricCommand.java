@@ -18,15 +18,22 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.methodic.context.BaseCommandContext;
+import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
 
 public class ParametricCommand extends BasicParametricCommand
 {
     public ParametricCommand(CommandDescriptor descriptor)
     {
         super(descriptor);
+    }
+
+    @Override
+    protected boolean run(BaseCommandContext commandContext)
+    {
+        commandContext.getInvocation().setProperty(new ModuleProvider(this.getDescriptor().valueFor(ModuleProvider.class)));
+        return super.run(commandContext);
     }
 
     @Override

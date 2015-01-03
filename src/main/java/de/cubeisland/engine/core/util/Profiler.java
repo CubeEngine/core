@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.core.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import gnu.trove.map.TObjectLongMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -29,7 +28,7 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
  */
 public class Profiler
 {
-    private static final TObjectLongMap<String> startTimes = new TObjectLongHashMap<>();
+    private static final Map<String, Long> startTimes = new HashMap<>();
 
     public static void startProfiling(String id)
     {

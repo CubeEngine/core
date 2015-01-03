@@ -17,7 +17,10 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -28,11 +31,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
-import de.cubeisland.engine.core.task.worker.CoreThreadFactory;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -40,7 +39,7 @@ public class BukkitTaskManager implements TaskManager
 {
     private final BukkitCore corePlugin;
     private final BukkitScheduler bukkitScheduler;
-    private final Map<Module, TIntSet> moduleTasks;
+    private final Map<Module, Set<Integer>> moduleTasks;
     private final CoreThreadFactory threadFactory;
     private final Map<String, ModuleThreadFactory> moduleThreadFactories;
 
@@ -50,20 +49,20 @@ public class BukkitTaskManager implements TaskManager
         this.threadFactory = new CoreThreadFactory(core);
         this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<>();
-        this.moduleThreadFactories = new THashMap<>();
+        this.moduleThreadFactories = new HashMap<>();
     }
 
-    private TIntSet getModuleIDs(Module module)
+    private Set<Integer> getModuleIDs(Module module)
     {
         return this.getModuleIDs(module, true);
     }
 
-    private TIntSet getModuleIDs(Module module, boolean create)
+    private Set<Integer> getModuleIDs(Module module, boolean create)
     {
-        TIntSet IDs = this.moduleTasks.get(module);
+        Set<Integer> IDs = this.moduleTasks.get(module);
         if (create && IDs == null)
         {
-            this.moduleTasks.put(module, IDs = new TIntHashSet());
+            this.moduleTasks.put(module, IDs = new HashSet<>());
         }
         return IDs;
     }
@@ -93,7 +92,7 @@ public class BukkitTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final TIntSet tasks = this.getModuleIDs(module);
+        final Set<Integer> tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.scheduleSyncDelayedTask(this.corePlugin, task, delay);
         if (taskID > -1)
@@ -109,7 +108,7 @@ public class BukkitTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final TIntSet tasks = this.getModuleIDs(module);
+        final Set<Integer> tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.runTaskTimer(this.corePlugin, task, delay, interval).getTaskId();
         if (taskID > -1)
@@ -130,7 +129,7 @@ public class BukkitTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final TIntSet tasks = this.getModuleIDs(module);
+        final Set<Integer> tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.runTaskLaterAsynchronously(this.corePlugin, task, delay).getTaskId();
         if (taskID > -1)
@@ -146,7 +145,7 @@ public class BukkitTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final TIntSet tasks = this.getModuleIDs(module);
+        final Set<Integer> tasks = this.getModuleIDs(module);
         final Task task = new Task(runnable, tasks);
         final int taskID = this.bukkitScheduler.runTaskTimerAsynchronously(this.corePlugin, task, delay, interval).getTaskId();
         if (taskID > -1)
@@ -166,7 +165,7 @@ public class BukkitTaskManager implements TaskManager
     public void cancelTask(Module module, int ID)
     {
         this.bukkitScheduler.cancelTask(ID);
-        TIntSet IDs = this.getModuleIDs(module, false);
+        Set<Integer> IDs = this.getModuleIDs(module, false);
         if (IDs != null)
         {
             IDs.remove(ID);
@@ -175,13 +174,12 @@ public class BukkitTaskManager implements TaskManager
 
     public void cancelTasks(Module module)
     {
-        TIntSet taskIDs = this.moduleTasks.remove(module);
+        Set<Integer> taskIDs = this.moduleTasks.remove(module);
         if (taskIDs != null)
         {
-            TIntIterator it = taskIDs.iterator();
-            while (it.hasNext())
+            for (Integer taskID : taskIDs)
             {
-                this.bukkitScheduler.cancelTask(it.next());
+                this.bukkitScheduler.cancelTask(taskID);
             }
         }
     }
@@ -220,9 +218,9 @@ public class BukkitTaskManager implements TaskManager
     {
         protected int taskID;
         private final Runnable task;
-        private final TIntSet taskIDs;
+        private final Set<Integer> taskIDs;
 
-        public Task(Runnable task, TIntSet taskIDs)
+        public Task(Runnable task, Set<Integer> taskIDs)
         {
             this.task = task;
             this.taskIDs = taskIDs;

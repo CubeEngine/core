@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -32,13 +33,11 @@ import org.bukkit.help.HelpTopic;
 
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.Dispatcher;
-import de.cubeisland.engine.command.util.property.PropertyHolder;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
-import gnu.trove.set.hash.THashSet;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
@@ -167,7 +166,7 @@ public class CommandInjector
 
     public void removeCommands(Module module)
     {
-        for (Command command : new THashSet<>(getCommandMap().getCommands()))
+        for (Command command : new HashSet<>(getCommandMap().getCommands()))
         {
             if (command instanceof WrappedCommand)
             {
@@ -211,7 +210,7 @@ public class CommandInjector
 
     public void removeCommands()
     {
-        for (Command command : new THashSet<>(getCommandMap().getCommands()))
+        for (Command command : new HashSet<>(getCommandMap().getCommands()))
         {
             if (command instanceof WrappedCommand)
             {
