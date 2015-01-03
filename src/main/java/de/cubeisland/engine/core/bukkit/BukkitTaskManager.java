@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
-import de.cubeisland.engine.core.task.worker.CoreThreadFactory;
+import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 

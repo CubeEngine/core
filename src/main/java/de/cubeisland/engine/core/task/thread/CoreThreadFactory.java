@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.task.worker;
+package de.cubeisland.engine.core.task.thread;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.logscribe.LogLevel;
 
 public class CoreThreadFactory extends BaseThreadFactory
 {
@@ -33,32 +34,6 @@ public class CoreThreadFactory extends BaseThreadFactory
     @Override
     protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        return new CoreThread(threadGroup, r, name, this.core);
-    }
-
-    private static class CoreThread extends Thread
-    {
-        private final Core core;
-
-        public CoreThread(ThreadGroup threadGroup, Runnable r, String name, Core core)
-        {
-            super(threadGroup, r, name);
-            this.core = core;
-            this.core.getLog().debug("Creating thread: {}", name);
-        }
-
-        @Override
-        public synchronized void start()
-        {
-            super.start();
-            this.core.getLog().debug("Started thread: {}", this.getName());
-        }
-
-        @Override
-        public void interrupt()
-        {
-            super.interrupt();
-            this.core.getLog().debug("Interrupted thread: {}", this.getName());
-        }
+        return new LoggingThread(threadGroup, r, name, this.core.getLog(), LogLevel.TRACE);
     }
 }

@@ -90,7 +90,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
         dsConf.addDataSourceProperty("connectionCollation", "utf8_general_ci");
         dsConf.setMinimumIdle(5);
         dsConf.setMaximumPoolSize(20);
-        dsConf.setThreadFactory(core.getTaskManager().getThreadFactory());
+        dsConf.setThreadFactory(threadFactory);
         dataSource = new HikariDataSource(dsConf);
         Connection connection = dataSource.getConnection();
         ResultSet resultSet = connection.prepareStatement("SHOW variables where Variable_name='wait_timeout'").executeQuery();
