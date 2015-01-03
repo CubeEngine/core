@@ -18,6 +18,8 @@
 package de.cubeisland.engine.core.bukkit.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.command.Command;
@@ -174,6 +176,7 @@ public class WrappedCommand extends Command
         CommandInvocation invocation = newInvocation(source, label, args);
         List<String> suggestions = this.command.getSuggestions(invocation);
         core.getCommandManager().logTabCompletion(source, command, args);
+        Collections.sort(suggestions);
         return suggestions;
     }
 

@@ -30,6 +30,13 @@ public class MethodicCommand extends BasicMethodicCommand
     }
 
     @Override
+    protected boolean run(BaseCommandContext commandContext)
+    {
+        commandContext.getInvocation().setProperty(new ModuleProvider(this.getDescriptor().valueFor(ModuleProvider.class)));
+        return super.run(commandContext);
+    }
+
+    @Override
     protected BaseCommandContext buildContext(CommandInvocation invocation)
     {
         return new CommandContext(invocation, this);
