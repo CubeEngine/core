@@ -170,7 +170,7 @@ public class NBTUtils
             NBTTagCompound compound = (NBTTagCompound)nbtBase;
             for (String key : (Set<String>)compound.c())
             {
-                map.setExactNode(key,convertNBTToNode(compound.get(key)));
+                map.set(key, convertNBTToNode(compound.get(key)));
             }
             return map;
         }

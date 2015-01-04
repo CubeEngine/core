@@ -51,7 +51,7 @@ public class LocationConverter extends SingleClassConverter<Location>
         loc.put("z", location.getZ());
         loc.put("yaw", location.getYaw());
         loc.put("pitch", location.getPitch());
-        return Node.wrapIntoNode(loc);
+        return manager.convertToNode(loc);
     }
 
     @Override

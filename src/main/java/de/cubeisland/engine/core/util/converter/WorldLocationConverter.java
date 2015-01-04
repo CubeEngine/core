@@ -38,7 +38,7 @@ public class WorldLocationConverter extends SingleClassConverter<WorldLocation>
         loc.put("z", location.z);
         loc.put("yaw", location.yaw);
         loc.put("pitch", location.pitch);
-        return Node.wrapIntoNode(loc);
+        return manager.convertToNode(loc);
     }
 
     @Override

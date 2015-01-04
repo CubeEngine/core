@@ -28,7 +28,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.ExceptionHandlerProperty;
+import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.core.command.CommandContainer;
+import de.cubeisland.engine.core.command.ExceptionHandler;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
@@ -42,6 +45,8 @@ public abstract class ConversationCommand extends CommandContainer implements Li
     {
         super(module);
         module.getCore().getEventManager().registerListener(module, this);
+
+        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(module.getCore())));
     }
 
     public Module getModule()

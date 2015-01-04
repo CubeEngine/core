@@ -31,9 +31,9 @@ public class BlockVector3Converter extends SingleClassConverter<BlockVector3>
     public Node toNode(BlockVector3 blockVector3, ConverterManager converterManager) throws ConversionException
     {
         MapNode mapNode = MapNode.emptyMap();
-        mapNode.setExactNode("x", new IntNode(blockVector3.x));
-        mapNode.setExactNode("y", new IntNode(blockVector3.y));
-        mapNode.setExactNode("z", new IntNode(blockVector3.z));
+        mapNode.set("x", new IntNode(blockVector3.x));
+        mapNode.set("y", new IntNode(blockVector3.y));
+        mapNode.set("z", new IntNode(blockVector3.z));
         return mapNode;
     }
 
@@ -42,9 +42,9 @@ public class BlockVector3Converter extends SingleClassConverter<BlockVector3>
     {
         if (node instanceof MapNode)
         {
-            Node x = ((MapNode)node).getExactNode("x");
-            Node y = ((MapNode)node).getExactNode("y");
-            Node z = ((MapNode)node).getExactNode("z");
+            Node x = ((MapNode)node).get("x");
+            Node y = ((MapNode)node).get("y");
+            Node z = ((MapNode)node).get("z");
             return new BlockVector3((Integer)converterManager.convertFromNode(x, Integer.class),
                                     (Integer)converterManager.convertFromNode(y, Integer.class),
                                     (Integer)converterManager.convertFromNode(z, Integer.class));

@@ -18,13 +18,13 @@
 package de.cubeisland.engine.core.util.formatter;
 
 import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.BasicConverter;
+import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.ChatFormat;
 
-public class ChatFormatConverter extends BasicConverter<ChatFormat>
+public class ChatFormatConverter extends SimpleConverter<ChatFormat>
 {
     @Override
     public Node toNode(ChatFormat object) throws ConversionException

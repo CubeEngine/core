@@ -102,7 +102,7 @@ public class NBTCodec extends FileCodec
         MapNode values = MapNode.emptyMap();
         for (Entry<String, Tag<?>> entry : tags.entrySet())
         {
-            values.setExactNode(entry.getKey(), this.toNode(entry.getValue()));
+            values.set(entry.getKey(), this.toNode(entry.getValue()));
         }
         return values;
     }
@@ -111,7 +111,7 @@ public class NBTCodec extends FileCodec
     {
         for (Entry<String, Tag<?>> entry : tags.entrySet())
         {
-            values.setExactNode(entry.getKey(),this.toNode(entry.getValue()));
+            values.set(entry.getKey(), this.toNode(entry.getValue()));
         }
     }
 

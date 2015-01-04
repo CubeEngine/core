@@ -172,19 +172,19 @@ public class CuboidBlockClipboard
         public Node toNode(CuboidBlockClipboard object, ConverterManager manager) throws ConversionException
         {
             MapNode result = MapNode.emptyMap();
-            result.setExactNode("width",new IntNode(object.size.x));
-            result.setExactNode("height",new IntNode(object.size.y));
-            result.setExactNode("length",new IntNode(object.size.z));
+            result.set("width", new IntNode(object.size.x));
+            result.set("height", new IntNode(object.size.y));
+            result.set("length", new IntNode(object.size.z));
             if (object.relative != null)
             {
                 MapNode relative = MapNode.emptyMap();
-                result.setExactNode("relative",relative);
-                relative.setExactNode("x",new IntNode(object.relative.x));
-                relative.setExactNode("y",new IntNode(object.relative.y));
-                relative.setExactNode("z",new IntNode(object.relative.z));
+                result.set("relative", relative);
+                relative.set("x", new IntNode(object.relative.x));
+                relative.set("y", new IntNode(object.relative.y));
+                relative.set("z", new IntNode(object.relative.z));
             }
             ListNode tileEntities = ListNode.emptyList();
-            result.setExactNode("tileentities",tileEntities);
+            result.set("tileentities", tileEntities);
             Map<Material,Byte> materials = new HashMap<>();
             object.mappedMaterials = new HashMap<>();
             Byte[] blocks = new Byte[object.size.x * object.size.y * object.size.z];
@@ -215,9 +215,9 @@ public class CuboidBlockClipboard
                     }
                 }
             }
-            result.setExactNode("materials", manager.convertToNode(object.mappedMaterials));
-            result.setExactNode("blocks", manager.convertToNode(blocks));
-            result.setExactNode("data", manager.convertToNode(bData));
+            result.set("materials", manager.convertToNode(object.mappedMaterials));
+            result.set("blocks", manager.convertToNode(blocks));
+            result.set("data", manager.convertToNode(bData));
             return result;
         }
 
