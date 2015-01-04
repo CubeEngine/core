@@ -71,10 +71,15 @@ public class HelpCommand implements CommandBase
         sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, helpTarget.getDescriptor().getDescription()));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
+        if (labels.isEmpty())
+        {
+            labels.add("");
+        }
         if ("?".equals(labels.get(labels.size() - 1)))
         {
             labels.remove(labels.size() - 1);
         }
+
         sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(invocation, labels.toArray(new String[labels.size()])));
         sender.sendMessage(" ");
 

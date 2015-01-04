@@ -47,6 +47,7 @@ public abstract class ConversationCommand extends CommandContainer implements Li
         module.getCore().getEventManager().registerListener(module, this);
 
         ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(module.getCore())));
+        this.registerSubCommands();
     }
 
     public Module getModule()
@@ -116,5 +117,11 @@ public abstract class ConversationCommand extends CommandContainer implements Li
     public void removeUser(User user)
     {
         this.usersInMode.remove(user.getUniqueId());
+    }
+
+    @Override
+    protected boolean selfExecute(CommandInvocation invocation)
+    {
+        return super.selfExecute(invocation);
     }
 }
