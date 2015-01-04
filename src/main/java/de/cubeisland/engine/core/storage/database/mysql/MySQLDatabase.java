@@ -26,8 +26,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 
-import com.avaje.ebean.config.MatchingNamingConvention;
-import com.avaje.ebean.config.TableName;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.cubeisland.engine.core.Core;
@@ -45,6 +43,9 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
+import org.jooq.conf.MappedSchema;
+import org.jooq.conf.MappedTable;
+import org.jooq.conf.RenderMapping;
 import org.jooq.conf.Settings;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
@@ -56,17 +57,11 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 public class MySQLDatabase extends AbstractPooledDatabase
 {
     private final MySQLDatabaseConfiguration config;
-
-    private static final char NAME_QUOTE = '`';
-    private static final char STRING_QUOTE = '\'';
-    private static String tablePrefix;
-
-    private final ListenableExecutorService fetchExecutorService;
     private final HikariDataSource dataSource;
+    private final ListenableExecutorService fetchExecutorService;
 
     private final Settings settings;
-
-    private DatabaseSchema schema;
+    private final MappedSchema mappedSchema;
 
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
@@ -92,24 +87,29 @@ public class MySQLDatabase extends AbstractPooledDatabase
         dsConf.setMaximumPoolSize(20);
         dsConf.setThreadFactory(threadFactory);
         dataSource = new HikariDataSource(dsConf);
-        Connection connection = dataSource.getConnection();
-        ResultSet resultSet = connection.prepareStatement("SHOW variables where Variable_name='wait_timeout'").executeQuery();
-        if (resultSet.next())
-        {
-            final int TIMEOUT_DELTA = 60;
-            int second = resultSet.getInt("Value") - TIMEOUT_DELTA;
-            if (second <= 0)
-            {
-                second += TIMEOUT_DELTA;
-            }
-            dataSource.setIdleTimeout(second);
-            dataSource.setMaxLifetime(second);
-        }
-        connection.close();
-        this.schema = new DatabaseSchema(config.database);
-        this.tablePrefix = this.config.tablePrefix;
 
+        try (Connection connection = dataSource.getConnection())
+        {
+            try (PreparedStatement s = connection.prepareStatement("SHOW variables WHERE Variable_name='wait_timeout'"))
+            {
+                ResultSet result = s.executeQuery();
+                if (result.next())
+                {
+                    final int TIMEOUT_DELTA = 60;
+                    int second = result.getInt("Value") - TIMEOUT_DELTA;
+                    if (second <= 0)
+                    {
+                        second += TIMEOUT_DELTA;
+                    }
+                    dataSource.setIdleTimeout(second);
+                    dataSource.setMaxLifetime(second);
+                }
+            }
+        }
+
+        this.mappedSchema = new MappedSchema().withInput(config.database);
         this.settings = new Settings();
+        this.settings.withRenderMapping(new RenderMapping().withSchemata(this.mappedSchema));
         this.settings.setExecuteLogging(false);
     }
 
@@ -129,14 +129,11 @@ public class MySQLDatabase extends AbstractPooledDatabase
 
     private boolean updateTableStructure(TableUpdateCreator updater)
     {
+        final String query = "SELECT table_name, table_comment FROM INFORMATION_SCHEMA.TABLES " +
+                             "WHERE table_schema = ? AND table_name = ?";
         try
         {
-            Connection connection = this.getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT table_name, table_comment \n" +
-                                                                          "FROM INFORMATION_SCHEMA.TABLES \n" +
-                                                                          "WHERE table_schema = ?\n" +
-                                                                          "AND table_name = ?");
-            ResultSet resultSet = this.bindValues(stmt, this.config.database, updater.getName()).executeQuery();
+            ResultSet resultSet = query(query, this.config.database, updater.getName());
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
@@ -148,25 +145,18 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 }
                 else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
-
-                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}",
-                                            updater.getName(), dbVersion.toString(), version.toString());
-                    try
+                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}", updater.getName(), dbVersion.toString(), version.toString());
+                    try (Connection connection = this.getConnection())
                     {
                         updater.update(connection, dbVersion);
                     }
-                    catch (SQLException ex)
-                    {
-                        throw new IllegalStateException(ex);
-                    }
                     this.core.getLog().info("{} got updated to {}", updater.getName(), version.toString());
-                    this.bindValues(this.prepareStatement("ALTER TABLE " + updater.getName() + " COMMENT = ?", connection), version.toString()).execute();
-                    connection.close(); // return the connection to the pool
+                    execute("ALTER TABLE " + updater.getName() + " COMMENT = ?", version.toString());
                 }
                 return true;
             }
         }
-        catch (Exception e)
+        catch (SQLException e)
         {
             this.core.getLog().warn(e, "Could not execute structure update for the table {}", updater.getName());
         }
@@ -177,9 +167,28 @@ public class MySQLDatabase extends AbstractPooledDatabase
      * Creates or updates the table for given entity
      *
      * @param table
-     * @param <T>
      */
-    public <T extends TableCreator> void registerTable(T table)
+    public void registerTable(TableCreator<?> table)
+    {
+        initializeTable(table);
+        final String name = table.getName();
+        registerTableMapping(name);
+        this.core.getLog().debug("Database-Table {0} registered!", name);
+    }
+
+    private void registerTableMapping(String name)
+    {
+        for (final MappedTable mappedTable : this.mappedSchema.getTables())
+        {
+            if (name.equals(mappedTable.getInput()))
+            {
+                return;
+            }
+        }
+        this.mappedSchema.withTables(new MappedTable().withInput(name).withOutput(getTablePrefix() + name));
+    }
+
+    protected void initializeTable(TableCreator<?> table)
     {
         if (table instanceof TableUpdateCreator && this.updateTableStructure((TableUpdateCreator)table))
         {
@@ -195,17 +204,15 @@ public class MySQLDatabase extends AbstractPooledDatabase
         {
             throw new IllegalStateException("Cannot create table " + table.getName(), ex);
         }
-        this.schema.addTable(table);
-        this.core.getLog().debug("Database-Table {0} registered!", table.getName());
     }
 
     @Override
-    public <T extends Table> void registerTable(Class<T> clazz)
+    public void registerTable(Class<? extends Table<?>> clazz)
     {
         try
         {
-            Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
-            T table = constructor.newInstance(this.config.tablePrefix);
+            Constructor<? extends Table<?>> constructor = clazz.getDeclaredConstructor(String.class);
+            Table<?> table = constructor.newInstance(this.config.tablePrefix);
             this.registerTable(table);
         }
         catch (ReflectiveOperationException e)
@@ -229,10 +236,8 @@ public class MySQLDatabase extends AbstractPooledDatabase
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL)
-                                                   .set(new DataSourceConnectionProvider(this.dataSource))
-                                                   .set(new JooqLogger())
-                                                   .set(settings));
+        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL).set(new DataSourceConnectionProvider(
+            this.dataSource)).set(new JooqLogger()).set(settings));
     }
 
     public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)
@@ -276,48 +281,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
         });
     }
 
-    /**
-     * Prepares a table name. (Quoting)
-     *
-     * @param name the name to prepare
-     * @return the prepared name
-     */
-    public static String prepareTableName(String name)
-    {
-        expectNotNull(name, "The name must not be null!");
-
-        return NAME_QUOTE + tablePrefix + name + NAME_QUOTE;
-    }
-
-    /**
-     * Prepares a field name. (Quoting).
-     *
-     * @param name the fieldname to prepare
-     * @return the prepared fieldname
-     */
-    public static String prepareColumnName(String name)
-    {
-        expectNotNull(name, "The name must not be null!");
-
-        int dotOffset = name.indexOf('.');
-        if (dotOffset >= 0)
-        {
-            return prepareTableName(name.substring(0, dotOffset)) + '.' + NAME_QUOTE + name.substring(dotOffset + 1) + NAME_QUOTE;
-        }
-        return NAME_QUOTE + name + NAME_QUOTE;
-    }
-
-    /**
-     * Prepares a string. (Quoting).
-     *
-     * @param name the string to prepare
-     * @return the prepared string
-     */
-    public static String prepareString(String name)
-    {
-        return STRING_QUOTE + name + STRING_QUOTE;
-    }
-
     @Override
     public void shutdown()
     {
@@ -329,16 +292,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public String getName()
     {
         return "MySQL";
-    }
-
-    class NamingConvention extends MatchingNamingConvention
-    {
-        @Override
-        public TableName getTableName(Class<?> beanClass)
-        {
-            TableName tableName = super.getTableName(beanClass);
-            return new TableName(tableName.getCatalog(), tableName.getSchema(), prepareTableName(tableName.getName()));
-        }
     }
 
     @Override

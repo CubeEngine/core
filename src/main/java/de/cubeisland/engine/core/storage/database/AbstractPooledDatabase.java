@@ -132,17 +132,12 @@ public abstract class AbstractPooledDatabase implements Database
         });
     }
 
-    protected PreparedStatement createAndBindValues(String query, Object... params) throws SQLException
+    private PreparedStatement createAndBindValues(Connection c, String query, Object[] params) throws SQLException
     {
-        return this.bindValues(this.prepareStatement(query), params);
+        return this.bindValues(this.prepareStatement(c, query), params);
     }
 
-    private PreparedStatement createAndBindValues(Connection withConnection, String query, Object[] params) throws SQLException
-    {
-        return this.bindValues(this.prepareStatement(query, withConnection), params);
-    }
-
-    protected PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException
+    private PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException
     {
         for (int i = 0; i < params.length; ++i)
         {
@@ -161,20 +156,14 @@ public abstract class AbstractPooledDatabase implements Database
     public void shutdown()
     {
         this.taskQueue.shutdown();
+        this.executorService.shutdown();
     }
 
     @Override
-    public PreparedStatement prepareStatement(String statement) throws SQLException
+    public PreparedStatement prepareStatement(Connection connection, String statement) throws SQLException
     {
         expectNotNull(statement, "The statement must not be null!");
-        return this.getConnection().prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
-    }
-
-    @Override
-    public PreparedStatement prepareStatement(String statement, Connection withConnection) throws SQLException
-    {
-        expectNotNull(statement, "The statement must not be null!");
-        return withConnection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
+        return connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 
     @Override

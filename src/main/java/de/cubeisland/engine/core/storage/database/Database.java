@@ -51,24 +51,13 @@ public interface Database
     Connection getConnection() throws SQLException;
 
     /**
-     * Prepares the statement
-     * <p>remember to close the connection to give it back to the connection-pool
-     *
-     * @param statement the statement
-     * @return the prepared statement
-     * @throws SQLException
-     */
-    PreparedStatement prepareStatement(String statement) throws SQLException;
-
-    /**
      * Returns the statement created with given connection
      *
      * @param statement the statement
-     * @param withConnection the connection
      * @return the prepared statement
      * @throws SQLException
      */
-    PreparedStatement prepareStatement(String statement, Connection withConnection) throws SQLException;
+    PreparedStatement prepareStatement(Connection c, String statement) throws SQLException;
 
     /**
      * Executes a query.
@@ -127,9 +116,9 @@ public interface Database
 
     DatabaseMetaData getMetaData() throws SQLException;
 
-    public <T extends TableCreator> void registerTable(T table);
+    public void registerTable(TableCreator<?> table);
 
-    public <T extends Table> void registerTable(Class<T> table);
+    public void registerTable(Class<? extends Table<?>> table);
 
     public DatabaseConfiguration getDatabaseConfig();
 
