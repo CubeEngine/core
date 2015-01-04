@@ -52,8 +52,6 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 
-import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
-
 public class MySQLDatabase extends AbstractPooledDatabase
 {
     private final MySQLDatabaseConfiguration config;

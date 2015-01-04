@@ -47,10 +47,10 @@ public abstract class AbstractPooledDatabase implements Database
     protected AbstractPooledDatabase(Core core)
     {
         this.core = core;
-        this.executorService = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
-        this.executor = Executors.newSingleThreadExecutor(core.getTaskManager().getThreadFactory());
-        this.taskQueue = new AsyncTaskQueue(this.executorService);
         this.threadFactory = new DatabaseThreadFactory();
+        this.executorService = Executors.newSingleThreadExecutor(this.threadFactory);
+        this.executor = Executors.newSingleThreadExecutor(this.threadFactory);
+        this.taskQueue = new AsyncTaskQueue(this.executorService);
     }
 
     @Override
@@ -156,6 +156,7 @@ public abstract class AbstractPooledDatabase implements Database
     public void shutdown()
     {
         this.taskQueue.shutdown();
+        this.executor.shutdown();
         this.executorService.shutdown();
     }
 
