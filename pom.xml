@@ -148,15 +148,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Is this even needed? Did not compile with it because it could not find the artifact
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>minecraft-server</artifactId>
-      <version>${minecraftVersion}</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.jooq</groupId>
       <artifactId>jooq</artifactId>
