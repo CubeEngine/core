@@ -18,15 +18,23 @@
 package de.cubeisland.engine.core.storage.database;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.task.worker.AsyncTaskQueue;
+import org.jooq.Query;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.ResultQuery;
+import org.jooq.exception.DataAccessException;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -36,10 +44,7 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
  */
 public abstract class AbstractPooledDatabase implements Database
 {
-    private final ExecutorService executorService;
-    private final AsyncTaskQueue taskQueue;
-
-    private final ExecutorService executor;
+    private final ListeningExecutorService executorService;
 
     protected final Core core;
     protected final ThreadFactory threadFactory;
@@ -48,93 +53,137 @@ public abstract class AbstractPooledDatabase implements Database
     {
         this.core = core;
         this.threadFactory = new DatabaseThreadFactory();
-        this.executorService = Executors.newSingleThreadExecutor(this.threadFactory);
-        this.executor = Executors.newSingleThreadExecutor(this.threadFactory);
-        this.taskQueue = new AsyncTaskQueue(this.executorService);
+        this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(this.threadFactory));
     }
 
     @Override
-    public ResultSet query(String query, Object... params) throws SQLException
+    public ListenableFuture<ResultSet> query(final String query, final Object... params)
     {
-        try (Connection connection = this.getConnection())
-        {
-            return this.createAndBindValues(connection, query, params).executeQuery();
-        }
-        catch (SQLException e)
-        {
-            throw new SQLException("SQL-Error while doing a query: " + query, e);
-        }
-    }
-
-    @Override
-    public int update(String query, Object... params) throws SQLException
-    {
-        try  (Connection connection = this.getConnection())
-        {
-            return this.createAndBindValues(connection, query, params).executeUpdate();
-        }
-        catch (SQLException e)
-        {
-            throw new SQLException("SQL-Error while doing an update-query: " + query, e);
-        }
-    }
-
-    @Override
-    public void asyncUpdate(final String query, final Object... params)
-    {
-        this.taskQueue.addTask(new Runnable()
+        return this.executorService.submit(new Callable<ResultSet>()
         {
             @Override
-            public void run()
+            public ResultSet call() throws Exception
             {
-                try
+                try (Connection connection = getConnection())
                 {
-                    update(query, params);
+                    try (PreparedStatement stmt = prepareStatement(connection, query))
+                    {
+                        bindValues(stmt, params);
+                        return stmt.executeQuery();
+                    }
                 }
-                catch (SQLException ex)
+                catch (SQLException e)
                 {
-                    core.getLog().error(ex, "An asynchronous query failed!");
+                    throw new SQLException("SQL-Error while doing a query: " + query, e);
                 }
             }
         });
     }
 
     @Override
-    public boolean execute(String query, Object... params) throws SQLException
+    public <R extends Record> ListenableFuture<Result<R>> query(final ResultQuery<R> query)
     {
-        try (Connection connection = this.getConnection())
-        {
-            return this.createAndBindValues(connection, query, params).execute();
-        }
-        catch (SQLException e)
-        {
-            throw new SQLException("SQL-Error while doing an execute-query: " + query, e);
-        }
-    }
-
-    @Override
-    public void asyncExecute(final String query, final Object... params)
-    {
-        this.taskQueue.addTask(new Runnable()
+        return this.executorService.submit(new Callable<Result<R>>()
         {
             @Override
-            public void run()
+            public Result<R> call() throws Exception
             {
                 try
                 {
-                    execute(query, params);
+                    return query.fetch();
                 }
-                catch (SQLException ex)
+                catch (DataAccessException e)
                 {
-                    core.getLog().error(ex, "An asynchronous query failed!");
+                    core.getLog().error("An error occurred while fetching later", e);
+                    throw e;
                 }
             }
         });
     }
 
-    private PreparedStatement createAndBindValues(Connection c, String query, Object[] params) throws SQLException
+    @Override
+    public ListenableFuture<Boolean> execute(final String query, final Object... params)
     {
-        return this.bindValues(this.prepareStatement(c, query), params);
+        return this.executorService.submit(new Callable<Boolean>()
+        {
+            @Override
+            public Boolean call() throws Exception
+            {
+                try (Connection connection = getConnection())
+                {
+                    try (PreparedStatement stmt = prepareStatement(connection, query))
+                    {
+                        bindValues(stmt, params);
+                        return stmt.execute();
+                    }
+                }
+                catch (SQLException e)
+                {
+                    throw new SQLException("SQL-Error while doing an execute-query: " + query, e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public ListenableFuture<Integer> update(final String query, final Object... params)
+    {
+        return this.executorService.submit(new Callable<Integer>()
+        {
+            @Override
+            public Integer call() throws Exception
+            {
+                try  (Connection connection = getConnection())
+                {
+                    try (PreparedStatement stmt = prepareStatement(connection, query))
+                    {
+                        bindValues(stmt, params);
+                        return stmt.executeUpdate();
+                    }
+                }
+                catch (SQLException e)
+                {
+                    throw new SQLException("SQL-Error while doing an update-query: " + query, e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public ListenableFuture<Integer> update(final Query query)
+    {
+        return this.executorService.submit(new Callable<Integer>()
+        {
+            @Override
+            public Integer call() throws Exception
+            {
+                try
+                {
+                    return query.execute();
+                }
+                catch (DataAccessException e)
+                {
+                    core.getLog().error("An error occurred while executing later", e);
+                    throw e;
+                }
+            }
+        });
+    }
+
+    @Override
+    public ListenableFuture<DatabaseMetaData> getMetaData()
+    {
+        return this.executorService.submit(new Callable<DatabaseMetaData>()
+        {
+            @Override
+            public DatabaseMetaData call() throws Exception
+            {
+                try (Connection c = getConnection())
+                {
+                    return c.getMetaData();
+                }
+            }
+        });
     }
 
     private PreparedStatement bindValues(PreparedStatement statement, Object... params) throws SQLException
@@ -147,16 +196,8 @@ public abstract class AbstractPooledDatabase implements Database
     }
 
     @Override
-    public void queueOperation(Runnable operation)
-    {
-        this.taskQueue.addTask(operation);
-    }
-
-    @Override
     public void shutdown()
     {
-        this.taskQueue.shutdown();
-        this.executor.shutdown();
         this.executorService.shutdown();
     }
 
@@ -165,11 +206,5 @@ public abstract class AbstractPooledDatabase implements Database
     {
         expectNotNull(statement, "The statement must not be null!");
         return connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
-    }
-
-    @Override
-    public ExecutorService getExecutor()
-    {
-        return this.executor;
     }
 }

@@ -23,7 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import de.cubeisland.engine.core.task.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -65,9 +65,10 @@ public interface Database
      * @param query  the query to execute
      * @param params the params
      * @return the ResultSet
-     * @throws SQLException
      */
-    ResultSet query(String query, Object... params) throws SQLException;
+    ListenableFuture<ResultSet> query(String query, Object... params);
+
+    <R extends Record> ListenableFuture<Result<R>> query(final ResultQuery<R> query);
 
     /**
      * Executes a query.
@@ -77,15 +78,7 @@ public interface Database
      * @return true if it succeeded
      * @throws SQLException
      */
-    boolean execute(String query, Object... params) throws SQLException;
-
-    /**
-     * Executes a query asynchronous.
-     *
-     * @param query  the query
-     * @param params the params
-     */
-    void asyncExecute(String query, Object... params);
+    ListenableFuture<Boolean> execute(String query, Object... params);
 
     /**
      * Executes an update query.
@@ -95,26 +88,13 @@ public interface Database
      * @return the affected rows
      * @throws SQLException
      */
-    int update(String query, Object... params) throws SQLException;
+    ListenableFuture<Integer> update(String query, Object... params);
 
-    /**
-     * Executes an update query asynchronous.
-     *
-     * @param query  the query
-     * @param params the params
-     */
-    void asyncUpdate(String query, Object... params);
-
-    /**
-     * Queues in an operation to execute later.
-     *
-     * @param runnable the operation to execute.
-     */
-    void queueOperation(Runnable runnable);
+    ListenableFuture<Integer> update(Query query);
 
     void shutdown();
 
-    DatabaseMetaData getMetaData() throws SQLException;
+    ListenableFuture<DatabaseMetaData> getMetaData();
 
     public void registerTable(TableCreator<?> table);
 
@@ -124,11 +104,5 @@ public interface Database
 
     DSLContext getDSL();
 
-    ListenableFuture<Integer> executeLater(Query query);
-
-    <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query);
-
     String getTablePrefix();
-
-    java.util.concurrent.ExecutorService getExecutor();
 }

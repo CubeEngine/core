@@ -242,14 +242,14 @@
               <pattern>com.fasterxml.jackson</pattern>
               <shadedPattern>${externalPackage}.jackson</shadedPattern>
             </relocation>
+            <relocation>
+              <pattern>com.google</pattern>
+              <shadedPattern>${externalPackage}.guava</shadedPattern>
+            </relocation>
             -->
             <relocation>
               <pattern>io.netty</pattern>
               <shadedPattern>${externalPackage}.netty</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>com.google</pattern>
-              <shadedPattern>${externalPackage}.guava</shadedPattern>
             </relocation>
             <relocation>
               <pattern>com.jolbox.bonecp</pattern>

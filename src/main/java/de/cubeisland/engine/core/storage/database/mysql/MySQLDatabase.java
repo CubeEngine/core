@@ -20,11 +20,10 @@ package de.cubeisland.engine.core.storage.database.mysql;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -34,20 +33,13 @@ import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
-import de.cubeisland.engine.core.task.ListenableExecutorService;
-import de.cubeisland.engine.core.task.ListenableFuture;
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
 import org.jooq.conf.MappedSchema;
 import org.jooq.conf.MappedTable;
 import org.jooq.conf.RenderMapping;
 import org.jooq.conf.Settings;
-import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
@@ -56,7 +48,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
-    private final ListenableExecutorService fetchExecutorService;
 
     private final Settings settings;
     private final MappedSchema mappedSchema;
@@ -64,7 +55,6 @@ public class MySQLDatabase extends AbstractPooledDatabase
     public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
-        this.fetchExecutorService = new ListenableExecutorService();
         this.config = config;
 
         HikariConfig dsConf = new HikariConfig();
@@ -131,7 +121,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                              "WHERE table_schema = ? AND table_name = ?";
         try
         {
-            ResultSet resultSet = query(query, this.config.database, updater.getName());
+            ResultSet resultSet = query(query, this.config.database, updater.getName()).get();
             if (resultSet.next())
             {
                 Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
@@ -154,7 +144,7 @@ public class MySQLDatabase extends AbstractPooledDatabase
                 return true;
             }
         }
-        catch (SQLException e)
+        catch (InterruptedException | ExecutionException | SQLException e)
         {
             this.core.getLog().warn(e, "Could not execute structure update for the table {}", updater.getName());
         }
@@ -226,57 +216,10 @@ public class MySQLDatabase extends AbstractPooledDatabase
     }
 
     @Override
-    public DatabaseMetaData getMetaData() throws SQLException
-    {
-        return this.getConnection().getMetaData();
-    }
-
-    @Override
     public DSLContext getDSL()
     {
         return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL).set(new DataSourceConnectionProvider(
             this.dataSource)).set(new JooqLogger()).set(settings));
-    }
-
-    public <R extends Record> ListenableFuture<Result<R>> fetchLater(final ResultQuery<R> query)
-    {
-        return this.fetchExecutorService.submit(new Callable<Result<R>>()
-        {
-            @Override
-            public Result<R> call() throws Exception
-            {
-                try
-                {
-                    return query.fetch();
-                }
-                catch (DataAccessException e)
-                {
-                    core.getLog().error("An error occurred while fetching later", e);
-                    throw e;
-                }
-            }
-        });
-    }
-
-    @Override
-    public ListenableFuture<Integer> executeLater(final Query query)
-    {
-        return this.fetchExecutorService.submit(new Callable<Integer>()
-        {
-            @Override
-            public Integer call() throws Exception
-            {
-                try
-                {
-                    return query.execute();
-                }
-                catch (DataAccessException e)
-                {
-                    core.getLog().error("An error occurred while executing later", e);
-                    throw e;
-                }
-            }
-        });
     }
 
     @Override

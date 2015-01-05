@@ -21,7 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import de.cubeisland.engine.core.CubeEngine;
 import org.jooq.impl.UpdatableRecordImpl;
 
 public abstract class AsyncRecord<T extends AsyncRecord<T>> extends UpdatableRecordImpl<T>
@@ -37,7 +36,7 @@ public abstract class AsyncRecord<T extends AsyncRecord<T>> extends UpdatableRec
 
     private ExecutorService getExecutor()
     {
-        return CubeEngine.getCore().getDB().getExecutor();
+        throw new UnsupportedOperationException("Not implemented yet"); // TODO implement me
     }
 
     public Future<Integer> asyncUpdate()
