@@ -24,12 +24,12 @@ import javax.persistence.Transient;
 
 import org.bukkit.OfflinePlayer;
 
-import de.cubeisland.engine.core.storage.database.AsyncRecord;
+import org.jooq.impl.UpdatableRecordImpl;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 
-public class UserEntity extends AsyncRecord<UserEntity>
+public class UserEntity extends UpdatableRecordImpl<UserEntity>
 {
     @Transient
     private UUID uid = null;

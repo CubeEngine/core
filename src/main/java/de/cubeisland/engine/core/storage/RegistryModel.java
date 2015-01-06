@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.core.storage;
 
-import de.cubeisland.engine.core.storage.database.AsyncRecord;
+import org.jooq.impl.UpdatableRecordImpl;
 
 import static de.cubeisland.engine.core.storage.TableRegistry.TABLE_REGISTRY;
 
-public class RegistryModel extends AsyncRecord<RegistryModel>
+public class RegistryModel extends UpdatableRecordImpl<RegistryModel>
 {
     public RegistryModel()
     {
