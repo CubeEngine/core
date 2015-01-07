@@ -486,7 +486,7 @@ public class MaterialMatcher
         if (dataMap == null)
         {
             CubeEngine.getLog().warn("Unknown Block-Data: {} DATA: {}", mat, data);
-            return null;
+            return mat.name();
         }
         String itemName = dataMap.get(data);
         if (itemName == null)
