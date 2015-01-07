@@ -74,7 +74,7 @@ public class BukkitWorldManager extends AbstractWorldManager
                     for (World world : loadedWorlds)
                     {
                         WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);
-                        entity.insert();
+                        entity.asyncInsert();
                         worlds.put(world.getName(), entity);
                         worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
                         worldUUIDs.add(world.getUID());

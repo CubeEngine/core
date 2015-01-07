@@ -153,13 +153,13 @@ public class BukkitUserManager extends AbstractUserManager
                 return user;
             }
             userEntity.setValue(TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getValue(TABLE_USER.LASTNAME)));
-            userEntity.update();
+            userEntity.asyncUpdate();
         }
         if (create)
         {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
             User user = new User(core, offlinePlayer);
-            user.getEntity().insert();
+            user.getEntity().asyncInsert();
             this.cacheUser(user);
             return user;
         }
@@ -175,7 +175,7 @@ public class BukkitUserManager extends AbstractUserManager
             if (user == null)
             {
                 user = new User(core, player);
-                user.getEntity().insert();
+                user.getEntity().asyncInsert();
             }
             this.cacheUser(user);
         }
@@ -216,7 +216,7 @@ public class BukkitUserManager extends AbstractUserManager
                     scheduledForRemoval.remove(user.getUniqueId());
                     user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                     Profiler.startProfiling("removalTask");
-                    user.getEntity().update();
+                    user.getEntity().asyncUpdate();
                     core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling("removalTask", TimeUnit.MILLISECONDS));
                     if (user.isOnline())
                     {
