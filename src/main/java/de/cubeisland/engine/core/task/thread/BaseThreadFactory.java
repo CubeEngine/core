@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.task.thread;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import de.cubeisland.engine.core.contract.Nullable;
 
 public abstract class BaseThreadFactory implements ThreadFactory
 {

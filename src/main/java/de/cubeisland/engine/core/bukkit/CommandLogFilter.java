@@ -28,7 +28,8 @@ import org.apache.logging.log4j.message.Message;
 
 public class CommandLogFilter implements Filter
 {
-    private final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
+    private static final Object[] NO_ARGS = {};
+    private static final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
 
     @Override
     public Result getOnMismatch()
@@ -57,7 +58,7 @@ public class CommandLogFilter implements Filter
     @Override
     public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Message message, Throwable throwable)
     {
-        return isCommandLog(message.getFormat(), level, throwable, null);
+        return isCommandLog(message.getFormat(), level, throwable, NO_ARGS);
     }
 
     @Override
