@@ -389,8 +389,31 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             standOn = standOn.getWorld().getHighestBlockAt(location);
             y = standOn.getY() + 1;
-            // If would fall in lava tp on highest position.
-            // If there is still lava then you shall burn!
+
+            int blockX = location.getBlockX();
+            int blockZ = location.getBlockZ();
+            boolean found = false;
+            for (int i = -5; i <= 5; i+=2)
+            {
+                for (int j = -5; j <= 5; j+=2)
+                {
+                    Block highestBlockAt = standOn.getWorld().getHighestBlockAt(blockX + i, blockZ + j);
+                    System.out.println(highestBlockAt.getType());
+                    System.out.println(highestBlockAt.getLocation());
+                    if (highestBlockAt.getType() != Material.LAVA && highestBlockAt.getType() != Material.STATIONARY_LAVA)
+                    {
+                        standOn = highestBlockAt;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    break;
+                }
+            }
+            location.setX(standOn.getX());
+            location.setZ(standOn.getZ());
         }
         if (standOn.getType() == Material.FENCE || standOn.getType() == Material.NETHER_FENCE)
         {
