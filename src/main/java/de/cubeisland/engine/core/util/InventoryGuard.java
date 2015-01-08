@@ -36,6 +36,8 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 
+import static org.bukkit.event.inventory.InventoryAction.NOTHING;
+
 public class InventoryGuard implements Listener
 {
     private final Inventory inventory;
@@ -222,19 +224,19 @@ public class InventoryGuard implements Listener
             User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getUniqueId());
             if (user != null && this.users.contains(user))
             {
-                if (event.getAction().equals(InventoryAction.NOTHING))
+                if (event.getAction() == NOTHING)
                 {
                     return;
                 }
                 switch (event.getAction())
                 {
                     case UNKNOWN:
-                        System.out.print("######################## Unknown Inventory Stuff!?");
+                        module.getLog().debug("Unknown inventory action");
                         event.setCancelled(true);
                         user.updateInventory();
-                    return;
+                        return;
                     case NOTHING:
-                    return;
+                        return;
                 }
                 ItemStack cursor = event.getCursor();
                 ItemStack invent = event.getCurrentItem();
@@ -426,6 +428,8 @@ public class InventoryGuard implements Listener
                             return amountIn + itemStackToGoIn.getAmount() <= guardedItem.amount; // Not sure what happens assume full stack
                         }
                         return amountIn + missing <= guardedItem.amount; // Missing filling up
+                    default:
+                        throw new IllegalStateException("Unknown action");
                 }
             }
         }
@@ -442,33 +446,34 @@ public class InventoryGuard implements Listener
                 int amountIn = InventoryUtil.getAmountOf(this.inventory,itemStackToOut);
                 switch (action)
                 {
-                case PICKUP_ALL:
-                case HOTBAR_MOVE_AND_READD:
-                case SWAP_WITH_CURSOR:
-                case HOTBAR_SWAP:
-                case DROP_ALL_SLOT:
-                case MOVE_TO_OTHER_INVENTORY: // assume the complete stack
-                    return amountIn - itemStackToOut.getAmount() >= guardedItem.amount;
-                case PICKUP_SOME:
-                    if (item == null)
-                    {
+                    case PICKUP_ALL:
+                    case HOTBAR_MOVE_AND_READD:
+                    case SWAP_WITH_CURSOR:
+                    case HOTBAR_SWAP:
+                    case DROP_ALL_SLOT:
+                    case MOVE_TO_OTHER_INVENTORY: // assume the complete stack
+                        return amountIn - itemStackToOut.getAmount() >= guardedItem.amount;
+                    case PICKUP_SOME:
+                        if (item == null)
+                        {
+                            return amountIn - itemStackToOut.getAmount() >= guardedItem.amount; //no idea what happens assume full stack to be sure
+                        }
+                        if (itemStackToOut.getAmount() > itemStackToOut.getMaxStackSize()) // overstacked in inventory
+                        {
+                            // items that are over max stacksize get moved to cursor
+                            return amountIn - (itemStackToOut.getAmount() - itemStackToOut.getMaxStackSize()) >= guardedItem.amount;
+                        }
                         return amountIn - itemStackToOut.getAmount() >= guardedItem.amount; //no idea what happens assume full stack to be sure
-                    }
-                    if (itemStackToOut.getAmount() > itemStackToOut.getMaxStackSize()) // overstacked in inventory
-                    {
-                        // items that are over max stacksize get moved to cursor
-                        return amountIn - (itemStackToOut.getAmount() - itemStackToOut.getMaxStackSize()) >= guardedItem.amount;
-                    }
-                    return amountIn - itemStackToOut.getAmount() >= guardedItem.amount; //no idea what happens assume full stack to be sure
-                case PICKUP_HALF:
-                    return amountIn - ((itemStackToOut.getAmount()+1)/2) >= guardedItem.amount;
-                case PICKUP_ONE:
-                case DROP_ONE_SLOT:
-                    return amountIn - 1 >= guardedItem.amount;
-                case COLLECT_TO_CURSOR:
-                    return amountIn - Math.min(amountIn, itemStackToOut.getAmount()) >= guardedItem.amount;
+                    case PICKUP_HALF:
+                        return amountIn - ((itemStackToOut.getAmount()+1)/2) >= guardedItem.amount;
+                    case PICKUP_ONE:
+                    case DROP_ONE_SLOT:
+                        return amountIn - 1 >= guardedItem.amount;
+                    case COLLECT_TO_CURSOR:
+                        return amountIn - Math.min(amountIn, itemStackToOut.getAmount()) >= guardedItem.amount;
+                    default:
+                        throw new IllegalStateException("Unknown action");
                 }
-                System.out.print("#################################### This should be impossible");
             }
         }
         return false;
