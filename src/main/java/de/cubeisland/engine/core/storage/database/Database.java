@@ -22,8 +22,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -66,9 +66,9 @@ public interface Database
      * @param params the params
      * @return the ResultSet
      */
-    ListenableFuture<ResultSet> query(String query, Object... params);
+    CompletableFuture<ResultSet> query(String query, Object... params);
 
-    <R extends Record> ListenableFuture<Result<R>> query(final ResultQuery<R> query);
+    <R extends Record> CompletableFuture<Result<R>> query(final ResultQuery<R> query);
 
     /**
      * Executes a query.
@@ -78,7 +78,7 @@ public interface Database
      * @return true if it succeeded
      * @throws SQLException
      */
-    ListenableFuture<Boolean> execute(String query, Object... params);
+    CompletableFuture<Boolean> execute(String query, Object... params);
 
     /**
      * Executes an update query.
@@ -88,13 +88,13 @@ public interface Database
      * @return the affected rows
      * @throws SQLException
      */
-    ListenableFuture<Integer> update(String query, Object... params);
+    CompletableFuture<Integer> update(String query, Object... params);
 
-    ListenableFuture<Integer> update(Query query);
+    CompletableFuture<Integer> update(Query query);
 
     void shutdown();
 
-    ListenableFuture<DatabaseMetaData> getMetaData();
+    CompletableFuture<DatabaseMetaData> getMetaData();
 
     public void registerTable(TableCreator<?> table);
 

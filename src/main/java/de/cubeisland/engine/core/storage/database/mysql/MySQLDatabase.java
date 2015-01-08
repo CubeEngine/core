@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutionException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.storage.database.AbstractPooledDatabase;
+import de.cubeisland.engine.core.storage.database.AbstractDatabase;
 import de.cubeisland.engine.core.storage.database.DatabaseConfiguration;
 import de.cubeisland.engine.core.storage.database.Table;
 import de.cubeisland.engine.core.storage.database.TableCreator;
@@ -44,7 +44,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 
-public class MySQLDatabase extends AbstractPooledDatabase
+public class MySQLDatabase extends AbstractDatabase
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
