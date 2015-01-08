@@ -69,6 +69,10 @@ import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
+import static de.cubeisland.engine.core.util.BlockUtil.isNonObstructingSolidBlock;
+import static org.bukkit.Material.*;
+import static org.bukkit.block.BlockFace.DOWN;
+import static org.bukkit.block.BlockFace.UP;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -323,72 +327,57 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
         Block block = location.getBlock();
-        Block block1Up = block.getRelative(BlockFace.UP);
-        double y = location.getY();
+        Block block1Up = block.getRelative(UP);
         // Search for 2 non occluding blocks
         if ((location.getY() + 1 < location.getWorld().getMaxHeight())) // on top of the world
         {
             while (block.getType().isSolid() || block1Up.getType().isSolid())
             {
                 // signpost OR plates ...
-                if ((!block.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block.getType()))
-                    && (!block1Up.getType().isSolid() || BlockUtil.isNonObstructingSolidBlock(block1Up.getType())))
+                if ((!block.getType().isSolid() || isNonObstructingSolidBlock(block.getType()))
+                 && (!block1Up.getType().isSolid() || isNonObstructingSolidBlock(block1Up.getType())))
                 {
                     break;
                 }
                 if (!block1Up.getType().isSolid()) // block on top is non Solid
                 {
-                    Block block2Up = block1Up.getRelative(BlockFace.UP);
+                    Block block2Up = block1Up.getRelative(UP);
                     if (block2Up.getY() != 0) // ignore wrap around
                     {
                         BlockState bs = block.getState();
                         BlockState bs2 = block2Up.getState();
                         if ((bs.getData() instanceof Step || bs.getData() instanceof  WoodenStep)
-                            && (bs2.getData() instanceof Step || bs2.getData() instanceof WoodenStep))
+                         && (bs2.getData() instanceof Step || bs2.getData() instanceof WoodenStep))
                         {
                             if (!isInvertedStep(bs.getData()) && isInvertedStep(bs2.getData()))
                             {
-                                block.getRelative(BlockFace.UP);
+                                block.getRelative(UP);
                                 break; // allow tp
                             }
                         }
                     }
                     // If block & block2Up are Steps in the right direction add 0.5 to y and exit
                 }
-                block1Up = block1Up.getRelative(BlockFace.UP);
-                block = block.getRelative(BlockFace.UP);
-                if (block1Up.getY() == 0) // reached wrap around of world
-                {
-                    if (block.getType().isSolid() && !BlockUtil.isNonObstructingSolidBlock(block.getType()))
-                    {
-                        y = block.getY() + 1;
-                    }
-                    else
-                    {
-                        y = block.getY();
-                    }
-                    break;
-                }
+                block1Up = block1Up.getRelative(UP);
+                block = block.getRelative(UP);
             }
         }
-        Block standOn = block.getRelative(BlockFace.DOWN); // Standing on
+        Block standOn = block.getRelative(DOWN); // Standing on
         if (!this.isFlying())
         {
-            while (standOn.getType() == Material.AIR)
+            while (standOn.getType() == AIR)
             {
-                Block rel = standOn.getRelative(BlockFace.DOWN);
+                Block rel = standOn.getRelative(DOWN);
                 if (rel.getY() > block.getY() || rel.getY() < 0) // wrap around from below
                 {
                     return false;
                 }
                 standOn = rel;
             }
-            y = standOn.getY() + 1;
         }
-        if (standOn.getType() == Material.STATIONARY_LAVA || standOn.getType() == Material.LAVA)
+        if (standOn.getType() == STATIONARY_LAVA || standOn.getType() == LAVA)
         {
             standOn = standOn.getWorld().getHighestBlockAt(location);
-            y = standOn.getY() + 1;
 
             int blockX = location.getBlockX();
             int blockZ = location.getBlockZ();
@@ -398,9 +387,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
                 for (int j = -5; j <= 5; j+=2)
                 {
                     Block highestBlockAt = standOn.getWorld().getHighestBlockAt(blockX + i, blockZ + j);
-                    System.out.println(highestBlockAt.getType());
-                    System.out.println(highestBlockAt.getLocation());
-                    if (highestBlockAt.getType() != Material.LAVA && highestBlockAt.getType() != Material.STATIONARY_LAVA)
+                    if (highestBlockAt.getType() != STATIONARY_LAVA && highestBlockAt.getType() != LAVA)
                     {
                         standOn = highestBlockAt;
                         found = true;
@@ -415,12 +402,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             location.setX(standOn.getX());
             location.setZ(standOn.getZ());
         }
-        if (standOn.getType() == Material.FENCE || standOn.getType() == Material.NETHER_FENCE)
+        double y = standOn.getY() + 1;
+        if (standOn.getType() == FENCE || standOn.getType() == NETHER_FENCE)
         {
             y += 0.5;
         }
-        block1Up = standOn.getRelative(BlockFace.UP);
-        if (block1Up.getType() == Material.STEP || block1Up.getType() == Material.WOOD_STEP)
+        block1Up = standOn.getRelative(UP);
+        if (block1Up.getType() == Material.STEP || block1Up.getType() == WOOD_STEP)
         {
             if (!isInvertedStep(standOn.getState().getData()))
             {
@@ -440,11 +428,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public boolean isPasswordSet()
     {
         byte[] value = this.entity.getValue(TABLE_USER.PASSWD);
-        if (value == null)
-        {
-            return false;
-        }
-        return value.length > 0;
+        return value != null && value.length > 0;
     }
 
     public void logout()
@@ -720,7 +704,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         while (lineOfSight.hasNext())
         {
             Block next = lineOfSight.next();
-            if (next.getType().isSolid() && !BlockUtil.isNonObstructingSolidBlock(next.getType()))
+            if (next.getType().isSolid() && !isNonObstructingSolidBlock(next.getType()))
             {
                 return next;
             }
