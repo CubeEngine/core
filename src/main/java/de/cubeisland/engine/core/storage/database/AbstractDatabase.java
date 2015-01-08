@@ -102,6 +102,12 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
+    public CompletableFuture<Integer> execute(final Query query)
+    {
+        return CompletableFuture.supplyAsync(query::execute);
+    }
+
+    @Override
     public CompletableFuture<Integer> update(final String query, final Object... params)
     {
         return CompletableFuture.supplyAsync(() -> {
@@ -123,7 +129,7 @@ public abstract class AbstractDatabase implements Database
     @Override
     public CompletableFuture<Integer> update(final Query query)
     {
-        return CompletableFuture.supplyAsync(query::execute);
+        return execute(query);
     }
 
     @Override

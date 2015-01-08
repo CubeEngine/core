@@ -80,6 +80,8 @@ public interface Database
      */
     CompletableFuture<Boolean> execute(String query, Object... params);
 
+    CompletableFuture<Integer> execute(Query query);
+
     /**
      * Executes an update query.
      *
