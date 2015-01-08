@@ -126,14 +126,14 @@ public abstract class AbstractUserManager implements UserManager
             password += this.salt;
             password += user.getEntity().getValue(TABLE_USER.FIRSTSEEN).toString();
             user.getEntity().setValue(TABLE_USER.PASSWD, this.messageDigest.digest(password.getBytes()));
-            user.getEntity().asyncUpdate();
+            user.getEntity().updateAsync();
         }
     }
 
     public void resetPassword(User user)
     {
         user.getEntity().setValue(TABLE_USER.PASSWD, null);
-        user.getEntity().asyncUpdate();
+        user.getEntity().updateAsync();
     }
 
     public void resetAllPasswords()
@@ -147,7 +147,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public void removeUser(final User user)
     {
-        user.getEntity().asyncDelete();
+        user.getEntity().deleteAsync();
         this.removeCachedUser(user);
     }
 
@@ -166,7 +166,7 @@ public abstract class AbstractUserManager implements UserManager
             if (user == null)
             {
                 user = new User(core, Bukkit.getOfflinePlayer(uuid));
-                user.getEntity().asyncInsert();
+                user.getEntity().insertAsync();
             }
             this.cacheUser(user);
         }
@@ -241,7 +241,7 @@ public abstract class AbstractUserManager implements UserManager
         if (!user.getName().equalsIgnoreCase(user.getEntity().getValue(TABLE_USER.LASTNAME)))
         {
             user.getEntity().setValue(TABLE_USER.LASTNAME, user.getName());
-            user.getEntity().asyncUpdate();
+            user.getEntity().updateAsync();
         }
     }
 

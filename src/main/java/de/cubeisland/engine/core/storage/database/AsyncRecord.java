@@ -31,32 +31,32 @@ public abstract class AsyncRecord<T extends AsyncRecord<T>> extends UpdatableRec
         super(table);
     }
 
-    public CompletableFuture<Integer> asyncUpdate()
+    public CompletableFuture<Integer> updateAsync()
     {
         return supplyAsync(this::update);
     }
 
-    public CompletableFuture<Integer> asyncUpdate(Executor executor)
+    public CompletableFuture<Integer> updateAsync(Executor executor)
     {
         return supplyAsync(this::update, executor);
     }
 
-    public CompletableFuture<Integer> asyncInsert()
+    public CompletableFuture<Integer> insertAsync()
     {
         return supplyAsync(this::insert);
     }
 
-    public CompletableFuture<Integer> asyncInsert(Executor executor)
+    public CompletableFuture<Integer> insertAsync(Executor executor)
     {
         return supplyAsync(this::insert, executor);
     }
 
-    public CompletableFuture<Integer> asyncDelete()
+    public CompletableFuture<Integer> deleteAsync()
     {
         return supplyAsync(this::delete);
     }
 
-    public CompletableFuture<Integer> asyncDelete(Executor executor)
+    public CompletableFuture<Integer> deleteAsync(Executor executor)
     {
         return supplyAsync(this::delete, executor);
     }
