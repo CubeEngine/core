@@ -70,6 +70,8 @@ public interface Database
 
     <R extends Record> CompletableFuture<Result<R>> query(final ResultQuery<R> query);
 
+    <R extends Record> CompletableFuture<R> queryOne(final ResultQuery<R> query);
+
     /**
      * Executes a query.
      *

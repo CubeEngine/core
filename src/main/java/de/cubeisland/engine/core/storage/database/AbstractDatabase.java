@@ -83,6 +83,12 @@ public abstract class AbstractDatabase implements Database
     }
 
     @Override
+    public <R extends Record> CompletableFuture<R> queryOne(final ResultQuery<R> query)
+    {
+        return CompletableFuture.supplyAsync(query::fetchOne);
+    }
+
+    @Override
     public CompletableFuture<Boolean> execute(final String query, final Object... params)
     {
         return CompletableFuture.supplyAsync(() -> {
