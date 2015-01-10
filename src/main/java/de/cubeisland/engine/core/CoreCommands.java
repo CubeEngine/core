@@ -98,17 +98,17 @@ public class CoreCommands extends CommandContainer
 
     @Unloggable
     @Command(alias = "setpw", desc = "Sets your password.")
-    public void setPassword(CommandContext context, @Label("password") String password, @Default @Label("player") User target)
+    public void setPassword(CommandContext context, String password, @Default User player)
     {
-        if ((context.getSource().equals(target)))
+        if ((context.getSource().equals(player)))
         {
-            um.setPassword(target, context.getString(0));
+            um.setPassword(player, context.getString(0));
             context.sendTranslated(POSITIVE, "Your password has been set!");
             return;
         }
         context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
-        um.setPassword(target, context.getString(0));
-        context.sendTranslated(POSITIVE, "{user}'s password has been set!", target);
+        um.setPassword(player, context.getString(0));
+        context.sendTranslated(POSITIVE, "{user}'s password has been set!", player);
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
