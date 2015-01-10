@@ -318,8 +318,8 @@ public class VanillaCommands
             return;
         }
         context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
-        Plugin p = server.getPluginManager().getPlugin(context.getString(0));
-        if (p == null)
+        Plugin instance = server.getPluginManager().getPlugin(context.getString(0));
+        if (instance == null)
         {
             List<Plugin> plugins = new ArrayList<>();
             for (Plugin p : server.getPluginManager().getPlugins())
@@ -341,18 +341,18 @@ public class VanillaCommands
             }
             return;
         }
-        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", p.getName(), p.getDescription().getVersion());
+        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", instance.getName(), instance.getDescription().getVersion());
         context.sendMessage(" ");
         context.sendTranslated(NEUTRAL.and(UNDERLINE), "Plugin information:");
         context.sendMessage(" ");
-        if (p instanceof Core && source)
+        if (instance instanceof Core && source)
         {
             showSourceVersion(context, core.getSourceVersion());
         }
-        context.sendTranslated(NEUTRAL, "Description: {input}", p.getDescription().getDescription() == null ? "NONE" : p.getDescription().getDescription());
-        context.sendTranslated(NEUTRAL, "Website: {input}", p.getDescription().getWebsite() == null ? "NONE" : p.getDescription().getWebsite());
+        context.sendTranslated(NEUTRAL, "Description: {input}", instance.getDescription().getDescription() == null ? "NONE" : instance.getDescription().getDescription());
+        context.sendTranslated(NEUTRAL, "Website: {input}", instance.getDescription().getWebsite() == null ? "NONE" : instance.getDescription().getWebsite());
         context.sendTranslated(NEUTRAL, "Authors:");
-        for (String author : p.getDescription().getAuthors())
+        for (String author : instance.getDescription().getAuthors())
         {
             context.sendMessage("   - " + ChatFormat.AQUA + author);
         }
