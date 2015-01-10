@@ -113,10 +113,10 @@ public class CoreCommands extends CommandContainer
 
     @Command(alias = "clearpw", desc = "Clears your password.")
     public void clearPassword(CommandContext context,
-          @Optional @Label("players") @Desc("* or a list of Players delimited by ,") UserList users)
+          @Optional @Desc("* or a list of Players delimited by ,") UserList players)
     {
         CommandSender sender = context.getSource();
-        if (users == null)
+        if (players == null)
         {
             if (!(sender instanceof User))
             {
@@ -126,7 +126,7 @@ public class CoreCommands extends CommandContainer
             sender.sendTranslated(POSITIVE, "Your password has been reset!");
             return;
         }
-        if (users.isAll())
+        if (players.isAll())
         {
             context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
             um.resetAllPasswords();
@@ -146,7 +146,7 @@ public class CoreCommands extends CommandContainer
     @Command(desc = "Logs you in with your password!")
     @CommandPermission(permDefault = TRUE)
     @Restricted(value = User.class, msg = "Only players can log in!")
-    public void login(CommandContext context, @Label("password") String password)
+    public void login(CommandContext context, String password)
     {
         User user = (User)context.getSource();
         if (user.isLoggedIn())
@@ -220,11 +220,11 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    public void loglevel(CommandContext context, @Optional @Label("loglevel") LogLevel level)
+    public void loglevel(CommandContext context, @Optional LogLevel loglevel)
     {
-        if (level != null)
+        if (loglevel != null)
         {
-            context.getCore().getLog().setLevel(level);
+            context.getCore().getLog().setLevel(loglevel);
             context.sendTranslated(POSITIVE, "New log level successfully set!");
             return;
         }
@@ -234,16 +234,15 @@ public class CoreCommands extends CommandContainer
     @Command(alias = "finduser", desc = "Searches for a user in the database")
     public void searchuser(CommandContext context,
         @Reader(FindUserReader.class)
-        @Label("name")
         @Desc("The name to search for")
-        User user)
+        User name)
     {
-        if (user.getName().equalsIgnoreCase(context.getString(0)))
+        if (name.getName().equalsIgnoreCase(context.getString(0)))
         {
-            context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", user);
+            context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", name);
             return;
         }
-        context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", user);
+        context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", name);
     }
 
     public static class FindUserReader implements ArgumentReader<User>

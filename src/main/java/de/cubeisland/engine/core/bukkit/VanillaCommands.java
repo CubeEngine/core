@@ -90,7 +90,7 @@ public class VanillaCommands
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    public void stop(CommandContext context, @Optional @Label("message") @Greed(INFINITE) String message)
+    public void stop(CommandContext context, @Optional @Greed(INFINITE) String message)
     {
         if (message == null || message.isEmpty())
         {
@@ -103,7 +103,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    public void reload(CommandContext context, @Optional @Label("message") @Greed(INFINITE) String message, @Flag(name = "m", longName = "modules") boolean modules)
+    public void reload(CommandContext context, @Optional @Greed(INFINITE) String message, @Flag(name = "m", longName = "modules") boolean modules)
     {
         if (message != null)
         {
@@ -129,7 +129,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    public void difficulty(CommandContext context, @Optional @Label("difficulty") Difficulty difficulty, @Named({"world", "w", "in"}) World world)
+    public void difficulty(CommandContext context, @Optional Difficulty difficulty, @Named({"world", "w", "in"}) World world)
     {
         if (world == null)
         {
@@ -158,7 +158,7 @@ public class VanillaCommands
 
     @Command(desc = "Makes a player an operator")
     @CommandPermission(permDefault = FALSE)
-    public void op(CommandContext context, @Optional @Label("player") OfflinePlayer player, @Flag(name = "f", longName = "force") boolean force)
+    public void op(CommandContext context, @Optional OfflinePlayer player, @Flag(name = "f", longName = "force") boolean force)
     {
         if (player == null)
         {
@@ -211,38 +211,38 @@ public class VanillaCommands
 
     @Command(desc = "Revokes the operator status of a player")
     @CommandPermission(permDefault = FALSE)
-    public void deop(CommandContext context, @Label("player") OfflinePlayer offlinePlayer)
+    public void deop(CommandContext context, OfflinePlayer player)
     {
-        if (!context.getSource().getUniqueId().equals(offlinePlayer.getUniqueId()))
+        if (!context.getSource().getUniqueId().equals(player.getUniqueId()))
         {
             context.ensurePermission(core.perms().COMMAND_DEOP_OTHER);
         }
-        if (!offlinePlayer.isOp())
+        if (!player.isOp())
         {
             context.sendTranslated(NEGATIVE, "The player you tried to deop is not an operator.");
             return;
         }
-        offlinePlayer.setOp(false);
-        if (offlinePlayer.isOnline())
+        player.setOp(false);
+        if (player.isOnline())
         {
-            um.getExactUser(offlinePlayer.getUniqueId()).sendTranslated(POSITIVE, "You were deopped by {user}.",
+            um.getExactUser(player.getUniqueId()).sendTranslated(POSITIVE, "You were deopped by {user}.",
                                                                         context.getSource());
         }
-        context.sendTranslated(POSITIVE, "{user} is no longer an operator!", offlinePlayer);
+        context.sendTranslated(POSITIVE, "{user} is no longer an operator!", player);
 
         for (User onlineUser : um.getOnlineUsers())
         {
-            if (onlineUser.getUniqueId().equals(offlinePlayer.getUniqueId()) ||
+            if (onlineUser.getUniqueId().equals(player.getUniqueId()) ||
                 onlineUser.getUniqueId().equals(context.getSource().getUniqueId()) ||
                 !core.perms().COMMAND_DEOP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", offlinePlayer,
+            onlineUser.sendTranslated(POSITIVE, "User {user} has been deopped by {sender}!", player,
                                       context.getSource());
         }
 
-        this.core.getLog().info("Player {} has been deopped by {}", offlinePlayer.getName(),
+        this.core.getLog().info("Player {} has been deopped by {}", player.getName(),
                                 context.getSource().getName());
     }
 
@@ -277,7 +277,7 @@ public class VanillaCommands
     // integrate /saveoff and /saveon and provide aliases
     @Alias(value = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
-    public void saveall(CommandContext context, @Optional @Label("world") World world)
+    public void saveall(CommandContext context, @Optional World world)
     {
         context.sendTranslated(NEUTRAL, "Saving...");
         if (world != null)
@@ -302,10 +302,10 @@ public class VanillaCommands
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
-    public void version(CommandContext context, @Optional @Label("plugin") String pluginName, @Flag(name = "s", longName = "source") boolean source)
+    public void version(CommandContext context, @Optional String plugin, @Flag(name = "s", longName = "source") boolean source)
     {
         Server server = this.core.getServer();
-        if (pluginName == null)
+        if (plugin == null)
         {
             context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
             context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
@@ -318,8 +318,8 @@ public class VanillaCommands
             return;
         }
         context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
-        Plugin plugin = server.getPluginManager().getPlugin(context.getString(0));
-        if (plugin == null)
+        Plugin p = server.getPluginManager().getPlugin(context.getString(0));
+        if (p == null)
         {
             List<Plugin> plugins = new ArrayList<>();
             for (Plugin p : server.getPluginManager().getPlugins())
@@ -341,18 +341,18 @@ public class VanillaCommands
             }
             return;
         }
-        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", plugin.getName(), plugin.getDescription().getVersion());
+        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", p.getName(), p.getDescription().getVersion());
         context.sendMessage(" ");
         context.sendTranslated(NEUTRAL.and(UNDERLINE), "Plugin information:");
         context.sendMessage(" ");
-        if (plugin instanceof Core && source)
+        if (p instanceof Core && source)
         {
             showSourceVersion(context, core.getSourceVersion());
         }
-        context.sendTranslated(NEUTRAL, "Description: {input}", plugin.getDescription().getDescription() == null ? "NONE" : plugin.getDescription().getDescription());
-        context.sendTranslated(NEUTRAL, "Website: {input}", plugin.getDescription().getWebsite() == null ? "NONE" : plugin.getDescription().getWebsite());
+        context.sendTranslated(NEUTRAL, "Description: {input}", p.getDescription().getDescription() == null ? "NONE" : p.getDescription().getDescription());
+        context.sendTranslated(NEUTRAL, "Website: {input}", p.getDescription().getWebsite() == null ? "NONE" : p.getDescription().getWebsite());
         context.sendTranslated(NEUTRAL, "Authors:");
-        for (String author : plugin.getDescription().getAuthors())
+        for (String author : p.getDescription().getAuthors())
         {
             context.sendMessage("   - " + ChatFormat.AQUA + author);
         }
@@ -384,7 +384,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        public void add(CommandContext context, @Label("player") OfflinePlayer player)
+        public void add(CommandContext context, OfflinePlayer player)
         {
             if (!context.hasPositional())
             {
@@ -401,7 +401,7 @@ public class VanillaCommands
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        public void remove(CommandContext context, @Label("player") OfflinePlayer player)
+        public void remove(CommandContext context, OfflinePlayer player)
         {
             if (!context.hasPositional())
             {

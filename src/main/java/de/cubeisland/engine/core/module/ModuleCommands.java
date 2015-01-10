@@ -107,7 +107,7 @@ public class ModuleCommands extends CommandContainer
 
     @Command(desc = "Enables a module")
     //@Params(positional = @Param(label = "module", type = ModuleReader.class))
-    public void enable(CommandContext context, @Label("module") @Reader(ModuleReader.class) Module module)
+    public void enable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
         if (this.mm.enableModule(module))
         {
@@ -118,14 +118,14 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Disables a module")
-    public void disable(CommandContext context, @Label("module") @Reader(ModuleReader.class) Module module)
+    public void disable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
         this.mm.disableModule(module);
         context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
-    public void unload(CommandContext context, @Label("module") @Reader(ModuleReader.class) Module module)
+    public void unload(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
         this.mm.unloadModule(module);
         context.sendTranslated(POSITIVE, "The module {name#module} was successfully unloaded!", module.getId());
@@ -133,7 +133,7 @@ public class ModuleCommands extends CommandContainer
 
     @Command(desc = "Reloads a module")
     public void reload(CommandContext context,
-                       @Label("module") @Reader(ModuleReader.class) Module module,
+                       @Reader(ModuleReader.class) Module module,
                        @Flag(name = "f", longName = "file") boolean fromFile)
     {
         try
@@ -157,7 +157,7 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    public void load(CommandContext context, @Label("filename") String filename)
+    public void load(CommandContext context, String filename)
     {
         if (filename.contains(".") || filename.contains("/") || filename.contains("\\"))
         {
@@ -196,7 +196,7 @@ public class ModuleCommands extends CommandContainer
 
     @Command(desc = "Get info about a module")
     public void info(CommandContext context,
-                     @Label("module") @Reader(ModuleReader.class) Module module,
+                     @Reader(ModuleReader.class) Module module,
                      @Flag(name = "s", longName = "source") boolean source)
     {
         ModuleInfo moduleInfo = module.getInfo();
