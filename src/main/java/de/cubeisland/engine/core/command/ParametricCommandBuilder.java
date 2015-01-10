@@ -47,9 +47,9 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
 
     @Override
     protected Parameter createParameter(CommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
-                                        CommandOrigin origin)
+                                        CommandOrigin origin, Object javaParameter)
     {
-        Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin);
+        Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin, javaParameter);
 
         for (Annotation annotation : annotations)
         {

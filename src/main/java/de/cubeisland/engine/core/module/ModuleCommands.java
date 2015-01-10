@@ -132,14 +132,12 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads a module")
-    public void reload(CommandContext context,
-                       @Reader(ModuleReader.class) Module module,
-                       @Flag(name = "f", longName = "file") boolean fromFile)
+    public void reload(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean file)
     {
         try
         {
-            this.mm.reloadModule(module, fromFile);
-            if (context.hasFlag("f"))
+            this.mm.reloadModule(module, file);
+            if (file)
             {
                 context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getId());
             }
@@ -195,9 +193,7 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Get info about a module")
-    public void info(CommandContext context,
-                     @Reader(ModuleReader.class) Module module,
-                     @Flag(name = "s", longName = "source") boolean source)
+    public void info(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
     {
         ModuleInfo moduleInfo = module.getInfo();
         context.sendTranslated(POSITIVE, "Name: {input}", moduleInfo.getName());

@@ -103,7 +103,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    public void reload(CommandContext context, @Optional @Greed(INFINITE) String message, @Flag(name = "m", longName = "modules") boolean modules)
+    public void reload(CommandContext context, @Optional @Greed(INFINITE) String message, @Flag boolean modules)
     {
         if (message != null)
         {
@@ -158,7 +158,7 @@ public class VanillaCommands
 
     @Command(desc = "Makes a player an operator")
     @CommandPermission(permDefault = FALSE)
-    public void op(CommandContext context, @Optional OfflinePlayer player, @Flag(name = "f", longName = "force") boolean force)
+    public void op(CommandContext context, @Optional OfflinePlayer player, @Flag boolean force)
     {
         if (player == null)
         {
@@ -302,7 +302,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
-    public void version(CommandContext context, @Optional String plugin, @Flag(name = "s", longName = "source") boolean source)
+    public void version(CommandContext context, @Optional String plugin, @Flag boolean source)
     {
         Server server = this.core.getServer();
         if (plugin == null)

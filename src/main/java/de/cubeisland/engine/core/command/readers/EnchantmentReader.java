@@ -17,19 +17,81 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
-import org.bukkit.enchantments.Enchantment;
-
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.command.parameter.reader.DefaultProvider;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
-public class EnchantmentReader implements ArgumentReader<Enchantment>
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+
+public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultProvider<Enchantment>
 {
+    public static String getPossibleEnchantments(ItemStack item)
+    {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (Enchantment enchantment : Enchantment.values())
+        {
+            if (item == null || enchantment.canEnchantItem(item))
+            {
+                if (first)
+                {
+                    sb.append(ChatFormat.YELLOW).append(Match.enchant().nameFor(enchantment));
+                    first = false;
+                }
+                else
+                {
+                    sb.append(ChatFormat.WHITE).append(", ").append(ChatFormat.YELLOW).append(Match.enchant()
+                                                                                                   .nameFor(enchantment));
+                }
+            }
+        }
+        if (sb.length() == 0)
+        {
+            return null;
+        }
+        return sb.toString();
+    }
+
     @Override
     public Enchantment read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
-        return Match.enchant().enchantment(invocation.consume(1));
+        String token = invocation.consume(1);
+        Enchantment enchantment = Match.enchant().enchantment(token);
+        if (enchantment == null)
+        {
+            User sender = (User)invocation.getCommandSource();
+            String possibleEnchs = getPossibleEnchantments(sender.getItemInHand());
+
+            sender.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", token);
+            if (possibleEnchs != null)
+            {
+                sender.sendTranslated(NEUTRAL, "Try one of those instead:");
+                sender.sendMessage(possibleEnchs);
+            }
+            else
+            {
+                sender.sendTranslated(NEGATIVE, "You can not enchant this item!");
+            }
+            return null;
+        }
+        return enchantment;
+    }
+
+    @Override
+    public Enchantment getDefault(CommandInvocation invocation)
+    {
+        User sender = (User)invocation.getCommandSource();
+        sender.sendTranslated(POSITIVE, "Following Enchantments are availiable:\n{input#enchs}", EnchantmentReader.getPossibleEnchantments(null));
+        throw new TooFewArgumentsException();
     }
 }

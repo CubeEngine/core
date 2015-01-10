@@ -87,11 +87,11 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads all of the modules!")
-    public void reloadmodules(CommandContext context, @Flag(name = "f", longName = "file") boolean fromFile)
+    public void reloadmodules(CommandContext context, @Flag boolean file)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        context.getCore().getModuleManager().reloadModules(fromFile);
+        context.getCore().getModuleManager().reloadModules(file);
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
