@@ -76,7 +76,7 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
-    public void reload(CommandContext context)
+    public void reload(CommandSender context)
     {
         context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
@@ -87,7 +87,7 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Reloads all of the modules!")
-    public void reloadmodules(CommandContext context, @Flag boolean file)
+    public void reloadmodules(CommandSender context, @Flag boolean file)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
@@ -102,18 +102,17 @@ public class CoreCommands extends CommandContainer
     {
         if ((context.getSource().equals(player)))
         {
-            um.setPassword(player, context.getString(0));
+            um.setPassword(player, password);
             context.sendTranslated(POSITIVE, "Your password has been set!");
             return;
         }
         context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
-        um.setPassword(player, context.getString(0));
+        um.setPassword(player, password);
         context.sendTranslated(POSITIVE, "{user}'s password has been set!", player);
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    public void clearPassword(CommandContext context,
-          @Optional @Desc("* or a list of Players delimited by ,") UserList players)
+    public void clearPassword(CommandContext context, @Optional @Desc("* or a list of Players delimited by ,") UserList players)
     {
         CommandSender sender = context.getSource();
         if (players == null)
@@ -146,51 +145,49 @@ public class CoreCommands extends CommandContainer
     @Command(desc = "Logs you in with your password!")
     @CommandPermission(permDefault = TRUE)
     @Restricted(value = User.class, msg = "Only players can log in!")
-    public void login(CommandContext context, String password)
+    public void login(User context, String password)
     {
-        User user = (User)context.getSource();
-        if (user.isLoggedIn())
+        if (context.isLoggedIn())
         {
             context.sendTranslated(POSITIVE, "You are already logged in!");
             return;
         }
-        boolean isLoggedIn = um.login(user, password);
+        boolean isLoggedIn = um.login(context, password);
         if (isLoggedIn)
         {
-            user.sendTranslated(POSITIVE, "You logged in successfully!");
+            context.sendTranslated(POSITIVE, "You logged in successfully!");
             return;
         }
-        user.sendTranslated(NEGATIVE, "Wrong password!");
+        context.sendTranslated(NEGATIVE, "Wrong password!");
         if (this.core.getConfiguration().security.fail2ban)
         {
-            if (fails.get(user.getUniqueId()) != null)
+            if (fails.get(context.getUniqueId()) != null)
             {
-                if (fails.get(user.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    String msg = user.getTranslation(NEGATIVE, "Too many wrong passwords!");
-                    msg += "\n" + user.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
-                    this.banManager.addBan(new UserBan(user.getName(),user.getName(), msg,
+                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!");
+                    msg += "\n" + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
+                    this.banManager.addBan(new UserBan(context.getName(),context.getName(), msg,
                                                        new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                     if (!Bukkit.getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(user.getAddress().getAddress(),user.getName(),msg,
+                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(),msg,
                                                          new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                     }
-                    user.kickPlayer(msg);
+                    context.kickPlayer(msg);
                 }
             }
-            fails.put(user.getUniqueId(),System.currentTimeMillis());
+            fails.put(context.getUniqueId(),System.currentTimeMillis());
         }
     }
 
     @Command(desc = "Logs you out!")
     @Restricted(value = User.class, msg = "You might use /stop for this.")
-    public void logout(CommandContext context)
+    public void logout(User context)
     {
-        User sender = (User)context.getSource();
-        if (sender.isLoggedIn())
+        if (context.isLoggedIn())
         {
-            sender.logout();
+            context.logout();
             context.sendTranslated(POSITIVE, "You're now logged out.");
             return;
         }
@@ -198,7 +195,7 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Shows the online mode")
-    public void onlinemode(CommandContext context)
+    public void onlinemode(CommandSender context)
     {
         if (this.core.getServer().getOnlineMode())
         {
@@ -220,7 +217,7 @@ public class CoreCommands extends CommandContainer
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    public void loglevel(CommandContext context, @Optional LogLevel loglevel)
+    public void loglevel(CommandSender context, @Optional LogLevel loglevel)
     {
         if (loglevel != null)
         {
