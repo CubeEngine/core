@@ -17,10 +17,8 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.methodic.context.ParameterizedContext;
-import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -28,35 +26,19 @@ import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class CommandContext extends ParameterizedContext
 {
-    private CommandBase cmd;
-
-    public CommandContext(CommandInvocation call, CommandBase cmd)
+    public CommandContext(CommandInvocation invocation)
     {
-        super(call);
-        if (!(call.getCommandSource() instanceof CommandSender))
+        super(invocation);
+        if (!(invocation.getCommandSource() instanceof CommandSender))
         {
             throw new IllegalArgumentException("CommandSource is not a CommandSender");
         }
-        // TODO make sure Invocation has a Cmd with Module
-        // TODO make sure CmdSoure is a CmdSender
-        this.cmd = cmd;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends CommandBase> T getCommand()
-    {
-        return (T)cmd;
     }
 
     @Override
     public CommandSender getSource()
     {
         return (CommandSender)super.getSource();
-    }
-
-    public Core getCore()
-    {
-        return this.getCommand().getDescriptor().valueFor(ModuleProvider.class).getCore();
     }
 
     public Module getModule()
@@ -85,10 +67,5 @@ public class CommandContext extends ParameterizedContext
         {
             throw new PermissionDeniedException(permission);
         }
-    }
-
-    public String getUsage()
-    {
-        return this.cmd.getDescriptor().getUsage(this.getInvocation());
     }
 }

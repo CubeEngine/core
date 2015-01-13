@@ -91,7 +91,7 @@ public class CoreCommands extends CommandContainer
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        context.getCore().getModuleManager().reloadModules(file);
+        core.getModuleManager().reloadModules(file);
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
@@ -224,11 +224,11 @@ public class CoreCommands extends CommandContainer
     {
         if (loglevel != null)
         {
-            context.getCore().getLog().setLevel(loglevel);
+            core.getLog().setLevel(loglevel);
             context.sendTranslated(POSITIVE, "New log level successfully set!");
             return;
         }
-        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}", context.getCore().getLog().getLevel().getName());
+        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}", core.getLog().getLevel().getName());
     }
 
     @Command(alias = "finduser", desc = "Searches for a user in the database")

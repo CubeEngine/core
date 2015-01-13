@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
@@ -38,14 +39,14 @@ public class PaginatedResult implements CommandResult<CommandContext>
         this.context = context;
         this.iterator = new StringListIterator(lines);
 
-        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
+        CubeEngine.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
     }
     public PaginatedResult(CommandContext context, PaginationIterator iterator)
     {
         this.context = context;
         this.iterator = iterator;
 
-        context.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
+        CubeEngine.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
     }
 
     @Override

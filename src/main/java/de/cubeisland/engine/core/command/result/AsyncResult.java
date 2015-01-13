@@ -20,9 +20,17 @@ package de.cubeisland.engine.core.command.result;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.module.Module;
 
 public abstract class AsyncResult implements CommandResult<CommandContext>
 {
+    private Module module;
+
+    public AsyncResult(Module module)
+    {
+        this.module = module;
+    }
+
     public abstract void main(CommandContext context);
     public void onFinish(CommandContext context)
     {}
@@ -32,7 +40,7 @@ public abstract class AsyncResult implements CommandResult<CommandContext>
     {
         if (CubeEngine.isMainThread()) // only run on another thread if we're on the main thread
         {
-            context.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
+            module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
                 @Override
                 public void run()
                 {
@@ -49,7 +57,7 @@ public abstract class AsyncResult implements CommandResult<CommandContext>
     private void doShow(final CommandContext context)
     {
         this.main(context);
-        context.getCore().getTaskManager().runTask(context.getModule(), new Runnable()
+        module.getCore().getTaskManager().runTask(context.getModule(), new Runnable()
         {
             @Override
             public void run()

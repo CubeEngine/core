@@ -150,7 +150,7 @@ public class ModuleCommands extends CommandContainer
         {
             context.sendTranslated(NEGATIVE, "Failed to reload the module!");
             context.sendTranslated(NEUTRAL, "Check the server log for info.");
-            context.getCore().getLog().error(ex, "Failed to reload the module {}!", module.getName());
+            module.getCore().getLog().error(ex, "Failed to reload the module {}!", module.getName());
         }
     }
 
@@ -162,7 +162,7 @@ public class ModuleCommands extends CommandContainer
             context.sendTranslated(NEGATIVE, "The given file name is invalid!");
             return;
         }
-        Path modulesPath = context.getCore().getFileManager().getModulesPath();
+        Path modulesPath = mm.getCoreModule().getCore().getFileManager().getModulesPath();
         Path modulePath = modulesPath.resolve(context.get(0) + ".jar");
         if (!Files.exists(modulePath))
         {
@@ -176,7 +176,6 @@ public class ModuleCommands extends CommandContainer
         }
         try
         {
-            ModuleManager mm = context.getCore().getModuleManager();
             Module module = mm.loadModule(modulePath);
             mm.enableModule(module);
             context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
@@ -188,7 +187,7 @@ public class ModuleCommands extends CommandContainer
         catch (ModuleException ex)
         {
             context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
-            context.getCore().getLog().error(ex, "Failed to load a module from file {}!", modulePath);
+            mm.getCoreModule().getCore().getLog().error(ex, "Failed to load a module from file {}!", modulePath);
         }
     }
 
@@ -201,7 +200,7 @@ public class ModuleCommands extends CommandContainer
         context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion().toString());
         if (source && moduleInfo.getSourceVersion() != null)
         {
-            VanillaCommands.showSourceVersion(context, moduleInfo.getSourceVersion());
+            VanillaCommands.showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
         }
 
         Map<String, Version> dependencies = moduleInfo.getDependencies();

@@ -32,28 +32,18 @@ public class ConfirmResult implements CommandResult<CommandContext>
     private final Runnable runnable;
     private final CommandSender sender;
     private final Module module;
-    private String message = "";
 
-    public ConfirmResult(Runnable runnable, CommandContext context)
+    public ConfirmResult(Module module, Runnable runnable, CommandContext context)
     {
+        this.module = module;
         this.runnable = runnable;
         this.sender = context.getSource();
-        this.module = context.getModule();
-    }
-
-    public void setMessage(String message)
-    {
-        this.message = message;
     }
 
     @Override
     public void process(CommandContext context)
     {
-        context.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
-        if (!message.isEmpty())
-        {
-            context.sendTranslated(NONE, message, context.getCommand().getDescriptor().getName());
-        }
+        module.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
     }
 
     public void run()

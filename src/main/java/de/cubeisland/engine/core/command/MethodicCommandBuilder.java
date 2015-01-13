@@ -22,6 +22,7 @@ import de.cubeisland.engine.command.filter.Filters;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.MethodicBuilder;
+import de.cubeisland.engine.command.methodic.context.ContextBuilder;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
 import de.cubeisland.engine.core.command.property.Loggable;

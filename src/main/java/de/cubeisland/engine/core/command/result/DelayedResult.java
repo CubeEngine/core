@@ -18,29 +18,31 @@
 package de.cubeisland.engine.core.command.result;
 
 import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
 
 public abstract class DelayedResult implements CommandResult<CommandContext>
 {
+    private Module module;
     private final long delay;
 
-    protected DelayedResult(long delay)
+    protected DelayedResult(Module module, long delay)
     {
+        this.module = module;
         this.delay = delay;
     }
 
-    protected DelayedResult()
+    protected DelayedResult(Module module)
     {
-        this(1);
+        this(module, 1);
     }
 
     @Override
     public void process(final CommandContext context)
     {
-        Module module = context.getCommand().getDescriptor().valueFor(ModuleProvider.class);
-        final int taskId = context.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
+        final int taskId = module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
         {
             @Override
             public void run()

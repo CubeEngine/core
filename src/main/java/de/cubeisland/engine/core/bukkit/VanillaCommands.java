@@ -23,27 +23,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import org.bukkit.Difficulty;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.filter.Restricted;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.parametric.Greed;
-import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Named;
 import de.cubeisland.engine.command.methodic.parametric.Optional;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.i18n.I18n;
@@ -52,6 +44,12 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
+import org.bukkit.Difficulty;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import static de.cubeisland.engine.command.parameter.Parameter.INFINITE;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
@@ -71,7 +69,7 @@ public class VanillaCommands
         this.um = core.getUserManager();
     }
 
-    public static void showSourceVersion(CommandContext context, String sourceVersion)
+    public static void showSourceVersion(CommandSender context, String sourceVersion)
     {
         if (sourceVersion != null)
         {
@@ -90,7 +88,7 @@ public class VanillaCommands
     }
 
     @Command(alias = {"shutdown", "killserver", "quit"}, desc = "Shuts down the server")
-    public void stop(CommandContext context, @Optional @Greed(INFINITE) String message)
+    public void stop(CommandSender context, @Optional @Greed(INFINITE) String message)
     {
         if (message == null || message.isEmpty())
         {
@@ -103,7 +101,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Reloads the server.")
-    public void reload(CommandContext context, @Optional @Greed(INFINITE) String message, @Flag boolean modules)
+    public void reload(CommandSender context, @Optional @Greed(INFINITE) String message, @Flag boolean modules)
     {
         if (message != null)
         {
@@ -120,7 +118,7 @@ public class VanillaCommands
         }
         context.sendTranslated(NEUTRAL, "Reloading the whole server... this may take some time.");
         // pre-translate to avoid a NPE
-        Locale locale = context.getSource().getLocale();
+        Locale locale = context.getLocale();
         long time = System.currentTimeMillis();
         I18n i18n = this.core.getI18n();
         this.core.getServer().reload();
@@ -129,13 +127,13 @@ public class VanillaCommands
     }
 
     @Command(desc = "Changes the difficulty level of the server")
-    public void difficulty(CommandContext context, @Optional Difficulty difficulty, @Named({"world", "w", "in"}) World world)
+    public void difficulty(CommandSender context, @Optional Difficulty difficulty, @Named({"world", "w", "in"}) World world)
     {
         if (world == null)
         {
-            if (context.isSource(User.class))
+            if (context instanceof User)
             {
-                world = ((User)context.getSource()).getWorld();
+                world = ((User)context).getWorld();
             }
             else
             {
@@ -158,7 +156,7 @@ public class VanillaCommands
 
     @Command(desc = "Makes a player an operator")
     @CommandPermission(permDefault = FALSE)
-    public void op(CommandContext context, @Optional OfflinePlayer player, @Flag boolean force)
+    public void op(CommandSender context, @Optional OfflinePlayer player, @Flag boolean force)
     {
         if (player == null)
         {
@@ -180,7 +178,7 @@ public class VanillaCommands
         }
         if (!(player.hasPlayedBefore() || player.isOnline()) && !force)
         {
-            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", context.get(0));
+            context.sendTranslated(NEGATIVE, "{user} has never played on this server!", player);
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
             return;
         }
@@ -192,21 +190,21 @@ public class VanillaCommands
         player.setOp(true);
         if (player.isOnline())
         {
-            um.getExactUser(player.getUniqueId()).sendTranslated(POSITIVE, "You were opped by {sender}", context.getSource());
+            um.getExactUser(player.getUniqueId()).sendTranslated(POSITIVE, "You were opped by {sender}", context);
         }
         context.sendTranslated(POSITIVE, "{user} is now an operator!", player);
 
         for (User onlineUser : um.getOnlineUsers())
         {
             if (onlineUser.getUniqueId().equals(player.getUniqueId()) ||
-                onlineUser.getUniqueId().equals(context.getSource().getUniqueId()) ||
+                onlineUser.getUniqueId().equals(context.getUniqueId()) ||
                 !core.perms().COMMAND_OP_NOTIFY.isAuthorized(onlineUser))
             {
                 continue;
             }
-            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", player, context.getSource());
+            onlineUser.sendTranslated(NEUTRAL, "User {user} has been opped by {sender}!", player, context);
         }
-        this.core.getLog().info("Player {} has been opped by {}", player.getName(), context.getSource().getName());
+        this.core.getLog().info("Player {} has been opped by {}", player.getName(), context.getName());
     }
 
     @Command(desc = "Revokes the operator status of a player")
@@ -247,7 +245,7 @@ public class VanillaCommands
     }
 
     @Command(desc = "Lists all loaded plugins")
-    public void plugins(CommandContext context)
+    public void plugins(CommandSender context)
     {
         Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
@@ -255,13 +253,11 @@ public class VanillaCommands
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
                                plugins.length, modules.size());
         context.sendMessage(" ");
-        context.sendMessage(
-            " - " + BRIGHT_GREEN + core.getName() + RESET + " (" + context.getCore().getVersion() + ")");
+        context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + core.getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage(
-                "   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
+            context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
         }
 
         for (Plugin p : plugins)
@@ -277,7 +273,7 @@ public class VanillaCommands
     // integrate /saveoff and /saveon and provide aliases
     @Alias(value = "save-all")
     @Command(desc = "Saves all or a specific world to disk.")
-    public void saveall(CommandContext context, @Optional World world)
+    public void saveall(CommandSender context, @Optional World world)
     {
         context.sendTranslated(NEUTRAL, "Saving...");
         if (world != null)
@@ -310,21 +306,21 @@ public class VanillaCommands
             context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
             context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
             context.sendMessage(" ");
-            context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", context.getCore().getVersion().toString());
+            context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", core.getVersion().toString());
             if (source)
             {
-                showSourceVersion(context, core.getSourceVersion());
+                showSourceVersion(context.getSource(), core.getSourceVersion());
             }
             return;
         }
         context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
-        Plugin instance = server.getPluginManager().getPlugin(context.getString(0));
+        Plugin instance = server.getPluginManager().getPlugin(plugin);
         if (instance == null)
         {
             List<Plugin> plugins = new ArrayList<>();
             for (Plugin p : server.getPluginManager().getPlugins())
             {
-                if (p.getName().toLowerCase().startsWith(context.getString(0).toLowerCase()))
+                if (p.getName().toLowerCase().startsWith(plugin.toLowerCase()))
                 {
                     plugins.add(p);
                 }
@@ -347,7 +343,7 @@ public class VanillaCommands
         context.sendMessage(" ");
         if (instance instanceof Core && source)
         {
-            showSourceVersion(context, core.getSourceVersion());
+            showSourceVersion(context.getSource(), core.getSourceVersion());
         }
         context.sendTranslated(NEUTRAL, "Description: {input}", instance.getDescription().getDescription() == null ? "NONE" : instance.getDescription().getDescription());
         context.sendTranslated(NEUTRAL, "Website: {input}", instance.getDescription().getWebsite() == null ? "NONE" : instance.getDescription().getWebsite());
@@ -384,13 +380,8 @@ public class VanillaCommands
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        public void add(CommandContext context, OfflinePlayer player)
+        public void add(CommandSender context, OfflinePlayer player)
         {
-            if (!context.hasPositional())
-            {
-                context.sendTranslated(NEGATIVE, "You have to specify the player to add to the whitelist!");
-                return;
-            }
             if (player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
@@ -401,13 +392,8 @@ public class VanillaCommands
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        public void remove(CommandContext context, OfflinePlayer player)
+        public void remove(CommandSender context, OfflinePlayer player)
         {
-            if (!context.hasPositional())
-            {
-                context.sendTranslated(NEGATIVE, "You have to specify the player to remove from the whitelist!");
-                return;
-            }
             if (!player.isWhitelisted())
             {
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
@@ -418,7 +404,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Lists all the whitelisted players")
-        public void list(CommandContext context)
+        public void list(CommandSender context)
         {
             Set<OfflinePlayer> whitelist = this.core.getServer().getWhitelistedPlayers();
             if (!this.core.getServer().hasWhitelist())
@@ -454,7 +440,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Enables the whitelisting")
-        public void on(CommandContext context)
+        public void on(CommandSender context)
         {
             if (this.core.getServer().hasWhitelist())
             {
@@ -467,7 +453,7 @@ public class VanillaCommands
         }
 
         @Command(desc = "Disables the whitelisting")
-        public void off(CommandContext context)
+        public void off(CommandSender context)
         {
             if (!this.core.getServer().hasWhitelist())
             {
@@ -481,7 +467,7 @@ public class VanillaCommands
 
         @Command(desc = "Wipes the whitelist completely")
         @Restricted(value = ConsoleCommandSender.class, msg = "This command is too dangerous for users!")
-        public void wipe(CommandContext context)
+        public void wipe(CommandSender context)
         {
             BukkitUtils.wipeWhitelist();
             context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");

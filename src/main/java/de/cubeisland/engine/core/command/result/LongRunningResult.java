@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.result;
 
 import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
 
 public abstract class LongRunningResult implements CommandResult<CommandContext>
@@ -28,7 +29,7 @@ public abstract class LongRunningResult implements CommandResult<CommandContext>
     @Override
     public void process(final CommandContext context)
     {
-        this.taskId = context.getCore().getTaskManager().runTimer(context.getModule(), new Runnable()
+        this.taskId = CubeEngine.getCore().getTaskManager().runTimer(context.getModule(), new Runnable()
         {
             @Override
             public void run()
@@ -36,7 +37,7 @@ public abstract class LongRunningResult implements CommandResult<CommandContext>
                 LongRunningResult.this.run(context);
                 if (isDone)
                 {
-                    context.getCore().getTaskManager()
+                    CubeEngine.getCore().getTaskManager()
                            .cancelTask(context.getModule(), taskId);
                 }
             }
