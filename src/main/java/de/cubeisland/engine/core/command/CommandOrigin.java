@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import de.cubeisland.engine.command.methodic.InvokableMethod;
 import de.cubeisland.engine.core.module.Module;
 

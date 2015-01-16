@@ -20,18 +20,6 @@ package de.cubeisland.engine.core.bukkit;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.bukkit.Difficulty;
-import org.bukkit.DyeColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldType;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Villager.Profession;
-import org.bukkit.inventory.ItemStack;
-
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandDescriptor;
@@ -93,6 +81,16 @@ import de.cubeisland.engine.core.user.UserList.UserListReader;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
+import org.bukkit.Difficulty;
+import org.bukkit.DyeColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 

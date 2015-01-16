@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,10 +33,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.user.User;
 
 import static org.bukkit.event.inventory.InventoryAction.NOTHING;
 

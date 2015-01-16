@@ -19,14 +19,12 @@ package de.cubeisland.engine.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public class InventoryGuardFactory
 {

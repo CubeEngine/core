@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleClassLoader;

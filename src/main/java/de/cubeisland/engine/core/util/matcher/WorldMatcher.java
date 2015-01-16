@@ -19,11 +19,9 @@ package de.cubeisland.engine.core.util.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.World;
-
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.StringUtils;
+import org.bukkit.World;
 
 public class WorldMatcher
 {

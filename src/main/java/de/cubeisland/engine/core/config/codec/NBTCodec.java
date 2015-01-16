@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.node.BooleanNode;
 import de.cubeisland.engine.converter.node.ByteNode;

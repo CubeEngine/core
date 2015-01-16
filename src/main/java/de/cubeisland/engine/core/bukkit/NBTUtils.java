@@ -20,7 +20,17 @@ package de.cubeisland.engine.core.bukkit;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import de.cubeisland.engine.converter.node.ByteNode;
+import de.cubeisland.engine.converter.node.DoubleNode;
+import de.cubeisland.engine.converter.node.FloatNode;
+import de.cubeisland.engine.converter.node.IntNode;
+import de.cubeisland.engine.converter.node.ListNode;
+import de.cubeisland.engine.converter.node.LongNode;
+import de.cubeisland.engine.converter.node.MapNode;
+import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.NullNode;
+import de.cubeisland.engine.converter.node.ShortNode;
+import de.cubeisland.engine.converter.node.StringNode;
 import net.minecraft.server.v1_8_R1.BlockPosition;
 import net.minecraft.server.v1_8_R1.NBTBase;
 import net.minecraft.server.v1_8_R1.NBTTagByte;
@@ -36,21 +46,8 @@ import net.minecraft.server.v1_8_R1.NBTTagLong;
 import net.minecraft.server.v1_8_R1.NBTTagShort;
 import net.minecraft.server.v1_8_R1.NBTTagString;
 import net.minecraft.server.v1_8_R1.TileEntity;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-
 import org.bukkit.Location;
-
-import de.cubeisland.engine.converter.node.ByteNode;
-import de.cubeisland.engine.converter.node.DoubleNode;
-import de.cubeisland.engine.converter.node.FloatNode;
-import de.cubeisland.engine.converter.node.IntNode;
-import de.cubeisland.engine.converter.node.ListNode;
-import de.cubeisland.engine.converter.node.LongNode;
-import de.cubeisland.engine.converter.node.MapNode;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.NullNode;
-import de.cubeisland.engine.converter.node.ShortNode;
-import de.cubeisland.engine.converter.node.StringNode;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
 
 public class NBTUtils
 {

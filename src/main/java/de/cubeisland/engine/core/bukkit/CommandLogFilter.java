@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.util.regex.Pattern;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;

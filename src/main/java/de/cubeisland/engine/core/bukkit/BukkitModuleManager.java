@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import org.bukkit.plugin.PluginManager;
-
 import de.cubeisland.engine.core.module.BaseModuleManager;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
+import org.bukkit.plugin.PluginManager;
 
 public class BukkitModuleManager extends BaseModuleManager
 {

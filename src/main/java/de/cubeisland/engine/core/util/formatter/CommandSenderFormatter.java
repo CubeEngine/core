@@ -17,13 +17,12 @@
  */
 package de.cubeisland.engine.core.util.formatter;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.AnimalTamer;
-
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.AnimalTamer;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
 

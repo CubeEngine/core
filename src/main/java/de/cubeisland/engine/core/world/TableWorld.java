@@ -22,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
-
 import de.cubeisland.engine.core.storage.database.AutoIncrementTable;
 import de.cubeisland.engine.core.storage.database.TableUpdateCreator;
 import de.cubeisland.engine.core.util.Version;

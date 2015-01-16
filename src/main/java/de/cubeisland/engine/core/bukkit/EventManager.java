@@ -23,14 +23,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.Module;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.Module;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 

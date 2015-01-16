@@ -22,8 +22,6 @@ import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
-
 /**
  * A result that should be confirmed via the /confirm command
  */

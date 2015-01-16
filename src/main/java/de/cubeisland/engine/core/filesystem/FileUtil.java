@@ -38,7 +38,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import de.cubeisland.engine.core.CubeEngine;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.event.ModuleDisabledEvent;
 import de.cubeisland.engine.core.module.event.ModuleEnabledEvent;

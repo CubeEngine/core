@@ -26,18 +26,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-
+import de.cubeisland.engine.core.CoreResource;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.util.AliasMapFormat;
 import net.minecraft.server.v1_8_R1.EntityTypes;
 import net.minecraft.server.v1_8_R1.NPC;
-
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Projectile;
-
-import de.cubeisland.engine.core.CoreResource;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.util.AliasMapFormat;
 
 /**
  * This Matcher provides methods to match Entities.

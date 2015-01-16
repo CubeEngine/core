@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-
 import de.cubeisland.engine.core.filesystem.FileUtil;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

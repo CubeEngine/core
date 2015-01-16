@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.i18n;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;

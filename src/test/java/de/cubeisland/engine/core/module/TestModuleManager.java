@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.module;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;

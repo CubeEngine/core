@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.util;
 
 import java.util.Date;
 import java.util.Locale;
-
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;

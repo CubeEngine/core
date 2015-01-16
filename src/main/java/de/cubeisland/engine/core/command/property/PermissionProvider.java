@@ -18,9 +18,6 @@
 package de.cubeisland.engine.core.command.property;
 
 import java.util.Stack;
-
-import org.bukkit.permissions.Permissible;
-
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherProperty;
 import de.cubeisland.engine.command.util.property.AbstractProperty;
@@ -29,6 +26,7 @@ import de.cubeisland.engine.command.util.property.PropertyHolder;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import org.bukkit.permissions.Permissible;
 
 public class PermissionProvider extends AbstractProperty<Permission> implements Finalizable
 {

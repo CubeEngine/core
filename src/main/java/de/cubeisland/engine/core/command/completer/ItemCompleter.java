@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command.completer;
 
 import java.util.Arrays;
 import java.util.List;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.core.util.matcher.Match;

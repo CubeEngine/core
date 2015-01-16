@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.storage.database;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-
 import org.jooq.impl.UpdatableRecordImpl;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;

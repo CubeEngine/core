@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.logging;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import de.cubeisland.engine.logscribe.LogEntry;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.format.DefaultFormat;

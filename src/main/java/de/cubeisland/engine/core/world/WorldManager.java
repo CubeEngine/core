@@ -21,13 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.util.Cleanable;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.generator.ChunkGenerator;
-
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.util.Cleanable;
 import org.jooq.types.UInteger;
 
 public interface WorldManager extends Cleanable

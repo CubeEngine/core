@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.webapi;
 
 import java.net.InetSocketAddress;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 

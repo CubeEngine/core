@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;

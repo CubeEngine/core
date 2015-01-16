@@ -24,22 +24,19 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
+import com.mojang.authlib.GameProfile;
+import de.cubeisland.engine.core.ban.Ban;
+import de.cubeisland.engine.core.ban.BanManager;
+import de.cubeisland.engine.core.ban.IpBan;
+import de.cubeisland.engine.core.ban.UserBan;
 import net.minecraft.server.v1_8_R1.DedicatedPlayerList;
 import net.minecraft.server.v1_8_R1.GameProfileBanEntry;
 import net.minecraft.server.v1_8_R1.GameProfileBanList;
 import net.minecraft.server.v1_8_R1.IpBanEntry;
 import net.minecraft.server.v1_8_R1.IpBanList;
 import net.minecraft.server.v1_8_R1.JsonListEntry;
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
-
 import org.bukkit.Bukkit;
-
-import com.mojang.authlib.GameProfile;
-import de.cubeisland.engine.core.ban.Ban;
-import de.cubeisland.engine.core.ban.BanManager;
-import de.cubeisland.engine.core.ban.IpBan;
-import de.cubeisland.engine.core.ban.UserBan;
+import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;

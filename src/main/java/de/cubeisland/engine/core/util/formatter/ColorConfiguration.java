@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.util.formatter;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 

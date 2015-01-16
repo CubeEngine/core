@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.storage.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import de.cubeisland.engine.core.util.Version;
 import org.jooq.Record;
 import org.jooq.Table;

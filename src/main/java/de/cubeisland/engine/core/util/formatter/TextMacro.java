@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.util.formatter;
 
 import java.util.Set;
-
 import de.cubeisland.engine.messagecompositor.macro.ConstantMacro;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 

@@ -20,12 +20,6 @@ package de.cubeisland.engine.core.bukkit.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
-
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
@@ -38,6 +32,10 @@ import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.StringUtils;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.help.HelpTopic;
 
 public class WrappedCommand extends Command
 {

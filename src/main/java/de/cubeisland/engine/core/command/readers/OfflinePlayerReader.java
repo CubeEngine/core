@@ -17,14 +17,13 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
-import org.bukkit.OfflinePlayer;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
+import org.bukkit.OfflinePlayer;
 
 public class OfflinePlayerReader implements ArgumentReader<OfflinePlayer>
 {

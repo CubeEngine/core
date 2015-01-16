@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.attachment;
 
 import java.util.Set;
-
 import de.cubeisland.engine.core.module.Module;
 
 public interface AttachmentHolder<T extends Attachment>

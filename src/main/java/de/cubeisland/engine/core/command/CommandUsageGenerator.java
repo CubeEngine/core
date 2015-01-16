@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core.command;
 
-import org.bukkit.permissions.Permissible;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.parameter.FlagParameter;
@@ -29,6 +27,7 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.bukkit.permissions.Permissible;
 
 import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
 

@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.methodic.MethodicCommandContainer;

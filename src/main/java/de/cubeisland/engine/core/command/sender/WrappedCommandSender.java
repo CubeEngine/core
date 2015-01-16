@@ -20,17 +20,15 @@ package de.cubeisland.engine.core.command.sender;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class WrappedCommandSender implements CommandSender
 {

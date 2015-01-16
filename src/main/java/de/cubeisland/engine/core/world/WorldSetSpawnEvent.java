@@ -17,12 +17,11 @@
  */
 package de.cubeisland.engine.core.world;
 
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.bukkit.CubeEvent;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.HandlerList;
-
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.CubeEvent;
 
 public class WorldSetSpawnEvent extends CubeEvent
 {

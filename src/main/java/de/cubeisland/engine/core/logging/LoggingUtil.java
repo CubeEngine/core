@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.logging;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logscribe.target.file.format.FileFormat;

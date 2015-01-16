@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.webapi;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

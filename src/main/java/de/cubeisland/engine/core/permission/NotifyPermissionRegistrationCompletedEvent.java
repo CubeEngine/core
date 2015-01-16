@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.core.permission;
 
-import org.bukkit.event.HandlerList;
-
 import de.cubeisland.engine.core.bukkit.CubeEvent;
 import de.cubeisland.engine.core.module.Module;
+import org.bukkit.event.HandlerList;
 
 /**
  * Event gets called after a new Bukkit permission was registered by CubeEngine.

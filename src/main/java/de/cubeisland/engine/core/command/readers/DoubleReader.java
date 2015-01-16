@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.readers;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;

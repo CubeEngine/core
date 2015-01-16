@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;

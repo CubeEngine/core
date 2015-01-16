@@ -20,13 +20,11 @@ package de.cubeisland.engine.core.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import de.cubeisland.engine.core.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
-import de.cubeisland.engine.core.user.User;
 
 public class InventoryUtil
 {

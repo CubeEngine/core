@@ -24,13 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.help.HelpTopic;
-
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
@@ -38,6 +31,11 @@ import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ModuleProvider;
 import de.cubeisland.engine.core.module.Module;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.command.defaults.VanillaCommand;
+import org.bukkit.help.HelpTopic;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;

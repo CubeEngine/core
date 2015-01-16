@@ -24,14 +24,12 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-
-import org.bukkit.scheduler.BukkitScheduler;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 

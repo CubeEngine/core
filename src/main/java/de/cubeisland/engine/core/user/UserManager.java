@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.user;
 
 import java.util.Set;
 import java.util.UUID;
-
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;

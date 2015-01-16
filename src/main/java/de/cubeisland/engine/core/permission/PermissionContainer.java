@@ -21,7 +21,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
-
 import de.cubeisland.engine.core.module.Module;
 
 public abstract class PermissionContainer<T extends Module>

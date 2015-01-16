@@ -17,9 +17,8 @@
  */
 package de.cubeisland.engine.core.bukkit;
 
-import org.bukkit.event.Event;
-
 import de.cubeisland.engine.core.Core;
+import org.bukkit.event.Event;
 
 /**
  * This class is a custom Event containing the core to allow easy access.

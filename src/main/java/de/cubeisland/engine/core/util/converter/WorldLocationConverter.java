@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.util.converter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.SingleClassConverter;

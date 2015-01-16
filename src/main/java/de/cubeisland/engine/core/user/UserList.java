@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.user;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;

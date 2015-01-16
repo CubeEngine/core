@@ -20,12 +20,10 @@ package de.cubeisland.engine.core.command.completer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.bukkit.Material;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.core.util.StringUtils;
+import org.bukkit.Material;
 
 public class MaterialListCompleter implements Completer
 {

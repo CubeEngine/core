@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.logging.LoggingUtil;

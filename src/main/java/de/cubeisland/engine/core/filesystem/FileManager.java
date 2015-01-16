@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;

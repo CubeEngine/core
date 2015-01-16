@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.task.TaskManager;
 

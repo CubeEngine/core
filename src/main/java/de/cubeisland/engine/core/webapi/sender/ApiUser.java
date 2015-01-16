@@ -19,12 +19,10 @@ package de.cubeisland.engine.core.webapi.sender;
 
 import java.util.Locale;
 import java.util.UUID;
-
-import org.bukkit.permissions.Permission;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
+import org.bukkit.permissions.Permission;
 
 public class ApiUser extends ApiCommandSender
 {

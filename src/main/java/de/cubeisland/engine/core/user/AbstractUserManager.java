@@ -37,9 +37,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.Bukkit;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -52,6 +49,7 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
+import org.bukkit.Bukkit;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
 

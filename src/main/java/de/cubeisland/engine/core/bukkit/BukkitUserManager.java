@@ -26,7 +26,11 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+import de.cubeisland.engine.core.user.AbstractUserManager;
+import de.cubeisland.engine.core.user.User;
+import de.cubeisland.engine.core.user.UserAttachment;
+import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.util.Profiler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -41,12 +45,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-
-import de.cubeisland.engine.core.user.AbstractUserManager;
-import de.cubeisland.engine.core.user.User;
-import de.cubeisland.engine.core.user.UserAttachment;
-import de.cubeisland.engine.core.user.UserEntity;
-import de.cubeisland.engine.core.util.Profiler;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;

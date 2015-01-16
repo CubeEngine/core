@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.util;
 
+import de.cubeisland.engine.core.user.User;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,8 +26,6 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Step;
 import org.bukkit.material.WoodenStep;
 import org.bukkit.util.BlockIterator;
-
-import de.cubeisland.engine.core.user.User;
 
 public class LocationUtil
 {

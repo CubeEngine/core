@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.webapi;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;

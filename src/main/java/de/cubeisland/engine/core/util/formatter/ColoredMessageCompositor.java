@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.util.formatter;
 
 import java.util.Locale;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.core.util.ChatFormat;

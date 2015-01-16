@@ -17,9 +17,8 @@
  */
 package de.cubeisland.engine.core.module.service;
 
-import org.bukkit.World;
-
 import de.cubeisland.engine.core.user.User;
+import org.bukkit.World;
 
 public interface Metadata
 {

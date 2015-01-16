@@ -18,14 +18,12 @@
 package de.cubeisland.engine.core.util.converter;
 
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 public class WorldConverter extends SimpleConverter<World>
 {

@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
-
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandException;
 import de.cubeisland.engine.command.CommandInvocation;

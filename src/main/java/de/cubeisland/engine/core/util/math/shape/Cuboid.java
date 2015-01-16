@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.util.math.shape;
 
 import java.util.Iterator;
-
 import de.cubeisland.engine.core.util.math.Vector3;
 
 public class Cuboid implements Shape

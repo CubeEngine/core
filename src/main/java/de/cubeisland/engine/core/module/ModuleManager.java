@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.module;
 
 import java.nio.file.Path;
 import java.util.Collection;
-
 import de.cubeisland.engine.core.module.exception.CircularDependencyException;
 import de.cubeisland.engine.core.module.exception.IncompatibleCoreException;
 import de.cubeisland.engine.core.module.exception.IncompatibleDependencyException;

@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.permission;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.bukkit.permissions.Permissible;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

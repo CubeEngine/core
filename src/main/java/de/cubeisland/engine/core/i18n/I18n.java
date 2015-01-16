@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.formatter.ColoredMessageCompositor;

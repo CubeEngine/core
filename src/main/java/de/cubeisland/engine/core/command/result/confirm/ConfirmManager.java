@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;

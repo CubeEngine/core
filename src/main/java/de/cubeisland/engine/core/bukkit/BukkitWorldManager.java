@@ -22,17 +22,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import net.minecraft.server.v1_8_R1.RegionFileCache;
-
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
+import net.minecraft.server.v1_8_R1.RegionFileCache;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 

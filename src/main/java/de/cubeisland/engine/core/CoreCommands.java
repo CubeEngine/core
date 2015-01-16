@@ -21,17 +21,12 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.filter.Restricted;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
 import de.cubeisland.engine.command.methodic.parametric.Default;
 import de.cubeisland.engine.command.methodic.parametric.Desc;
-import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Optional;
 import de.cubeisland.engine.command.methodic.parametric.Reader;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
@@ -52,6 +47,8 @@ import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.logscribe.LogLevel;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;

@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.core.module.service;
 
-import org.bukkit.Location;
-
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.math.shape.Shape;
+import org.bukkit.Location;
 
 public interface Selector
 {

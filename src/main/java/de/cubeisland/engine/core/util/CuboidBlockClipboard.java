@@ -21,15 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
-import net.minecraft.server.v1_8_R1.NBTTagInt;
-
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.SingleClassConverter;
@@ -42,6 +33,12 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.NBTUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
+import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R1.NBTTagInt;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 
 import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
 

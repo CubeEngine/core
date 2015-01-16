@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 import de.cubeisland.engine.core.CubeEngine;

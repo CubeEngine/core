@@ -32,20 +32,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CoreCommands;
@@ -98,6 +84,16 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.joda.time.Duration;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

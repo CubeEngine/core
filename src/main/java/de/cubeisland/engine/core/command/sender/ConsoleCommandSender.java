@@ -18,13 +18,11 @@
 package de.cubeisland.engine.core.command.sender;
 
 import java.util.Locale;
-
+import de.cubeisland.engine.core.bukkit.BukkitCore;
 import org.bukkit.Server;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.permissions.Permission;
-
-import de.cubeisland.engine.core.bukkit.BukkitCore;
 
 public class ConsoleCommandSender extends WrappedCommandSender implements org.bukkit.command.ConsoleCommandSender
 {

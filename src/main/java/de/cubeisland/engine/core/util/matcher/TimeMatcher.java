@@ -28,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;

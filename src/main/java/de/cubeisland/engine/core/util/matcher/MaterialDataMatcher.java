@@ -26,17 +26,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
+import de.cubeisland.engine.core.CoreResource;
+import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.filesystem.FileUtil;
+import de.cubeisland.engine.core.util.StringUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import de.cubeisland.engine.core.CoreResource;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.filesystem.FileUtil;
-import de.cubeisland.engine.core.util.StringUtils;
 
 public class MaterialDataMatcher
 {

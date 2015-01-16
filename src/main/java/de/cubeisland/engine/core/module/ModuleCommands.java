@@ -22,15 +22,10 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.methodic.Command;
 import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.parametric.Label;
 import de.cubeisland.engine.command.methodic.parametric.Reader;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
@@ -41,6 +36,8 @@ import de.cubeisland.engine.core.command.CommandContainer;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.Version;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import static de.cubeisland.engine.core.util.ChatFormat.BRIGHT_GREEN;
 import static de.cubeisland.engine.core.util.ChatFormat.RED;
@@ -106,7 +103,6 @@ public class ModuleCommands extends CommandContainer
     }
 
     @Command(desc = "Enables a module")
-    //@Params(positional = @Param(label = "module", type = ModuleReader.class))
     public void enable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
         if (this.mm.enableModule(module))

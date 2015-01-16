@@ -29,9 +29,7 @@ import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultProvider<Enchantment>
 {

@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.i18n;
 
 import java.util.Locale;
-
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;

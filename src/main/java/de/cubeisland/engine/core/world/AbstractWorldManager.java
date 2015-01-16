@@ -27,13 +27,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import org.bukkit.World;
-import org.bukkit.generator.ChunkGenerator;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
+import org.bukkit.World;
+import org.bukkit.generator.ChunkGenerator;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 

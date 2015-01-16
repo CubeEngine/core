@@ -21,17 +21,15 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
+import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import de.cubeisland.engine.core.util.matcher.Match;
 
 import static de.cubeisland.engine.core.util.StringUtils.explode;
 import static de.cubeisland.engine.core.util.StringUtils.implode;

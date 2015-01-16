@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;

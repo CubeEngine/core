@@ -17,11 +17,10 @@
  */
 package de.cubeisland.engine.core.module.service;
 
+import de.cubeisland.engine.core.command.CommandSender;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-
-import de.cubeisland.engine.core.command.CommandSender;
 
 public interface Permission
 {

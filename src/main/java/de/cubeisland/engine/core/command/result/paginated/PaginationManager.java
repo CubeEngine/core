@@ -19,13 +19,11 @@ package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.command.CommandSender;
 
 public class PaginationManager implements Listener
 {

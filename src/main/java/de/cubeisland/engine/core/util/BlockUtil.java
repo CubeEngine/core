@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.util;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

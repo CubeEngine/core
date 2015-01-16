@@ -24,11 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.bukkit.permissions.Permissible;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.SimplePluginManager;
-
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LoggingUtil;
@@ -40,6 +35,9 @@ import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.SimplePluginManager;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

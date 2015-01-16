@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.util.matcher;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
 import org.bukkit.entity.Villager.Profession;
 
 public class ProfessionMatcher

@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.readers;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;

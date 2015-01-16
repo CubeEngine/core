@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.command;
 
 import java.lang.annotation.Annotation;
-
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.ImmutableCommandDescriptor;
 import de.cubeisland.engine.command.filter.Filters;

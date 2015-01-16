@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
-import de.cubeisland.engine.command.methodic.context.BasicCommandContext;
 
 public class MethodicCommand extends BasicMethodicCommand
 {

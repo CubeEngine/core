@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
-
 import org.bukkit.Bukkit;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

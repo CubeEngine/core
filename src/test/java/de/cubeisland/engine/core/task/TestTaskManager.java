@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.task;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.thread.CoreThreadFactory;

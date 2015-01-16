@@ -24,15 +24,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.module.ModuleClassLoader;
+import de.cubeisland.engine.core.module.service.ServiceManager;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
-
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.module.ModuleClassLoader;
-import de.cubeisland.engine.core.module.service.ServiceManager;
 
 public class BukkitServiceManager extends ServiceManager implements ServicesManager
 {

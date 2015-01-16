@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.webapi;
 
 import java.util.LinkedHashMap;
-
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 

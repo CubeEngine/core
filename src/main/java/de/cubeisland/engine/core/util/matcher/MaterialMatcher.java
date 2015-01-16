@@ -32,13 +32,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * This Matcher provides methods to match Material or Items.

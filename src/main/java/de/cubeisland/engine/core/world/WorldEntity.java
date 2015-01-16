@@ -19,10 +19,8 @@ package de.cubeisland.engine.core.world;
 
 import java.util.UUID;
 import javax.persistence.Transient;
-
-import org.bukkit.World;
-
 import de.cubeisland.engine.core.storage.database.AsyncRecord;
+import org.bukkit.World;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 

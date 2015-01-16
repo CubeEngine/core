@@ -17,12 +17,11 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
-import org.bukkit.World.Environment;
-
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import org.bukkit.World.Environment;
 
 public class EnvironmentReader implements ArgumentReader<Environment>
 {

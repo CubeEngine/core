@@ -18,7 +18,6 @@
 package de.cubeisland.engine.core.module;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.task.thread.BaseThreadFactory;
 import de.cubeisland.engine.core.task.thread.LoggingThread;
