@@ -18,16 +18,19 @@
 package de.cubeisland.engine.core.command.readers;
 
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.command.parameter.reader.DefaultProvider;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.user.User;
 import org.bukkit.World;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
-public class WorldReader implements ArgumentReader<World>
+public class WorldReader implements ArgumentReader<World>, DefaultProvider<World>
 {
     private final Core core;
 
@@ -46,5 +49,15 @@ public class WorldReader implements ArgumentReader<World>
             throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
         }
         return world;
+    }
+
+    @Override
+    public World getDefault(CommandInvocation invocation)
+    {
+        if (invocation.getCommandSource() instanceof User)
+        {
+            return ((User)invocation.getCommandSource()).getWorld();
+        }
+        throw new TooFewArgumentsException();
     }
 }
