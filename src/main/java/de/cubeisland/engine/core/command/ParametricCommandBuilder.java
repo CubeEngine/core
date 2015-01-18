@@ -18,34 +18,28 @@
 package de.cubeisland.engine.core.command;
 
 import java.lang.annotation.Annotation;
-import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.ImmutableCommandDescriptor;
-import de.cubeisland.engine.command.filter.Filters;
-import de.cubeisland.engine.command.methodic.Command;
-import de.cubeisland.engine.command.methodic.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.methodic.parametric.ParametricBuilder;
+import de.cubeisland.engine.command.parametric.Command;
+import de.cubeisland.engine.command.parametric.BasicParametricCommand;
+import de.cubeisland.engine.command.parametric.ParametricBuilder;
 import de.cubeisland.engine.command.parameter.Parameter;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.ParameterPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
-import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 
 import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
-import static de.cubeisland.engine.core.command.property.CheckPermission.CHECK;
-import static de.cubeisland.engine.core.command.property.CheckPermission.NOT_CHECK;
 
-public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
+public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, CubeCommandDescriptor>
 {
     public ParametricCommandBuilder()
     {
-        this.usageGenerator = new CommandUsageGenerator();
+        super(new CommandUsageGenerator());
     }
 
     @Override
-    protected Parameter createParameter(CommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
+    protected Parameter createParameter(CubeCommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
                                         CommandOrigin origin, Object javaParameter)
     {
         Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin, javaParameter);
@@ -56,11 +50,10 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
             {
                 if (isRequired(parameter))
                 {
-                    throw new IllegalArgumentException(
-                        "A Parameter cannot be required and have a permission"); // TODO custom execption
+                    throw new IllegalArgumentException("A Parameter cannot be required and have a permission"); // TODO custom execption
                 }
-                Permission paramPerm = descriptor.valueFor(PermissionProvider.class).child(
-                    ((ParameterPermission)annotation).value(), ((ParameterPermission)annotation).permDefault());
+                ParameterPermission annot = (ParameterPermission)annotation;
+                Permission paramPerm = descriptor.getPermission().child(annot.value(), annot.permDefault());
                 parameter.setProperty(new PermissionProvider(paramPerm));
             }
         }
@@ -69,9 +62,16 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
     }
 
     @Override
-    protected ImmutableCommandDescriptor buildCommandDescriptor(Command annotation, CommandOrigin origin)
+    protected CubeCommandDescriptor newDescriptor()
     {
-        ImmutableCommandDescriptor descriptor = super.buildCommandDescriptor(annotation, origin);
+        return new CubeCommandDescriptor();
+    }
+
+    @Override
+    protected CubeCommandDescriptor fillDescriptor(CubeCommandDescriptor descriptor, Command annotation,
+                                                   CommandOrigin origin)
+    {
+        super.fillDescriptor(descriptor, annotation, origin);
 
         String permName = descriptor.getName();
         boolean checkPerm = true;
@@ -84,26 +84,25 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin>
             checkPerm = perm.checkPermission();
         }
         Permission permission = origin.getModule().getBasePermission().childWildcard("command").child(permName, def);
-        descriptor.setProperty(new PermissionProvider(permission));
-        descriptor.setProperty(checkPerm ? CHECK : NOT_CHECK);
+
+        descriptor.setPermission(permission, checkPerm);
+
         if (checkPerm)
         {
-            descriptor.valueFor(Filters.class).addFilter(new PermissionFilter(permission));
+            descriptor.addFilter(new PermissionFilter(permission));
         }
 
-        descriptor.setProperty(Loggable.of(!origin.getMethod().isAnnotationPresent(Unloggable.class)));
+        descriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
 
+        descriptor.setModule(origin.getModule());
         return descriptor;
     }
 
     @Override
     protected BasicParametricCommand build(Command annotation, CommandOrigin origin)
     {
-        ImmutableCommandDescriptor descriptor = buildCommandDescriptor(annotation, origin);
-        descriptor.setProperty(buildParameters(descriptor, origin));
-        descriptor.setProperty(new ModuleProvider(origin.getModule()));
-        ParametricCommand cmd = new ParametricCommand(descriptor);
-        cmd.addCommand(new HelpCommand(cmd));
-        return cmd;
+        BasicParametricCommand command = super.build(annotation, origin);
+        command.addCommand(new HelpCommand(command));
+        return command;
     }
 }

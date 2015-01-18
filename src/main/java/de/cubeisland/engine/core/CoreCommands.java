@@ -23,12 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.filter.Restricted;
-import de.cubeisland.engine.command.methodic.Command;
-import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.parametric.Default;
-import de.cubeisland.engine.command.methodic.parametric.Desc;
-import de.cubeisland.engine.command.methodic.parametric.Optional;
-import de.cubeisland.engine.command.methodic.parametric.Reader;
+import de.cubeisland.engine.command.parametric.Command;
+import de.cubeisland.engine.command.parametric.Flag;
+import de.cubeisland.engine.command.parametric.Default;
+import de.cubeisland.engine.command.parametric.Desc;
+import de.cubeisland.engine.command.parametric.Optional;
+import de.cubeisland.engine.command.parametric.Reader;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
@@ -37,7 +37,7 @@ import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.command.CommandContainer;
+import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
@@ -55,7 +55,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 @Command(name = "cubeengine", alias = "ce",
          desc = "These are the basic commands of the CubeEngine.")
-public class CoreCommands extends CommandContainer
+public class CoreCommands extends ContainerCommand
 {
     private final BukkitCore core;
     private final BanManager banManager;

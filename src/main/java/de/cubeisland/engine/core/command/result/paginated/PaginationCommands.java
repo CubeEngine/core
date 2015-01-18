@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.command.result.paginated;
 
-import de.cubeisland.engine.command.methodic.Command;
-import de.cubeisland.engine.command.methodic.parametric.Label;
+import de.cubeisland.engine.command.parametric.Command;
+import de.cubeisland.engine.command.parametric.Label;
 import de.cubeisland.engine.core.command.CommandContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;

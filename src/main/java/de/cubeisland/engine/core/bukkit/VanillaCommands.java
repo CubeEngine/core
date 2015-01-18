@@ -26,14 +26,14 @@ import java.util.Set;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.alias.Alias;
 import de.cubeisland.engine.command.filter.Restricted;
-import de.cubeisland.engine.command.methodic.Command;
-import de.cubeisland.engine.command.methodic.Flag;
-import de.cubeisland.engine.command.methodic.parametric.Greed;
-import de.cubeisland.engine.command.methodic.parametric.Named;
-import de.cubeisland.engine.command.methodic.parametric.Optional;
+import de.cubeisland.engine.command.parametric.Command;
+import de.cubeisland.engine.command.parametric.Flag;
+import de.cubeisland.engine.command.parametric.Greed;
+import de.cubeisland.engine.command.parametric.Named;
+import de.cubeisland.engine.command.parametric.Optional;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.CommandContainer;
+import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
@@ -355,7 +355,7 @@ public class VanillaCommands
     }
 
     @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
-    public static class WhitelistCommand extends CommandContainer
+    public static class WhitelistCommand extends ContainerCommand
     {
         private final BukkitCore core;
 

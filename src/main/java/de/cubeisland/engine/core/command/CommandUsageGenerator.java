@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.core.command;
 
+import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.parameter.FlagParameter;
 import de.cubeisland.engine.command.parameter.Parameter;
-import de.cubeisland.engine.command.parameter.ParameterGroup;
 import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
@@ -34,7 +34,7 @@ import static de.cubeisland.engine.command.parameter.property.Requirement.isRequ
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {
     @Override
-    public String generateParameterUsage(CommandInvocation invocation, ParameterGroup parameters)
+    public String generateParameterUsage(CommandInvocation invocation, CommandDescriptor parameters)
     {
         return super.generateParameterUsage(invocation, parameters);
     }

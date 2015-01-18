@@ -22,7 +22,7 @@ import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.completer.CompleterProvider;
-import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
+import de.cubeisland.engine.command.parametric.BasicParametricCommand;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
@@ -69,11 +69,11 @@ public interface CommandManager extends Cleanable, Dispatcher, CompleterProvider
 
     PaginationManager getPaginationManager();
 
-    CommandBuilder<BasicMethodicCommand, CommandOrigin> getCommandBuilder();
+    CommandBuilder<BasicParametricCommand, CommandOrigin> getCommandBuilder();
 
 
     /**
-     * Creates {@link de.cubeisland.engine.command.methodic.BasicMethodicCommand} for all methods annotated as a command
+     * Creates {@link de.cubeisland.engine.command.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to

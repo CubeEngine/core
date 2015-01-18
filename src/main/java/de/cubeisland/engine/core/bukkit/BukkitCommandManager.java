@@ -26,32 +26,24 @@ import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
-import de.cubeisland.engine.command.ExceptionHandlerProperty;
-import de.cubeisland.engine.command.ImmutableCommandDescriptor;
-import de.cubeisland.engine.command.Name;
-import de.cubeisland.engine.command.SelfDescribing;
-import de.cubeisland.engine.command.UsageProvider;
 import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.methodic.BasicMethodicCommand;
-import de.cubeisland.engine.command.methodic.CompositeCommandBuilder;
-import de.cubeisland.engine.command.methodic.MethodicBuilder;
-import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
-import de.cubeisland.engine.command.parameter.property.Description;
+import de.cubeisland.engine.command.parametric.CompositeCommandBuilder;
+import de.cubeisland.engine.command.parametric.BasicParametricCommand;
+import de.cubeisland.engine.command.parametric.ParametricBuilder;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
 import de.cubeisland.engine.core.command.CommandManager;
+import de.cubeisland.engine.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.core.command.CommandOrigin;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.ExceptionHandler;
-import de.cubeisland.engine.core.command.MethodicCommandBuilder;
+import de.cubeisland.engine.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.completer.ModuleCompleter;
 import de.cubeisland.engine.core.command.completer.PlayerCompleter;
 import de.cubeisland.engine.core.command.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.completer.WorldCompleter;
-import de.cubeisland.engine.core.command.property.Loggable;
 import de.cubeisland.engine.core.command.readers.BooleanReader;
 import de.cubeisland.engine.core.command.readers.ByteReader;
 import de.cubeisland.engine.core.command.readers.DifficultyReader;
@@ -94,7 +86,7 @@ import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
-public class BukkitCommandManager extends DispatcherCommand implements CommandManager, SelfDescribing
+public class BukkitCommandManager extends DispatcherCommand implements CommandManager
 {
     private final CommandInjector injector;
     private final ConsoleCommandSender consoleSender;
@@ -102,16 +94,24 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     private final ConfirmManager confirmManager;
     private final PaginationManager paginationManager;
     private final ReaderManager readerManager;
-    private final CommandBuilder<BasicMethodicCommand, CommandOrigin> builder;
+    private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
 
     private Map<Class, Completer> completers = new HashMap<>();
 
+    @Override
+    public CommandManagerDescriptor getDescriptor()
+    {
+        return (CommandManagerDescriptor)super.getDescriptor();
+    }
+
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
+        super(new CommandManagerDescriptor(core));
+
         this.consoleSender = new ConsoleCommandSender(core);
         this.injector = injector;
 
-        this.builder = new CompositeCommandBuilder<>(new MethodicCommandBuilder(), new ParametricCommandBuilder());
+        this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
         // TODO finish ConfirmManager
@@ -149,19 +149,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         readerManager.registerReader(new LogLevelReader(), LogLevel.class);
 
         readerManager.registerReader(new UserListReader(), UserList.class);
-
-        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(
-            core)));
-    }
-
-    @Override
-    public CommandDescriptor selfDescribe()
-    {
-        ImmutableCommandDescriptor descriptor = new ImmutableCommandDescriptor();
-        descriptor.setProperty(new Name(""));
-        descriptor.setProperty(new Description("Base CommandDispatcher for CubeEngine"));
-        descriptor.setProperty(new UsageProvider(new ParameterUsageGenerator()));
-        return descriptor;
     }
 
     @Override
@@ -181,7 +168,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    public CommandBuilder<BasicMethodicCommand, CommandOrigin> getCommandBuilder()
+    public CommandBuilder<BasicParametricCommand, CommandOrigin> getCommandBuilder()
     {
         return this.builder;
     }
@@ -226,15 +213,16 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public void logExecution(CommandSource sender, boolean ran, CommandBase command, String[] args)
     {
-        if (command.getDescriptor().valueFor(Loggable.class))
+        CommandDescriptor descriptor = command.getDescriptor();
+        if (descriptor instanceof CubeCommandDescriptor && ((CubeCommandDescriptor)descriptor).isLoggable())
         {
             if (ran)
             {
-                this.commandLogger.debug("execute {} {}: {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+                this.commandLogger.debug("execute {} {}: {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
             }
             else
             {
-                this.commandLogger.debug("failed {} {}; {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+                this.commandLogger.debug("failed {} {}; {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
             }
         }
     }
@@ -242,9 +230,10 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public void logTabCompletion(CommandSource sender, CommandBase command, String[] args)
     {
-        if (command.getDescriptor().valueFor(Loggable.class))
+        CommandDescriptor descriptor = command.getDescriptor();
+        if (descriptor instanceof CubeCommandDescriptor && ((CubeCommandDescriptor)descriptor).isLoggable())
         {
-            this.commandLogger.debug("getSuggestions {} {}: {}", sender.getName(), command.getDescriptor().getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("getSuggestions {} {}: {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
         }
     }
 
@@ -291,7 +280,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     }
 
     /**
-     * Creates {@link de.cubeisland.engine.command.methodic.BasicMethodicCommand} for all methods annotated as a command
+     * Creates {@link de.cubeisland.engine.command.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to
@@ -301,9 +290,9 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     @SuppressWarnings("unchecked")
     public void addCommands(Dispatcher dispatcher, Module module, Object commandHolder)
     {
-        for (Method method : MethodicBuilder.getMethods(commandHolder.getClass()))
+        for (Method method : ParametricBuilder.getMethods(commandHolder.getClass()))
         {
-            BasicMethodicCommand cmd = this.getCommandBuilder().buildCommand(new CommandOrigin(method, commandHolder, module));
+            BasicParametricCommand cmd = this.getCommandBuilder().buildCommand(new CommandOrigin(method, commandHolder, module));
             if (cmd != null)
             {
                 dispatcher.addCommand(cmd);

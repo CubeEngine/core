@@ -31,7 +31,7 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-public class ExceptionHandler extends de.cubeisland.engine.command.ExceptionHandler
+public class ExceptionHandler implements de.cubeisland.engine.command.ExceptionHandler
 {
     private Core core;
 

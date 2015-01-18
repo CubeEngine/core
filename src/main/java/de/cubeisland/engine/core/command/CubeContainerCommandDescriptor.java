@@ -17,30 +17,51 @@
  */
 package de.cubeisland.engine.core.command;
 
-import java.lang.reflect.Method;
-import de.cubeisland.engine.command.parametric.InvokableMethod;
+import de.cubeisland.engine.command.parametric.ContainerCommandDescriptor;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 
-/**
- * The origin of a Command in CubeEngine based on an invokable Method
- */
-public class CommandOrigin extends InvokableMethod
+public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor implements CubeDescriptor
 {
-    private final Module module;
+    private boolean loggable;
+    private Permission permission;
+    private boolean checkPerm;
+    private Module module;
 
-    public CommandOrigin(Method method, Object holder, Module module)
+    public void setLoggable(boolean loggable)
     {
-        super(method, holder);
+        this.loggable = loggable;
+    }
+
+    public boolean isLoggable()
+    {
+        return loggable;
+    }
+
+    public void setPermission(Permission permission, boolean checkPerm)
+    {
+        this.permission = permission;
+        this.checkPerm = checkPerm;
+    }
+
+    public Permission getPermission()
+    {
+        return permission;
+    }
+
+    public boolean isCheckPerm()
+    {
+        return checkPerm;
+    }
+
+    public void setModule(Module module)
+    {
         this.module = module;
     }
 
-    /**
-     * Returns the module owning the command
-     *
-     * @return the module
-     */
     public Module getModule()
     {
         return module;
     }
+
 }

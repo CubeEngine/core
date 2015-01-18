@@ -25,11 +25,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import de.cubeisland.engine.command.CommandBase;
+import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.Dispatcher;
+import de.cubeisland.engine.command.alias.AliasDescriptor;
 import de.cubeisland.engine.core.bukkit.BukkitCore;
 import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
-import de.cubeisland.engine.core.command.ModuleProvider;
+import de.cubeisland.engine.core.command.CubeCommandDescriptor;
+import de.cubeisland.engine.core.command.CubeDescriptor;
+import de.cubeisland.engine.core.command.HelpCommand;
 import de.cubeisland.engine.core.module.Module;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginCommand;
@@ -80,7 +84,7 @@ public class CommandInjector
 
     public synchronized void registerCommand(CommandBase command)
     {
-        WrappedCommand newCommand = new WrappedCommand(command, core);
+        WrappedCommand newCommand = new WrappedCommand(command);
         SimpleCommandMap commandMap = getCommandMap();
         Command old = this.getCommand(command.getDescriptor().getName());
         if (old != null)
@@ -182,26 +186,36 @@ public class CommandInjector
 
     private void removeSubCommands(Module module, CommandBase command)
     {
-        if (command instanceof Dispatcher)
+        if (!(command instanceof Dispatcher))
         {
-            Set<CommandBase> subCmds = ((Dispatcher)command).getCommands();
-            if (subCmds.isEmpty())
+            return;
+        }
+        Set<CommandBase> commands = ((Dispatcher)command).getCommands();
+        if (commands.isEmpty())
+        {
+            return;
+        }
+        Iterator<CommandBase> it = commands.iterator();
+
+        while (it.hasNext())
+        {
+            CommandBase subCmd = it.next();
+            if (subCmd instanceof HelpCommand)
             {
-                return;
+                continue;
             }
-            Iterator<CommandBase> it = subCmds.iterator();
-            CommandBase subCmd;
-            while (it.hasNext())
+            CommandDescriptor descriptor = subCmd.getDescriptor();
+            if (descriptor instanceof AliasDescriptor)
             {
-                subCmd = it.next();
-                if (subCmd.getDescriptor().valueFor(ModuleProvider.class) == module)
-                {
-                    it.remove();
-                }
-                else
-                {
-                    this.removeSubCommands(module, subCmd);
-                }
+                descriptor = ((AliasDescriptor)descriptor).mainDescriptor();
+            }
+            if (((CubeDescriptor)descriptor).getModule() == module)
+            {
+                it.remove();
+            }
+            else
+            {
+                this.removeSubCommands(module, subCmd);
             }
         }
     }

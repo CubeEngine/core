@@ -17,21 +17,12 @@
  */
 package de.cubeisland.engine.core.command.property;
 
-import java.util.Stack;
-import de.cubeisland.engine.command.Dispatcher;
-import de.cubeisland.engine.command.DispatcherProperty;
 import de.cubeisland.engine.command.util.property.AbstractProperty;
-import de.cubeisland.engine.command.util.property.Finalizable;
-import de.cubeisland.engine.command.util.property.PropertyHolder;
-import de.cubeisland.engine.core.command.ModuleProvider;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import org.bukkit.permissions.Permissible;
 
-public class PermissionProvider extends AbstractProperty<Permission> implements Finalizable
+public class PermissionProvider extends AbstractProperty<Permission>
 {
-    private boolean isRegistered = false;
-
     public PermissionProvider(Permission value)
     {
         super(value);
@@ -40,38 +31,5 @@ public class PermissionProvider extends AbstractProperty<Permission> implements 
     public boolean isAuthorized(Permissible permissible)
     {
         return value().isAuthorized(permissible);
-    }
-
-    public void doFinalize(PropertyHolder holder)
-    {
-        if (isRegistered)
-        {
-            return;
-        }
-        Module module = holder.valueFor(ModuleProvider.class);
-        if (module == null)
-        {
-            throw new IllegalStateException("Property Holder is missing a ModuleProvider Property");
-        }
-        Stack<String> cmds = new Stack<>();
-        Dispatcher parent = holder.valueFor(DispatcherProperty.class).getDispatcher();
-        while (parent != null)
-        {
-            cmds.push(parent.getDescriptor().getName());
-            parent = parent.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher();
-        }
-
-        Permission cmdPerm = module.getBasePermission().childWildcard("command");
-        while (!cmds.isEmpty())
-        {
-            String cmd = cmds.pop();
-            if (!cmd.isEmpty())
-            {
-                cmdPerm = cmdPerm.childWildcard(cmd);
-            }
-        }
-        this.value().setParent(cmdPerm);
-        module.getCore().getPermissionManager().registerPermission(module, this.value());
-        this.isRegistered = true;
     }
 }

@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.methodic.context.ParameterizedContext;
+import de.cubeisland.engine.command.parametric.context.ParameterizedContext;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -43,7 +43,7 @@ public class CommandContext extends ParameterizedContext
 
     public Module getModule()
     {
-        return this.getInvocation().valueFor(ModuleProvider.class);
+        return ((CubeDescriptor)this.getInvocation().getCommand().getDescriptor()).getModule();
     }
 
     public void sendMessage(String message)

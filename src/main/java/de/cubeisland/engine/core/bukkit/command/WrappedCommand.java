@@ -21,12 +21,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import de.cubeisland.engine.command.CommandBase;
+import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
+import de.cubeisland.engine.command.alias.AliasConfiguration;
+import de.cubeisland.engine.command.alias.AliasDescriptor;
 import de.cubeisland.engine.command.completer.CompleterProviderProperty;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.ModuleProvider;
-import de.cubeisland.engine.core.command.property.PermissionProvider;
+import de.cubeisland.engine.core.command.CubeCommandDescriptor;
+import de.cubeisland.engine.core.command.CubeDescriptor;
 import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
@@ -43,16 +46,26 @@ public class WrappedCommand extends Command
     private final Core core;
     private HelpTopic helpTopic;
 
-    public WrappedCommand(CommandBase command, Core core)
+    public WrappedCommand(CommandBase command)
     {
         super(command.getDescriptor().getName());
         this.command = command;
-        this.core = core;
+        CommandDescriptor descriptor = command.getDescriptor();
+        if (descriptor instanceof AliasDescriptor)
+        {
+            descriptor = ((AliasDescriptor)descriptor).mainDescriptor();
+        }
+        this.core = ((CubeDescriptor)descriptor).getModule().getCore();
     }
 
     public Module getModule()
     {
-        return this.command.getDescriptor().valueFor(ModuleProvider.class);
+        CommandDescriptor descriptor = command.getDescriptor();
+        if (descriptor instanceof AliasDescriptor)
+        {
+            descriptor = ((AliasDescriptor)descriptor).mainDescriptor();
+        }
+        return ((CubeDescriptor)descriptor).getModule();
     }
 
     public CommandBase getCommand()
@@ -102,7 +115,15 @@ public class WrappedCommand extends Command
     @Override
     public List<String> getAliases()
     {
-        return new ArrayList<>(this.command.getDescriptor().getAliases());
+        List<String> aliases = new ArrayList<>();
+        for (AliasConfiguration alias : this.command.getDescriptor().getAliases())
+        {
+            if (alias.getDispatcher() == null)
+            {
+                aliases.add(alias.getName());
+            }
+        }
+        return aliases;
     }
 
     @Override
@@ -121,8 +142,15 @@ public class WrappedCommand extends Command
     @Override
     public String getPermission()
     {
-        Permission permission = this.command.getDescriptor().valueFor(PermissionProvider.class);
-        return permission == null ? null : permission.getFullName();
+        if (this.command.getDescriptor() instanceof CubeCommandDescriptor)
+        {
+            Permission permission = ((CubeCommandDescriptor)this.command.getDescriptor()).getPermission();
+            if (permission != null)
+            {
+                return permission.getFullName();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -161,7 +189,7 @@ public class WrappedCommand extends Command
         {
             commandLine += " " + StringUtils.implode(" ", args);
         }
-        CommandInvocation invocation = new CommandInvocation(source, commandLine, getModule().getCore().getCommandManager().getReaderManager()).subInvocation();
+        CommandInvocation invocation = new CommandInvocation(source, commandLine, getModule().getCore().getCommandManager().getReaderManager()).subInvocation(command);
         invocation.setProperty(new CompleterProviderProperty(core.getCommandManager()));
         return invocation;
     }

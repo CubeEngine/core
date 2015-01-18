@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.command;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import de.cubeisland.engine.command.CommandBase;
@@ -27,13 +26,9 @@ import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
-import de.cubeisland.engine.command.ImmutableCommandDescriptor;
-import de.cubeisland.engine.command.Name;
+import de.cubeisland.engine.command.SimpleCommandDescriptor;
 import de.cubeisland.engine.command.alias.AliasCommand;
-import de.cubeisland.engine.command.alias.AliasConfiguration;
-import de.cubeisland.engine.command.alias.Aliases;
-import de.cubeisland.engine.command.methodic.MethodicCommandContainer;
-import de.cubeisland.engine.command.parameter.property.Description;
+import de.cubeisland.engine.command.parametric.ParametricContainerCommand;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
@@ -42,16 +37,13 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 public class HelpCommand implements CommandBase
 {
-    private Dispatcher helpTarget;
-
-    private static final ImmutableCommandDescriptor helpDescriptor = new ImmutableCommandDescriptor();
-
+    private static final SimpleCommandDescriptor helpDescriptor = new SimpleCommandDescriptor();
     static
     {
-        helpDescriptor.setProperty(new Name("?"));
-        helpDescriptor.setProperty(new Aliases(Collections.<AliasConfiguration>emptyList()));
-        helpDescriptor.setProperty(new Description("Displays Help"));
+        helpDescriptor.setName("?");
+        helpDescriptor.setDescription("Displays Help");
     }
+    private Dispatcher helpTarget;
 
     public HelpCommand(Dispatcher target)
     {
@@ -65,9 +57,10 @@ public class HelpCommand implements CommandBase
         {
             return false;
         }
+        CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
         MessageType grey = MessageType.of(GREY);
-        sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, helpTarget.getDescriptor().getDescription()));
+        sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -79,7 +72,7 @@ public class HelpCommand implements CommandBase
             labels.remove(labels.size() - 1);
         }
 
-        sender.sendTranslated(grey, "Usage: {input}", helpTarget.getDescriptor().getUsage(invocation, labels.toArray(new String[labels.size()])));
+        sender.sendTranslated(grey, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)
@@ -102,16 +95,17 @@ public class HelpCommand implements CommandBase
             }
                 sender.sendMessage(" ");
             }
-            else if (helpTarget instanceof MethodicCommandContainer)
+            else if (helpTarget instanceof ParametricContainerCommand)
             {
                 sender.sendTranslated(NEGATIVE, "No actions are available");
                 sender.sendMessage(" ");
             }
         }
 
-        sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}",
-                              "http://engine.cubeisland.de/c/" + helpTarget.getDescriptor().valueFor(
-                                  ModuleProvider.class).getId() + "/" + StringUtils.implode("/", labels));
+        if (descriptor instanceof CubeDescriptor)
+        {
+            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule() + "/" + StringUtils.implode("/", labels));
+        }
         return true;
     }
 

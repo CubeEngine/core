@@ -22,11 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.ExceptionHandlerProperty;
-import de.cubeisland.engine.command.ImmutableCommandDescriptor;
-import de.cubeisland.engine.core.command.CommandContainer;
-import de.cubeisland.engine.core.command.ExceptionHandler;
-import de.cubeisland.engine.core.command.ModuleProvider;
+import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
@@ -35,7 +31,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-public abstract class ConversationCommand extends CommandContainer implements Listener
+public abstract class ConversationCommand extends ContainerCommand implements Listener
 {
     private final Set<UUID> usersInMode = new HashSet<>();
 
@@ -43,14 +39,13 @@ public abstract class ConversationCommand extends CommandContainer implements Li
     {
         super(module);
         module.getCore().getEventManager().registerListener(module, this);
-
-        ((ImmutableCommandDescriptor)getDescriptor()).setProperty(new ExceptionHandlerProperty(new ExceptionHandler(module.getCore())));
+        getDescriptor().setDispatcher(module.getCore().getCommandManager()); // needed for exceptionhandler
         this.registerSubCommands();
     }
 
     public Module getModule()
     {
-        return this.getDescriptor().valueFor(ModuleProvider.class);
+        return this.getDescriptor().getModule();
     }
 
     public boolean hasUser(User user)
