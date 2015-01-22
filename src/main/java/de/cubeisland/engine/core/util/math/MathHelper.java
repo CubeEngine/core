@@ -51,41 +51,6 @@ public class MathHelper
     }
 
     /**
-     * This is a fast floor implementation
-     *
-     * @param num the number to floor
-     * @return the floored number
-     */
-    public static int floor(double num)
-    {
-        final int floored = (int)num;
-        return floored - (int)(Double.doubleToRawLongBits(num) >>> 63);
-    }
-
-    /**
-     * This is a fast ceil implementation
-     *
-     * @param num the number to ceil
-     * @return the rounded up number
-     */
-    public static int ceil(double num)
-    {
-        final int floored = (int)num;
-        return floored + (int)(Double.doubleToRawLongBits(num) >>> 63);
-    }
-
-    /**
-     * This is a fast round implementation based in the fast floor implementation
-     *
-     * @param num the number to floor
-     * @return the rounded number
-     */
-    public static int round(double num)
-    {
-        return floor(num + 0.5);
-    }
-
-    /**
      * This is a fast pow implementation
      *
      * @param x the base
