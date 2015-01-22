@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.core.util.math;
 
+import static de.cubeisland.engine.core.util.math.MathHelper.compare;
+import static de.cubeisland.engine.core.util.math.MathHelper.isZero;
+
 /**
  * This class represents a 2D vector.
  */
@@ -56,7 +59,7 @@ public class Vector2
      */
     public boolean isOrthogonal(Vector2 other)
     {
-        return (this.dot(other) == 0.0);
+        return isZero(this.dot(other));
     }
 
     /**
@@ -67,7 +70,7 @@ public class Vector2
      */
     public boolean isParallel(Vector2 other)
     {
-        return (this.x / other.x == this.y / other.y);
+        return compare(this.x / other.x, this.y / other.y);
     }
 
     /**
@@ -252,7 +255,7 @@ public class Vector2
 
         Vector2 other = (Vector2)o;
 
-        return (this.x == other.x && this.y == other.y);
+        return compare(this.x, other.x) && compare(this.y, other.y);
     }
 
     /**

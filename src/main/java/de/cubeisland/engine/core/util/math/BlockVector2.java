@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.core.util.math;
 
+import static de.cubeisland.engine.core.util.math.MathHelper.compare;
+import static de.cubeisland.engine.core.util.math.MathHelper.isZero;
+
 /**
  * This class represents a 2D vector with integer coordinates.
  */
@@ -45,7 +48,7 @@ public class BlockVector2
      */
     public boolean isOrthogonal(BlockVector2 other)
     {
-        return (this.dot(other) == 0.0);
+        return isZero(this.dot(other));
     }
 
     /**
@@ -56,7 +59,7 @@ public class BlockVector2
      */
     public boolean isParallel(BlockVector2 other)
     {
-        return (this.x / other.x == this.z / other.z);
+        return compare(this.x / other.x, this.z / other.z);
     }
 
     /**
@@ -243,7 +246,7 @@ public class BlockVector2
 
         BlockVector2 other = (BlockVector2)o;
 
-        return (this.x == other.x && this.z == other.z);
+        return compare(this.x, other.x) && compare(this.z, other.z);
     }
 
     /**

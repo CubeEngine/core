@@ -23,6 +23,7 @@ package de.cubeisland.engine.core.util.math;
 public class MathHelper
 {
     private static final double RADIANS_DEGREE_CONVERTER = 180.0 / Math.PI;
+    private static final double EPSILON = 0.00000001;
 
     private MathHelper()
     {}
@@ -58,7 +59,7 @@ public class MathHelper
     public static int floor(double num)
     {
         final int floored = (int)num;
-        return (floored == num ? floored : floored - (int)(Double.doubleToRawLongBits(num) >>> 63));
+        return floored - (int)(Double.doubleToRawLongBits(num) >>> 63);
     }
 
     /**
@@ -70,7 +71,7 @@ public class MathHelper
     public static int ceil(double num)
     {
         final int floored = (int)num;
-        return (floored == num ? floored : floored + (int)(Double.doubleToRawLongBits(num) >>> 63));
+        return floored + (int)(Double.doubleToRawLongBits(num) >>> 63);
     }
 
     /**
@@ -125,5 +126,25 @@ public class MathHelper
             n /= 2;
         }
         return result;
+    }
+
+    public static boolean isZero(double value)
+    {
+        return isZero(value, EPSILON);
+    }
+
+    public static boolean isZero(double value, double epsilon)
+    {
+        return Math.abs(value) < epsilon;
+    }
+
+    public static boolean compare(double first, double second)
+    {
+        return isZero(first - second);
+    }
+
+    public static boolean compare(double first, double second, double epsilon)
+    {
+        return isZero(first - second, epsilon);
     }
 }
