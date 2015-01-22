@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
@@ -195,19 +196,21 @@ public class MaterialDataMatcher
             CubeEngine.getLog().info("Updated datavalues.txt");
             StringBuilder sb = new StringBuilder();
             Map<Map<Short, Set<String>>, String> itemMap = new HashMap<>();
-            for (Material material : this.reverseItemData.keySet()) // make serializable...
+            for (Entry<Material, Map<Short, Set<String>>> entry : this.reverseItemData.entrySet()) // make serializable...
             {
-                Map<Short, Set<String>> map = this.reverseItemData.get(material);
+                Map<Short, Set<String>> map = entry.getValue();
                 if (map.isEmpty())
+                {
                     continue;
+                }
                 String mats = itemMap.get(map);
                 if (mats == null)
                 {
-                    mats = material.name();
+                    mats = entry.getKey().name();
                 }
                 else
                 {
-                    mats += "," + material.name();
+                    mats += "," + entry.getKey().name();
                 }
                 itemMap.put(map, mats);
             }
@@ -217,9 +220,9 @@ public class MaterialDataMatcher
                     continue;
                 sb.append(entry.getValue()).append(":\n");
                 Map<Short, Set<String>> map = entry.getKey();
-                for (Short value : map.keySet())
+                for (Entry<Short, Set<String>> e : map.entrySet())
                 {
-                    sb.append("    ").append(StringUtils.implode(",", map.get(value))).append(": ").append(value).append("\n");
+                    sb.append("    ").append(StringUtils.implode(",", e.getValue())).append(": ").append(e.getKey()).append("\n");
                 }
             }
             HashMap<Map<Byte, Set<String>>, String> blockMap = new HashMap<>();
@@ -241,18 +244,18 @@ public class MaterialDataMatcher
                     continue;
                 sb.append(entry.getValue()).append(":\n");
                 Map<Byte, Set<String>> map = entry.getKey();
-                for (Byte value : map.keySet())
+                for (Entry<Byte, Set<String>> e : map.entrySet())
                 {
                     String val;
-                    if (value < 0)
+                    if (e.getKey() < 0)
                     {
-                        val = "-0x" + Integer.toString(-value, 16);
+                        val = "-0x" + Integer.toString(-e.getKey(), 16);
                     }
                     else
                     {
-                        val = "0x" + Integer.toString(value, 16);
+                        val = "0x" + Integer.toString(e.getKey(), 16);
                     }
-                    sb.append("    ").append(StringUtils.implode(",", map.get(value))).append(": ").append(val).append("\n");
+                    sb.append("    ").append(StringUtils.implode(",", e.getValue())).append(": ").append(val).append("\n");
                 }
             }
             try
@@ -422,28 +425,27 @@ public class MaterialDataMatcher
         if (map != null)
         {
             String zeroData = null;
-            for (Byte flag : map.keySet())
+            for (Entry<Byte, Set<String>> entry : map.entrySet())
             {
+                Byte flag = entry.getKey();
                 if (flag < 0)
                 {
                     if (!((mask & -flag) == flag))
                     {
-                        dataNames += ":" + map.get(flag).iterator().next();
+                        dataNames += ":" + entry.getValue().iterator().next();
                     }
                 }
                 else if (flag == 0)
                 {
-                    zeroData = map.get(flag).iterator().next();
+                    zeroData = entry.getValue().iterator().next();
                 }
-                else
+                else if ((mask & flag) == flag)
                 {
-                    if ((mask & flag) == flag)
-                    {
-                        dataNames += ":" + map.get(flag).iterator().next();
-                        mask &= ~flag;
-                    }
+                    dataNames += ":" + entry.getValue().iterator().next();
+                    mask &= ~flag;
                 }
             }
+
             if (dataNames.isEmpty() && zeroData != null)
             {
                 dataNames += ":" + zeroData;

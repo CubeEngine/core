@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 
@@ -83,10 +84,10 @@ public class AliasMapFormat
     public static void parseAndSaveStringListMap(TreeMap<String, List<String>> map, Path file) throws IOException
     {
         StringBuilder sb = new StringBuilder();
-        for (String key : map.keySet())
+        for (Entry<String, List<String>> entry : map.entrySet())
         {
-            sb.append(key).append(":").append("\n");
-            List<String> entitynames = map.get(key);
+            sb.append(entry.getKey()).append(":").append("\n");
+            List<String> entitynames = entry.getValue();
             for (String entityname : entitynames)
             {
                 sb.append("    ").append(entityname).append("\n");

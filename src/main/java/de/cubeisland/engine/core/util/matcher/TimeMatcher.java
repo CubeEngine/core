@@ -75,10 +75,10 @@ public class TimeMatcher
                 {
                     CubeEngine.getLog().info("Updated times.txt");
                     StringBuilder sb = new StringBuilder();
-                    for (Long timeValue : readTime.keySet())
+                    for (Entry<Long, List<String>> entry : readTime.entrySet())
                     {
-                        sb.append(timeValue).append(":").append("\n");
-                        for (String name : readTime.get(timeValue))
+                        sb.append(entry.getKey()).append(":").append("\n");
+                        for (String name : entry.getValue())
                         {
                             sb.append("  ").append(name).append("\n");
                         }

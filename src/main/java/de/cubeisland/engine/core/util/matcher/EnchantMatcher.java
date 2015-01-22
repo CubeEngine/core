@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
@@ -51,15 +52,15 @@ public class EnchantMatcher
         this.enchantmentName = new HashMap<>();
 
         TreeMap<String, List<String>> enchs = this.readEnchantments();
-        for (String bukkitName : enchs.keySet())
+        for (Entry<String, List<String>> entry : enchs.entrySet())
         {
-            Enchantment ench = this.bukkitnames.get(bukkitName);
+            Enchantment ench = this.bukkitnames.get(entry.getKey());
             if (ench == null)
             {
-                CubeEngine.getLog().warn("Unkown Enchantment: {}", bukkitName);
+                CubeEngine.getLog().warn("Unkown Enchantment: {}", entry.getKey());
                 continue;
             }
-            this.registerEnchantment(ench, enchs.get(bukkitName));
+            this.registerEnchantment(ench, entry.getValue());
         }
     }
 

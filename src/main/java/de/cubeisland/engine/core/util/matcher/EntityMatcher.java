@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
@@ -47,13 +48,13 @@ public class EntityMatcher
     EntityMatcher()
     {
         TreeMap<String, List<String>> entityList = this.readEntities();
-        for (String key : entityList.keySet())
+        for (Entry<String, List<String>> entry : entityList.entrySet())
         {
             try
             {
-                EntityType entityType = EntityType.valueOf(key);
+                EntityType entityType = EntityType.valueOf(entry.getKey());
                 boolean first = true;
-                for (String name : entityList.get(key))
+                for (String name : entry.getValue())
                 {
                     if (first)
                     {
@@ -65,7 +66,7 @@ public class EntityMatcher
             }
             catch (IllegalArgumentException ex)
             {
-                CubeEngine.getLog().warn("Unknown EntityType: {}", key);
+                CubeEngine.getLog().warn("Unknown EntityType: {}", entry.getKey());
             }
         }
     }

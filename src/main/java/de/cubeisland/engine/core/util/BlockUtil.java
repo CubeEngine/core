@@ -53,7 +53,7 @@ public class BlockUtil
         };
 
     private static net.minecraft.server.v1_8_R1.Block getBlockForId(int id)
-    {
+    {>
         return (net.minecraft.server.v1_8_R1.Block)REGISTRY.a(id);
     }
 

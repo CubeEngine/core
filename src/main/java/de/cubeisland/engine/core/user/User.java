@@ -493,13 +493,14 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         positive.clear();
         negative.clear();
-        for (String perm : permissions.keySet())
+        for (Entry<String, Boolean> entry : permissions.entrySet())
         {
+            String perm = entry.getKey();
             if (perm.endsWith("*") && (perm.startsWith("-cubeengine.") || perm.startsWith("cubeengine.")))
             {
                 continue;
             }
-            if (permissions.get(perm))
+            if (entry.getValue())
             {
                 positive.put(perm, true);
             }
