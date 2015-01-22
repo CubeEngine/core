@@ -152,6 +152,7 @@ public enum ChatFormat
         return new String(chars);
     }
 
+    @Override
     public String toString()
     {
         return this.string;

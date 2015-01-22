@@ -155,6 +155,7 @@ public class MySQLDatabase extends AbstractDatabase
      *
      * @param table
      */
+    @Override
     public void registerTable(TableCreator<?> table)
     {
         initializeTable(table);

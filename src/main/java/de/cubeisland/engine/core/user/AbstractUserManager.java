@@ -95,6 +95,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public boolean login(User user, String password)
     {
         if (!user.isLoggedIn())
@@ -105,6 +106,7 @@ public abstract class AbstractUserManager implements UserManager
         return user.isLoggedIn();
     }
 
+    @Override
     public boolean checkPassword(User user, String password)
     {
         synchronized (this.messageDigest)
@@ -116,6 +118,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void setPassword(User user, String password)
     {
         synchronized (this.messageDigest)
@@ -128,12 +131,14 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void resetPassword(User user)
     {
         user.getEntity().setValue(TABLE_USER.PASSWD, null);
         user.getEntity().updateAsync();
     }
 
+    @Override
     public void resetAllPasswords()
     {
         this.database.getDSL().update(TABLE_USER).set(TABLE_USER.PASSWD, (byte[])null).execute();
@@ -143,12 +148,14 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void removeUser(final User user)
     {
         user.getEntity().deleteAsync();
         this.removeCachedUser(user);
     }
 
+    @Override
     public User getExactUser(String name)
     {
         return this.getUser(name, true);
@@ -177,6 +184,7 @@ public abstract class AbstractUserManager implements UserManager
         return entity == null ? null : new User(entity);
     }
 
+    @Override
     public synchronized User getUser(UInteger id)
     {
         User user = this.cachedUserByDbId.get(id);
@@ -194,6 +202,7 @@ public abstract class AbstractUserManager implements UserManager
         return user;
     }
 
+    @Override
     public User findExactUser(String name)
     {
         return this.getUser(name, false);
@@ -368,6 +377,7 @@ public abstract class AbstractUserManager implements UserManager
 
     private final Map<Long, Triplet<Long, String, Integer>> failedLogins = new HashMap<>();
 
+    @Override
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
         return this.failedLogins.get(user.getId());
@@ -394,6 +404,7 @@ public abstract class AbstractUserManager implements UserManager
         this.failedLogins.remove(user.getId());
     }
 
+    @Override
     public synchronized void kickAll(String message)
     {
         for (User user : this.cachedUserByUUID.values())
@@ -402,6 +413,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public synchronized void kickAll(String message, Object... params)
     {
         for (User user : this.cachedUserByUUID.values())
@@ -410,6 +422,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void attachToAll(Class<? extends UserAttachment> attachmentClass, Module module)
     {
         for (User user : this.getLoadedUsers())
@@ -418,6 +431,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void detachFromAll(Class<? extends UserAttachment> attachmentClass)
     {
         for (User user : this.getLoadedUsers())
@@ -426,6 +440,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public void detachAllOf(Module module)
     {
         for (User user : this.getLoadedUsers())
@@ -434,6 +449,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public synchronized void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass, Module module)
     {
         DefaultAttachment attachment = new DefaultAttachment(attachmentClass, module);
@@ -444,6 +460,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public synchronized void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass)
     {
         Iterator<DefaultAttachment> it = this.defaultAttachments.iterator();
@@ -457,6 +474,7 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public synchronized void removeDefaultAttachments(Module module)
     {
         Iterator<DefaultAttachment> it = this.defaultAttachments.iterator();
@@ -469,11 +487,13 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    @Override
     public synchronized void removeDefaultAttachments()
     {
         this.defaultAttachments.clear();
     }
 
+    @Override
     public Set<Long> getAllIds()
     {
         Set<Long> ids = new HashSet<>();
@@ -484,17 +504,20 @@ public abstract class AbstractUserManager implements UserManager
         return ids;
     }
 
+    @Override
     public synchronized void cleanup(Module module)
     {
         this.removeDefaultAttachments(module);
         this.detachAllOf(module);
     }
 
+    @Override
     public User findUser(String name)
     {
         return this.findUser(name, false);
     }
 
+    @Override
     public User findUser(String name, boolean searchDatabase)
     {
         if (name == null)

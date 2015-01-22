@@ -65,11 +65,13 @@ public class BukkitTaskManager implements TaskManager
         return IDs;
     }
 
+    @Override
     public CoreThreadFactory getThreadFactory()
     {
         return this.threadFactory;
     }
 
+    @Override
     public synchronized ModuleThreadFactory getThreadFactory(Module module)
     {
         ModuleThreadFactory threadFactory = this.moduleThreadFactories.get(module.getId());
@@ -80,11 +82,13 @@ public class BukkitTaskManager implements TaskManager
         return threadFactory;
     }
 
+    @Override
     public int runTask(Module module, Runnable runnable)
     {
         return this.runTaskDelayed(module, runnable, 0);
     }
 
+    @Override
     public int runTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
@@ -101,6 +105,7 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
+    @Override
     public int runTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
@@ -117,11 +122,13 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
+    @Override
     public int runAsynchronousTask(Module module, Runnable runnable)
     {
         return this.runAsynchronousTaskDelayed(module, runnable, 0);
     }
 
+    @Override
     public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
@@ -138,6 +145,7 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
+    @Override
     public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
@@ -154,12 +162,14 @@ public class BukkitTaskManager implements TaskManager
         return taskID;
     }
 
+    @Override
     public <T> Future<T> callSync(Callable<T> callable)
     {
         expectNotNull(callable, "The callable must not be null!");
         return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);
     }
 
+    @Override
     public void cancelTask(Module module, int ID)
     {
         this.bukkitScheduler.cancelTask(ID);
@@ -170,6 +180,7 @@ public class BukkitTaskManager implements TaskManager
         }
     }
 
+    @Override
     public void cancelTasks(Module module)
     {
         Set<Integer> taskIDs = this.moduleTasks.remove(module);
@@ -182,16 +193,19 @@ public class BukkitTaskManager implements TaskManager
         }
     }
 
+    @Override
     public boolean isCurrentlyRunning(int taskID)
     {
         return this.bukkitScheduler.isCurrentlyRunning(taskID);
     }
 
+    @Override
     public boolean isQueued(int taskID)
     {
         return this.bukkitScheduler.isQueued(taskID);
     }
 
+    @Override
     public synchronized void clean(Module module)
     {
         this.cancelTasks(module);

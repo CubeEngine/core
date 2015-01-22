@@ -47,7 +47,6 @@ public abstract class AbstractWorldManager implements WorldManager
 
     protected final Database database;
 
-
     public AbstractWorldManager(Core core)
     {
         this.database = core.getDB();
@@ -57,6 +56,7 @@ public abstract class AbstractWorldManager implements WorldManager
         this.generatorMap = new HashMap<>();
     }
 
+    @Override
     public synchronized UInteger getWorldId(World world)
     {
         if (world == null)
@@ -88,6 +88,7 @@ public abstract class AbstractWorldManager implements WorldManager
         return worldEntity;
     }
 
+    @Override
     public synchronized UInteger getWorldId(String name)
     {
         WorldEntity entity = this.worlds.get(name);
@@ -100,6 +101,7 @@ public abstract class AbstractWorldManager implements WorldManager
         return entity.getValue(TABLE_WORLD.KEY);
     }
 
+    @Override
     public synchronized Set<UInteger> getAllWorldIds()
     {
         return this.worldIds.keySet();
@@ -111,11 +113,13 @@ public abstract class AbstractWorldManager implements WorldManager
         return Collections.unmodifiableSet(this.worldUUIDs);
     }
 
+    @Override
     public synchronized World getWorld(UInteger id)
     {
         return this.worldIds.get(id);
     }
 
+    @Override
     public synchronized void registerGenerator(Module module, String id, ChunkGenerator generator)
     {
         expectNotNull(id, "The ID must nto be null!");
@@ -129,6 +133,7 @@ public abstract class AbstractWorldManager implements WorldManager
         moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
     }
 
+    @Override
     public synchronized ChunkGenerator getGenerator(Module module, String id)
     {
         expectNotNull(module, "The module must not be null!");
@@ -142,6 +147,7 @@ public abstract class AbstractWorldManager implements WorldManager
         return null;
     }
 
+    @Override
     public synchronized void removeGenerator(Module module, String id)
     {
         expectNotNull(module, "The module must not be null!");

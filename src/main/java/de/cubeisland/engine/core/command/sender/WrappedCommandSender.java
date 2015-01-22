@@ -51,6 +51,7 @@ public class WrappedCommandSender implements CommandSender
         return NON_PLAYER_UUID;
     }
 
+    @Override
     public Core getCore()
     {
         return this.core;
@@ -98,6 +99,7 @@ public class WrappedCommandSender implements CommandSender
         return this.getWrappedSender().getServer();
     }
 
+    @Override
     public String getTranslation(MessageType type, String message, Object... params)
     {
         return this.getCore().getI18n().translate(this.getLocale(), type, message, params);

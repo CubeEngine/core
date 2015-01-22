@@ -91,6 +91,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return this.serviceManager;
     }
 
+    @Override
     public synchronized Module getModule(String name)
     {
         if (name == null)
@@ -107,6 +108,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return (T)this.classMap.get(mainClass);
     }
 
+    @Override
     public synchronized Collection<Module> getModules()
     {
         return new ArrayList<>(this.modules.values());
@@ -146,6 +148,7 @@ public abstract class BaseModuleManager implements ModuleManager
         providers.addLast(module);
     }
 
+    @Override
     public synchronized Module loadModule(Path modulePath) throws ModuleException
     {
         expectNotNull(modulePath, "The file must not be null!");
@@ -156,6 +159,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return this.loadModule(loadModuleInfo(modulePath).getName(), this.moduleInfoMap);
     }
 
+    @Override
     public synchronized void loadModules(Path directory)
     {
         expectNotNull(directory, "The directory must not be null!");
@@ -408,6 +412,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
+    @Override
     public synchronized boolean enableModule(Module module)
     {
         boolean result = this.enableModule0(module);
@@ -437,6 +442,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return result;
     }
 
+    @Override
     public synchronized void enableModules()
     {
         List<Module> brokenModules = new ArrayList<>();
@@ -455,6 +461,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
+    @Override
     public synchronized void disableModule(Module module)
     {
         boolean wasEnabled = module.isEnabled();
@@ -674,11 +681,13 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
+    @Override
     public synchronized int reloadModules()
     {
         return this.reloadModules(false);
     }
 
+    @Override
     public synchronized int reloadModules(boolean fromFile)
     {
         int modules = 0;
@@ -697,6 +706,7 @@ public abstract class BaseModuleManager implements ModuleManager
         return modules;
     }
 
+    @Override
     public synchronized void disableModules()
     {
         for (Module module : this.modules.values())
@@ -705,6 +715,7 @@ public abstract class BaseModuleManager implements ModuleManager
         }
     }
 
+    @Override
     public synchronized void unloadModules()
     {
         Set<Module> moduleSet = new HashSet<>(this.modules.values());
@@ -741,6 +752,7 @@ public abstract class BaseModuleManager implements ModuleManager
         this.loader.shutdown();
     }
 
+    @Override
     public CoreModule getCoreModule()
     {
         return this.coreModule;

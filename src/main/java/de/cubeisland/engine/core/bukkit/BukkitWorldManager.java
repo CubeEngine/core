@@ -81,6 +81,7 @@ public class BukkitWorldManager extends AbstractWorldManager
         });
     }
 
+    @Override
     public World createWorld(WorldCreator creator)
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");

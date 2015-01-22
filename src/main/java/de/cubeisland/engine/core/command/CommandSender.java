@@ -30,14 +30,17 @@ public interface CommandSender extends org.bukkit.command.CommandSender, Command
 
     Core getCore();
 
+    @Override
     String getName();
 
     String getDisplayName();
 
     boolean isAuthorized(Permission perm);
 
+    @Override
     Locale getLocale();
 
+    @Override
     void sendMessage(String message);
 
     String getTranslation(MessageType type, String message, Object... params);
@@ -48,5 +51,6 @@ public interface CommandSender extends org.bukkit.command.CommandSender, Command
 
     String getTranslationN(MessageType type, int n, String singular, String plural, Object... params);
 
+    @Override
     UUID getUniqueId();
 }

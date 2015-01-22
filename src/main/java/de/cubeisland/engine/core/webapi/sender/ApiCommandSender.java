@@ -44,6 +44,7 @@ public abstract class ApiCommandSender implements CommandSender
         this.mapper = mapper;
     }
 
+    @Override
     public Core getCore()
     {
         return this.core;

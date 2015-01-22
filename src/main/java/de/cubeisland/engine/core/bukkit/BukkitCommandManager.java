@@ -162,6 +162,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         return injector;
     }
 
+    @Override
     public void removeCommand(String name, boolean completely)
     {
         this.injector.removeCommand(name, completely);
@@ -173,16 +174,19 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         return this.builder;
     }
 
+    @Override
     public void removeCommands(Module module)
     {
         this.injector.removeCommands(module);
     }
 
+    @Override
     public void removeCommands()
     {
         this.injector.removeCommands();
     }
 
+    @Override
     public void clean()
     {
         this.injector.shutdown();
@@ -197,6 +201,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         return b;
     }
 
+    @Override
     public boolean runCommand(CommandSender sender, String commandLine)
     {
         expect(CubeEngine.isMainThread(), "Commands may only be called synchronously!");
@@ -288,6 +293,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
      * @param commandHolder the command holder containing the command-methods
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void addCommands(Dispatcher dispatcher, Module module, Object commandHolder)
     {
         for (Method method : ParametricBuilder.getMethods(commandHolder.getClass()))

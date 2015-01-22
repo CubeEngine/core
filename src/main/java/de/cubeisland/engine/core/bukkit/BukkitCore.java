@@ -633,6 +633,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         return this.banManager;
     }
 
+    @Override
     public LogFactory getLogFactory()
     {
         return logFactory;

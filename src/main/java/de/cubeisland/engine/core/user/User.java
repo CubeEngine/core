@@ -109,6 +109,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         this.attachments = new HashMap<>();
     }
 
+    @Override
     public Core getCore()
     {
         return this.core;
@@ -153,6 +154,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return (A)this.attachments.get(type);
     }
 
+    @Override
     public synchronized Set<UserAttachment> getAll()
     {
         return new HashSet<>(this.attachments.values());
@@ -269,6 +271,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      *
      * @return a locale string
      */
+    @Override
     public Locale getLocale()
     {
         if (this.entity.getLocale() != null)

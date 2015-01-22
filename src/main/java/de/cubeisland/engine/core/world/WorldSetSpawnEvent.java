@@ -47,6 +47,7 @@ public class WorldSetSpawnEvent extends CubeEvent
 
     private static final HandlerList handlers = new HandlerList();
 
+    @Override
     public HandlerList getHandlers()
     {
         return handlers;

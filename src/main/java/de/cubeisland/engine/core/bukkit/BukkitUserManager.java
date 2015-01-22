@@ -102,6 +102,7 @@ public class BukkitUserManager extends AbstractUserManager
         return users;
     }
 
+    @Override
     public void shutdown()
     {
         super.shutdown();
@@ -130,6 +131,7 @@ public class BukkitUserManager extends AbstractUserManager
         }
     }
 
+    @Override
     protected User getUser(String name, boolean create)
     {
         for (User user : this.getOnlineUsers())

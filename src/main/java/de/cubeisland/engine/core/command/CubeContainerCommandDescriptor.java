@@ -33,6 +33,7 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
         this.loggable = loggable;
     }
 
+    @Override
     public boolean isLoggable()
     {
         return loggable;
@@ -44,11 +45,13 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
         this.checkPerm = checkPerm;
     }
 
+    @Override
     public Permission getPermission()
     {
         return permission;
     }
 
+    @Override
     public boolean isCheckPerm()
     {
         return checkPerm;
@@ -59,6 +62,7 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
         this.module = module;
     }
 
+    @Override
     public Module getModule()
     {
         return module;

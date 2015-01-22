@@ -249,6 +249,7 @@ public class BukkitPermissionManager implements PermissionManager
         module.getCore().getEventManager().fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
     }
 
+    @Override
     public void removePermission(Module module, String perm)
     {
         expectNotNull(module, "The module must not be null!");
@@ -272,6 +273,7 @@ public class BukkitPermissionManager implements PermissionManager
         this.removePermission(module, permission.getName());
     }
 
+    @Override
     public void removePermissions(Module module)
     {
         expectNotNull(module, "The module must not be null!");
@@ -290,6 +292,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
+    @Override
     public void removePermissions()
     {
         Iterator<Entry<Module, Set<String>>> modulesIter = this.modulePermissionMap.entrySet().iterator();
@@ -306,6 +309,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
+    @Override
     public PermDefault getDefaultFor(String permission)
     {
         if (permission == null)
@@ -332,6 +336,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
+    @Override
     public void clean()
     {
         this.removePermissions();

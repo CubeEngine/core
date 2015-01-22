@@ -1782,6 +1782,7 @@ public class UserBase implements Player
         return this.getLocation(new Location(null, 0, 0, 0));
     }
 
+    @Override
     public Location getLocation(Location loc)
     {
         final Player player = this.getOfflinePlayer().getPlayer();
