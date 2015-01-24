@@ -44,7 +44,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        getDescriptor().setPermission(module.getBasePermission().child(permName, def), checkPerm);
+        getDescriptor().setPermission(module.getBasePermission().childWildcard("command").child(permName, def), checkPerm);
         getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 
