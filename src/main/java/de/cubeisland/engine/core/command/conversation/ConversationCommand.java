@@ -42,7 +42,7 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
         module.getCore().getEventManager().registerListener(module, this);
         getDescriptor().setDispatcher(module.getCore().getCommandManager()); // needed for exceptionhandler
         Permission childPerm = getDescriptor().getPermission();
-        module.getBasePermission().childWildcard("command").setParent(childPerm);
+        childPerm.setParent(module.getBasePermission().childWildcard("command"));
         module.getCore().getPermissionManager().registerPermission(module, childPerm);
         this.registerSubCommands();
     }
