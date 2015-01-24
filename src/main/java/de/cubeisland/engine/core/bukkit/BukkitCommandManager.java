@@ -39,6 +39,7 @@ import de.cubeisland.engine.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.core.command.CommandOrigin;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommandDescriptor;
+import de.cubeisland.engine.core.command.CubeDescriptor;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.completer.ModuleCompleter;
 import de.cubeisland.engine.core.command.completer.PlayerCompleter;
@@ -67,6 +68,7 @@ import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserList.UserListReader;
@@ -97,6 +99,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
 
     private Map<Class, Completer> completers = new HashMap<>();
+    private Core core;
 
     @Override
     public CommandManagerDescriptor getDescriptor()
@@ -107,6 +110,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
         super(new CommandManagerDescriptor(core));
+        this.core = core;
 
         this.consoleSender = new ConsoleCommandSender(core);
         this.injector = injector;
@@ -195,6 +199,14 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public boolean addCommand(CommandBase command)
     {
+        if (command.getDescriptor() instanceof CubeDescriptor)
+        {
+            Module module = ((CubeDescriptor)command.getDescriptor()).getModule();
+            Permission perm = module.getBasePermission().childWildcard("command");
+            Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
+            childPerm.setParent(perm);
+            this.core.getPermissionManager().registerPermission(module, childPerm);
+        }
         boolean b = super.addCommand(command);
         // TODO handle perm when removing cmd from parent
         this.injector.registerCommand(command); // register at bukkit

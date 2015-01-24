@@ -44,7 +44,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        getDescriptor().setPermission(module.getBasePermission().childWildcard("command").child(permName, def), checkPerm);
+        getDescriptor().setPermission(Permission.detachedPermission(permName, def), checkPerm);
         getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 
@@ -72,19 +72,15 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
     @Override
     public boolean addCommand(CommandBase command)
     {
-        if (super.addCommand(command))
+        if (!(command instanceof AliasCommand) && command.getDescriptor() instanceof CubeDescriptor)
         {
-            if (!(command instanceof AliasCommand) && command.getDescriptor() instanceof CubeDescriptor)
-            {
-                CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
-                Module module = descriptor.getModule();
-                Permission permission = descriptor.getPermission();
-                permission.setParent(this.getDescriptor().getPermission());
-                module.getCore().getPermissionManager().registerPermission(module, permission);
-            }
-            return true;
+            CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
+            Module module = descriptor.getModule();
+            Permission childPerm = descriptor.getPermission();
+            childPerm.setParent(this.getDescriptor().getPermission());
+            module.getCore().getPermissionManager().registerPermission(module, childPerm);
         }
-        return false;
+        return super.addCommand(command);
     }
 
     public Permission getPermission(String... alias)
