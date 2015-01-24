@@ -24,6 +24,7 @@ import java.util.UUID;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,9 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
         super(module);
         module.getCore().getEventManager().registerListener(module, this);
         getDescriptor().setDispatcher(module.getCore().getCommandManager()); // needed for exceptionhandler
+        Permission childPerm = getDescriptor().getPermission();
+        module.getBasePermission().childWildcard("command").setParent(childPerm);
+        module.getCore().getPermissionManager().registerPermission(module, childPerm);
         this.registerSubCommands();
     }
 
