@@ -433,7 +433,7 @@ public class BukkitUtils
                         @Override
                         public void run()
                         {
-                            passenger.setPassengerOf(entity);
+                            passenger.mount(entity);
                         }
                     }, 0);
                 }
