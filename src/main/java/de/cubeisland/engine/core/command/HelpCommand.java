@@ -104,7 +104,7 @@ public class HelpCommand implements CommandBase
 
         if (descriptor instanceof CubeDescriptor)
         {
-            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule() + "/" + StringUtils.implode("/", labels));
+            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getId() + "/" + StringUtils.implode("/", labels));
         }
         return true;
     }
