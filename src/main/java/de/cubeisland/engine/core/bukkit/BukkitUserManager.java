@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,7 @@ import de.cubeisland.engine.core.user.AbstractUserManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.user.UserEntity;
+import de.cubeisland.engine.core.user.UserLoadedEvent;
 import de.cubeisland.engine.core.util.Profiler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -166,8 +168,9 @@ public class BukkitUserManager extends AbstractUserManager
         return null;
     }
 
-    private User getExactUser(OfflinePlayer player)
+    private User getExactUser(OfflinePlayer player, boolean login)
     {
+        CompletableFuture<Integer> future = null;
         User user = this.cachedUserByUUID.get(player.getUniqueId());
         if (user == null)
         {
@@ -175,11 +178,30 @@ public class BukkitUserManager extends AbstractUserManager
             if (user == null)
             {
                 user = new User(core, player);
-                user.getEntity().insertAsync();
+                future = user.getEntity().insertAsync();
             }
             this.cacheUser(user);
         }
+        if (login)
+        {
+            UserLoadedEvent event = new UserLoadedEvent(core, user);
+            if (future != null)
+            {
+                future.thenAccept(cnt ->
+                    core.getServer().getScheduler().runTask(core, () ->
+                        core.getEventManager().fireEvent(event)));
+            }
+            else
+            {
+                core.getEventManager().fireEvent(event);
+            }
+        }
         return user;
+    }
+
+    private User getExactUser(OfflinePlayer player)
+    {
+        return this.getExactUser(player, false);
     }
 
     private class UserListener implements Listener
@@ -196,15 +218,10 @@ public class BukkitUserManager extends AbstractUserManager
             final User user = getExactUser(event.getPlayer().getUniqueId());
             final BukkitScheduler scheduler = user.getServer().getScheduler();
 
-            scheduler.runTask(core, new Runnable()
-            {
-                @Override
-                public void run()
+            scheduler.runTask(core, () -> {
+                synchronized (BukkitUserManager.this)
                 {
-                    synchronized (BukkitUserManager.this)
-                    {
-                        onlineUsers.remove(user);
-                    }
+                    onlineUsers.remove(user);
                 }
             });
 
@@ -235,7 +252,7 @@ public class BukkitUserManager extends AbstractUserManager
         {
             if (event.getResult() == ALLOWED)
             {
-                User user = getExactUser(event.getPlayer());
+                User user = getExactUser(event.getPlayer(), true);
                 onlineUsers.add(user);
             }
         }
