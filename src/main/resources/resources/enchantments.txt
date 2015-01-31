@@ -35,6 +35,9 @@ WATER_WORKER:
   aquaaffinity
 THORNS:
   thorns
+DEPTH_STRIDER:
+  depthstrider
+  waterwalk
 DAMAGE_ALL:
   damage
   alldamage

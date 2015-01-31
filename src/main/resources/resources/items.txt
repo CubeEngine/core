@@ -862,6 +862,55 @@ DOUBLE_PLANT:4
   rosebush
 DOUBLE_PLANT:5
   peony
+STANDING_BANNER
+  standingbanner
+WALL_BANNER
+  wallbanner
+DAYLIGHT_DETECTOR_INVERTED
+  daylightsensorinverted
+  sensorinverted
+RED_SANDSTONE
+  redsandstone
+RED_SANDSTONE_STAIRS
+  redsandstonestairs
+DOUBLE_STONE_SLAB2:0
+  redsandstonedoubleslab
+DOUBLE_STONE_SLAB2:8
+  smoothredsandstonedoubleslab
+STONE_SLAB2:0
+  redsandstoneslab
+STONE_SLAB2:8
+  redsandstoneslabupper
+SPRUCE_FENCE_GATE
+  sprucegate
+BIRCH_FENCE_GATE
+  birchgate
+JUNGLE_FENCE_GATE
+  junglegate
+DARK_OAK_FENCE_GATE
+  darkoakgate
+ACACIA_FENCE_GATE
+  acaciagate
+SPRUCE_FENCE
+  sprucefence
+BIRCH_FENCE
+  birchfence
+JUNGLE_FENCE
+  junglefence
+DARK_OAK_FENCE
+  darkoakfence
+ACACIA_FENCE
+  acaciafence
+SPRUCE_DOOR
+  sprucefence
+BIRCH_DOOR
+  birchdoorblock
+JUNGLE_DOOR
+  jungledoorblock
+ACACIA_DOOR
+  acaciadoorblock
+DARK_OAK_DOOR
+  darkoakdoorblock
 IRON_SPADE:0
   ironshovel
   ironspade
@@ -1656,6 +1705,24 @@ LEASH:0
   lead
 NAME_TAG:0
   nametag
+COMMAND_MINECART
+  commandminecart
+MUTTON
+  mutton
+COOKED_MUTTON
+  cookedmutton
+BANNER
+  banner
+SPRUCE_DOOR_ITEM
+  sprucedoor
+BIRCH_DOOR_ITEM
+  birchdoor
+JUNGLE_DOOR_ITEM
+  jungledoor
+ACACIA_DOOR_ITEM
+  acaciadoor
+DARK_OAK_DOOR_ITEM
+  darkoakdoor
 GOLD_RECORD:0
   record13
   goldrecord

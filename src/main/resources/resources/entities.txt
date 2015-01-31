@@ -42,6 +42,8 @@ FALLING_BLOCK:
     FallingSand
 FIREWORK:
     Firework
+AROMOR_STAND:
+    armorstand
 #Vehicles
 MINECART:
     Minecart
@@ -55,6 +57,8 @@ MINECART_HOPPER
     HopperMinecart
 MINECART_MOB_SPAWNER
     SpawnerMinecart
+MINECART_COMMAND:
+    CommandMinecart
 BOAT:
     Boat
 #Hostile mobs
@@ -93,6 +97,10 @@ BAT:
     Bat
 WITCH:
     Witch
+ENDERMITE:
+    Endermite
+GUARDIAN:
+    Guardian
 #Passive mobs
 PIG:
     Pig
@@ -120,6 +128,8 @@ HORSE:
     horse
     mule
     donkey
+RABBIT:
+    rabbit
 #NPCs
 VILLAGER:
     Villager

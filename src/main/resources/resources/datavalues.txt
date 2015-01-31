@@ -144,7 +144,7 @@ STONE_BUTTON:
     south: 3
     west: 2
     east: 1
-IRON_DOOR,WOOD_DOOR:
+IRON_DOOR,WOOD_DOOR,SPRUCE_DOOR,BIRCH_DOOR,JUNGLE_DOOR,ACACIA_DOOR,DARK_OAK_DOOR:
     top-left: 9
     top-right: 8
     south-opened: 7
