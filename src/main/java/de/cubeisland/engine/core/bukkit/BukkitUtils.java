@@ -27,6 +27,8 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.i18n.I18nUtil;
 import net.minecraft.server.v1_8_R1.DedicatedServer;
 import net.minecraft.server.v1_8_R1.Entity;
+import net.minecraft.server.v1_8_R1.EntityEnderDragon;
+import net.minecraft.server.v1_8_R1.EntityGhast;
 import net.minecraft.server.v1_8_R1.EntityLiving;
 import net.minecraft.server.v1_8_R1.EntityPlayer;
 import net.minecraft.server.v1_8_R1.GenericAttributes;
@@ -69,7 +71,6 @@ public class BukkitUtils
     private static Field entityPlayerLocaleField;
     private static CommandLogFilter commandFilter = null;
     private static Field dragonTarget;
-    private static Field ghastTarget;
 
     private BukkitUtils()
     {}
@@ -195,7 +196,6 @@ public class BukkitUtils
     public static synchronized void cleanup()
     {
         dragonTarget = null;
-        ghastTarget = null;
         resetCommandLogging();
     }
 
@@ -347,36 +347,22 @@ public class BukkitUtils
         if (hunter == null) return null;
         EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
         if (entity == null) return null;
-        EntityLiving target;
         try
         {
-            if(hunter instanceof EnderDragon)
+            if (entity instanceof EntityGhast)
+            {
+                return (LivingEntity)((EntityGhast)entity).getGoalTarget().getBukkitEntity();
+            }
+            if(entity instanceof EntityEnderDragon)
             {
                 if (dragonTarget == null)
                 {
-                    dragonTarget = entity.getClass().getDeclaredField("bD");
+                    dragonTarget = entity.getClass().getDeclaredField("by"); // used by EntityTargetEvent in EntityEnderDragon
                     dragonTarget.setAccessible(true);
                 }
-                target = (EntityLiving)dragonTarget.get(entity);
+                return (LivingEntity)((Entity)dragonTarget.get(entity)).getBukkitEntity();
             }
-            else if (hunter instanceof Ghast)
-            {
-                if (ghastTarget == null)
-                {
-                    ghastTarget = entity.getClass().getDeclaredField("target");
-                    ghastTarget.setAccessible(true);
-                }
-                target = (EntityLiving)ghastTarget.get(entity);
-            }
-            else
-            {
-                return null;
-            }
-            if(target == null)
-            {
-                return null;
-            }
-            return (LivingEntity) target.getBukkitEntity();
+            return null;
         }
         catch (Exception ex)
         {
