@@ -42,7 +42,7 @@ FALLING_BLOCK:
     FallingSand
 FIREWORK:
     Firework
-AROMOR_STAND:
+ARMOR_STAND:
     armorstand
 #Vehicles
 MINECART:
