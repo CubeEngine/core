@@ -215,11 +215,12 @@ public class MySQLDatabase extends AbstractDatabase
         return this.dataSource.getConnection();
     }
 
+    private final JooqLogger jooqLogger = new JooqLogger();
     @Override
     public DSLContext getDSL()
     {
         return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL).set(new DataSourceConnectionProvider(
-            this.dataSource)).set(new JooqLogger()).set(settings));
+            this.dataSource)).set(jooqLogger).set(settings));
     }
 
     @Override
