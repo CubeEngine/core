@@ -17,20 +17,15 @@
  */
 package de.cubeisland.engine.core.util;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -43,13 +38,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.core.CubeEngine;
-import org.joda.time.DateTime;
 
 public class McUUID
 {
     private final static ObjectMapper mapper = new ObjectMapper();
-    private static final String MOJANG_API_URL_NAME_UUID = "https://api.mojang.com/profiles/page/";
-    private static final String MOJANG_API_URL_UUID_NAMEHISTORY = "https://api.mojang.com/user/profiles/%s/names";
+    private static final String MOJANG_API_BASE_URL = "https://api.mojang.com/";
+    private static final String MOJANG_API_URL_NAME_UUID = MOJANG_API_BASE_URL + "profiles/page/";
+    private static final String MOJANG_API_URL_UUID_NAMEHISTORY = MOJANG_API_BASE_URL + "user/profiles/%s/names";
     private static final String AGENT = "minecraft";
 
     static {
