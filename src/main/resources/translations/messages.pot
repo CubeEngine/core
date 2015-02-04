@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:core:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2015-02-04 23:28:28+0100\n"
+"POT-Creation-Date: 2015-02-04 23:52:39+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -161,7 +161,9 @@ msgstr ""
 msgid "Current difficulty level: {input}"
 msgstr ""
 
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:348
 #: de/cubeisland/engine/core/command/HelpCommand.java:63
+#: de/cubeisland/engine/core/module/ModuleCommands.java:195
 msgid "Description: {input}"
 msgstr ""
 
@@ -575,4 +577,190 @@ msgstr ""
 
 #: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:58
 msgid "page-number"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:113
+msgid "An error occurred while enabling the module!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:350
+msgid "Authors:"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:307
+msgid "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:148
+msgid "Check the server log for info."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:309
+msgid ""
+"Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version "
+"{input#version:color=INDIGO}"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:147
+msgid "Failed to reload the module!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:236
+msgid "Matched exactly! User: {user}"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:239
+msgid "Matched not exactly! User: {user}"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:221
+msgid "Module dependencies:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:237
+msgid "Module soft-dependencies:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:194
+msgid "Name: {input}"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:253
+msgid "Plugin dependencies:"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:342
+msgid "Plugin information:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:213
+msgid "Provided services:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:269
+msgid "Service dependencies:"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:277
+msgid "Service soft dependencies"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:158
+msgid "The given file name is invalid!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:165
+msgid "The given module file was not found! The name might be case sensitive."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:110
+msgid "The given module was successfully enabled!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:328
+msgid ""
+"The given plugin doesn't seem to be loaded, have you typed it correctly "
+"(casing does matter)?"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:170
+msgid "The module exists, but cannot be read! Check the file permissions."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:185
+msgid "The module failed to load! Check the server log for info."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:177
+msgid "The module {name#module} has been successfully loaded and enabled!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:120
+msgid "The module {name#module} was successfully disabled!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:138
+msgid "The module {name#module} was successfully reloaded from file!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:142
+msgid "The module {name#module} was successfully reloaded!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:127
+msgid "The module {name#module} was successfully unloaded!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:100
+msgid "The page you want to see is out of bounds."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:220
+msgid "The player you tried to deop is not an operator."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:87
+msgid "There are no modules loaded!"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:90
+msgid "These are the loaded modules."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:181
+msgid "This module is already loaded, try reloading it."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:306
+msgid ""
+"This server is running {name#server} in version {input#version:color=INDIGO}"
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:196
+msgid "Version: {input}"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:349
+msgid "Website: {input}"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:42
+msgid "You don't have any pending confirmations!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:43
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:54
+#: de/cubeisland/engine/core/command/result/paginated/PaginationCommands.java:65
+msgid "You don't have any results to show!"
+msgstr ""
+
+#: de/cubeisland/engine/core/command/result/confirm/ConfirmCommand.java:49
+msgid "You have {amount} pending confirmations"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:332
+msgid "You might want to try one of these:"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:103
+msgid "Your password has been set!"
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:340
+msgid ""
+"{name#plugin} is currently running in version {input#version:color=INDIGO}."
+msgstr ""
+
+#: de/cubeisland/engine/core/module/ModuleCommands.java:91
+msgid ""
+"{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color="
+"RED} for disabled."
+msgstr ""
+
+#: de/cubeisland/engine/core/bukkit/VanillaCommands.java:229
+msgid "{user} is no longer an operator!"
+msgstr ""
+
+#: de/cubeisland/engine/core/CoreCommands.java:108
+msgid "{user}'s password has been set!"
 msgstr ""
