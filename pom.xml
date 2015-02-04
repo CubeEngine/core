@@ -19,17 +19,27 @@
   </properties>
 
   <repositories>
-    <repository>
-      <id>sonatype-nexus</id>
-      <url>https://oss.sonatype.org/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
+      <repository>
+          <id>cubeisland-repo</id>
+          <url>http://maven.cubeisland.de/content/groups/public/</url>
+          <releases>
+              <enabled>true</enabled>
+          </releases>
+          <snapshots>
+              <enabled>true</enabled>
+          </snapshots>
+      </repository>
+      <repository>
+          <id>sonatype-nexus</id>
+          <url>https://oss.sonatype.org/content/groups/public/</url>
+          <releases>
+              <enabled>true</enabled>
+          </releases>
+          <snapshots>
+              <enabled>true</enabled>
+              <updatePolicy>always</updatePolicy>
+          </snapshots>
+      </repository>
   </repositories>
 
   <dependencies>
@@ -138,6 +148,10 @@
         <exclusion>
           <groupId>org.fusesource.jansi</groupId>
           <artifactId>jansi-website</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.spigotmc</groupId>
+          <artifactId>minecraft-server</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
