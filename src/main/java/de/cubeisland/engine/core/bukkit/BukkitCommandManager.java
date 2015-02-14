@@ -152,7 +152,10 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         readerManager.registerReader(new DifficultyReader(), Difficulty.class);
         readerManager.registerReader(new LogLevelReader(), LogLevel.class);
 
-        readerManager.registerReader(new UserListReader(), UserList.class);
+        UserListReader userListReader = new UserListReader();
+        readerManager.registerReader(userListReader, UserList.class);
+
+        this.registerDefaultCompleter(userListReader, UserList.class);
     }
 
     @Override

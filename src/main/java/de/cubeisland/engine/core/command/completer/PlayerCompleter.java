@@ -41,7 +41,6 @@ public class PlayerCompleter implements Completer
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
-
         List<String> playerNames = new ArrayList<>();
         final CommandSender sender = (CommandSender)invocation.getCommandSource(); // TODO prevent class cast exceptions
         for (User player : CubeEngine.getUserManager().getOnlineUsers())

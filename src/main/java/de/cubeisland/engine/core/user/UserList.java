@@ -21,10 +21,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.command.CommandSender;
+
+import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 /**
  * Represents a list of users.
@@ -63,8 +67,13 @@ public class UserList
         return all;
     }
 
-    public static class UserListReader implements ArgumentReader<UserList>
+    public static class UserListReader implements ArgumentReader<UserList>, Completer
     {
+        private static boolean canSee(CommandSender sender, User user)
+        {
+            return !(sender instanceof User) || ((User)sender).canSee(user);
+        }
+
         @Override
         @SuppressWarnings("unchecked")
         public UserList read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
@@ -75,6 +84,29 @@ public class UserList
                 return new UserList(null);
             }
             return new UserList((List<User>)manager.read(List.class, User.class, invocation));
+        }
+
+        @Override
+        public List<String> getSuggestions(CommandInvocation invocation)
+        {
+            List<String> list = new ArrayList<>();
+            if (invocation.currentToken().isEmpty())
+            {
+                list.add("*");
+            }
+
+            final CommandSender sender = (CommandSender)invocation.getCommandSource();
+            for (User player : CubeEngine.getUserManager().getOnlineUsers())
+            {
+                String name = player.getName();
+                if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))
+                {
+                    list.add(name);
+                }
+            }
+            list.remove(sender.getName());
+            // TODO complete actual lists
+            return list;
         }
     }
 }
