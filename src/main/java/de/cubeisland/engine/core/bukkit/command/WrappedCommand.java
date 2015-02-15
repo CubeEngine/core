@@ -201,6 +201,10 @@ public class WrappedCommand extends Command
         CommandInvocation invocation = newInvocation(source, label, args);
         List<String> suggestions = this.command.getSuggestions(invocation);
         core.getCommandManager().logTabCompletion(source, command, args);
+        if (suggestions == null)
+        {
+            suggestions = Collections.emptyList();
+        }
         Collections.sort(suggestions);
         return suggestions;
     }
