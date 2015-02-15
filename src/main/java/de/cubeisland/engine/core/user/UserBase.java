@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -2814,5 +2815,38 @@ public class UserBase implements Player
         {
             player.sendSignChange(location, strings);
         }
+    }
+
+    @Override
+    public List<Block> getLineOfSight(Set<Material> set, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.getLineOfSight(set, i);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Block getTargetBlock(Set<Material> set, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.getTargetBlock(set, i);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getLastTwoTargetBlocks(set, i);
+        }
+        return Collections.emptyList();
     }
 }
