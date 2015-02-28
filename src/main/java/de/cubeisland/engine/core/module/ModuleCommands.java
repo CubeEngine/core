@@ -32,6 +32,7 @@ import de.cubeisland.engine.command.parameter.reader.ReaderException;
 import de.cubeisland.engine.command.parameter.reader.ReaderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
+import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.module.exception.ModuleException;
@@ -151,7 +152,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    public void load(CommandContext context, String filename)
+    public void load(CommandSender context, String filename)
     {
         if (filename.contains(".") || filename.contains("/") || filename.contains("\\"))
         {
@@ -159,7 +160,7 @@ public class ModuleCommands extends ContainerCommand
             return;
         }
         Path modulesPath = mm.getCoreModule().getCore().getFileManager().getModulesPath();
-        Path modulePath = modulesPath.resolve(context.get(0) + ".jar");
+        Path modulePath = modulesPath.resolve(filename + ".jar");
         if (!Files.exists(modulePath))
         {
             context.sendTranslated(NEGATIVE, "The given module file was not found! The name might be case sensitive.");
@@ -173,8 +174,10 @@ public class ModuleCommands extends ContainerCommand
         try
         {
             Module module = mm.loadModule(modulePath);
-            mm.enableModule(module);
-            context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
+            if (mm.enableModule(module))
+            {
+                context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
+            }
         }
         catch (ModuleAlreadyLoadedException e)
         {
