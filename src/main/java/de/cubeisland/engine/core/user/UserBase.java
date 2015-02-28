@@ -2823,7 +2823,7 @@ public class UserBase implements Player
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            player.getLineOfSight(set, i);
+            return player.getLineOfSight(set, i);
         }
         return Collections.emptyList();
     }
@@ -2834,7 +2834,7 @@ public class UserBase implements Player
         final Player player = this.getOfflinePlayer().getPlayer();
         if (player != null)
         {
-            player.getTargetBlock(set, i);
+            return player.getTargetBlock(set, i);
         }
         return null;
     }
