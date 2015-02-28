@@ -205,7 +205,7 @@ public class MySQLDatabase extends AbstractDatabase
         }
         catch (ReflectiveOperationException e)
         {
-            throw new IllegalStateException("Unable to instantiate Table!", e);
+            throw new IllegalStateException("Unable to instantiate Table! " + clazz.getName(), e);
         }
     }
 
