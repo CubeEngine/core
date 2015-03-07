@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.DyeColor;
 
 public class DyeColorReader implements ArgumentReader<DyeColor>
 {
     @Override
-    public DyeColor read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public DyeColor read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         return Match.materialData().colorData(invocation.consume(1));
     }

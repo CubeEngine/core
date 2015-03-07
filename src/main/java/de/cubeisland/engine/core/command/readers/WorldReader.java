@@ -20,9 +20,9 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.DefaultProvider;
+import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -30,7 +30,7 @@ import org.bukkit.World;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 
-public class WorldReader implements ArgumentReader<World>, DefaultProvider<World>
+public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
     private final Core core;
 
@@ -40,7 +40,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultProvider<World
     }
 
     @Override
-    public World read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public World read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
         World world = this.core.getWorldManager().getWorld(name);

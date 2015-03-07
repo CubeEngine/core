@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ShortReader implements ArgumentReader<Short>
 {
     @Override
-    public Short read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Short read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         try

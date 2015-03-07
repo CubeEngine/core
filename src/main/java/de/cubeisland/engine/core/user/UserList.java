@@ -24,7 +24,7 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
 
@@ -76,7 +76,7 @@ public class UserList
 
         @Override
         @SuppressWarnings("unchecked")
-        public UserList read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+        public UserList read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
         {
             if ("*".equals(invocation.currentToken()))
             {

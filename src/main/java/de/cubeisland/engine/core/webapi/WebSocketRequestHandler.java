@@ -161,12 +161,12 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                         break;
                     }
                     Parameters params = new Parameters(qsDecoder.parameters(),
-                                                       core.getCommandManager().getReaderManager());
+                                                       core.getCommandManager().getProviderManager());
                     ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
                     ApiResponse response = handler.execute(request);
                     if (msgid != null)
                     {
-                        responseNode.put("response", objectMapper.valueToTree(response.getContent()));
+                        responseNode.set("response", objectMapper.valueToTree(response.getContent()));
                     }
                     break;
                 case "subscribe":

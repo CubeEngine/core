@@ -20,13 +20,13 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import org.bukkit.World.Environment;
 
 public class EnvironmentReader implements ArgumentReader<Environment>
 {
     @Override
-    public Environment read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Environment read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         return Environment.valueOf(invocation.consume(1).toUpperCase());
     }

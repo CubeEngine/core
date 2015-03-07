@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.entity.Villager.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>
 {
     @Override
-    public Profession read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Profession read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         return Match.profession().profession(invocation.consume(1));
     }

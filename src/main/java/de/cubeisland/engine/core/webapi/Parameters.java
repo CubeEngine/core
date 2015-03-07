@@ -20,16 +20,16 @@ package de.cubeisland.engine.core.webapi;
 import java.util.List;
 import java.util.Map;
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 public class Parameters
 {
     private final Map<String, List<String>> data;
-    private final ReaderManager readerManager;
+    private final ProviderManager readerManager;
 
-    public Parameters(Map<String, List<String>> data, ReaderManager readerManager)
+    public Parameters(Map<String, List<String>> data, ProviderManager readerManager)
     {
         this.data = data;
         this.readerManager = readerManager;

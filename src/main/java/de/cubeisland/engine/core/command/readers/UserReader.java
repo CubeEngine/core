@@ -19,9 +19,9 @@ package de.cubeisland.engine.core.command.readers;
 
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.DefaultProvider;
+import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -31,7 +31,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 /**
  * This argument is used to get users
  */
-public class UserReader implements ArgumentReader<User>, DefaultProvider<User>
+public class UserReader implements ArgumentReader<User>, DefaultValue<User>
 {
     private final Core core;
 
@@ -41,7 +41,7 @@ public class UserReader implements ArgumentReader<User>, DefaultProvider<User>
     }
 
     @Override
-    public User read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public User read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         User user = this.core.getUserManager().findUser(arg);

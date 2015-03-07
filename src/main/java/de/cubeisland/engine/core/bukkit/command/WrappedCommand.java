@@ -26,7 +26,6 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.alias.AliasConfiguration;
 import de.cubeisland.engine.command.alias.AliasDescriptor;
-import de.cubeisland.engine.command.completer.CompleterProviderProperty;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.core.command.CubeDescriptor;
@@ -189,9 +188,8 @@ public class WrappedCommand extends Command
         {
             commandLine += " " + StringUtils.implode(" ", args);
         }
-        CommandInvocation invocation = new CommandInvocation(source, commandLine, getModule().getCore().getCommandManager().getReaderManager()).subInvocation(command);
-        invocation.setProperty(new CompleterProviderProperty(core.getCommandManager()));
-        return invocation;
+
+        return new CommandInvocation(source, commandLine, core.getCommandManager().getProviderManager()).subInvocation(command);
     }
 
     @Override

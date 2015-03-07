@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -44,7 +44,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<User> read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public List<User> read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         ArrayList<User> users = new ArrayList<>();
         if ("*".equals(invocation.currentToken()))

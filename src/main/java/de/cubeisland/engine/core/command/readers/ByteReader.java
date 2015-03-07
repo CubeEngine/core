@@ -20,14 +20,14 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class ByteReader implements ArgumentReader<Byte>
 {
     @Override
-    public Byte read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Byte read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
 
         String num = invocation.consume(1);

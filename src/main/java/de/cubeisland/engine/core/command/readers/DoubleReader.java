@@ -23,14 +23,14 @@ import java.util.Locale;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class DoubleReader implements ArgumentReader<Double>
 {
     @Override
-    public Double read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Double read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         Locale locale = invocation.getLocale();

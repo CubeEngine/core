@@ -23,7 +23,7 @@ import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.completer.CompleterProvider;
 import de.cubeisland.engine.command.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -33,9 +33,9 @@ import de.cubeisland.engine.core.util.Cleanable;
 /**
  * This class manages the registration of commands.
  */
-public interface CommandManager extends Cleanable, Dispatcher, CompleterProvider
+public interface CommandManager extends Cleanable, Dispatcher
 {
-    ReaderManager getReaderManager();
+    ProviderManager getProviderManager();
 
     /**
      * Removes a command by its name

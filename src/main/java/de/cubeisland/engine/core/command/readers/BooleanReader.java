@@ -23,7 +23,7 @@ import java.util.Set;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 
 public class BooleanReader implements ArgumentReader<Boolean>
@@ -49,7 +49,7 @@ public class BooleanReader implements ArgumentReader<Boolean>
     }
 
     @Override
-    public Boolean read(ReaderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Boolean read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         Locale locale = invocation.getLocale();

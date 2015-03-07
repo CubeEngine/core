@@ -18,19 +18,16 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandBuilder;
 import de.cubeisland.engine.command.CommandDescriptor;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.Dispatcher;
 import de.cubeisland.engine.command.DispatcherCommand;
-import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.parametric.CompositeCommandBuilder;
 import de.cubeisland.engine.command.parametric.BasicParametricCommand;
 import de.cubeisland.engine.command.parametric.ParametricBuilder;
-import de.cubeisland.engine.command.parameter.reader.ReaderManager;
+import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
@@ -95,10 +92,9 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
     private final PaginationManager paginationManager;
-    private final ReaderManager readerManager;
+    private final ProviderManager providerManager;
     private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
 
-    private Map<Class, Completer> completers = new HashMap<>();
     private Core core;
 
     @Override
@@ -122,46 +118,44 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.confirmManager = new ConfirmManager(this, core);
         this.paginationManager = new PaginationManager(core);
 
-        this.registerDefaultCompleter(new PlayerCompleter(), User.class, OfflinePlayer.class);
-        this.registerDefaultCompleter(new WorldCompleter(), World.class);
-        this.registerDefaultCompleter(new ModuleCompleter(core), Module.class);
+        this.providerManager = new ProviderManager();
 
-        this.registerDefaultCompleter(new PlayerListCompleter(core), PlayerListCompleter.class);
+        providerManager.register(core, new PlayerCompleter(), User.class, OfflinePlayer.class);
+        providerManager.register(core, new WorldCompleter(), World.class);
+        providerManager.register(core, new ModuleCompleter(core), Module.class);
+        providerManager.register(core, new PlayerListCompleter(core), PlayerListCompleter.class);
 
-        this.readerManager = new ReaderManager();
-        this.readerManager.registerDefaultReader();
+        providerManager.register(new ByteReader(), Byte.class, byte.class);
+        providerManager.register(new ShortReader(), Short.class, short.class);
+        providerManager.register(new IntReader(), Integer.class, int.class);
+        providerManager.register(new LongReader(), Long.class, long.class);
+        providerManager.register(new FloatReader(), Float.class, float.class);
+        providerManager.register(new DoubleReader(), Double.class, double.class);
 
-        readerManager.registerReader(new ByteReader(), Byte.class, byte.class);
-        readerManager.registerReader(new ShortReader(), Short.class, short.class);
-        readerManager.registerReader(new IntReader(), Integer.class, int.class);
-        readerManager.registerReader(new LongReader(), Long.class, long.class);
-        readerManager.registerReader(new FloatReader(), Float.class, float.class);
-        readerManager.registerReader(new DoubleReader(), Double.class, double.class);
-
-        readerManager.registerReader(new BooleanReader(core), Boolean.class, boolean.class);
-        readerManager.registerReader(new EnchantmentReader(), Enchantment.class);
-        readerManager.registerReader(new ItemStackReader(), ItemStack.class);
-        readerManager.registerReader(new UserReader(core), User.class);
-        readerManager.registerReader(new WorldReader(core), World.class);
-        readerManager.registerReader(new EntityTypeReader(), EntityType.class);
-        readerManager.registerReader(new DyeColorReader(), DyeColor.class);
-        readerManager.registerReader(new ProfessionReader(), Profession.class);
-        readerManager.registerReader(new OfflinePlayerReader(core), OfflinePlayer.class);
-        readerManager.registerReader(new EnvironmentReader(), Environment.class);
-        readerManager.registerReader(new WorldTypeReader(), WorldType.class);
-        readerManager.registerReader(new DifficultyReader(), Difficulty.class);
-        readerManager.registerReader(new LogLevelReader(), LogLevel.class);
+        providerManager.register(new BooleanReader(core), Boolean.class, boolean.class);
+        providerManager.register(new EnchantmentReader(), Enchantment.class);
+        providerManager.register(new ItemStackReader(), ItemStack.class);
+        providerManager.register(new UserReader(core), User.class);
+        providerManager.register(new WorldReader(core), World.class);
+        providerManager.register(new EntityTypeReader(), EntityType.class);
+        providerManager.register(new DyeColorReader(), DyeColor.class);
+        providerManager.register(new ProfessionReader(), Profession.class);
+        providerManager.register(new OfflinePlayerReader(core), OfflinePlayer.class);
+        providerManager.register(new EnvironmentReader(), Environment.class);
+        providerManager.register(new WorldTypeReader(), WorldType.class);
+        providerManager.register(new DifficultyReader(), Difficulty.class);
+        providerManager.register(new LogLevelReader(), LogLevel.class);
 
         UserListReader userListReader = new UserListReader();
-        readerManager.registerReader(userListReader, UserList.class);
+        providerManager.register(userListReader, UserList.class);
 
-        this.registerDefaultCompleter(userListReader, UserList.class);
+        providerManager.register(core, userListReader, UserList.class);
     }
 
     @Override
-    public ReaderManager getReaderManager()
+    public ProviderManager getProviderManager()
     {
-        return readerManager;
+        return providerManager;
     }
 
     public CommandInjector getInjector()
@@ -269,29 +263,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         return paginationManager;
     }
 
-    @Override
-    public Completer getDefaultCompleter(Class... types)
-    {
-        for (Class type : types)
-        {
-            Completer completer = this.completers.get(type);
-            if (completer != null)
-            {
-                return completer;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void registerDefaultCompleter(Completer completer, Class... types)
-    {
-        for (Class type : types)
-        {
-            this.completers.put(type, completer);
-            this.completers.put(completer.getClass(), completer);
-        }
-    }
 
     @Override
     public Dispatcher getBaseDispatcher()

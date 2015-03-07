@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
@@ -77,7 +78,8 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
 
     private CommandInvocation newInvocation(User user, String message)
     {
-        return new CommandInvocation(user, message, this.getModule().getCore().getCommandManager().getReaderManager());
+        CommandManager cm = getModule().getCore().getCommandManager();
+        return new CommandInvocation(user, message, cm.getProviderManager());
     }
 
     @EventHandler
