@@ -17,29 +17,30 @@
  */
 package de.cubeisland.engine.core.command.result;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.module.Module;
 
-public abstract class LongRunningResult implements CommandResult<CommandContext>
+public abstract class LongRunningResult implements CommandResult
 {
     private boolean isDone = false;
     private int taskId = -1;
+    private Module module;
+
+    public LongRunningResult(Module module)
+    {
+        this.module = module;
+    }
 
     @Override
-    public void process(final CommandContext context)
+    public void process(final CommandInvocation context)
     {
-        this.taskId = CubeEngine.getCore().getTaskManager().runTimer(context.getModule(), new Runnable()
-        {
-            @Override
-            public void run()
+        this.taskId = CubeEngine.getCore().getTaskManager().runTimer(module, () -> {
+            LongRunningResult.this.run(context);
+            if (isDone)
             {
-                LongRunningResult.this.run(context);
-                if (isDone)
-                {
-                    CubeEngine.getCore().getTaskManager()
-                           .cancelTask(context.getModule(), taskId);
-                }
+                module.getCore().getTaskManager().cancelTask(module, taskId);
             }
         }, 0, 1);
         if (this.taskId == -1)
@@ -48,10 +49,10 @@ public abstract class LongRunningResult implements CommandResult<CommandContext>
         }
     }
 
+    public abstract void run(CommandInvocation context);
+
     protected final void setDone()
     {
         this.isDone = true;
     }
-
-    public abstract void run(CommandContext context);
 }

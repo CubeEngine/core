@@ -17,12 +17,14 @@
  */
 package de.cubeisland.engine.core.command.result;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
+import de.cubeisland.engine.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.core.module.Module;
 
-public abstract class AsyncResult implements CommandResult<CommandContext>
+public abstract class AsyncResult implements CommandResult
 {
     private Module module;
 
@@ -31,22 +33,16 @@ public abstract class AsyncResult implements CommandResult<CommandContext>
         this.module = module;
     }
 
-    public abstract void main(CommandContext context);
-    public void onFinish(CommandContext context)
+    public abstract void main(CommandInvocation context);
+    public void onFinish(CommandInvocation context)
     {}
 
     @Override
-    public final void process(final CommandContext context)
+    public final void process(final CommandInvocation context)
     {
         if (CubeEngine.isMainThread()) // only run on another thread if we're on the main thread
         {
-            module.getCore().getTaskManager().getThreadFactory().newThread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    doShow(context);
-                }
-            }).start();
+            module.getCore().getTaskManager().getThreadFactory().newThread(() -> doShow(context)).start();
         }
         else
         {
@@ -54,16 +50,9 @@ public abstract class AsyncResult implements CommandResult<CommandContext>
         }
     }
 
-    private void doShow(final CommandContext context)
+    private void doShow(final CommandInvocation context)
     {
         this.main(context);
-        module.getCore().getTaskManager().runTask(context.getModule(), new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                onFinish(context);
-            }
-        });
+        module.getCore().getTaskManager().runTask(module, () -> onFinish(context));
     }
 }

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -25,7 +26,7 @@ import de.cubeisland.engine.core.module.Module;
 /**
  * A result that should be confirmed via the /confirm command
  */
-public class ConfirmResult implements CommandResult<CommandContext>
+public class ConfirmResult implements CommandResult
 {
     private final Runnable runnable;
     private final CommandSender sender;
@@ -39,7 +40,7 @@ public class ConfirmResult implements CommandResult<CommandContext>
     }
 
     @Override
-    public void process(CommandContext context)
+    public void process(CommandInvocation context)
     {
         module.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
     }

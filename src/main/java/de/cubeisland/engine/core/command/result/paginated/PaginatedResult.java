@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.ArrayList;
 import java.util.List;
+import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandContext;
@@ -26,7 +27,7 @@ import de.cubeisland.engine.core.command.CommandContext;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
 
-public class PaginatedResult implements CommandResult<CommandContext>
+public class PaginatedResult implements CommandResult
 {
     private final CommandContext context;
     private final PaginationIterator iterator;
@@ -49,7 +50,7 @@ public class PaginatedResult implements CommandResult<CommandContext>
     }
 
     @Override
-    public void process(CommandContext context)
+    public void process(CommandInvocation invocation)
     {
         int pageCount = iterator.pageCount(PaginationManager.LINES_PER_PAGE);
         context.sendTranslated(NONE, PaginationManager.HEADER, pageNumber + 1, pageCount);
@@ -93,7 +94,7 @@ public class PaginatedResult implements CommandResult<CommandContext>
         if (pageNumber >= 0 && pageNumber < iterator.pageCount(PaginationManager.LINES_PER_PAGE))
         {
             this.pageNumber = pageNumber;
-            this.process(this.context);
+            this.process(this.context.getInvocation());
         }
         else
         {

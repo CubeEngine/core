@@ -125,29 +125,29 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new ModuleCompleter(core), Module.class);
         providerManager.register(core, new PlayerListCompleter(core), PlayerListCompleter.class);
 
-        providerManager.register(new ByteReader(), Byte.class, byte.class);
-        providerManager.register(new ShortReader(), Short.class, short.class);
-        providerManager.register(new IntReader(), Integer.class, int.class);
-        providerManager.register(new LongReader(), Long.class, long.class);
-        providerManager.register(new FloatReader(), Float.class, float.class);
-        providerManager.register(new DoubleReader(), Double.class, double.class);
+        providerManager.register(core, new ByteReader(), Byte.class, byte.class);
+        providerManager.register(core, new ShortReader(), Short.class, short.class);
+        providerManager.register(core, new IntReader(), Integer.class, int.class);
+        providerManager.register(core, new LongReader(), Long.class, long.class);
+        providerManager.register(core, new FloatReader(), Float.class, float.class);
+        providerManager.register(core, new DoubleReader(), Double.class, double.class);
 
-        providerManager.register(new BooleanReader(core), Boolean.class, boolean.class);
-        providerManager.register(new EnchantmentReader(), Enchantment.class);
-        providerManager.register(new ItemStackReader(), ItemStack.class);
-        providerManager.register(new UserReader(core), User.class);
-        providerManager.register(new WorldReader(core), World.class);
-        providerManager.register(new EntityTypeReader(), EntityType.class);
-        providerManager.register(new DyeColorReader(), DyeColor.class);
-        providerManager.register(new ProfessionReader(), Profession.class);
-        providerManager.register(new OfflinePlayerReader(core), OfflinePlayer.class);
-        providerManager.register(new EnvironmentReader(), Environment.class);
-        providerManager.register(new WorldTypeReader(), WorldType.class);
-        providerManager.register(new DifficultyReader(), Difficulty.class);
-        providerManager.register(new LogLevelReader(), LogLevel.class);
+        providerManager.register(core, new BooleanReader(core), Boolean.class, boolean.class);
+        providerManager.register(core, new EnchantmentReader(), Enchantment.class);
+        providerManager.register(core, new ItemStackReader(), ItemStack.class);
+        providerManager.register(core, new UserReader(core), User.class);
+        providerManager.register(core, new WorldReader(core), World.class);
+        providerManager.register(core, new EntityTypeReader(), EntityType.class);
+        providerManager.register(core, new DyeColorReader(), DyeColor.class);
+        providerManager.register(core, new ProfessionReader(), Profession.class);
+        providerManager.register(core, new OfflinePlayerReader(core), OfflinePlayer.class);
+        providerManager.register(core, new EnvironmentReader(), Environment.class);
+        providerManager.register(core, new WorldTypeReader(), WorldType.class);
+        providerManager.register(core, new DifficultyReader(), Difficulty.class);
+        providerManager.register(core, new LogLevelReader(), LogLevel.class);
 
         UserListReader userListReader = new UserListReader();
-        providerManager.register(userListReader, UserList.class);
+        providerManager.register(core, userListReader, UserList.class);
 
         providerManager.register(core, userListReader, UserList.class);
     }
