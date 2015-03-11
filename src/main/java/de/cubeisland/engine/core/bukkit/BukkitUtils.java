@@ -25,21 +25,21 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.i18n.I18nUtil;
-import net.minecraft.server.v1_8_R1.DedicatedServer;
-import net.minecraft.server.v1_8_R1.Entity;
-import net.minecraft.server.v1_8_R1.EntityEnderDragon;
-import net.minecraft.server.v1_8_R1.EntityGhast;
-import net.minecraft.server.v1_8_R1.EntityLiving;
-import net.minecraft.server.v1_8_R1.EntityPlayer;
-import net.minecraft.server.v1_8_R1.GenericAttributes;
-import net.minecraft.server.v1_8_R1.Item;
-import net.minecraft.server.v1_8_R1.JsonList;
-import net.minecraft.server.v1_8_R1.MinecraftServer;
-import net.minecraft.server.v1_8_R1.PlayerInteractManager;
-import net.minecraft.server.v1_8_R1.RecipesFurnace;
-import net.minecraft.server.v1_8_R1.TileEntityFurnace;
-import net.minecraft.server.v1_8_R1.WhiteList;
-import net.minecraft.server.v1_8_R1.WorldServer;
+import net.minecraft.server.v1_8_R2.DedicatedServer;
+import net.minecraft.server.v1_8_R2.Entity;
+import net.minecraft.server.v1_8_R2.EntityEnderDragon;
+import net.minecraft.server.v1_8_R2.EntityGhast;
+import net.minecraft.server.v1_8_R2.EntityLiving;
+import net.minecraft.server.v1_8_R2.EntityPlayer;
+import net.minecraft.server.v1_8_R2.GenericAttributes;
+import net.minecraft.server.v1_8_R2.Item;
+import net.minecraft.server.v1_8_R2.JsonList;
+import net.minecraft.server.v1_8_R2.MinecraftServer;
+import net.minecraft.server.v1_8_R2.PlayerInteractManager;
+import net.minecraft.server.v1_8_R2.RecipesFurnace;
+import net.minecraft.server.v1_8_R2.TileEntityFurnace;
+import net.minecraft.server.v1_8_R2.WhiteList;
+import net.minecraft.server.v1_8_R2.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -49,11 +49,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.LivingEntity;
@@ -244,14 +244,14 @@ public class BukkitUtils
     public static boolean isFuel(ItemStack item)
     {
         // Create an NMS item stack
-        net.minecraft.server.v1_8_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_8_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
         return TileEntityFurnace.isFuel(nmss);
     }
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_8_R1.ItemStack nmss = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_8_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
         // TileEntityFurnace private canBurn() checks this first for null
         // If the result of that item being cooked is null, it is not cookable
         return RecipesFurnace.getInstance().getResult(nmss) != null;
