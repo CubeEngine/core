@@ -249,7 +249,7 @@ public class CoreCommands extends ContainerCommand
             User found = um.findExactUser(name);
             if (found == null)
             {
-                found = um.findUser(name);
+                found = um.findUser(name, true);
             }
             if (found == null)
             {
