@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de.cubeisland.engine:core:1.0.0-SNAPSHOT\n"
 "Report-Msgid-Bugs-To: development@cubeisland.de\n"
-"POT-Creation-Date: 2015-02-04 23:52:39+0100\n"
+"POT-Creation-Date: 2015-03-15 23:33:30+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Clears your password."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:116
+#: de/cubeisland/engine/core/module/ModuleCommands.java:118
 msgid "Disables a module"
 msgstr ""
 
@@ -53,7 +53,7 @@ msgstr ""
 msgid "Displays the version of the server or a given plugin"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:105
+#: de/cubeisland/engine/core/module/ModuleCommands.java:107
 msgid "Enables a module"
 msgstr ""
 
@@ -61,7 +61,7 @@ msgstr ""
 msgid "Enables the whitelisting"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:190
+#: de/cubeisland/engine/core/module/ModuleCommands.java:194
 msgid "Get info about a module"
 msgstr ""
 
@@ -69,7 +69,7 @@ msgstr ""
 msgid "Lists all loaded plugins"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:81
+#: de/cubeisland/engine/core/module/ModuleCommands.java:83
 msgid "Lists all the loaded modules"
 msgstr ""
 
@@ -77,7 +77,7 @@ msgstr ""
 msgid "Lists all the whitelisted players"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:153
+#: de/cubeisland/engine/core/module/ModuleCommands.java:155
 msgid "Loads a module from the modules directory."
 msgstr ""
 
@@ -93,7 +93,7 @@ msgstr ""
 msgid "Makes a player an operator"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:130
+#: de/cubeisland/engine/core/module/ModuleCommands.java:132
 msgid "Reloads a module"
 msgstr ""
 
@@ -133,7 +133,7 @@ msgstr ""
 msgid "Shuts down the server"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:123
+#: de/cubeisland/engine/core/module/ModuleCommands.java:125
 msgid "Unloaded a module and all the modules that depend on it"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 
 #: de/cubeisland/engine/core/bukkit/VanillaCommands.java:348
 #: de/cubeisland/engine/core/command/HelpCommand.java:63
-#: de/cubeisland/engine/core/module/ModuleCommands.java:195
+#: de/cubeisland/engine/core/module/ModuleCommands.java:199
 msgid "Description: {input}"
 msgstr ""
 
@@ -228,7 +228,7 @@ msgstr ""
 msgid "The following users are operators:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:74
+#: de/cubeisland/engine/core/module/ModuleCommands.java:76
 msgid "The given module could not be found!"
 msgstr ""
 
@@ -440,7 +440,7 @@ msgstr ""
 msgid "Modules Reload completed in {integer#time}s!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:47
+#: de/cubeisland/engine/core/module/ModuleCommands.java:48
 msgid "Provides ingame module plugin management functionality"
 msgstr ""
 
@@ -579,7 +579,7 @@ msgstr ""
 msgid "page-number"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:113
+#: de/cubeisland/engine/core/module/ModuleCommands.java:115
 msgid "An error occurred while enabling the module!"
 msgstr ""
 
@@ -591,7 +591,7 @@ msgstr ""
 msgid "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:148
+#: de/cubeisland/engine/core/module/ModuleCommands.java:150
 msgid "Check the server log for info."
 msgstr ""
 
@@ -601,7 +601,7 @@ msgid ""
 "{input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:147
+#: de/cubeisland/engine/core/module/ModuleCommands.java:149
 msgid "Failed to reload the module!"
 msgstr ""
 
@@ -613,19 +613,19 @@ msgstr ""
 msgid "Matched not exactly! User: {user}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:221
+#: de/cubeisland/engine/core/module/ModuleCommands.java:225
 msgid "Module dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:237
+#: de/cubeisland/engine/core/module/ModuleCommands.java:241
 msgid "Module soft-dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:194
+#: de/cubeisland/engine/core/module/ModuleCommands.java:198
 msgid "Name: {input}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:253
+#: de/cubeisland/engine/core/module/ModuleCommands.java:257
 msgid "Plugin dependencies:"
 msgstr ""
 
@@ -633,27 +633,27 @@ msgstr ""
 msgid "Plugin information:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:213
+#: de/cubeisland/engine/core/module/ModuleCommands.java:217
 msgid "Provided services:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:269
+#: de/cubeisland/engine/core/module/ModuleCommands.java:273
 msgid "Service dependencies:"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:277
+#: de/cubeisland/engine/core/module/ModuleCommands.java:281
 msgid "Service soft dependencies"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:158
+#: de/cubeisland/engine/core/module/ModuleCommands.java:160
 msgid "The given file name is invalid!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:165
+#: de/cubeisland/engine/core/module/ModuleCommands.java:167
 msgid "The given module file was not found! The name might be case sensitive."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:110
+#: de/cubeisland/engine/core/module/ModuleCommands.java:112
 msgid "The given module was successfully enabled!"
 msgstr ""
 
@@ -663,35 +663,35 @@ msgid ""
 "(casing does matter)?"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:170
+#: de/cubeisland/engine/core/module/ModuleCommands.java:172
 msgid "The module exists, but cannot be read! Check the file permissions."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:185
+#: de/cubeisland/engine/core/module/ModuleCommands.java:189
 msgid "The module failed to load! Check the server log for info."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:177
+#: de/cubeisland/engine/core/module/ModuleCommands.java:180
 msgid "The module {name#module} has been successfully loaded and enabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:120
+#: de/cubeisland/engine/core/module/ModuleCommands.java:122
 msgid "The module {name#module} was successfully disabled!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:138
+#: de/cubeisland/engine/core/module/ModuleCommands.java:140
 msgid "The module {name#module} was successfully reloaded from file!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:142
+#: de/cubeisland/engine/core/module/ModuleCommands.java:144
 msgid "The module {name#module} was successfully reloaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:127
+#: de/cubeisland/engine/core/module/ModuleCommands.java:129
 msgid "The module {name#module} was successfully unloaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:100
+#: de/cubeisland/engine/core/command/result/paginated/PaginatedResult.java:101
 msgid "The page you want to see is out of bounds."
 msgstr ""
 
@@ -699,15 +699,15 @@ msgstr ""
 msgid "The player you tried to deop is not an operator."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:87
+#: de/cubeisland/engine/core/module/ModuleCommands.java:89
 msgid "There are no modules loaded!"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:90
+#: de/cubeisland/engine/core/module/ModuleCommands.java:92
 msgid "These are the loaded modules."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:181
+#: de/cubeisland/engine/core/module/ModuleCommands.java:185
 msgid "This module is already loaded, try reloading it."
 msgstr ""
 
@@ -716,7 +716,7 @@ msgid ""
 "This server is running {name#server} in version {input#version:color=INDIGO}"
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:196
+#: de/cubeisland/engine/core/module/ModuleCommands.java:200
 msgid "Version: {input}"
 msgstr ""
 
@@ -751,7 +751,7 @@ msgid ""
 "{name#plugin} is currently running in version {input#version:color=INDIGO}."
 msgstr ""
 
-#: de/cubeisland/engine/core/module/ModuleCommands.java:91
+#: de/cubeisland/engine/core/module/ModuleCommands.java:93
 msgid ""
 "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color="
 "RED} for disabled."
