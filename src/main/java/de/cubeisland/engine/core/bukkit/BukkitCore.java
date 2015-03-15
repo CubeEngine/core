@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.bukkit;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.nio.file.Files;
@@ -165,7 +166,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
         try (InputStream is = this.getResource("plugin.yml"))
         {
-            this.pluginConfig = configFactory.load(PluginConfig.class, is);
+            this.pluginConfig = configFactory.load(PluginConfig.class, new InputStreamReader(is));
         }
         catch (IOException e)
         {

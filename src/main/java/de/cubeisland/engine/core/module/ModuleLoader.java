@@ -19,6 +19,7 @@ package de.cubeisland.engine.core.module;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -243,7 +244,7 @@ public class ModuleLoader
 
             try (InputStream is = jarFile.getInputStream(entry))
             {
-                info = new ModuleInfo(file, this.getCore().getConfigFactory().load(ModuleConfig.class, is));
+                info = new ModuleInfo(file, this.getCore().getConfigFactory().load(ModuleConfig.class, new InputStreamReader(is)));
             }
         }
         catch (IOException e)
