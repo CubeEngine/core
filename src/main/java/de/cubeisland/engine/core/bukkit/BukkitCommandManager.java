@@ -137,7 +137,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new EnchantmentReader(), Enchantment.class);
         providerManager.register(core, new ItemStackReader(), ItemStack.class);
         providerManager.register(core, new UserReader(core), User.class);
-        providerManager.register(core, new CommandSenderReader(), CommandSender.class);
+        providerManager.register(core, new CommandSenderReader(core), CommandSender.class);
         providerManager.register(core, new WorldReader(core), World.class);
         providerManager.register(core, new EntityTypeReader(), EntityType.class);
         providerManager.register(core, new DyeColorReader(), DyeColor.class);

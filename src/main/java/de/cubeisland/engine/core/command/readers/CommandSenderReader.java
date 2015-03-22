@@ -22,19 +22,26 @@ import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.core.CubeEngine;
+import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 
 public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>
 {
+    private final Core core;
+
+    public CommandSenderReader(Core core)
+    {
+        this.core = core;
+    }
+
     @Override
     public CommandSender read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
     {
         if ("console".equalsIgnoreCase(invocation.currentToken()))
         {
             invocation.consume(1);
-            return CubeEngine.getCore().getCommandManager().getConsoleSender();
+            return core.getCommandManager().getConsoleSender();
         }
         return (User)manager.getReader(User.class).read(manager, type, invocation);
     }
