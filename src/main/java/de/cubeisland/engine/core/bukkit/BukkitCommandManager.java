@@ -44,6 +44,7 @@ import de.cubeisland.engine.core.command.completer.PlayerListCompleter;
 import de.cubeisland.engine.core.command.completer.WorldCompleter;
 import de.cubeisland.engine.core.command.readers.BooleanReader;
 import de.cubeisland.engine.core.command.readers.ByteReader;
+import de.cubeisland.engine.core.command.readers.CommandSenderReader;
 import de.cubeisland.engine.core.command.readers.DifficultyReader;
 import de.cubeisland.engine.core.command.readers.DoubleReader;
 import de.cubeisland.engine.core.command.readers.DyeColorReader;
@@ -136,6 +137,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new EnchantmentReader(), Enchantment.class);
         providerManager.register(core, new ItemStackReader(), ItemStack.class);
         providerManager.register(core, new UserReader(core), User.class);
+        providerManager.register(core, new CommandSenderReader(), CommandSender.class);
         providerManager.register(core, new WorldReader(core), World.class);
         providerManager.register(core, new EntityTypeReader(), EntityType.class);
         providerManager.register(core, new DyeColorReader(), DyeColor.class);
