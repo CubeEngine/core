@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.logscribe.LogLevel;
 
@@ -29,7 +28,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 public class LogLevelReader implements ArgumentReader<LogLevel>
 {
     @Override
-    public LogLevel read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public LogLevel read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         LogLevel logLevel = LogLevel.toLevel(arg);

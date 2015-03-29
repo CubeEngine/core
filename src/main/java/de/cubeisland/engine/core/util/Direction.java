@@ -17,6 +17,9 @@
  */
 package de.cubeisland.engine.core.util;
 
+import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.util.formatter.MessageType;
+
 public enum Direction
 {
     NORTH(23),
@@ -45,5 +48,30 @@ public enum Direction
             }
         }
         return Direction.NORTH;
+    }
+
+    public String translated(CommandSender sender)
+    {
+        switch (this)
+        {
+            case NORTH:
+                return sender.getTranslation(MessageType.NONE, "north");
+            case NORTH_EAST:
+                return sender.getTranslation(MessageType.NONE, "north-east");
+            case EAST:
+                return sender.getTranslation(MessageType.NONE, "east");
+            case SOUTH_EAST:
+                return sender.getTranslation(MessageType.NONE, "south-east");
+            case SOUTH:
+                return sender.getTranslation(MessageType.NONE, "south");
+            case SOUTH_WEST:
+                return sender.getTranslation(MessageType.NONE, "south-west");
+            case WEST:
+                return sender.getTranslation(MessageType.NONE, "west");
+            case NORTH_WEST:
+                return sender.getTranslation(MessageType.NONE, "north-west");
+            default:
+                throw new IllegalStateException();
+        }
     }
 }

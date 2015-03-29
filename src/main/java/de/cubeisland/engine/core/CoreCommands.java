@@ -32,7 +32,6 @@ import de.cubeisland.engine.command.parametric.Reader;
 import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
@@ -242,7 +241,7 @@ public class CoreCommands extends ContainerCommand
     public static class FindUserReader implements ArgumentReader<User>
     {
         @Override
-        public User read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+        public User read(Class type, CommandInvocation invocation) throws ReaderException
         {
             String name = invocation.consume(1);
             UserManager um = CubeEngine.getCore().getUserManager();

@@ -21,7 +21,6 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -41,7 +40,7 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
     }
 
     @Override
-    public User read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public User read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         User user = this.core.getUserManager().findUser(arg);

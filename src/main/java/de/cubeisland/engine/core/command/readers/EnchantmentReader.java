@@ -22,7 +22,6 @@ import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
@@ -61,7 +60,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     }
 
     @Override
-    public Enchantment read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Enchantment read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
         Enchantment enchantment = Match.enchant().enchantment(token);

@@ -22,7 +22,6 @@ import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -40,7 +39,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     }
 
     @Override
-    public World read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public World read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
         World world = this.core.getWorldManager().getWorld(name);

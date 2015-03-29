@@ -24,7 +24,6 @@ import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.command.CommandSender;
 
@@ -76,14 +75,14 @@ public class UserList
 
         @Override
         @SuppressWarnings("unchecked")
-        public UserList read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+        public UserList read(Class type, CommandInvocation invocation) throws ReaderException
         {
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
                 return new UserList(null);
             }
-            return new UserList((List<User>)manager.read(List.class, User.class, invocation));
+            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation));
         }
 
         @Override

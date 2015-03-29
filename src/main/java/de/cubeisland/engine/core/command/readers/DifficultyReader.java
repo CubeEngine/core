@@ -21,7 +21,6 @@ import java.util.Locale;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import org.bukkit.Difficulty;
 
@@ -30,7 +29,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 public class DifficultyReader implements ArgumentReader<Difficulty>
 {
     @Override
-    public Difficulty read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Difficulty read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         Locale locale = invocation.getLocale();

@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.user.User;
@@ -44,7 +43,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<User> read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public List<User> read(Class type, CommandInvocation invocation) throws ReaderException
     {
         ArrayList<User> users = new ArrayList<>();
         if ("*".equals(invocation.currentToken()))
@@ -55,7 +54,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         }
         if (invocation.currentToken().contains(","))
         {
-            for (List<User> list : ((List<List<User>>)manager.getReader(List.class).read(manager, FuzzyUserReader.class, invocation)))
+            for (List<User> list : ((List<List<User>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation)))
             {
                 users.addAll(list);
             }
@@ -80,7 +79,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         }
         else
         {
-            users.add((User)manager.read(User.class, User.class, invocation));
+            users.add((User)invocation.getManager().read(User.class, User.class, invocation));
         }
         return users;
     }

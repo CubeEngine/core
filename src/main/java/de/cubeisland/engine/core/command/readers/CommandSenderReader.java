@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
+import java.util.ArrayList;
+import java.util.List;
 import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.ProviderManager;
+import de.cubeisland.engine.command.completer.Completer;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.DefaultValue;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
@@ -26,7 +28,7 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;
 
-public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>
+public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>, Completer
 {
     private final Core core;
 
@@ -36,14 +38,14 @@ public class CommandSenderReader implements ArgumentReader<CommandSender>, Defau
     }
 
     @Override
-    public CommandSender read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public CommandSender read(Class type, CommandInvocation invocation) throws ReaderException
     {
         if ("console".equalsIgnoreCase(invocation.currentToken()))
         {
             invocation.consume(1);
             return core.getCommandManager().getConsoleSender();
         }
-        return (User)manager.getReader(User.class).read(manager, type, invocation);
+        return (User)invocation.getManager().getReader(User.class).read(type, invocation);
     }
 
     @Override
@@ -54,5 +56,17 @@ public class CommandSenderReader implements ArgumentReader<CommandSender>, Defau
             return (User)invocation.getCommandSource();
         }
         throw new ReaderException("You need to provide a player");
+    }
+
+    @Override
+    public List<String> getSuggestions(CommandInvocation invocation)
+    {
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(invocation.getManager().getCompleter(User.class).getSuggestions(invocation));
+        if ("console".startsWith(invocation.currentToken().toLowerCase()))
+        {
+            list.add("console");
+        }
+        return list;
     }
 }

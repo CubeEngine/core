@@ -29,7 +29,6 @@ import de.cubeisland.engine.command.parametric.Flag;
 import de.cubeisland.engine.command.parametric.Reader;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.VanillaCommands;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -68,7 +67,7 @@ public class ModuleCommands extends ContainerCommand
         }
 
         @Override
-        public Module read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+        public Module read(Class type, CommandInvocation invocation) throws ReaderException
         {
             Module module = this.mm.getModule(invocation.consume(1));
             if (module == null)

@@ -22,14 +22,13 @@ import java.text.ParseException;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 
 public class FloatReader implements ArgumentReader<Float>
 {
     @Override
-    public Float read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public Float read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String consumed = invocation.consume(1);
         try

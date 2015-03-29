@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +29,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 public class ItemStackReader implements ArgumentReader<ItemStack>
 {
     @Override
-    public ItemStack read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public ItemStack read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         ItemStack item = Match.material().itemStack(arg);

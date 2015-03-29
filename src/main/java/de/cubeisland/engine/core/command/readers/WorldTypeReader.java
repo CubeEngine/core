@@ -20,13 +20,12 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import org.bukkit.WorldType;
 
 public class WorldTypeReader implements ArgumentReader<WorldType>
 {
     @Override
-    public WorldType read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public WorldType read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         //Locale locale = invocation.getLocale();

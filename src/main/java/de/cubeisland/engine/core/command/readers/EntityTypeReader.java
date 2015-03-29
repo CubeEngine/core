@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.command.parameter.reader.ReaderException;
-import de.cubeisland.engine.command.ProviderManager;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.entity.EntityType;
 
@@ -28,7 +27,7 @@ public class EntityTypeReader implements ArgumentReader<EntityType>
 {
 
     @Override
-    public EntityType read(ProviderManager manager, Class type, CommandInvocation invocation) throws ReaderException
+    public EntityType read(Class type, CommandInvocation invocation) throws ReaderException
     {
         return Match.entity().any(invocation.consume(1));
     }
