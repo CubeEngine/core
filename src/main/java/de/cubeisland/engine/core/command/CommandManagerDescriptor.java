@@ -17,35 +17,24 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.CommandBase;
 import de.cubeisland.engine.command.CommandInvocation;
 import de.cubeisland.engine.command.CommandSource;
 import de.cubeisland.engine.command.SimpleCommandDescriptor;
+import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.command.parametric.context.BasicCommandContext;
 import de.cubeisland.engine.command.parametric.context.CommandContextBuilder;
 import de.cubeisland.engine.command.parametric.context.ContextBuilder;
 import de.cubeisland.engine.command.parametric.context.SourceContextBuilder;
-import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
-import de.cubeisland.engine.core.Core;
 
-public class CommandManagerDescriptor extends SimpleCommandDescriptor implements de.cubeisland.engine.command.ExceptionHandler, ContextBuilder
+public class CommandManagerDescriptor extends SimpleCommandDescriptor implements ContextBuilder
 {
-    private ExceptionHandler exceptionHandler;
-
     private ContextBuilder srcCtxBuilder = new SourceContextBuilder();
     private ContextBuilder cmdCtxBuilder = new CommandContextBuilder();
 
-    public CommandManagerDescriptor(Core core)
+    public CommandManagerDescriptor()
     {
-        this.exceptionHandler = new ExceptionHandler(core);
         this.setName("Base CommandDispatcher for CubeEngine");
         this.setUsageGenerator(new ParameterUsageGenerator());
-    }
-
-    @Override
-    public void handleException(Throwable e, CommandBase command, CommandInvocation invocation)
-    {
-        this.exceptionHandler.handleException(e, command, invocation);
     }
 
     @Override

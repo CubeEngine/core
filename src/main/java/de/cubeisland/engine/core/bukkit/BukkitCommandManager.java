@@ -37,6 +37,7 @@ import de.cubeisland.engine.core.command.CommandOrigin;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.core.command.CubeDescriptor;
+import de.cubeisland.engine.core.command.ExceptionHandler;
 import de.cubeisland.engine.core.command.ParametricCommandBuilder;
 import de.cubeisland.engine.core.command.completer.ModuleCompleter;
 import de.cubeisland.engine.core.command.completer.PlayerCompleter;
@@ -104,7 +105,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
 
     public BukkitCommandManager(BukkitCore core, CommandInjector injector)
     {
-        super(new CommandManagerDescriptor(core));
+        super(new CommandManagerDescriptor());
         this.core = core;
 
         this.consoleSender = new ConsoleCommandSender(core);
@@ -117,6 +118,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.paginationManager = new PaginationManager(core);
 
         this.providerManager = new ProviderManager();
+        providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
 
         providerManager.register(core, new PlayerCompleter(), User.class, OfflinePlayer.class);
         providerManager.register(core, new WorldCompleter(), World.class);

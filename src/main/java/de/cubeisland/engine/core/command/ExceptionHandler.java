@@ -41,13 +41,13 @@ public class ExceptionHandler implements de.cubeisland.engine.command.ExceptionH
     }
 
     @Override
-    public void handleException(Throwable t, CommandBase command, CommandInvocation invocation)
+    public boolean handleException(Throwable t, CommandBase command, CommandInvocation invocation)
     {
         if (!(invocation.getCommandSource() instanceof CommandSender))
         {
             core.getLog().info("An unknown CommandSource ({}) caused an exception: {}",
                                invocation.getCommandSource().getClass().getName(), t.getMessage());
-            return;
+            return true;
         }
 
         if (t instanceof InvocationTargetException || t instanceof ExecutionException)
@@ -106,103 +106,6 @@ public class ExceptionHandler implements de.cubeisland.engine.command.ExceptionH
             core.getLog().error(t, "Unexpected Command Exception: " + t.getMessage());
             sender.sendTranslated(CRITICAL, "Unexpected command failure: {text}", t.getMessage());
         }
+        return true;
     }
-
-    /*
-    // TODO handle in cmd via property
-    private void handleCommandException(@NotNull final CommandBase command, @NotNull final CommandInvocation invocation, Throwable t)
-    {
-        final CommandSource source = invocation.getCommandSource();
-        final Module module = command.getDescriptor().valueFor(ModuleProvider.class);
-        if (!(source instanceof CommandSender))
-        {
-            module.getLog().info("An unknown CommandSource ({}) caused an exception: {}", source.getClass().getName(), t.getMessage());
-            return;
-        }
-        final CommandSender sender = (CommandSender)source;
-        if (!CubeEngine.isMainThread())
-        {
-            final Throwable tmp = t;
-            module.getCore().getTaskManager().callSync(new Callable<Void>()
-            {
-                @Override
-                public Void call() throws Exception
-                {
-                    handleCommandException(command, invocation, tmp);
-                    return null;
-                }
-            });
-            return;
-        }
-        if (t instanceof InvocationTargetException || t instanceof ExecutionException)
-        {
-            t = t.getCause();
-        }
-        if (t instanceof MissingParameterException)
-        {
-            if (t.getMessage().isEmpty())
-            {
-                sender.sendTranslated(NEGATIVE, "The parameter {name#parameter} is missing!", ((MissingParameterException)t).getParamName());
-            }
-            else
-            {
-                sender.sendMessage(t.getMessage());
-            }
-        }
-        else if (t instanceof IncorrectUsageException)
-        {
-            IncorrectUsageException e = (IncorrectUsageException)t;
-            if (e.getMessage() != null)
-            {
-                sender.sendMessage(t.getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "That seems wrong...");
-            }
-            if (e.getDisplayUsage())
-            {
-                final String usage;
-
-                CommandDescriptor descriptor = command.getDescriptor();
-                usage = descriptor.valueFor(UsageProvider.class).generateUsage(invocation.getCommandSource(), descriptor);
-
-                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {message}", usage);
-            }
-        }
-        else if (t instanceof ReaderException)
-        {
-            ReaderException e = (ReaderException)t;
-            if (e.getMessage() != null)
-            {
-                sender.sendMessage(t.getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument...");
-            }
-        }
-        else if (t instanceof PermissionDeniedException)
-        {
-
-        }
-        else if (t instanceof IncorrectArgumentException)
-        {
-            if (((IncorrectArgumentException)t).isNamedArgument())
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument for {input#named}: {input#reason}", ((IncorrectArgumentException)t).getName(), t.getCause().getMessage());
-            }
-            else
-            {
-                sender.sendTranslated(NEGATIVE, "Invalid Argument at {integer#index}: {input#reason}", ((IncorrectArgumentException)t).getIndex(), t.getCause().getMessage());
-            }
-        }
-        else
-        {
-            sender.sendTranslated(CRITICAL, "An unknown error occurred while executing this command!");
-            sender.sendTranslated(CRITICAL, "Please report this error to an administrator.");
-            module.getLog().debug(t, t.getLocalizedMessage());
-        }
-    }
-    */
 }
