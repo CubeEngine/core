@@ -172,7 +172,6 @@ public class VanillaCommands
             for (OfflinePlayer opPlayer : ops)
             {
                 context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", opPlayer, new Date(opPlayer.getLastPlayed()));
-                // TODO locale dependent formatter for date
             }
             return;
         }

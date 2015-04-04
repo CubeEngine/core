@@ -61,7 +61,6 @@ import de.cubeisland.engine.core.command.readers.ProfessionReader;
 import de.cubeisland.engine.core.command.readers.ShortReader;
 import de.cubeisland.engine.core.command.readers.UserReader;
 import de.cubeisland.engine.core.command.readers.WorldReader;
-import de.cubeisland.engine.core.command.readers.WorldTypeReader;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -78,7 +77,6 @@ import org.bukkit.DyeColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.WorldType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Villager.Profession;
@@ -115,7 +113,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
-        // TODO finish ConfirmManager
         this.confirmManager = new ConfirmManager(this, core);
         this.paginationManager = new PaginationManager(core);
 
@@ -144,7 +141,6 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new ProfessionReader(), Profession.class);
         providerManager.register(core, new OfflinePlayerReader(core), OfflinePlayer.class);
         providerManager.register(core, new EnvironmentReader(), Environment.class);
-        providerManager.register(core, new WorldTypeReader(), WorldType.class);
         providerManager.register(core, new DifficultyReader(), Difficulty.class);
         providerManager.register(core, new LogLevelReader(), LogLevel.class);
 
