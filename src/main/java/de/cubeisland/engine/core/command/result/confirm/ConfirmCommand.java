@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.core.command.result.confirm;
 
-import de.cubeisland.engine.command.parametric.Command;
-import de.cubeisland.engine.command.result.CommandResult;
+import de.cubeisland.engine.butler.parametric.Command;
+import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.core.command.CommandContext;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;

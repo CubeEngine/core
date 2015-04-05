@@ -19,8 +19,8 @@ package de.cubeisland.engine.core.webapi;
 
 import java.util.List;
 import java.util.Map;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.ProviderManager;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.ProviderManager;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 

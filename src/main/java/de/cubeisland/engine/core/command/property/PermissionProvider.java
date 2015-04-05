@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command.property;
 
-import de.cubeisland.engine.command.util.property.AbstractProperty;
+import de.cubeisland.engine.butler.util.property.AbstractProperty;
 import de.cubeisland.engine.core.permission.Permission;
 import org.bukkit.permissions.Permissible;
 

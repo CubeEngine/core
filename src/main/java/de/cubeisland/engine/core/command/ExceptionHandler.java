@@ -19,19 +19,19 @@ package de.cubeisland.engine.core.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
-import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.CommandException;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.filter.RestrictedSourceException;
-import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
-import de.cubeisland.engine.command.parameter.TooManyArgumentsException;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
+import de.cubeisland.engine.butler.CommandBase;
+import de.cubeisland.engine.butler.CommandException;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.filter.RestrictedSourceException;
+import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
+import de.cubeisland.engine.butler.parameter.TooManyArgumentsException;
+import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
-public class ExceptionHandler implements de.cubeisland.engine.command.ExceptionHandler
+public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler
 {
     private Core core;
 

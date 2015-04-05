@@ -19,11 +19,11 @@ package de.cubeisland.engine.core.command.readers;
 
 import java.util.ArrayList;
 import java.util.List;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.completer.Completer;
-import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.DefaultValue;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.completer.Completer;
+import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
+import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.user.User;

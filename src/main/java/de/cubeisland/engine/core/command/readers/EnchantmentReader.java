@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.parameter.TooFewArgumentsException;
-import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.DefaultValue;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
+import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
+import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;

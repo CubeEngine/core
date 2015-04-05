@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import de.cubeisland.engine.command.CommandInvocation;
+import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.module.Module;

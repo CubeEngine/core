@@ -17,19 +17,19 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.CommandSource;
-import de.cubeisland.engine.command.parameter.FlagParameter;
-import de.cubeisland.engine.command.parameter.Parameter;
-import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
+import de.cubeisland.engine.butler.CommandDescriptor;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.CommandSource;
+import de.cubeisland.engine.butler.parameter.FlagParameter;
+import de.cubeisland.engine.butler.parameter.Parameter;
+import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.bukkit.permissions.Permissible;
 
-import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
+import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {

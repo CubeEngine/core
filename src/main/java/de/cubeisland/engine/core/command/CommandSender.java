@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command;
 
 import java.util.Locale;
 import java.util.UUID;
-import de.cubeisland.engine.command.CommandSource;
+import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;

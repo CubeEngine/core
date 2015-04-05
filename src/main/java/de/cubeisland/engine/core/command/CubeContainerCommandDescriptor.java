@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.parametric.ContainerCommandDescriptor;
+import de.cubeisland.engine.butler.parametric.ContainerCommandDescriptor;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 

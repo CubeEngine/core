@@ -17,14 +17,14 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.CommandSource;
-import de.cubeisland.engine.command.SimpleCommandDescriptor;
-import de.cubeisland.engine.command.parameter.ParameterUsageGenerator;
-import de.cubeisland.engine.command.parametric.context.BasicCommandContext;
-import de.cubeisland.engine.command.parametric.context.CommandContextBuilder;
-import de.cubeisland.engine.command.parametric.context.ContextBuilder;
-import de.cubeisland.engine.command.parametric.context.SourceContextBuilder;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.CommandSource;
+import de.cubeisland.engine.butler.SimpleCommandDescriptor;
+import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
+import de.cubeisland.engine.butler.parametric.context.BasicCommandContext;
+import de.cubeisland.engine.butler.parametric.context.CommandContextBuilder;
+import de.cubeisland.engine.butler.parametric.context.ContextBuilder;
+import de.cubeisland.engine.butler.parametric.context.SourceContextBuilder;
 
 public class CommandManagerDescriptor extends SimpleCommandDescriptor implements ContextBuilder
 {

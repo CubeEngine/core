@@ -20,9 +20,9 @@ package de.cubeisland.engine.core.command.readers;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.command.parameter.reader.ReaderException;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
+import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
 
 public class BooleanReader implements ArgumentReader<Boolean>

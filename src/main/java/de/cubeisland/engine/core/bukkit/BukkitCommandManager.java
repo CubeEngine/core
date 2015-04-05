@@ -18,16 +18,16 @@
 package de.cubeisland.engine.core.bukkit;
 
 import java.lang.reflect.Method;
-import de.cubeisland.engine.command.CommandBase;
-import de.cubeisland.engine.command.CommandBuilder;
-import de.cubeisland.engine.command.CommandDescriptor;
-import de.cubeisland.engine.command.CommandSource;
-import de.cubeisland.engine.command.Dispatcher;
-import de.cubeisland.engine.command.DispatcherCommand;
-import de.cubeisland.engine.command.parametric.CompositeCommandBuilder;
-import de.cubeisland.engine.command.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.parametric.ParametricBuilder;
-import de.cubeisland.engine.command.ProviderManager;
+import de.cubeisland.engine.butler.CommandBase;
+import de.cubeisland.engine.butler.CommandBuilder;
+import de.cubeisland.engine.butler.CommandDescriptor;
+import de.cubeisland.engine.butler.CommandSource;
+import de.cubeisland.engine.butler.Dispatcher;
+import de.cubeisland.engine.butler.DispatcherCommand;
+import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
+import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
+import de.cubeisland.engine.butler.parametric.ParametricBuilder;
+import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.command.CommandInjector;
@@ -271,7 +271,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
     }
 
     /**
-     * Creates {@link de.cubeisland.engine.command.parametric.BasicParametricCommand} for all methods annotated as a command
+     * Creates {@link de.cubeisland.engine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to

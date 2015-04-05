@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command;
 
 import java.lang.reflect.Method;
-import de.cubeisland.engine.command.parametric.InvokableMethod;
+import de.cubeisland.engine.butler.parametric.InvokableMethod;
 import de.cubeisland.engine.core.module.Module;
 
 /**

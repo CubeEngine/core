@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.core.command;
 
-import de.cubeisland.engine.command.CommandInvocation;
-import de.cubeisland.engine.command.CommandSource;
-import de.cubeisland.engine.command.filter.Filter;
-import de.cubeisland.engine.command.filter.FilterException;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.CommandSource;
+import de.cubeisland.engine.butler.filter.Filter;
+import de.cubeisland.engine.butler.filter.FilterException;
 import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.permission.Permission;
 

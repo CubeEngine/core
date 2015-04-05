@@ -18,10 +18,10 @@
 package de.cubeisland.engine.core.command;
 
 import java.lang.annotation.Annotation;
-import de.cubeisland.engine.command.parametric.Command;
-import de.cubeisland.engine.command.parametric.BasicParametricCommand;
-import de.cubeisland.engine.command.parametric.ParametricBuilder;
-import de.cubeisland.engine.command.parameter.Parameter;
+import de.cubeisland.engine.butler.parametric.Command;
+import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
+import de.cubeisland.engine.butler.parametric.ParametricBuilder;
+import de.cubeisland.engine.butler.parameter.Parameter;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.ParameterPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
@@ -29,7 +29,7 @@ import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 
-import static de.cubeisland.engine.command.parameter.property.Requirement.isRequired;
+import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
 public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, CubeCommandDescriptor>
 {
