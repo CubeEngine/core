@@ -55,6 +55,7 @@ import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
@@ -120,6 +121,10 @@ public class UserBase implements Player
 
     private EntityPlayer getDummy()
     {
+        if (getPlayer() != null)
+        {
+            return ((CraftPlayer)getPlayer()).getHandle();
+        }
         if (this.dummy == null)
         {
             CraftServer srv = (CraftServer)this.getServer();
@@ -127,11 +132,7 @@ public class UserBase implements Player
             // LoginListener is doing this
             // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
             // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
-            // TODO verify me
-            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile(this.getOfflinePlayer().getUniqueId(),
-                                                                                  this.getName()),
-                                          new PlayerInteractManager(world)
-            );
+            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()), new PlayerInteractManager(world));
         }
         return this.dummy;
     }
