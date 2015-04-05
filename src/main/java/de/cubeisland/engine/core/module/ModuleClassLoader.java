@@ -110,7 +110,6 @@ public class ModuleClassLoader extends URLClassLoader
             clazz = it.next().getValue();
             this.moduleLoader.getCore().getConfigFactory().getDefaultConverterManager().removeConverter(clazz);
             it.remove();
-            // TODO remove ArgumentReaders
         }
 
         try

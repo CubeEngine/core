@@ -207,6 +207,7 @@ public class ModuleLoader
     {
         expectNotNull(module, "The module must not be null!");
 
+        module.getCore().getCommandManager().getProviderManager().removeAll(module); // Removes completers readers and defaultvalues
         ModuleClassLoader classLoader = this.classLoaders.remove(module.getId());
         if (classLoader != null)
         {
