@@ -173,7 +173,7 @@ public class WrappedCommand extends Command
             boolean ran = this.command.execute(newInvocation(source, label, args));
             core.getCommandManager().logExecution(source, ran, this.command, args);
             delta = System.currentTimeMillis() - delta;
-            if (delta > 1000 / 20 / 3) // half a tick
+            if (delta > 1000 / 20 / 3) // third of a tick
             {
                 core.getLog().warn("The following command used more than third a tick:\n   {} {} | {}ms ({}%)", label, String.join(" ", args), delta, delta * 100 / (1000 / 20) );
             }
