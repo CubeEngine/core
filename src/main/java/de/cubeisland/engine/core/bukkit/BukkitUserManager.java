@@ -35,6 +35,7 @@ import de.cubeisland.engine.core.user.UserLoadedEvent;
 import de.cubeisland.engine.core.util.Profiler;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -221,7 +222,17 @@ public class BukkitUserManager extends AbstractUserManager
             scheduler.runTask(core, () -> {
                 synchronized (BukkitUserManager.this)
                 {
-                    onlineUsers.remove(user);
+                    if (!user.isOnline())
+                    {
+                        onlineUsers.remove(user);
+                        user.getWorld().getEntities().stream().
+                            filter(entity -> entity instanceof Player).
+                            filter(entity -> entity.getName().equals(user.getName())).
+                            forEach(entity -> {
+                                core.getLog().warn("A Players entity had to be removed manually ");
+                                entity.remove();
+                            });
+                    }
                 }
             });
 
