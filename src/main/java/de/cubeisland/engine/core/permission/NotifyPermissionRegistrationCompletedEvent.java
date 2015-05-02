@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.permission;
 
-import de.cubeisland.engine.core.bukkit.CubeEvent;
+import de.cubeisland.engine.core.sponge.CubeEvent;
 import de.cubeisland.engine.core.module.Module;
 import org.bukkit.event.HandlerList;
 

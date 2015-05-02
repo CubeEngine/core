@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import de.cubeisland.engine.core.util.Version;
 import org.apache.commons.lang.Validate;
 

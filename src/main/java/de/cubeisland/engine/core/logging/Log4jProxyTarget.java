@@ -72,7 +72,7 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
     @Override
     protected void onShutdown()
     {
-        // this is not our logger! Let bukkit handle it
+        // this is not our logger! Let sponge handle it
     }
 
     Logger getHandle()

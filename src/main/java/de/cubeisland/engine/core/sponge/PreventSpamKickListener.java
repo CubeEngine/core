@@ -15,17 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
-import de.cubeisland.engine.reflect.annotations.Name;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerKickEvent;
 
-/**
- * Configuration class to parse the custom CubeEngine values of plugin.yml
- */
-@SuppressWarnings("all")
-public class PluginConfig extends ReflectedYaml
+public class PreventSpamKickListener implements Listener
 {
-    @Name("source-version")
-    public String sourceVersion = "unknown";
+    private final BukkitCore core;
+
+    public PreventSpamKickListener(BukkitCore core)
+    {
+        this.core = core;
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onKick(PlayerKickEvent event)
+    {
+        if (event.getReason().equals("disconnect.spam") && core.perms().SPAM.isAuthorized(event.getPlayer()))
+        {
+            event.setCancelled(true);
+        }
+    }
 }

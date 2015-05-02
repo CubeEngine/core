@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -64,7 +64,7 @@ import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
 /**
- * This class contains various methods to access bukkit-related stuff.
+ * This class contains various methods to access sponge-related stuff.
  */
 public class BukkitUtils
 {
@@ -93,7 +93,7 @@ public class BukkitUtils
     public static boolean isCompatible(BukkitCore core)
     {
         String serverClassName = core.getServer().getClass().getName();
-        return (serverClassName.startsWith("org.bukkit.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
+        return (serverClassName.startsWith("org.sponge.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
     }
 
     public static Locale getLocaleFromSender(CommandSender sender)

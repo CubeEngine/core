@@ -24,7 +24,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.bukkit.Server;

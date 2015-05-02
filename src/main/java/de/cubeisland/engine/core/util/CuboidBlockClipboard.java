@@ -30,7 +30,7 @@ import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.NBTUtils;
+import de.cubeisland.engine.core.sponge.NBTUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
 import net.minecraft.server.v1_8_R2.NBTTagCompound;
@@ -40,7 +40,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 
-import static de.cubeisland.engine.core.bukkit.NBTUtils.convertNBTToNode;
+import static de.cubeisland.engine.core.sponge.NBTUtils.convertNBTToNode;
 
 /**
  * A simple clipboard for blocks and TileEntity-Data

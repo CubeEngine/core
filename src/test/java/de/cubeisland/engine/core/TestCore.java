@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.core.ban.BanManager;
-import de.cubeisland.engine.core.bukkit.EventManager;
+import de.cubeisland.engine.core.sponge.EventManager;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.filesystem.TestFileManager;

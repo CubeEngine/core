@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import org.bukkit.OfflinePlayer;
 
 public class OfflinePlayerReader implements ArgumentReader<OfflinePlayer>

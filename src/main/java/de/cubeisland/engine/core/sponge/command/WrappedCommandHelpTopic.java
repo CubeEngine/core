@@ -15,48 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge.command;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import org.bukkit.command.CommandSender;
+import org.bukkit.help.GenericCommandHelpTopic;
 
-public class AfterJoinEvent extends Event
+public class WrappedCommandHelpTopic extends GenericCommandHelpTopic
 {
-    private static final HandlerList handlers = new HandlerList();
-    private String joinMessage;
-    private Player player;
+    private final WrappedCommand command;
 
-    public AfterJoinEvent(Player player, String joinMessage)
+    public WrappedCommandHelpTopic(WrappedCommand command)
     {
-        this.joinMessage = joinMessage;
-        this.player = player;
+        super(command);
+        this.command = command;
     }
 
     @Override
-    public HandlerList getHandlers()
+    public boolean canSee(CommandSender commandSender)
     {
-        return handlers;
+        String permission = command.getPermission();
+        return permission == null || commandSender.hasPermission(permission);
     }
 
-    public static HandlerList getHandlerList()
+    public WrappedCommand getCommand()
     {
-        return handlers;
-    }
-
-    /**
-     * @return the joinMessage
-     */
-    public String getJoinMessage()
-    {
-        return joinMessage;
-    }
-
-    /**
-     * @return the player
-     */
-    public Player getPlayer()
-    {
-        return player;
+        return command;
     }
 }

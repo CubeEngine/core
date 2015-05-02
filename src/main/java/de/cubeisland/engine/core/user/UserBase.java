@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import de.cubeisland.engine.core.sponge.BukkitUtils;
 import net.minecraft.server.v1_8_R2.EntityPlayer;
 import net.minecraft.server.v1_8_R2.NBTTagCompound;
 import net.minecraft.server.v1_8_R2.NBTTagDouble;

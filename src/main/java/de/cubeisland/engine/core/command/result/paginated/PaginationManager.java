@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.HashMap;
 import java.util.Map;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

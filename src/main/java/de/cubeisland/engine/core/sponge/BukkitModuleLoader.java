@@ -15,30 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.command;
+package de.cubeisland.engine.core.sponge;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.help.GenericCommandHelpTopic;
+import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.ModuleLoader;
 
-public class WrappedCommandHelpTopic extends GenericCommandHelpTopic
+public class BukkitModuleLoader extends ModuleLoader
 {
-    private final WrappedCommand command;
-
-    public WrappedCommandHelpTopic(WrappedCommand command)
+    public BukkitModuleLoader(Core core, ClassLoader parentClassLoader)
     {
-        super(command);
-        this.command = command;
-    }
-
-    @Override
-    public boolean canSee(CommandSender commandSender)
-    {
-        String permission = command.getPermission();
-        return permission == null || commandSender.hasPermission(permission);
-    }
-
-    public WrappedCommand getCommand()
-    {
-        return command;
+        super(core, parentClassLoader);
     }
 }

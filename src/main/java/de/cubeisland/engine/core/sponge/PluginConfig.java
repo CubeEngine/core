@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
-import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.ModuleLoader;
+import de.cubeisland.engine.reflect.annotations.Name;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
-public class BukkitModuleLoader extends ModuleLoader
+/**
+ * Configuration class to parse the custom CubeEngine values of plugin.yml
+ */
+@SuppressWarnings("all")
+public class PluginConfig extends ReflectedYaml
 {
-    public BukkitModuleLoader(Core core, ClassLoader parentClassLoader)
-    {
-        super(core, parentClassLoader);
-    }
+    @Name("source-version")
+    public String sourceVersion = "unknown";
 }

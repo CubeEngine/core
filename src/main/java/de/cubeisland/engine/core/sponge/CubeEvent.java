@@ -15,28 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerKickEvent;
+import de.cubeisland.engine.core.Core;
+import org.bukkit.event.Event;
 
-public class PreventSpamKickListener implements Listener
+/**
+ * This class is a custom Event containing the core to allow easy access.
+ */
+public abstract class CubeEvent extends Event
 {
-    private final BukkitCore core;
+    private final Core core;
 
-    public PreventSpamKickListener(BukkitCore core)
+    public CubeEvent(Core core)
     {
         this.core = core;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onKick(PlayerKickEvent event)
+    /**
+     * Returns the CubeEngine-Core
+     *
+     * @return the core
+     */
+    public Core getCore()
     {
-        if (event.getReason().equals("disconnect.spam") && core.perms().SPAM.isAuthorized(event.getPlayer()))
-        {
-            event.setCancelled(true);
-        }
+        return this.core;
     }
 }

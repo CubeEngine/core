@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
 import java.lang.reflect.Method;
 import de.cubeisland.engine.butler.CommandBase;
@@ -30,7 +30,7 @@ import de.cubeisland.engine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.command.CommandInjector;
+import de.cubeisland.engine.core.sponge.command.CommandInjector;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.core.command.CommandOrigin;
@@ -206,7 +206,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         }
         boolean b = super.addCommand(command);
         // TODO handle perm when removing cmd from parent
-        this.injector.registerCommand(command); // register at bukkit
+        this.injector.registerCommand(command); // register at sponge
         return b;
     }
 

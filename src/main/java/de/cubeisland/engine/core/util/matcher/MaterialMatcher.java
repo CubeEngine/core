@@ -336,7 +336,7 @@ public class MaterialMatcher
                 }
                 if (item == null) // Contained ":" but could not find any matching item
                 {
-                    // Try to match bukkit name
+                    // Try to match sponge name
                     item = this.matchWithLevenshteinDistance(material, bukkitnames);
                     item = materialDataMatcher.setData(item, data);
                     return item;
@@ -348,7 +348,7 @@ public class MaterialMatcher
                 item = this.matchWithLevenshteinDistance(s, items);
                 if (item == null)
                 {
-                    // Try to match bukkit name
+                    // Try to match sponge name
                     item = this.matchWithLevenshteinDistance(s, bukkitnames);
                     if (item == null)
                     {
@@ -411,7 +411,7 @@ public class MaterialMatcher
 
         // ld-match
         itemMap = this.allMatchesWithLevenshteinDistance(material, items, 5, 50);
-        // Try to match bukkit name
+        // Try to match sponge name
         itemMap.putAll(this.allMatchesWithLevenshteinDistance(material, bukkitnames, 5, 50));
 
         if (s.contains(":"))

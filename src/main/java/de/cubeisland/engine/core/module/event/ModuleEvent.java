@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.module.event;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.CubeEvent;
+import de.cubeisland.engine.core.sponge.CubeEvent;
 import de.cubeisland.engine.core.module.Module;
 
 /**

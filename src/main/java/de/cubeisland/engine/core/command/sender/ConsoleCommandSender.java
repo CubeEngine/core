@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.command.sender;
 
 import java.util.Locale;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import org.bukkit.Server;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;

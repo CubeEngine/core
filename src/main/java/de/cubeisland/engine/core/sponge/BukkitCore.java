@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -39,9 +39,9 @@ import de.cubeisland.engine.core.CoreCommands;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.bukkit.VanillaCommands.WhitelistCommand;
-import de.cubeisland.engine.core.bukkit.command.CommandInjector;
-import de.cubeisland.engine.core.bukkit.command.PreCommandListener;
+import de.cubeisland.engine.core.sponge.VanillaCommands.WhitelistCommand;
+import de.cubeisland.engine.core.sponge.command.CommandInjector;
+import de.cubeisland.engine.core.sponge.command.PreCommandListener;
 import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;

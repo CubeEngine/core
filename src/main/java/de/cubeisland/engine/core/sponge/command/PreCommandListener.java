@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.command;
+package de.cubeisland.engine.core.sponge.command;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitUtils;
+import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitUtils;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;

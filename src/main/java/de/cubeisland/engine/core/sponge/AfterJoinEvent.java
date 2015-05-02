@@ -15,30 +15,48 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit;
+package de.cubeisland.engine.core.sponge;
 
-import de.cubeisland.engine.core.Core;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
-/**
- * This class is a custom Event containing the core to allow easy access.
- */
-public abstract class CubeEvent extends Event
+public class AfterJoinEvent extends Event
 {
-    private final Core core;
+    private static final HandlerList handlers = new HandlerList();
+    private String joinMessage;
+    private Player player;
 
-    public CubeEvent(Core core)
+    public AfterJoinEvent(Player player, String joinMessage)
     {
-        this.core = core;
+        this.joinMessage = joinMessage;
+        this.player = player;
+    }
+
+    @Override
+    public HandlerList getHandlers()
+    {
+        return handlers;
+    }
+
+    public static HandlerList getHandlerList()
+    {
+        return handlers;
     }
 
     /**
-     * Returns the CubeEngine-Core
-     *
-     * @return the core
+     * @return the joinMessage
      */
-    public Core getCore()
+    public String getJoinMessage()
     {
-        return this.core;
+        return joinMessage;
+    }
+
+    /**
+     * @return the player
+     */
+    public Player getPlayer()
+    {
+        return player;
     }
 }

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.core.bukkit.command;
+package de.cubeisland.engine.core.sponge.command;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -28,8 +28,8 @@ import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.alias.AliasDescriptor;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
-import de.cubeisland.engine.core.bukkit.BukkitCoreConfiguration;
+import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeDescriptor;
 import de.cubeisland.engine.core.command.HelpCommand;

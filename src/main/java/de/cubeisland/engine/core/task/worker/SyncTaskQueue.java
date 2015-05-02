@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.task.worker;
 import java.util.LinkedList;
 import java.util.Queue;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.BukkitCore;
+import de.cubeisland.engine.core.sponge.BukkitCore;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;

@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.user;
 
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.bukkit.CubeEvent;
+import de.cubeisland.engine.core.sponge.CubeEvent;
 
 /**
  * This is a base for user related events.
