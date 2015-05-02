@@ -26,10 +26,12 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
+import static org.bukkit.Material.AIR;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
@@ -39,7 +41,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         boolean first = true;
         for (Enchantment enchantment : Enchantment.values())
         {
-            if (item == null || enchantment.canEnchantItem(item))
+            if (item == null || item.getType() == AIR || enchantment.canEnchantItem(item))
             {
                 if (first)
                 {
