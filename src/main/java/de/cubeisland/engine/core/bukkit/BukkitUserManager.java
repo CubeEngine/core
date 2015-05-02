@@ -225,13 +225,6 @@ public class BukkitUserManager extends AbstractUserManager
                     if (!user.isOnline())
                     {
                         onlineUsers.remove(user);
-                        user.getWorld().getEntities().stream().
-                            filter(entity -> entity instanceof Player).
-                            filter(entity -> entity.getName().equals(user.getName())).
-                            forEach(entity -> {
-                                core.getLog().warn("A Players entity had to be removed manually ");
-                                entity.remove();
-                            });
                     }
                 }
             });
@@ -264,6 +257,13 @@ public class BukkitUserManager extends AbstractUserManager
             if (event.getResult() == ALLOWED)
             {
                 User user = getExactUser(event.getPlayer(), true);
+                user.getWorld().getEntities().stream().
+                    filter(entity -> entity instanceof Player).
+                        filter(entity -> entity.getName().equals(user.getName())).
+                        forEach(entity -> {
+                            core.getLog().warn("A Players entity had to be removed manually ");
+                            entity.remove();
+                        });
                 onlineUsers.add(user);
             }
         }
