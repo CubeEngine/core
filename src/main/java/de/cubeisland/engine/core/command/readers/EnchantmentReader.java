@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.command.readers;
 
 import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.SilentException;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
@@ -79,7 +80,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
             {
                 sender.sendTranslated(NEGATIVE, "You can not enchant this item!");
             }
-            return null;
+            throw new SilentException();
         }
         return enchantment;
     }

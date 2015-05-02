@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandException;
 import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.SilentException;
 import de.cubeisland.engine.butler.filter.RestrictedSourceException;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.TooManyArgumentsException;
@@ -95,6 +96,10 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
                 {
                     sender.sendTranslated(NEUTRAL, t.getMessage());
                 }
+            }
+            else if (t instanceof SilentException)
+            {
+                // do nothing
             }
             else
             {
