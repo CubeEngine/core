@@ -35,15 +35,11 @@ import de.cubeisland.engine.core.permission.PermissionManager;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.SimplePluginManager;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.Permission.BASE;
 import static java.util.Locale.ENGLISH;
-import static org.bukkit.permissions.PermissionDefault.*;
 
 public class BukkitPermissionManager implements PermissionManager
 {
@@ -58,7 +54,7 @@ public class BukkitPermissionManager implements PermissionManager
     private Set<org.bukkit.permissions.Permission> defaultPermFalse;
 
     @SuppressWarnings("unchecked")
-    public BukkitPermissionManager(BukkitCore core)
+    public BukkitPermissionManager(SpongeCore core)
     {
         this.startup = true;
         this.pm = core.getServer().getPluginManager();

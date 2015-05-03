@@ -37,11 +37,11 @@ public class LogFactory extends DefaultLogFactory
     private final Log parent;
     private Log databaseLog;
 
-    public LogFactory(Core core, java.util.logging.Logger julLogger)
+    public LogFactory(Core core, Logger baseLogger)
     {
         this.core = core;
         this.parent = this.getLog(core.getClass());
-        Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget((Logger)LogManager.getLogger(julLogger.getName()));
+        Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget(baseLogger);
         this.parent.addTarget(log4jProxyTarget);
 
         exLog = this.getLog(Core.class, "Exceptions");

@@ -31,19 +31,19 @@ import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.util.StringUtils;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.spongepowered.api.data.types.DyeColor;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class MaterialDataMatcher
 {
 
-    private HashMap<Material, Map<Short, Set<String>>> reverseItemData;
-    private HashMap<Material, Map<Byte, Set<String>>> reverseBlockData;
-    private HashMap<Material, Map<String, Short>> itemData;
-    private HashMap<Material, Map<String, Byte>> blockData;
+    private HashMap<ItemType, Map<Short, Set<String>>> reverseItemData;
+    private HashMap<ItemType, Map<Byte, Set<String>>> reverseBlockData;
+    private HashMap<ItemType, Map<String, Short>> itemData;
+    private HashMap<ItemType, Map<String, Byte>> blockData;
 
     MaterialDataMatcher()
     {
@@ -94,7 +94,7 @@ public class MaterialDataMatcher
         Map<Byte, Set<String>> reverseCurrentBlockData = null;
         Map<String, Short> currentItemData = null;
         Map<String, Byte> currentBlockData = null;
-        Set<Material> currentMaterials = new HashSet<>();
+        Set<ItemType> currentMaterials = new HashSet<>();
         for (String line : input)
         {
             line = line.trim();
@@ -113,7 +113,7 @@ public class MaterialDataMatcher
                 {
                     try
                     {
-                        Material material = Material.valueOf(key);
+                        ItemType material = Material.valueOf(key);
                         currentMaterials.add(material);
                         if (first)
                         {
@@ -196,7 +196,7 @@ public class MaterialDataMatcher
             CubeEngine.getLog().info("Updated datavalues.txt");
             StringBuilder sb = new StringBuilder();
             Map<Map<Short, Set<String>>, String> itemMap = new HashMap<>();
-            for (Entry<Material, Map<Short, Set<String>>> entry : this.reverseItemData.entrySet()) // make serializable...
+            for (Entry<ItemType, Map<Short, Set<String>>> entry : this.reverseItemData.entrySet()) // make serializable...
             {
                 Map<Short, Set<String>> map = entry.getValue();
                 if (map.isEmpty())
@@ -206,11 +206,11 @@ public class MaterialDataMatcher
                 String mats = itemMap.get(map);
                 if (mats == null)
                 {
-                    mats = entry.getKey().name();
+                    mats = entry.getKey().getName();
                 }
                 else
                 {
-                    mats += "," + entry.getKey().name();
+                    mats += "," + entry.getKey().getName();
                 }
                 itemMap.put(map, mats);
             }
@@ -226,15 +226,15 @@ public class MaterialDataMatcher
                 }
             }
             HashMap<Map<Byte, Set<String>>, String> blockMap = new HashMap<>();
-            for (Material material : this.reverseBlockData.keySet()) // make serializable...
+            for (ItemType material : this.reverseBlockData.keySet()) // make serializable...
             {
                 Map<Byte, Set<String>> map = this.reverseBlockData.get(material);
                 if (map.isEmpty())
                     continue;
-                String mats = blockMap.put(map, material.name());
+                String mats = blockMap.put(map, material.getName());
                 if (mats != null)
                 {
-                    mats += "," + material.name();
+                    mats += "," + material.getName();
                     blockMap.put(map, mats);
                 }
             }
@@ -269,10 +269,10 @@ public class MaterialDataMatcher
         }
     }
 
-    private boolean saveData(Set<Material> currentMaterials, Map<Short, Set<String>> reverseCurrentItemData, Map<Byte, Set<String>> reverseCurrentBlockData, Map<String, Short> currentItemData, Map<String, Byte> currentBlockData)
+    private boolean saveData(Set<ItemType> currentMaterials, Map<Short, Set<String>> reverseCurrentItemData, Map<Byte, Set<String>> reverseCurrentBlockData, Map<String, Short> currentItemData, Map<String, Byte> currentBlockData)
     {
         boolean updated = false;
-        for (Material material : currentMaterials)
+        for (ItemType material : currentMaterials)
         {
             if (!reverseCurrentItemData.isEmpty())
             {
@@ -350,7 +350,7 @@ public class MaterialDataMatcher
         }
         catch (NumberFormatException ignored)
         {}
-        Map<String, Short> woolData = this.itemData.get(Material.WOOL);
+        Map<String, Short> woolData = this.itemData.get(ItemTypes.WOOL);
         if (woolData == null)
         {
             CubeEngine.getLog().warn("No data found for Wool-color");
@@ -389,7 +389,7 @@ public class MaterialDataMatcher
         { // check for special cases
             switch (item.getType())
             {
-                case MONSTER_EGG:
+                case ItemTypes.MONSTER_EGG:
                     EntityType foundEggData = Match.entity().spawnEggMob(data);
                     if (foundEggData != null)
                     {
@@ -417,7 +417,7 @@ public class MaterialDataMatcher
         }
     }
 
-    public String getDataNameFor(Material mat, Byte blockData)
+    public String getDataNameFor(ItemType mat, Byte blockData)
     {
         Map<Byte, Set<String>> map = this.reverseBlockData.get(mat);
         String dataNames = "";
@@ -484,7 +484,7 @@ public class MaterialDataMatcher
 
     public String[] colorStrings()
     {
-        Set<String> woolColors = this.itemData.get(Material.WOOL).keySet();
+        Set<String> woolColors = this.itemData.get(ItemTypes.WOOL).keySet();
         return woolColors.toArray(new String[woolColors.size()]);
     }
 }

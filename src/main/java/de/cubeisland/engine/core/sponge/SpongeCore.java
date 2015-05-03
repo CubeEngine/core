@@ -1,28 +1,28 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.cubeisland.engine.core.sponge;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -33,21 +33,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
+import com.google.inject.Inject;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CoreCommands;
 import de.cubeisland.engine.core.CorePerms;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.sponge.VanillaCommands.WhitelistCommand;
-import de.cubeisland.engine.core.sponge.command.CommandInjector;
-import de.cubeisland.engine.core.sponge.command.PreCommandListener;
 import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleCommands;
+import de.cubeisland.engine.core.sponge.VanillaCommands.WhitelistCommand;
+import de.cubeisland.engine.core.sponge.command.CommandInjector;
+import de.cubeisland.engine.core.sponge.command.PreCommandListener;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.core.user.TableUser;
@@ -82,27 +83,31 @@ import de.cubeisland.engine.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.core.world.TableWorld;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.modularity.asm.AsmInformationLoader;
 import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.joda.time.Duration;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.state.InitializationEvent;
+import org.spongepowered.api.event.state.PreInitializationEvent;
+import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 /**
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
-public final class BukkitCore extends JavaPlugin implements Core
+@Plugin(id = "de.cubeisland.engine.core.sponge.SpongeCore", name = "CubeEngine Core", version = "1.0.0")
+public final class SpongeCore implements Core
 {
     //region Core fields
     private Version version;
@@ -113,75 +118,63 @@ public final class BukkitCore extends JavaPlugin implements Core
     private BukkitModuleManager moduleManager;
     private I18n i18n;
     private BukkitCoreConfiguration config;
-    private Log logger;
     private EventManager eventManager;
-    private BukkitCommandManager commandManager;
-    private BukkitTaskManager taskManager;
+    private SpongeCommandManager commandManager;
+    private SpongeTaskManager taskManager;
     private ApiServer apiServer;
     private BukkitWorldManager worldManager;
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
     private CorePerms corePerms;
-    private BukkitBanManager banManager;
+    private SpongeBanManager banManager;
     private LogFactory logFactory;
     private Reflector configFactory;
     //endregion
 
     private List<Runnable> initHooks;
-    private PluginConfig pluginConfig;
     private FreezeDetection freezeDetection;
     private boolean loaded = false;
     private boolean started = false;
 
-    @Override
-    public void onLoad()
+    @Inject private PluginContainer instance;
+    @Inject private Game game;
+    @Inject private org.slf4j.Logger pluginLogger;
+    @ConfigDir(sharedRoot = false) @Inject File dataFolder;
+
+    private Log logger;
+
+    private String sourceVersion = "unknown-unknown";
+
+    @Subscribe
+    public void onPreInitialize(PreInitializationEvent event)
     {
-        final Server server = this.getServer();
-        final PluginManager pm = server.getPluginManager();
-
-        if (!BukkitUtils.isCompatible(this) || !BukkitUtils.init(this))
-        {
-            this.getLogger().log(java.util.logging.Level.SEVERE, "Your Bukkit server is incompatible with this CubeEngine version.");
-            return;
-        }
-
-        this.version = Version.fromString(this.getDescription().getVersion());
-
         CubeEngine.initialize(this);
+        this.version = Version.fromString(instance.getVersion());
+
+        // Get SourceVersion from Manifest
+        URL location = SpongeCore.class.getProtectionDomain().getCodeSource().getLocation();
+        try
+        {
+            sourceVersion = AsmInformationLoader.getManifestInfo(new File(location.getFile()), "sourceVersion",
+                                                                 sourceVersion);
+        }
+        catch (IOException ignored)
+        {}
 
         this.configFactory = new Reflector();
-        ConverterManager manager = this.configFactory.getDefaultConverterManager();
-        manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(), Material.class);
-        manager.registerConverter(new EnchantmentConverter(), Enchantment.class);
-        manager.registerConverter(new UserConverter(), User.class);
-        manager.registerConverter(new WorldConverter(), World.class);
-        manager.registerConverter(new DurationConverter(), Duration.class);
-        manager.registerConverter(new VersionConverter(), Version.class);
-        manager.registerConverter(new PlayerConverter(this), OfflinePlayer.class);
-        manager.registerConverter(new LocationConverter(this), Location.class);
-        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
-        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
 
-        try (InputStream is = this.getResource("plugin.yml"))
-        {
-            this.pluginConfig = configFactory.load(PluginConfig.class, new InputStreamReader(is));
-        }
-        catch (IOException e)
-        {
-            this.pluginConfig = configFactory.create(PluginConfig.class);
-        }
+        registerConverters();
 
-        this.initHooks = Collections.synchronizedList(new LinkedList<Runnable>());
+        this.initHooks = Collections.synchronizedList(new LinkedList<>());
 
         try
         {
-            this.fileManager = new FileManager(this.getLogger(), this.getDataFolder().toPath());
+
+            this.fileManager = new FileManager(pluginLogger, dataFolder.toPath());
         }
         catch (IOException e)
         {
-            this.getLogger().log(java.util.logging.Level.SEVERE, "Failed to initialize the FileManager", e);
+            logger.error("Failed to initialize the FileManager", e);
             return;
         }
         this.fileManager.dropResources(CoreResource.values());
@@ -197,10 +190,10 @@ public final class BukkitCore extends JavaPlugin implements Core
         }
 
         // depends on: core config, server
-        this.taskManager = new BukkitTaskManager(this, this.getServer().getScheduler());
+        this.taskManager = new SpongeTaskManager(this, game.getAsyncScheduler(), game.getSyncScheduler());
 
         // depends on: taskmanager
-        this.logFactory = new LogFactory(this, this.getLogger()); // , BukkitUtils.isAnsiSupported(server)
+        this.logFactory = new LogFactory(this, (Logger)LogManager.getLogger(SpongeCore.class.getName())); // , BukkitUtils.isAnsiSupported(server)
 
         // depends on: taskmanager
         this.logger = logFactory.getCoreLog();
@@ -222,9 +215,9 @@ public final class BukkitCore extends JavaPlugin implements Core
             try
             {
                 this.apiServer.start();
-                ConsoleLogEvent event = new ConsoleLogEvent(apiServer);
-                event.start();
-                ((Logger)LogManager.getLogger()).addAppender(event);
+                ConsoleLogEvent e = new ConsoleLogEvent(apiServer);
+                e.start();
+                ((Logger)LogManager.getLogger()).addAppender(e);
             }
             catch (ApiStartupException ex)
             {
@@ -255,20 +248,14 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.i18n = new I18n(this);
 
         // depends on: database
-        this.moduleManager = new BukkitModuleManager(this, this.getClassLoader());
+        this.moduleManager = new BukkitModuleManager(this, this.getClass().getClassLoader());
 
         // depends on: plugin manager, module manager
         this.permissionManager = new BukkitPermissionManager(this);
 
         // depends on: user manager, world manager, server, config, permission manager
-        this.commandManager = new BukkitCommandManager(this, new CommandInjector(this));
-        this.addInitHook(new Runnable() {
-            @Override
-            public void run()
-            {
-                pm.registerEvents(new PreCommandListener(BukkitCore.this), BukkitCore.this);
-            }
-        });
+        this.commandManager = new SpongeCommandManager(this, new CommandInjector(this));
+        this.addInitHook(() -> game.getEventManager().register(SpongeCore.this, new PreCommandListener(SpongeCore.this)));
 
         // depends on: core module
         this.corePerms = new CorePerms(this.moduleManager.getCoreModule());
@@ -277,7 +264,7 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.inventoryGuard = new InventoryGuardFactory(this);
 
         // depends on loaded worlds
-        this.worldManager = new BukkitWorldManager(BukkitCore.this);
+        this.worldManager = new BukkitWorldManager(SpongeCore.this);
         // depends on worldManager
         this.getConfigFactory().getDefaultConverterManager().registerConverter(new ConfigWorldConverter(worldManager),
                                                                                ConfigWorld.class);
@@ -286,6 +273,28 @@ public final class BukkitCore extends JavaPlugin implements Core
         this.moduleManager.loadModules(this.fileManager.getModulesPath());
 
         this.loaded = true;
+    }
+
+    private void registerConverters()
+    {
+        ConverterManager manager = this.configFactory.getDefaultConverterManager();
+        manager.registerConverter(new LevelConverter(), LogLevel.class);
+        manager.registerConverter(new ItemStackConverter(), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(), Enchantment.class);
+        manager.registerConverter(new UserConverter(), User.class);
+        manager.registerConverter(new WorldConverter(game.getServer()), World.class);
+        manager.registerConverter(new DurationConverter(), Duration.class);
+        manager.registerConverter(new VersionConverter(), Version.class);
+        manager.registerConverter(new PlayerConverter(game.getServer()), org.spongepowered.api.entity.player.User.class);
+        manager.registerConverter(new LocationConverter(this), Location.class);
+        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
+        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
+    }
+
+    @Subscribe
+    public void onInitialize(InitializationEvent event)
+    {
     }
 
     @Override
@@ -299,7 +308,7 @@ public final class BukkitCore extends JavaPlugin implements Core
             }
             if (!this.loaded)
             {
-                this.getServer().getPluginManager().disablePlugin(this);
+                game.getPluginManager().disablePlugin(this);
                 return;
             }
         }
@@ -317,38 +326,34 @@ public final class BukkitCore extends JavaPlugin implements Core
             it.remove();
         }
 
-        this.banManager = new BukkitBanManager(this);
+        this.banManager = new SpongeBanManager(this);
 
         // depends on: server, module manager, ban manager
         this.commandManager.addCommand(new ModuleCommands(this.moduleManager));
         this.commandManager.addCommand(new CoreCommands(this));
         if (this.config.improveVanilla)
         {
-            this.commandManager.addCommands(commandManager, this.getModuleManager().getCoreModule(), new VanillaCommands(this));
+            this.commandManager.addCommands(commandManager, this.getModuleManager().getCoreModule(),
+                                            new VanillaCommands(this));
             this.commandManager.addCommand(new WhitelistCommand(this));
         }
-        commandManager.addCommands(commandManager, getModuleManager().getCoreModule(), new PaginationCommands(commandManager.getPaginationManager()));
+        commandManager.addCommands(commandManager, getModuleManager().getCoreModule(), new PaginationCommands(
+            commandManager.getPaginationManager()));
         eventManager.registerListener(getModuleManager().getCoreModule(), commandManager.getPaginationManager());
 
         if (this.config.preventSpamKick)
         {
-            this.getServer().getPluginManager().registerEvents(new PreventSpamKickListener(this), this);
+            game.getEventManager().register(this, new PreventSpamKickListener(this));
         }
 
-        this.getServer().getPluginManager().registerEvents(new CoreListener(this), this);
+        game.getEventManager().register(this, new CoreListener(this));
 
         this.moduleManager.init();
         this.moduleManager.enableModules();
         this.permissionManager.calculatePermissions();
 
         this.freezeDetection = new FreezeDetection(this, 20);
-        this.freezeDetection.addListener(new Runnable() {
-            @Override
-            public void run()
-            {
-                dumpThreads();
-            }
-        });
+        this.freezeDetection.addListener(() -> dumpThreads());
         this.freezeDetection.start();
 
         this.started = true;
@@ -451,7 +456,7 @@ public final class BukkitCore extends JavaPlugin implements Core
 
     public void dumpThreads()
     {
-        Path threadDumpFolder = this.getDataFolder().toPath().resolve("thread-dumps");
+        Path threadDumpFolder = dataFolder.toPath().resolve("thread-dumps");
         try
         {
             Files.createDirectories(threadDumpFolder);
@@ -462,7 +467,8 @@ public final class BukkitCore extends JavaPlugin implements Core
             return;
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat("yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CubeEngine.CHARSET))
+        try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat(
+            "yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CubeEngine.CHARSET))
         {
             Thread main = CubeEngine.getMainThread();
             int i = 1;
@@ -493,7 +499,8 @@ public final class BukkitCore extends JavaPlugin implements Core
         int j = 0;
         for (StackTraceElement e : trace)
         {
-            writer.write("  #" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':' + e.getLineNumber() + ")\n");
+            writer.write("  #" + ++j + " " + e.getClassName() + '.' + e.getMethodName() + '(' + e.getFileName() + ':'
+                             + e.getLineNumber() + ")\n");
         }
 
         writer.write("\n\n\n");
@@ -535,7 +542,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     @Override
     public String getSourceVersion()
     {
-        return this.pluginConfig.sourceVersion;
+        return this.sourceVersion;
     }
 
     @Override
@@ -593,13 +600,13 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public BukkitCommandManager getCommandManager()
+    public SpongeCommandManager getCommandManager()
     {
         return this.commandManager;
     }
 
     @Override
-    public BukkitTaskManager getTaskManager()
+    public SpongeTaskManager getTaskManager()
     {
         return this.taskManager;
     }
@@ -629,7 +636,7 @@ public final class BukkitCore extends JavaPlugin implements Core
     }
 
     @Override
-    public BukkitBanManager getBanManager()
+    public SpongeBanManager getBanManager()
     {
         return this.banManager;
     }
@@ -649,6 +656,11 @@ public final class BukkitCore extends JavaPlugin implements Core
     public CorePerms perms()
     {
         return corePerms;
+    }
+
+    public Game getGame()
+    {
+        return game;
     }
 
     //endregion

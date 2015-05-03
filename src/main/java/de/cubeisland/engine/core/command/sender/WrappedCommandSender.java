@@ -18,24 +18,22 @@
 package de.cubeisland.engine.core.command.sender;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import org.bukkit.Server;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
 
 public class WrappedCommandSender implements CommandSender
 {
     private final Core core;
-    private final org.bukkit.command.CommandSender wrapped;
+    private final CommandSource wrapped;
 
-    public WrappedCommandSender(Core core, org.bukkit.command.CommandSender sender)
+    public WrappedCommandSender(Core core, CommandSource sender)
     {
         this.core = core;
         this.wrapped = sender;
@@ -82,18 +80,6 @@ public class WrappedCommandSender implements CommandSender
     }
 
     @Override
-    public void sendMessage(String message)
-    {
-        this.getWrappedSender().sendMessage(message);
-    }
-
-    @Override
-    public void sendMessage(String[] messages)
-    {
-        this.getWrappedSender().sendMessage(messages);
-    }
-
-    @Override
     public Server getServer()
     {
         return this.getWrappedSender().getServer();
@@ -108,7 +94,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.getTranslation(type, message, params));
+        this.sendMessage(Texts.of(this.getTranslation(type, message, params)));
     }
 
 
@@ -122,19 +108,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
-    }
-
-    @Override
-    public boolean isPermissionSet(String name)
-    {
-        return this.getWrappedSender().isPermissionSet(name);
-    }
-
-    @Override
-    public boolean isPermissionSet(org.bukkit.permissions.Permission perm)
-    {
-        return this.getWrappedSender().isPermissionSet(perm);
+        this.sendMessage(Texts.of(this.getTranslationN(type, n, singular, plural, params)));
     }
 
     @Override
@@ -143,67 +117,7 @@ public class WrappedCommandSender implements CommandSender
         return this.getWrappedSender().hasPermission(name);
     }
 
-    @Override
-    public boolean hasPermission(org.bukkit.permissions.Permission perm)
-    {
-        return this.getWrappedSender().hasPermission(perm);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value)
-    {
-        return this.getWrappedSender().addAttachment(plugin, name, value);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin)
-    {
-        return this.getWrappedSender().addAttachment(plugin);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks)
-    {
-        return this.getWrappedSender().addAttachment(plugin, name, value, ticks);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, int ticks)
-    {
-        return this.getWrappedSender().addAttachment(plugin, ticks);
-    }
-
-    @Override
-    public void removeAttachment(PermissionAttachment attachment)
-    {
-        this.getWrappedSender().removeAttachment(attachment);
-    }
-
-    @Override
-    public void recalculatePermissions()
-    {
-        this.getWrappedSender().recalculatePermissions();
-    }
-
-    @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions()
-    {
-        return this.getWrappedSender().getEffectivePermissions();
-    }
-
-    @Override
-    public boolean isOp()
-    {
-        return this.getWrappedSender().isOp();
-    }
-
-    @Override
-    public void setOp(boolean value)
-    {
-        this.getWrappedSender().setOp(value);
-    }
-
-    public org.bukkit.command.CommandSender getWrappedSender()
+    public CommandSource getWrappedSender()
     {
         return this.wrapped;
     }
@@ -219,9 +133,9 @@ public class WrappedCommandSender implements CommandSender
         {
             return ((WrappedCommandSender)o).getName().equals(this.getWrappedSender().getName());
         }
-        else if (o instanceof org.bukkit.command.CommandSender)
+        else if (o instanceof CommandSource)
         {
-            return ((org.bukkit.command.CommandSender)o).getName().equals(this.getWrappedSender().getName());
+            return ((CommandSource)o).getName().equals(this.getWrappedSender().getName());
         }
 
         return false;

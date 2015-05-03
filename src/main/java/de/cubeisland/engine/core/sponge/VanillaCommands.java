@@ -26,16 +26,16 @@ import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.alias.Alias;
 import de.cubeisland.engine.butler.filter.Restricted;
+import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Greed;
 import de.cubeisland.engine.butler.parametric.Named;
 import de.cubeisland.engine.butler.parametric.Optional;
-import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.i18n.I18n;
@@ -44,12 +44,13 @@ import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
-import org.bukkit.Difficulty;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.data.manipulators.entities.WhitelistData;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.butler.parameter.Parameter.INFINITE;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
@@ -60,10 +61,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class VanillaCommands
 {
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final UserManager um;
 
-    public VanillaCommands(BukkitCore core)
+    public VanillaCommands(SpongeCore core)
     {
         this.core = core;
         this.um = core.getUserManager();
@@ -92,12 +93,11 @@ public class VanillaCommands
     {
         if (message == null || message.isEmpty())
         {
-            message = this.core.getServer().getShutdownMessage();
+            message = this.core.getGame().getServer().getShutdownMessage();
         }
         message = ChatFormat.parseFormats(message);
 
-        um.kickAll(message);
-        this.core.getServer().shutdown();
+        this.core.getGame().getServer().shutdown(Texts.of(message));
     }
 
     @Command(desc = "Reloads the server.")
@@ -121,7 +121,7 @@ public class VanillaCommands
         Locale locale = context.getLocale();
         long time = System.currentTimeMillis();
         I18n i18n = this.core.getI18n();
-        this.core.getServer().reload();
+        this.core.getGame().getServer().reload();
         context.sendMessage(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
                                            MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
     }
@@ -143,25 +143,25 @@ public class VanillaCommands
         }
         if (difficulty != null)
         {
-            world.setDifficulty(difficulty);
+            world.getProperties().setDifficulty(difficulty); // TODO is this saved?
             context.sendTranslated(POSITIVE, "The difficulty has been successfully set!");
             return;
         }
-        context.sendTranslated(POSITIVE, "Current difficulty level: {input}", world.getDifficulty().name());
-        if (this.core.getServer().isHardcore())
+        context.sendTranslated(POSITIVE, "Current difficulty level: {input}", world.getDifficulty().getName());
+        if (world.getProperties().isHardcore())
         {
-            context.sendTranslated(POSITIVE, "Your server has the hardcore mode enabled.");
+            context.sendTranslated(POSITIVE, "The world {world} has the hardcore mode enabled.", world);
         }
     }
 
     @Command(desc = "Makes a player an operator")
     @CommandPermission(permDefault = FALSE)
-    public void op(CommandSender context, @Optional OfflinePlayer player, @Flag boolean force)
+    public void op(CommandSender context, @Optional org.spongepowered.api.entity.player.User player, @Flag boolean force) // TODO gameprofile instead?
     {
         if (player == null)
         {
             // else list operators
-            Set<OfflinePlayer> ops = this.core.getServer().getOperators();
+            Set<org.spongepowered.api.entity.player.User> ops = this.core.getServer().getOperators();
             if (ops.isEmpty())
             {
                 context.sendTranslated(NEUTRAL, "There are currently no operators!");
@@ -169,7 +169,7 @@ public class VanillaCommands
             }
             context.sendTranslated(NEUTRAL, "The following users are operators:");
             context.sendMessage(" ");
-            for (OfflinePlayer opPlayer : ops)
+            for (org.spongepowered.api.entity.player.User opPlayer : ops)
             {
                 context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", opPlayer, new Date(opPlayer.getLastPlayed()));
             }
@@ -208,7 +208,7 @@ public class VanillaCommands
 
     @Command(desc = "Revokes the operator status of a player")
     @CommandPermission(permDefault = FALSE)
-    public void deop(CommandContext context, OfflinePlayer player)
+    public void deop(CommandContext context, org.spongepowered.api.entity.player.User player)
     {
         if (!context.getSource().getUniqueId().equals(player.getUniqueId()))
         {
@@ -223,7 +223,7 @@ public class VanillaCommands
         if (player.isOnline())
         {
             um.getExactUser(player.getUniqueId()).sendTranslated(POSITIVE, "You were deopped by {user}.",
-                                                                        context.getSource());
+                                                                 context.getSource());
         }
         context.sendTranslated(POSITIVE, "{user} is no longer an operator!", player);
 
@@ -246,11 +246,11 @@ public class VanillaCommands
     @Command(desc = "Lists all loaded plugins")
     public void plugins(CommandSender context)
     {
-        Plugin[] plugins = this.core.getServer().getPluginManager().getPlugins();
+        Collection<PluginContainer> plugins = this.core.getGame().getPluginManager().getPlugins();
         Collection<Module> modules = this.core.getModuleManager().getModules();
 
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
-                               plugins.length, modules.size());
+                               plugins.size(), modules.size());
         context.sendMessage(" ");
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + core.getVersion() + ")");
 
@@ -259,7 +259,7 @@ public class VanillaCommands
             context.sendMessage("   - " + (m.isEnabled() ? BRIGHT_GREEN : RED) + m.getName() + RESET + " (" + m.getVersion() + ")");
         }
 
-        for (Plugin p : plugins)
+        for (PluginContainer p : plugins)
         {
             if (p != this.core)
             {
@@ -286,7 +286,7 @@ public class VanillaCommands
             return;
         }
         Profiler.startProfiling("save-worlds");
-        for (World aWorld : this.core.getServer().getWorlds())
+        for (World aWorld : this.core.getGame().getServer().getWorlds())
         {
             aWorld.save();
         }
@@ -299,11 +299,11 @@ public class VanillaCommands
     @Command(desc = "Displays the version of the server or a given plugin")
     public void version(CommandContext context, @Optional String plugin, @Flag boolean source)
     {
-        Server server = this.core.getServer();
+        Game game = this.core.getGame();
         if (plugin == null)
         {
-            context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", server.getName(), server.getVersion());
-            context.sendTranslated(NEUTRAL, "Bukkit API {text:version\\::color=WHITE} {input#version:color=INDIGO}", server.getBukkitVersion());
+            context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", game.getMinecraftVersion().getName(), game.getImplementationVersion());
+            context.sendTranslated(NEUTRAL, "Sponge API {text:version\\::color=WHITE} {input#version:color=INDIGO}", game.getApiVersion());
             context.sendMessage(" ");
             context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", core.getVersion().toString());
             if (source)
@@ -313,15 +313,15 @@ public class VanillaCommands
             return;
         }
         context.ensurePermission(core.perms().COMMAND_VERSION_PLUGINS);
-        Plugin instance = server.getPluginManager().getPlugin(plugin);
-        if (instance == null)
+        com.google.common.base.Optional<PluginContainer> instance = game.getPluginManager().getPlugin(plugin);
+        if (!instance.isPresent())
         {
-            List<Plugin> plugins = new ArrayList<>();
-            for (Plugin p : server.getPluginManager().getPlugins())
+            List<PluginContainer> plugins = new ArrayList<>();
+            for (PluginContainer container : game.getPluginManager().getPlugins())
             {
-                if (p.getName().toLowerCase().startsWith(plugin.toLowerCase()))
+                if (container.getName().toLowerCase().startsWith(plugin.toLowerCase()))
                 {
-                    plugins.add(p);
+                    plugins.add(container);
                 }
             }
             context.sendTranslated(NEGATIVE,
@@ -329,14 +329,15 @@ public class VanillaCommands
             if (!plugins.isEmpty())
             {
                 context.sendTranslated(NEGATIVE, "You might want to try one of these:");
-                for (Plugin p : plugins)
+                for (PluginContainer p : plugins)
                 {
                     context.sendMessage(" - " + p.getName());
                 }
             }
             return;
         }
-        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.", instance.getName(), instance.getDescription().getVersion());
+        context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.",
+                               instance.get().getName(), instance.get().getVersion());
         context.sendMessage(" ");
         context.sendTranslated(NEUTRAL.and(UNDERLINE), "Plugin information:");
         context.sendMessage(" ");
@@ -356,9 +357,9 @@ public class VanillaCommands
     @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
     public static class WhitelistCommand extends ContainerCommand
     {
-        private final BukkitCore core;
+        private final SpongeCore core;
 
-        public WhitelistCommand(BukkitCore core)
+        public WhitelistCommand(SpongeCore core)
         {
             super(core.getModuleManager().getCoreModule());
             this.core = core;
@@ -379,34 +380,34 @@ public class VanillaCommands
         }
 
         @Command(desc = "Adds a player to the whitelist.")
-        public void add(CommandSender context, OfflinePlayer player)
+        public void add(CommandSender context, User player)
         {
-            if (player.isWhitelisted())
+            if (player.getData(WhitelistData.class).isPresent())
             {
                 context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
                 return;
             }
-            player.setWhitelisted(true);
+            player.offer(core.getGame().getRegistry().getBuilderOf(WhitelistData.class).get());
             context.sendTranslated(POSITIVE, "{user} is now whitelisted.", player);
         }
 
         @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        public void remove(CommandSender context, OfflinePlayer player)
+        public void remove(CommandSender context, User player)
         {
-            if (!player.isWhitelisted())
+            if (!player.getData(WhitelistData.class).isPresent())
             {
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
                 return;
             }
-            player.setWhitelisted(false);
+            player.remove(WhitelistData.class);
             context.sendTranslated(POSITIVE, "{user} is not whitelisted anymore.", player.getName());
         }
 
         @Command(desc = "Lists all the whitelisted players")
         public void list(CommandSender context)
         {
-            Set<OfflinePlayer> whitelist = this.core.getServer().getWhitelistedPlayers();
-            if (!this.core.getServer().hasWhitelist())
+            Set<org.spongepowered.api.entity.player.User> whitelist = this.core.getGame().getServer().getWhitelistedPlayers();
+            if (!this.core.getGame().getServer().hasWhitelist())
             {
                 context.sendTranslated(NEUTRAL, "The whitelist is currently disabled.");
             }
@@ -422,16 +423,16 @@ public class VanillaCommands
             else
             {
                 context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
-                for (OfflinePlayer player : whitelist)
+                for (org.spongepowered.api.entity.player.User player : whitelist)
                 {
                     context.sendMessage(" - " + player.getName());
                 }
             }
-            Set<OfflinePlayer> operators = this.core.getServer().getOperators();
+            Set<org.spongepowered.api.entity.player.User> operators = this.core.getGame().getServer().getOperators();
             if (!operators.isEmpty())
             {
                 context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
-                for (OfflinePlayer operator : operators)
+                for (org.spongepowered.api.entity.player.User operator : operators)
                 {
                     context.sendMessage(" - " + operator.getName());
                 }
@@ -441,12 +442,12 @@ public class VanillaCommands
         @Command(desc = "Enables the whitelisting")
         public void on(CommandSender context)
         {
-            if (this.core.getServer().hasWhitelist())
+            if (this.core.getGame().getServer().hasWhitelist())
             {
                 context.sendTranslated(NEGATIVE, "The whitelist is already enabled!");
                 return;
             }
-            this.core.getServer().setWhitelist(true);
+            this.core.getGame().getServer().setHasWhitelist(true);
             BukkitUtils.saveServerProperties();
             context.sendTranslated(POSITIVE, "The whitelist is now enabled.");
         }
@@ -454,12 +455,12 @@ public class VanillaCommands
         @Command(desc = "Disables the whitelisting")
         public void off(CommandSender context)
         {
-            if (!this.core.getServer().hasWhitelist())
+            if (!this.core.getGame().getServer().hasWhitelist())
             {
                 context.sendTranslated(NEGATIVE, "The whitelist is already disabled!");
                 return;
             }
-            this.core.getServer().setWhitelist(false);
+            this.core.getGame().getServer().setHasWhitelist(false);
             BukkitUtils.saveServerProperties();
             context.sendTranslated(POSITIVE, "The whitelist is now disabled.");
         }

@@ -409,7 +409,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kickPlayer(message);
+            user.kick(message);
         }
     }
 
@@ -418,7 +418,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kickPlayer(user.getTranslation(NONE, message, params));
+            user.kick(user.getTranslation(NONE, message, params));
         }
     }
 

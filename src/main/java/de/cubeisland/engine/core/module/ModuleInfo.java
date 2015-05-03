@@ -25,10 +25,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.util.Version;
-import org.apache.commons.lang.Validate;
 
+import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 /**
@@ -58,9 +58,9 @@ public class ModuleInfo
     {
         this.path = Paths.get("CubeEngine.jar");
         this.sourceVersion = core.getSourceVersion();
-        if (core instanceof BukkitCore)
+        if (core instanceof SpongeCore)
         {
-            this.main = ((BukkitCore)core).getDescription().getMain();
+            this.main = ((SpongeCore)core).getDescription().getMain();
         }
         else
         {

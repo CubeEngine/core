@@ -29,6 +29,9 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.world.WorldManager;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 public class LocationConverter extends SingleClassConverter<Location>
 {
@@ -43,12 +46,12 @@ public class LocationConverter extends SingleClassConverter<Location>
     public Node toNode(Location location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("world", location.getWorld().getName());
+        loc.put("world", ((World)location.getExtent()).getName()); // TODO dont assume its world
         loc.put("x", location.getX());
         loc.put("y", location.getY());
         loc.put("z", location.getZ());
-        loc.put("yaw", location.getYaw());
-        loc.put("pitch", location.getPitch());
+        loc.put("yaw", location.getYaw()); // TODO Location + Direction
+        loc.put("pitch", location.getPitch()); // TODO Location + Direction
         return manager.convertToNode(loc);
     }
 
@@ -66,7 +69,7 @@ public class LocationConverter extends SingleClassConverter<Location>
             double yaw = manager.convertFromNode(input.get("yaw"), double.class);
             double pitch = manager.convertFromNode(input.get("pitch"), double.class);
 
-            return new Location(world, x, y, z, (float)yaw, (float)pitch);
+            return new Location(world, x, y, z, (float)yaw, (float)pitch); // TODO Location + Direction
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

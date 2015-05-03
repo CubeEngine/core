@@ -18,19 +18,27 @@
 package de.cubeisland.engine.core.util.converter;
 
 import java.util.UUID;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.world.World;
 
 public class WorldConverter extends SimpleConverter<World>
 {
+    private final Server server;
+
+    public WorldConverter(Server server)
+    {
+        this.server = server;
+    }
+
     @Override
     public Node toNode(World object) throws ConversionException
     {
-        return StringNode.of(object.getName() + "(" + object.getUID().toString() + ")");
+        return StringNode.of(object.getName() + "(" + object.getUniqueId().toString() + ")");
     }
 
     @Override
@@ -39,20 +47,20 @@ public class WorldConverter extends SimpleConverter<World>
         if (node instanceof StringNode)
         {
             String string = ((StringNode)node).getValue();
-            World world = null;
+            Optional<World> world = Optional.absent();
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));
-                world = Bukkit.getWorld(uid);
+                world = server.getWorld(uid);
                 string = string.substring(0, string.indexOf('('));
             }
-            if (world == null)
+            if (!world.isPresent())
             {
-                world = Bukkit.getWorld(string);
+                world = server.getWorld(string);
             }
-            if (world != null)
+            if (world.isPresent())
             {
-                return world;
+                return world.get();
             }
             throw ConversionException.of(this, node, "World not found! ");
         }

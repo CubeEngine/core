@@ -28,8 +28,8 @@ import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 /**
  * This Matcher provides methods to match Enchantments.
@@ -169,7 +169,7 @@ public class EnchantMatcher
             return false;
         if (enchStrength == 0)
         {
-            enchStrength = ench.getMaxLevel();
+            enchStrength = ench.getMaximumLevel();
         }
         if (force)
         {

@@ -60,6 +60,16 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
+import org.spongepowered.api.data.manipulators.tileentities.BrewingData;
+import org.spongepowered.api.data.properties.BurningFuelProperty;
+import org.spongepowered.api.entity.living.Living;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.properties.AcceptsItems;
+import org.spongepowered.api.item.inventory.slots.InputSlot;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -68,36 +78,15 @@ import sun.misc.SignalHandler;
  */
 public class BukkitUtils
 {
-    private static Field entityPlayerLocaleField;
     private static CommandLogFilter commandFilter = null;
     private static Field dragonTarget;
 
     private BukkitUtils()
     {}
 
-    static boolean init(BukkitCore core)
+    public static Locale getLocaleFromSender(CommandSource sender)
     {
-        try
-        {
-            entityPlayerLocaleField = EntityPlayer.class.getDeclaredField("locale");
-            entityPlayerLocaleField.setAccessible(true);
-        }
-        catch (Exception ex)
-        {
-            core.getLog().error(ex, "Failed to initialize the required hacks!");
-            return false;
-        }
-        return true;
-    }
 
-    public static boolean isCompatible(BukkitCore core)
-    {
-        String serverClassName = core.getServer().getClass().getName();
-        return (serverClassName.startsWith("org.sponge.craftbukkit.") && serverClassName.endsWith(".CraftServer"));
-    }
-
-    public static Locale getLocaleFromSender(CommandSender sender)
-    {
         if (sender instanceof de.cubeisland.engine.core.command.CommandSender)
         {
             return ((de.cubeisland.engine.core.command.CommandSender)sender).getLocale();
@@ -105,39 +94,13 @@ public class BukkitUtils
         Locale locale = null;
         if (sender instanceof Player)
         {
-            locale = getLocaleFromUser((Player)sender);
+            locale = ((Player)sender).getLocale();
         }
         if (locale == null)
         {
             return Locale.getDefault();
         }
         return locale;
-    }
-
-    /**
-     * Returns the locale string of a player.
-     *
-     * @param player the Player instance
-     * @return the locale string of the player
-     */
-    private static Locale getLocaleFromUser(Player player)
-    {
-        if (player.getClass() == CraftPlayer.class)
-        {
-            try
-            {
-                final String localeString = (String)entityPlayerLocaleField.get(((CraftPlayer)player).getHandle());
-                return I18nUtil.stringToLocale(localeString);
-            }
-            catch (Exception ignored)
-            {}
-        }
-        return null;
-    }
-
-    public static CommandMap getCommandMap(final Server server)
-    {
-        return ((CraftServer)server).getCommandMap();
     }
 
     public static void disableCommandLogging()
@@ -158,56 +121,10 @@ public class BukkitUtils
             logger.getContext().removeFilter(commandFilter);
         }
     }
-
-    public static int getPing(Player onlinePlayer)
-    {
-        return ((CraftPlayer)onlinePlayer).getHandle().ping;
-    }
-
-    public static boolean isInvulnerable(Player player)
-    {
-        if (player != null)
-        {
-            if (player instanceof User)
-            {
-                player = ((User)player).getOfflinePlayer().getPlayer();
-            }
-            if (player != null && player instanceof CraftPlayer)
-            {
-                return ((CraftPlayer)player).getHandle().abilities.isInvulnerable;
-            }
-        }
-        return false;
-    }
-
-    public static void setInvulnerable(Player player, boolean state)
-    {
-        if (player != null && player instanceof User)
-        {
-            player = ((User)player).getOfflinePlayer().getPlayer();
-        }
-        if (player != null && player instanceof CraftPlayer)
-        {
-            ((CraftPlayer)player).getHandle().abilities.isInvulnerable = state;
-            ((CraftPlayer)player).getHandle().updateAbilities();
-        }
-    }
-
     public static synchronized void cleanup()
     {
         dragonTarget = null;
         resetCommandLogging();
-    }
-
-    public static void setOnlineMode(boolean mode)
-    {
-        getCraftServer().getServer().setOnlineMode(mode);
-        saveServerProperties();
-    }
-
-    private static CraftServer getCraftServer()
-    {
-        return ((CraftServer)Bukkit.getServer());
     }
 
     public static void saveServerProperties()
@@ -243,10 +160,7 @@ public class BukkitUtils
 
     public static boolean isFuel(ItemStack item)
     {
-        // Create an NMS item stack
-        net.minecraft.server.v1_8_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
-        // Use the NMS TileEntityFurnace to check if the item being clicked is a fuel
-        return TileEntityFurnace.isFuel(nmss);
+        return item.getItem().getDefaultProperty(BurningFuelProperty.class).isPresent();
     }
 
     public static boolean isSmeltable(ItemStack item)
@@ -257,7 +171,7 @@ public class BukkitUtils
         return RecipesFurnace.getInstance().getResult(nmss) != null;
     }
 
-    static void setSignalHandlers(final BukkitCore core)
+    static void setSignalHandlers(final SpongeCore core)
     {
         try
         {
@@ -278,14 +192,9 @@ public class BukkitUtils
                     if (time - this.lastReceived <= 5000)
                     {
                         core.getLog().info("Shutting down the server now!");
-                        core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                core.getServer().shutdown();
-                                lastReceived = -1;
-                            }
+                        core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
+                            core.getGame().getServer().shutdown(Texts.of()); // tODO default message?
+                            lastReceived = -1;
                         });
                     }
                     else
@@ -309,15 +218,10 @@ public class BukkitUtils
                         {
                             this.reloading = true;
                             core.getLog().info("Reloading the server!");
-                            core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    core.getServer().reload();
-                                    core.getLog().info("Done reloading the server!");
-                                    reloading = false;
-                                }
+                            core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
+                                core.getServer().reload();
+                                core.getLog().info("Done reloading the server!");
+                                reloading = false;
                             });
                         }
                     }
@@ -371,12 +275,12 @@ public class BukkitUtils
         }
     }
 
-    public static double getEntitySpeed(LivingEntity entity)
+    public static double getEntitySpeed(Living entity)
     {
         return (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).getValue();
     }
 
-    public static void setEntitySpeed(LivingEntity entity, double value)
+    public static void setEntitySpeed(Living entity, double value)
     {
         (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).setValue(value);
     }

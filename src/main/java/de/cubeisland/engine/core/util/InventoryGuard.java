@@ -24,19 +24,14 @@ import java.util.Map.Entry;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.inventory.InventoryClickEvent;
+import org.spongepowered.api.event.inventory.InventoryCloseEvent;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
 
-import static org.bukkit.event.inventory.InventoryAction.NOTHING;
-
-public class InventoryGuard implements Listener
+public class InventoryGuard
 {
     private final Inventory inventory;
     private final HashSet<User> users;
@@ -120,7 +115,7 @@ public class InventoryGuard implements Listener
         }
     }
 
-    @EventHandler
+    @Subscribe
     public void onInventoryClose(InventoryCloseEvent event)
     {
         if ((event.getInventory().equals(this.inventory)
@@ -144,7 +139,7 @@ public class InventoryGuard implements Listener
         }
     }
 
-    @EventHandler
+    @Subscribe
     @SuppressWarnings("deprecation")
     public void onInventoryDrag(InventoryDragEvent event)
     {
@@ -210,7 +205,7 @@ public class InventoryGuard implements Listener
         }
     }
 
-    @EventHandler
+    @Subscribe
     @SuppressWarnings("deprecation")
     public void onInventoryClick(InventoryClickEvent event)
     {

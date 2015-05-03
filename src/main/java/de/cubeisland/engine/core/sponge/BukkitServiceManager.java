@@ -34,12 +34,12 @@ import org.bukkit.plugin.ServicesManager;
 
 public class BukkitServiceManager extends ServiceManager implements ServicesManager
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final ServicesManager servicesManager;
     private final Map<Class<?>, Module> serviceMap;
     private final Map<Module, List<Object>> providerMap;
 
-    public BukkitServiceManager(BukkitCore core)
+    public BukkitServiceManager(SpongeCore core)
     {
         super(core);
         this.core = core;

@@ -35,7 +35,7 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -46,8 +46,9 @@ import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.logscribe.LogLevel;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
+import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -56,7 +57,7 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
          desc = "These are the basic commands of the CubeEngine.")
 public class CoreCommands extends ContainerCommand
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final BanManager banManager;
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
     private final UserManager um;
@@ -64,7 +65,7 @@ public class CoreCommands extends ContainerCommand
     public CoreCommands(Core core)
     {
         super(core.getModuleManager().getCoreModule());
-        this.core = (BukkitCore)core;
+        this.core = (SpongeCore)core;
         this.banManager = core.getBanManager();
         this.um = core.getUserManager();
 
@@ -76,7 +77,8 @@ public class CoreCommands extends ContainerCommand
     {
         context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
-        PluginManager pm = this.core.getServer().getPluginManager();
+
+        PluginManager pm = core.getGame().getPluginManager();
         pm.disablePlugin(this.core);
         pm.enablePlugin(this.core);
         context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", System.currentTimeMillis() - startTime);
@@ -161,16 +163,17 @@ public class CoreCommands extends ContainerCommand
             {
                 if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!");
-                    msg += "\n" + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
-                    this.banManager.addBan(new UserBan(context.getName(),context.getName(), msg,
-                                                       new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
-                    if (!Bukkit.getServer().getOnlineMode())
+                    Text msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!");
+                    msg = msg.builder().append(Texts.of("\n")).append(context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.")).build();
+
+                    this.banManager.addBan(new UserBan(context.getName(), context.getName(), msg,
+                        new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+
+                    if (!core.getGame().getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(),msg,
-                                                         new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(),msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                     }
-                    context.kickPlayer(msg);
+                    context.kick(msg);
                 }
             }
             fails.put(context.getUniqueId(),System.currentTimeMillis());
@@ -193,7 +196,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Shows the online mode")
     public void onlinemode(CommandSender context)
     {
-        if (this.core.getServer().getOnlineMode())
+        if (this.core.getGame().getServer().getOnlineMode())
         {
             context.sendTranslated(POSITIVE, "The Server is running in online mode");
             return;

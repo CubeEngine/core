@@ -19,9 +19,11 @@ package de.cubeisland.engine.core.task.worker;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.UUID;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -31,10 +33,10 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    private final BukkitCore corePlugin;
-    private final BukkitScheduler scheduler;
+    private final SpongeCore corePlugin;
+    private final SynchronousScheduler scheduler;
     private final Queue<Runnable> taskQueue;
-    private int taskID;
+    private UUID taskID;
     private boolean isShutdown;
 
     public SyncTaskQueue(Core core)
@@ -44,10 +46,10 @@ public class SyncTaskQueue implements TaskQueue
 
     public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
-        this.corePlugin = (BukkitCore)core;
-        this.scheduler = this.corePlugin.getServer().getScheduler();
+        this.corePlugin = (SpongeCore)core;
+        this.scheduler = this.corePlugin.getGame().getSyncScheduler();
         this.taskQueue = taskQueue;
-        this.taskID = -1;
+        this.taskID = null;
         this.isShutdown = false;
     }
 

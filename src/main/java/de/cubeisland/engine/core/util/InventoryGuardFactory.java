@@ -23,8 +23,8 @@ import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class InventoryGuardFactory
 {
@@ -82,7 +82,7 @@ public class InventoryGuardFactory
         List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
-            list.add(new GuardedItemStack(item,item.getAmount()));
+            list.add(new GuardedItemStack(item, item.getQuantity()));
         }
         this.currentGuardConfig.get().filter(true, true, list);
         return this;
@@ -102,7 +102,7 @@ public class InventoryGuardFactory
         List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
-            list.add(new GuardedItemStack(item,item.getAmount()));
+            list.add(new GuardedItemStack(item, item.getQuantity()));
         }
         this.currentGuardConfig.get().filter(true, false, list);
         return this;
@@ -130,7 +130,7 @@ public class InventoryGuardFactory
         List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
-            list.add(new GuardedItemStack(item,item.getAmount()));
+            list.add(new GuardedItemStack(item,item.getQuantity()));
         }
         this.currentGuardConfig.get().filter(false, true, list);
         return this;
@@ -148,7 +148,7 @@ public class InventoryGuardFactory
         List<GuardedItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
-            list.add(new GuardedItemStack(item,item.getAmount()));
+            list.add(new GuardedItemStack(item,item.getQuantity()));
         }
         this.currentGuardConfig.get().filter(false, false, list);
         return this;

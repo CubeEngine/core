@@ -23,6 +23,7 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
 import org.bukkit.Difficulty;
+import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 

@@ -24,36 +24,26 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import net.minecraft.server.v1_8_R2.DedicatedPlayerList;
-import net.minecraft.server.v1_8_R2.GameProfileBanEntry;
-import net.minecraft.server.v1_8_R2.GameProfileBanList;
-import net.minecraft.server.v1_8_R2.IpBanEntry;
-import net.minecraft.server.v1_8_R2.IpBanList;
-import net.minecraft.server.v1_8_R2.JsonListEntry;
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.spongepowered.api.service.ban.BanService;
+import org.spongepowered.api.util.ban.BanBuilder;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
-import static org.bukkit.BanList.Type.IP;
-import static org.bukkit.BanList.Type.NAME;
 
-public class BukkitBanManager implements BanManager
+public class SpongeBanManager implements BanManager
 {
-    private final GameProfileBanList profileBan;
-    private final IpBanList ipBans;
+    private final BanService manager;
+    private final BanBuilder banBuilder;
 
-    public BukkitBanManager(BukkitCore core)
+    public SpongeBanManager(SpongeCore core)
     {
-        final DedicatedPlayerList playerList = ((CraftServer)core.getServer()).getHandle();
-        this.profileBan = playerList.getProfileBans();
-        this.ipBans = playerList.getIPBans();
+        manager = core.getGame().getServiceManager().provide(BanService.class).get();
+        banBuilder = core.getGame().getRegistry().getBuilderOf(BanBuilder.class).get();
     }
 
     @Override

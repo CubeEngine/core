@@ -28,12 +28,11 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.entity.player.PlayerChatEvent;
+import org.spongepowered.api.text.Text;
 
-public abstract class ConversationCommand extends ContainerCommand implements Listener
+public abstract class ConversationCommand extends ContainerCommand
 {
     private final Set<UUID> usersInMode = new HashSet<>();
 
@@ -58,8 +57,8 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
         return usersInMode.contains(user.getUniqueId());
     }
 
-    @EventHandler
-    public void onChatHandler(AsyncPlayerChatEvent event)
+    @Subscribe
+    public void onChatHandler(PlayerChatEvent event)
     {
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
@@ -68,8 +67,8 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
                 ChatFormat.PURPLE + "[" + ChatFormat.WHITE + this.getDescriptor().getName() + ChatFormat.PURPLE + "] "
                     + ChatFormat.WHITE + event.getMessage());
 
-            String message = event.getMessage();
-            CommandInvocation invocation = newInvocation(user, message);
+            Text message = event.getMessage();
+            CommandInvocation invocation = newInvocation(user, message.toString()); // TODO
             this.execute(invocation);
 
             event.setCancelled(true);
@@ -82,8 +81,8 @@ public abstract class ConversationCommand extends ContainerCommand implements Li
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 
-    @EventHandler
-    public void onTabComplete(PlayerChatTabCompleteEvent event)
+    @Subscribe
+    public void onTabComplete(ChatTabCompleteEvent event)
     {
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))

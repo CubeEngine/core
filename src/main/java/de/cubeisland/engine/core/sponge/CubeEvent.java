@@ -18,12 +18,12 @@
 package de.cubeisland.engine.core.sponge;
 
 import de.cubeisland.engine.core.Core;
-import org.bukkit.event.Event;
+import org.spongepowered.api.event.AbstractEvent;
 
 /**
  * This class is a custom Event containing the core to allow easy access.
  */
-public abstract class CubeEvent extends Event
+public abstract class CubeEvent extends AbstractEvent
 {
     private final Core core;
 

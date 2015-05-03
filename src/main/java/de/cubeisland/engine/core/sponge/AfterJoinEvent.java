@@ -17,37 +17,25 @@
  */
 package de.cubeisland.engine.core.sponge;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.event.AbstractEvent;
+import org.spongepowered.api.text.Text;
 
-public class AfterJoinEvent extends Event
+public class AfterJoinEvent extends AbstractEvent
 {
-    private static final HandlerList handlers = new HandlerList();
-    private String joinMessage;
+    private Text joinMessage;
     private Player player;
 
-    public AfterJoinEvent(Player player, String joinMessage)
+    public AfterJoinEvent(Player player, Text joinMessage)
     {
         this.joinMessage = joinMessage;
         this.player = player;
     }
 
-    @Override
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
-    }
-
     /**
      * @return the joinMessage
      */
-    public String getJoinMessage()
+    public Text getJoinMessage()
     {
         return joinMessage;
     }

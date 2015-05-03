@@ -17,8 +17,6 @@
  */
 package de.cubeisland.engine.core.permission;
 
-import org.bukkit.permissions.PermissionDefault;
-
 public enum PermDefault
 {
     TRUE(PermissionDefault.TRUE),

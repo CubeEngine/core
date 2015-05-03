@@ -19,13 +19,12 @@ package de.cubeisland.engine.core.command.result.paginated;
 
 import java.util.HashMap;
 import java.util.Map;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
 
-public class PaginationManager implements Listener
+public class PaginationManager
 {
     public static final String HEADER =          "--------- page {integer}/{integer} ---------";
     public static final String FOOTER =          "- /prev - page {integer}/{integer} - /next -";
@@ -35,14 +34,14 @@ public class PaginationManager implements Listener
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
-    private BukkitCore core;
+    private SpongeCore core;
 
-    public PaginationManager(BukkitCore core)
+    public PaginationManager(SpongeCore core)
     {
         this.core = core;
     }
 
-    @EventHandler
+    @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event)
     {
         userCommandMap.remove(core.getUserManager().getExactUser(event.getPlayer().getUniqueId()));

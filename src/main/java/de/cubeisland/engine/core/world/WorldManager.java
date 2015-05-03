@@ -21,22 +21,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.util.Cleanable;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.generator.ChunkGenerator;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 public interface WorldManager extends Cleanable
 {
-    World createWorld(WorldCreator creator);
+    World createWorld(WorldProperties creator);
     UInteger getWorldId(World world);
     UInteger getWorldId(String name);
     Set<UInteger> getAllWorldIds();
     World getWorld(UInteger id);
-    World getWorld(String name);
-    World getWorld(UUID uid);
+    Optional<World> getWorld(String name);
+    Optional<World> getWorld(UUID uid);
     boolean unloadWorld(String worldName, boolean save);
     boolean unloadWorld(World world, boolean save);
     boolean deleteWorld(String worldName) throws IOException;

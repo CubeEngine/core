@@ -19,7 +19,8 @@ package de.cubeisland.engine.core.permission;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.bukkit.permissions.Permissible;
+
+import org.spongepowered.api.service.permission.Subject;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.permission.PermDefault.FALSE;
@@ -232,7 +233,7 @@ public class Permission
         this.generateName();
     }
 
-    public boolean isAuthorized(Permissible permissible)
+    public boolean isAuthorized(Subject permissible)
     {
         expectNotNull(permissible, "The permissible may not be null!");
 

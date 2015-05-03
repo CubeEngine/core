@@ -30,10 +30,9 @@ import java.util.UUID;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
-import org.bukkit.World;
-import org.bukkit.generator.ChunkGenerator;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
@@ -73,7 +72,7 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity worldEntity = this.worlds.get(world.getName());
         if (worldEntity == null)
         {
-            UUID uid = world.getUID();
+            UUID uid = world.getUniqueId();
             worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.LEAST.eq(uid.getLeastSignificantBits()),
                                                             TABLE_WORLD.MOST.eq(uid.getMostSignificantBits())).fetchOne();
             if (worldEntity == null)
@@ -83,7 +82,7 @@ public abstract class AbstractWorldManager implements WorldManager
             }
             this.worlds.put(world.getName(), worldEntity);
             this.worldIds.put(worldEntity.getValue(TABLE_WORLD.KEY), world);
-            this.worldUUIDs.add(world.getUID());
+            this.worldUUIDs.add(world.getUniqueId());
         }
         return worldEntity;
     }

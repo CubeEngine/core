@@ -20,7 +20,7 @@ package de.cubeisland.engine.core.world;
 import java.util.UUID;
 import javax.persistence.Transient;
 import de.cubeisland.engine.core.storage.database.AsyncRecord;
-import org.bukkit.World;
+import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
@@ -38,7 +38,7 @@ public class WorldEntity extends AsyncRecord<WorldEntity>
     public WorldEntity newWorld(World world)
     {
         this.setValue(TABLE_WORLD.WORLDNAME, world.getName());
-        this.setWorldUUID(world.getUID());
+        this.setWorldUUID(world.getUniqueId());
         return this;
     }
 

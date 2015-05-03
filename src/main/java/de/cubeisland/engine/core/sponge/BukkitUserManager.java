@@ -27,39 +27,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.user.AbstractUserManager;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserAttachment;
 import de.cubeisland.engine.core.user.UserEntity;
 import de.cubeisland.engine.core.user.UserLoadedEvent;
 import de.cubeisland.engine.core.util.Profiler;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.entity.player.PlayerChatEvent;
+import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
+import org.spongepowered.api.event.entity.player.PlayerKickEvent;
+import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
+import org.spongepowered.api.event.message.CommandEvent;
+
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
-import static org.bukkit.event.player.PlayerLoginEvent.Result.ALLOWED;
 
 
 public class BukkitUserManager extends AbstractUserManager
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     protected ScheduledExecutorService nativeScheduler;
-    protected Map<UUID, Integer> scheduledForRemoval;
+    protected Map<UUID, UUID> scheduledForRemoval;
 
-    public BukkitUserManager(final BukkitCore core)
+    public BukkitUserManager(final SpongeCore core)
     {
         super(core);
         this.core = core;
@@ -69,17 +63,13 @@ public class BukkitUserManager extends AbstractUserManager
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new HashMap<>();
 
-        this.core.addInitHook(new Runnable() {
-            @Override
-            public void run()
-            {
-                core.getServer().getPluginManager().registerEvents(new UserListener(), core);
-                core.getServer().getPluginManager().registerEvents(new AttachmentHookListener(), core);
+        this.core.addInitHook(() -> {
+            core.getGame().getEventManager().register(core, new UserListener());
+            core.getGame().getEventManager().register(core, new AttachmentHookListener());
 
-                for (Player player : core.getServer().getOnlinePlayers())
-                {
-                    onlineUsers.add(getExactUser(player.getUniqueId()));
-                }
+            for (Player player : core.getGame().getServer().getOnlinePlayers())
+            {
+                onlineUsers.add(getExactUser(player.getUniqueId()));
             }
         });
     }
@@ -110,9 +100,9 @@ public class BukkitUserManager extends AbstractUserManager
     {
         super.shutdown();
 
-        for (Integer id : this.scheduledForRemoval.values())
+        for (UUID id : this.scheduledForRemoval.values())
         {
-            core.getServer().getScheduler().cancelTask(id);
+            core.getTaskManager().cancelTask(core.getModuleManager().getCoreModule(), id);
         }
 
         this.scheduledForRemoval.clear();
@@ -148,7 +138,7 @@ public class BukkitUserManager extends AbstractUserManager
                                              .where(TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
         if (userEntity != null)
         {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            org.spongepowered.api.entity.player.User offlinePlayer = Bukkit.getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
                 User user = new User(userEntity);
@@ -160,7 +150,7 @@ public class BukkitUserManager extends AbstractUserManager
         }
         if (create)
         {
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
+            org.spongepowered.api.entity.player.User offlinePlayer = Bukkit.getOfflinePlayer(name);
             User user = new User(core, offlinePlayer);
             user.getEntity().insertAsync();
             this.cacheUser(user);
@@ -169,7 +159,7 @@ public class BukkitUserManager extends AbstractUserManager
         return null;
     }
 
-    private User getExactUser(OfflinePlayer player, boolean login)
+    private User getExactUser(org.spongepowered.api.entity.player.User player, boolean login)
     {
         CompletableFuture<Integer> future = null;
         User user = this.cachedUserByUUID.get(player.getUniqueId());
@@ -188,9 +178,8 @@ public class BukkitUserManager extends AbstractUserManager
             UserLoadedEvent event = new UserLoadedEvent(core, user);
             if (future != null)
             {
-                future.thenAccept(cnt ->
-                    core.getServer().getScheduler().runTask(core, () ->
-                        core.getEventManager().fireEvent(event)));
+                future.thenAccept(cnt -> core.getTaskManager().runTask(core.getModuleManager().getCoreModule(),
+                                                                       () -> core.getEventManager().fireEvent(event)));
             }
             else
             {
@@ -200,12 +189,12 @@ public class BukkitUserManager extends AbstractUserManager
         return user;
     }
 
-    private User getExactUser(OfflinePlayer player)
+    private User getExactUser(org.spongepowered.api.entity.player.User player)
     {
         return this.getExactUser(player, false);
     }
 
-    private class UserListener implements Listener
+    private class UserListener
     {
         /**
          * Removes the user from loaded UserList when quitting the server and
@@ -213,13 +202,11 @@ public class BukkitUserManager extends AbstractUserManager
          *
          * @param event the PlayerQuitEvent
          */
-        @EventHandler(priority = EventPriority.MONITOR)
+        @Subscribe(order = Order.POST)
         public void onQuit(final PlayerQuitEvent event)
         {
             final User user = getExactUser(event.getPlayer().getUniqueId());
-            final BukkitScheduler scheduler = user.getServer().getScheduler();
-
-            scheduler.runTask(core, () -> {
+            core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
                 synchronized (BukkitUserManager.this)
                 {
                     if (!user.isOnline())
@@ -229,7 +216,7 @@ public class BukkitUserManager extends AbstractUserManager
                 }
             });
 
-            final BukkitTask task = scheduler.runTaskLater(core, () -> {
+             Optional<UUID> uid = core.getTaskManager().runTaskDelayed(core.getModuleManager().getCoreModule(), () -> {
                 scheduledForRemoval.remove(user.getUniqueId());
                 user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                 Profiler.startProfiling("removalTask");
@@ -241,17 +228,17 @@ public class BukkitUserManager extends AbstractUserManager
                 }
             }, core.getConfiguration().usermanager.keepInMemory);
 
-            if (task == null || task.getTaskId() == -1)
+            if (!uid.isPresent())
             {
                 core.getLog().warn("The delayed removed of player '{}' could not be scheduled... removing them now.");
                 removeCachedUser(user);
                 return;
             }
 
-            scheduledForRemoval.put(user.getUniqueId(), task.getTaskId());
+            scheduledForRemoval.put(user.getUniqueId(), uid.get());
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @Subscribe(order = Order.POST)
         public void onLogin(final PlayerLoginEvent event)
         {
             if (event.getResult() == ALLOWED)
@@ -268,7 +255,7 @@ public class BukkitUserManager extends AbstractUserManager
             }
         }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        @Subscribe(priority = EventPriority.LOWEST)
         public void onJoin(final PlayerJoinEvent event)
         {
             final User user = getExactUser(event.getPlayer());
@@ -276,10 +263,10 @@ public class BukkitUserManager extends AbstractUserManager
             {
                 updateLastName(user);
                 user.refreshIP();
-                final Integer removalTask = scheduledForRemoval.get(user.getUniqueId());
+                final UUID removalTask = scheduledForRemoval.get(user.getUniqueId());
                 if (removalTask != null)
                 {
-                    user.getServer().getScheduler().cancelTask(removalTask);
+                    core.getTaskManager().cancelTask(core.getModuleManager().getCoreModule(), removalTask);
                 }
             }
         }
@@ -300,9 +287,9 @@ public class BukkitUserManager extends AbstractUserManager
         }
     }
 
-    private class AttachmentHookListener implements Listener
+    private class AttachmentHookListener
     {
-        @EventHandler(priority = EventPriority.MONITOR)
+        @Subscribe(order = Order.POST)
         public void onJoin(PlayerJoinEvent event)
         {
             for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
@@ -311,7 +298,7 @@ public class BukkitUserManager extends AbstractUserManager
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @Subscribe(order = Order.POST)
         public void onQuit(PlayerQuitEvent event)
         {
             for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
@@ -320,17 +307,17 @@ public class BukkitUserManager extends AbstractUserManager
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @Subscribe(order = Order.POST)
         public void onKick(PlayerKickEvent event)
         {
             for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
-                attachment.onKick(event.getLeaveMessage());
+                attachment.onKick(event.getReason());
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onChat(AsyncPlayerChatEvent event)
+        @Subscribe(order = Order.POST)
+        public void onChat(PlayerChatEvent event)
         {
             for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
@@ -338,12 +325,15 @@ public class BukkitUserManager extends AbstractUserManager
             }
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onCommand(PlayerCommandPreprocessEvent event)
+        @Subscribe(order = Order.POST)
+        public void onCommand(CommandEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
+            if (event.getSource() instanceof Player)
             {
-                attachment.onCommand(event.getMessage());
+                for (UserAttachment attachment : getExactUser((Player)event.getSource()).getAll())
+                {
+                    attachment.onCommand(event.getCommand() + " " + event.getArguments());
+                }
             }
         }
     }

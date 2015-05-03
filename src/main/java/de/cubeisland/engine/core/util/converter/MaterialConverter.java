@@ -23,17 +23,18 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.Material;
+import org.spongepowered.api.item.ItemType;
 
-public class MaterialConverter extends SimpleConverter<Material>
+public class MaterialConverter extends SimpleConverter<ItemType>
 {
     @Override
-    public Node toNode(Material object) throws ConversionException
+    public Node toNode(ItemType object) throws ConversionException
     {
-        return StringNode.of(object.name());
+        return StringNode.of(object.getName());
     }
 
     @Override
-    public Material fromNode(Node node) throws ConversionException
+    public ItemType fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

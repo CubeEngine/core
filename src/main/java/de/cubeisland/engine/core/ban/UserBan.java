@@ -18,26 +18,28 @@
 package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
-import org.bukkit.Bukkit;
+
+import org.spongepowered.api.entity.player.User;
+import org.spongepowered.api.text.Text;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 
-public class UserBan extends Ban<String>
+public class UserBan extends Ban<User>
 {
-    private final String target;
+    private final User target;
 
-    public UserBan(String target, String source, String reason)
+    public UserBan(User target, String source, Text reason)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public UserBan(String target, String source, String reason, Date expires)
+    public UserBan(User target, String source, Text reason, Date expires)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public UserBan(String target, String source, String reason, Date created, Date expires)
+    public UserBan(User target, String source, Text reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
         expectNotNull(target, "The user must not be null!");
@@ -45,7 +47,7 @@ public class UserBan extends Ban<String>
     }
 
     @Override
-    public String getTarget()
+    public User getTarget()
     {
         return this.target;
     }
@@ -53,7 +55,6 @@ public class UserBan extends Ban<String>
     @Override
     public String toString()
     {
-        String name = Bukkit.getOfflinePlayer(target).getName();
-        return DARK_GREEN + (name == null ? "Unknown" : name) + YELLOW + "(" + GOLD +  this.getTarget() + YELLOW + ")";
+        return DARK_GREEN + (target == null ? "Unknown" : target.getName()) + YELLOW + "(" + GOLD +  this.getTarget().getUniqueId() + YELLOW + ")";
     }
 }

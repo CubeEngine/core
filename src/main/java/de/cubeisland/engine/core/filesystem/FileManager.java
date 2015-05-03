@@ -32,11 +32,10 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.core.util.Cleanable;
+import org.slf4j.Logger;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -167,14 +166,14 @@ public class FileManager implements Cleanable
 
     public void clearTempDir()
     {
-        logger.log(Level.INFO, "Clearing the temporary folder ''{0}''...", this.tempPath.toAbsolutePath());
+        logger.info("Clearing the temporary folder ''{0}''...", this.tempPath.toAbsolutePath());
         if (!Files.exists(this.tempPath))
         {
             return;
         }
         if (!Files.isDirectory(this.tempPath))
         {
-            logger.log(Level.WARNING, "The path ''{0}'' is not a directory!", this.tempPath.toAbsolutePath());
+            logger.warn("The path ''{0}'' is not a directory!", this.tempPath.toAbsolutePath());
             return;
         }
 
@@ -184,7 +183,7 @@ public class FileManager implements Cleanable
         }
         catch (IOException e)
         {
-            this.logger.log(Level.WARNING, "Failed to clear the temp directory!", e);
+            this.logger.warn("Failed to clear the temp directory!", e);
             return;
         }
 
@@ -237,7 +236,7 @@ public class FileManager implements Cleanable
         }
         catch (IOException e)
         {
-            this.logger.log(Level.WARNING, e.getLocalizedMessage(), e);
+            this.logger.warn(e.getLocalizedMessage(), e);
             return null;
         }
     }
@@ -296,7 +295,7 @@ public class FileManager implements Cleanable
                 }
                 catch (IOException e)
                 {
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

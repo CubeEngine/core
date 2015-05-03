@@ -30,19 +30,14 @@ import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
-import net.minecraft.server.v1_8_R2.EntityTypes;
-import net.minecraft.server.v1_8_R2.NPC;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Projectile;
+import org.spongepowered.api.entity.EntityType;
 
 /**
  * This Matcher provides methods to match Entities.
  */
 public class EntityMatcher
 {
-    private final Map<EntityType, String> reverseNameMap = new EnumMap<>(EntityType.class);
+    private final Map<EntityType, String> reverseNameMap = new HashMap<>();
     private final Map<String, EntityType> nameMap = new HashMap<>();
 
     EntityMatcher()

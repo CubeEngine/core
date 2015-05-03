@@ -1,56 +1,51 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.cubeisland.engine.core.util;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashSet;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
-import org.bukkit.material.Attachable;
-import org.bukkit.material.MaterialData;
+import java.util.Set;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
-import static net.minecraft.server.v1_8_R2.Block.REGISTRY;
-import static org.bukkit.Material.*;
+import static org.spongepowered.api.block.BlockTypes.*;
+import static org.spongepowered.api.util.Direction.*;
 
 /**
  * Provides Utils for blocks in Bukkit.
  */
 public class BlockUtil
 {
-    public static final BlockFace[] BLOCK_FACES =
-    {
-        BlockFace.DOWN, BlockFace.UP, BlockFace.EAST, BlockFace.NORTH, BlockFace.WEST, BlockFace.SOUTH
+    public static final org.spongepowered.api.util.Direction[] BLOCK_FACES = {
+        DOWN, UP, EAST, NORTH, WEST, SOUTH
     };
 
-    public static final BlockFace[] DIRECTIONS = new BlockFace[]
-    {
-            BlockFace.DOWN, BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
+    public static final org.spongepowered.api.util.Direction[] DIRECTIONS = {
+        DOWN, NORTH, WEST, EAST, SOUTH
     };
 
-    public static final BlockFace[] CARDINAL_DIRECTIONS = new BlockFace[]
-        {
-            BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH
-        };
+    public static final org.spongepowered.api.util.Direction[] CARDINAL_DIRECTIONS = {
+        NORTH, WEST, EAST, SOUTH
+    };
 
     private static net.minecraft.server.v1_8_R2.Block getBlockForId(int id)
     {
@@ -58,19 +53,20 @@ public class BlockUtil
     }
 
     /**
-     * Searches for blocks that are attached onto given block.
+     * Searches for blocks that ar
+     * e attached onto given block.
      *
-     * @param block
      * @return the attached blocks
      */
-    public static Collection<Block> getAttachedBlocks(Block block)
+    public static Collection<Location> getAttachedBlocks(Location block)
     {
-        Collection<Block> blocks = new HashSet<>();
-        for (BlockFace bf : BLOCK_FACES)
+        Collection<Location> blocks = new HashSet<>();
+        for (org.spongepowered.api.util.Direction bf : BLOCK_FACES)
         {
             if (block.getRelative(bf).getState().getData() instanceof Attachable)
             {
-                if (((Attachable)block.getRelative(bf).getState().getData()).getAttachedFace().getOppositeFace().equals(bf))
+                if (((Attachable)block.getRelative(bf).getState().getData()).getAttachedFace().getOppositeFace().equals(
+                    bf))
                 {
                     blocks.add(block.getRelative(bf));
                 }
@@ -79,16 +75,16 @@ public class BlockUtil
         return blocks;
     }
 
-    public static boolean isDetachableFromBelow(Material mat)
+    public static boolean isDetachableFromBelow(BlockType mat)
     {
-        switch(mat)
+        switch (mat)
         {
             case BROWN_MUSHROOM:
-            case CARROT:
-            case DEAD_BUSH:
+            case CARROTS:
+            case DEADBUSH:
             case DETECTOR_RAIL:
-            case POTATO:
-            case CROPS:
+            case POTATOES:
+            case WHEAT:
             case DIODE:
             case DIODE_BLOCK_OFF:
             case DIODE_BLOCK_ON:
@@ -132,33 +128,34 @@ public class BlockUtil
             case CACTUS:
             case SAND:
             case GRAVEL:
-            return true;
-            default: return false;
+                return true;
+            default:
+                return false;
         }
     }
 
-    public static Collection<Block> getDetachableBlocksOnTop(Block block)
+    public static Collection<Location> getDetachableBlocksOnTop(Location block)
     {
-        Collection<Block> blocks = new HashSet<>();
-        Block onTop = block.getRelative(BlockFace.UP);
+        Collection<Location> blocks = new HashSet<>();
+        Location onTop = block.getRelative(UP);
         while (isDetachableFromBelow(onTop.getType()))
         {
             blocks.add(onTop);
-            for (Block attachedBlock : getAttachedBlocks(onTop))
+            for (Location attachedBlock : getAttachedBlocks(onTop))
             {
                 blocks.add(attachedBlock);
                 blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
             }
-            onTop = onTop.getRelative(BlockFace.UP);
+            onTop = onTop.getRelative(UP);
         }
         return blocks;
     }
 
-    public static Collection<Block> getDetachableBlocks(Block block)
+    public static Collection<Location> getDetachableBlocks(Location block)
     {
-        Collection<Block> blocks = new HashSet<>();
+        Collection<Location> blocks = new HashSet<>();
 
-        for (Block attachedBlock : getAttachedBlocks(block))
+        for (Location attachedBlock : getAttachedBlocks(block))
         {
             blocks.add(attachedBlock);
             blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
@@ -167,12 +164,12 @@ public class BlockUtil
         return blocks;
     }
 
-    public static boolean isSurroundedByWater(Block block)
+    public static boolean isSurroundedByWater(Location block)
     {
-        for (final BlockFace face : DIRECTIONS)
+        for (final Direction face : DIRECTIONS)
         {
-            final int type = block.getRelative(face).getTypeId();
-            if (type == 8 || type == 9)
+            BlockType type = block.getRelative(face).getType();
+            if (type == WATER || type == FLOWING_WATER)
             {
                 return true;
             }
@@ -188,9 +185,10 @@ public class BlockUtil
     /**
      * All fluid blocks
      */
-    private static final EnumSet<Material> FLUID_BLOCKS = EnumSet.of(WATER, STATIONARY_WATER, LAVA, STATIONARY_LAVA);
+    private static final Set<BlockType> FLUID_BLOCKS = new HashSet<>(Arrays.asList(WATER, FLOWING_WATER, LAVA,
+                                                                                   FLOWING_LAVA));
 
-    public static boolean isFluidBlock(Material mat)
+    public static boolean isFluidBlock(BlockType mat)
     {
         return FLUID_BLOCKS.contains(mat);
     }
@@ -198,28 +196,53 @@ public class BlockUtil
     /**
      * Blocks that can get destroyed by fluids
      */
-    private static final EnumSet<Material> NON_FLUID_PROOF_BLOCKS =
-        EnumSet.of(SAPLING, POWERED_RAIL, DETECTOR_RAIL, WEB, LONG_GRASS, DEAD_BUSH, YELLOW_FLOWER,
-                   RED_ROSE, BROWN_MUSHROOM, RED_MUSHROOM, TORCH, FIRE, REDSTONE_WIRE, CROPS, LEVER, REDSTONE_TORCH_OFF,
-                   REDSTONE_TORCH_ON, SNOW, DIODE_BLOCK_OFF, DIODE_BLOCK_ON, PUMPKIN_STEM, MELON_STEM, VINE, WATER_LILY,
-                   NETHER_WARTS, COCOA, TRIPWIRE_HOOK, TRIPWIRE, FLOWER_POT, CARROT, POTATO, SKULL,
-                   ACTIVATOR_RAIL, REDSTONE_COMPARATOR_OFF, REDSTONE_COMPARATOR_ON);
+    private static final Set<BlockType> NON_FLUID_PROOF_BLOCKS = new HashSet<>(Arrays.asList(SAPLING, GOLDEN_RAIL,
+                                                                                             DETECTOR_RAIL, WEB,
+                                                                                             TALLGRASS, DEADBUSH,
+                                                                                             YELLOW_FLOWER, RED_FLOWER,
+                                                                                             BROWN_MUSHROOM,
+                                                                                             RED_MUSHROOM, TORCH, FIRE,
+                                                                                             REDSTONE_WIRE, WHEAT,
+                                                                                             LEVER,
+                                                                                             UNLIT_REDSTONE_TORCH,
+                                                                                             REDSTONE_TORCH, SNOW,
+                                                                                             UNPOWERED_REPEATER,
+                                                                                             POWERED_REPEATER,
+                                                                                             PUMPKIN_STEM, MELON_STEM,
+                                                                                             VINE, WATERLILY,
+                                                                                             NETHER_WART, COCOA,
+                                                                                             TRIPWIRE_HOOK, TRIPWIRE,
+                                                                                             FLOWER_POT, CARROTS,
+                                                                                             POTATOES, SKULL,
+                                                                                             ACTIVATOR_RAIL,
+                                                                                             POWERED_COMPARATOR,
+                                                                                             UNPOWERED_COMPARATOR));
 
-    public static boolean isNonFluidProofBlock(Material mat)
+    public static boolean isNonFluidProofBlock(BlockType mat)
     {
         return NON_FLUID_PROOF_BLOCKS.contains(mat);
     }
 
-    private static final EnumSet<Material> NON_OBSTRUCTING_SOLID_BLOCKS =
-        EnumSet.of(SIGN_POST, WOODEN_DOOR, WALL_SIGN, STONE_PLATE, IRON_DOOR_BLOCK,
-                   WOOD_PLATE, GOLD_PLATE, IRON_PLATE);
+    private static final Set<BlockType> NON_OBSTRUCTING_SOLID_BLOCKS = new HashSet<>(Arrays.asList(STANDING_SIGN,
+                                                                                                   WALL_SIGN,
+                                                                                                   WOODEN_DOOR,
+                                                                                                   IRON_DOOR,
+                                                                                                   ACACIA_DOOR,
+                                                                                                   BIRCH_DOOR,
+                                                                                                   DARK_OAK_DOOR,
+                                                                                                   JUNGLE_DOOR,
+                                                                                                   SPRUCE_DOOR,
+                                                                                                   STONE_PRESSURE_PLATE,
+                                                                                                   WOODEN_PRESSURE_PLATE,
+                                                                                                   LIGHT_WEIGHTED_PRESSURE_PLATE,
+                                                                                                   HEAVY_WEIGHTED_PRESSURE_PLATE));
 
-    public static boolean isNonObstructingSolidBlock(Material material)
+    public static boolean isNonObstructingSolidBlock(BlockType material)
     {
         return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material);
     }
 
-    public static boolean isPowerSource(Material type)
+    public static boolean isPowerSource(BlockType type)
     {
         return getBlockForId(type.getId()).isPowerSource();
     }
@@ -228,19 +251,28 @@ public class BlockUtil
      * On BlockPlaceEvent a door will orientate its hinge according to the returned data for the top door-half
      *
      * @param placeLocation the location where the lower door half is placed
-     * @param player the player placing the door
+     * @param player        the player placing the door
+     *
      * @return the top-data
      */
     public static byte getTopDoorDataOnPlace(Material doorType, Location placeLocation, Player player)
     {
         byte dir1 = 0;
         byte dir2 = 0;
-        switch ((int) Math.floor(((player.getLocation().getYaw() + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3)
+        switch ((int)Math.floor(((player.getLocation().getYaw() + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3)
         {
-            case 0: dir2 = 1; break;
-            case 1: dir1 = -1; break;
-            case 2: dir2 = -1; break;
-            case 3: dir1 = 1; break;
+            case 0:
+                dir2 = 1;
+                break;
+            case 1:
+                dir1 = -1;
+                break;
+            case 2:
+                dir2 = -1;
+                break;
+            case 3:
+                dir1 = 1;
+                break;
         }
         Material negLocType = placeLocation.clone().add(-dir1, 0, -dir2).getBlock().getType();
         Material negLocUpType = placeLocation.clone().add(-dir1, 1, -dir2).getBlock().getType();
@@ -249,7 +281,7 @@ public class BlockUtil
         int hingeBlockSide1 = (isHingeBlock(negLocType) ? 1 : 0) + (isHingeBlock(negLocUpType) ? 1 : 0);
         int hingeBlockSide2 = (isHingeBlock(posgLocType) ? 1 : 0) + (isHingeBlock(posLocUpType) ? 1 : 0);
         boolean foundDoorSide1 = negLocType == doorType || negLocUpType == doorType;
-        boolean foundDoorSide2 =  posgLocType == doorType || posLocUpType == doorType;
+        boolean foundDoorSide2 = posgLocType == doorType || posLocUpType == doorType;
         return (byte)(8 | (((foundDoorSide1 && !foundDoorSide2) || (hingeBlockSide2 > hingeBlockSide1)) ? 1 : 0));
     }
 
@@ -260,21 +292,21 @@ public class BlockUtil
         return block.isOccluding(); // return (this.material.k()) && (d()) && (!isPowerSource());
     }
 
-    public static Block getHighestBlockAt(Location loc)
+    public static Location getHighestBlockAt(Location loc)
     {
-        return getHighestBlockAt(loc.getWorld(), loc.getBlockX(), loc.getBlockZ());
+        return getHighestBlockAt((World)loc.getExtent(), loc.getBlockX(), loc.getBlockZ());
     }
-    
+
     @SuppressWarnings("deprecation")
-    public static Block getHighestBlockAt(World world, final int x, final int z)
+    public static Location getHighestBlockAt(World world, final int x, final int z)
     {
-        int y = world.getMaxHeight() - 1;
-        
-        while (world.getBlockTypeIdAt(x, y, z) == 0 && y > 0)
+        int y = world.getBuildHeight() - 1;
+
+        while (world.getBlockType(x, y, z) == AIR && y > 0)
         {
             --y;
         }
-        
-        return world.getBlockAt(x, y, z);
+
+        return world.getFullBlock(x, y, z);
     }
 }

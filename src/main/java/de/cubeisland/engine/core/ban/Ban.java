@@ -19,21 +19,23 @@ package de.cubeisland.engine.core.ban;
 
 import java.util.Date;
 
+import org.spongepowered.api.text.Text;
+
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 public abstract class Ban<T>
 {
     private String source;
-    private String reason;
+    private Text reason;
     private Date created;
     private Date expires;
 
-    protected Ban(String source, String reason, Date expires)
+    protected Ban(String source, Text reason, Date expires)
     {
         this(source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    protected Ban(String source, String reason, Date created, Date expires)
+    protected Ban(String source, Text reason, Date created, Date expires)
     {
         expectNotNull(source, "The source must not be null");
         expectNotNull(reason, "The reason must not be null");
@@ -78,7 +80,7 @@ public abstract class Ban<T>
      *
      * @return the ban reason. never null!
      */
-    public String getReason()
+    public Text getReason()
     {
         return reason;
     }
@@ -88,7 +90,7 @@ public abstract class Ban<T>
      *
      * @param reason the ban reason. may not be null!
      */
-    public void setReason(String reason)
+    public void setReason(Text reason)
     {
         expectNotNull(reason, "The reason must not be null");
         this.reason = reason;

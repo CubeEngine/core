@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.UUID;
 import javax.persistence.Transient;
 import de.cubeisland.engine.core.storage.database.AsyncRecord;
-import org.bukkit.OfflinePlayer;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -42,7 +41,7 @@ public class UserEntity extends AsyncRecord<UserEntity>
     /**
      * Fills in Information for a new User
      */
-    public UserEntity newUser(OfflinePlayer player)
+    public UserEntity newUser(org.spongepowered.api.entity.player.User player)
     {
         this.setValue(TABLE_USER.KEY, UInteger.valueOf(0));
         this.setValue(TABLE_USER.LASTNAME, player.getName().toLowerCase());

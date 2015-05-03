@@ -17,14 +17,13 @@
  */
 package de.cubeisland.engine.core.sponge.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.CommandSource;
-import de.cubeisland.engine.butler.alias.AliasConfiguration;
 import de.cubeisland.engine.butler.alias.AliasDescriptor;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CubeCommandDescriptor;
@@ -33,21 +32,22 @@ import de.cubeisland.engine.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
-import de.cubeisland.engine.core.util.StringUtils;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandCallable;
+import org.spongepowered.api.util.command.CommandException;
+import org.spongepowered.api.util.command.CommandResult;
+import org.spongepowered.api.util.command.source.CommandBlockSource;
+import org.spongepowered.api.util.command.source.ConsoleSource;
 
-public class WrappedCommand extends Command
+public class WrappedCommand implements CommandCallable
 {
     private final CommandBase command;
     private final Core core;
-    private HelpTopic helpTopic;
 
     public WrappedCommand(CommandBase command)
     {
-        super(command.getDescriptor().getName());
         this.command = command;
         CommandDescriptor descriptor = command.getDescriptor();
         if (descriptor instanceof AliasDescriptor)
@@ -72,73 +72,75 @@ public class WrappedCommand extends Command
         return command;
     }
 
-    @Override
-    public String getName()
+    private CommandInvocation newInvocation(CommandSource source, String commandLine)
     {
-        return this.command.getDescriptor().getName();
+        return new CommandInvocation(source, commandLine, core.getCommandManager().getProviderManager()).subInvocation(command);
     }
 
-    @Override
-    public boolean setLabel(String name)
+    private static de.cubeisland.engine.core.command.CommandSender wrapSender(Core core, org.spongepowered.api.util.command.CommandSource spongeSender)
     {
-        // Not supported by our commands
-        return false;
-    }
-
-    @Override
-    public String getLabel()
-    {
-        return this.getName();
-    }
-
-    @Override
-    public Command setDescription(String description)
-    {
-        // Not supported by our commands
-        return this;
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return this.command.getDescriptor().getDescription();
-    }
-
-    @Override
-    public Command setAliases(List<String> aliases)
-    {
-        // Not supported by our commands
-        return this;
-    }
-
-    @Override
-    public List<String> getAliases()
-    {
-        List<String> aliases = new ArrayList<>();
-        for (AliasConfiguration alias : this.command.getDescriptor().getAliases())
+        if (spongeSender instanceof de.cubeisland.engine.core.command.CommandSender)
         {
-            if (alias.getDispatcher() == null)
-            {
-                aliases.add(alias.getName());
-            }
+            return (de.cubeisland.engine.core.command.CommandSender)spongeSender;
         }
-        return aliases;
+        else if (spongeSender instanceof Player)
+        {
+            return core.getUserManager().getExactUser(spongeSender.getName());
+        }
+        else if (spongeSender instanceof ConsoleSource)
+        {
+            return core.getCommandManager().getConsoleSender();
+        }
+        else if (spongeSender instanceof CommandBlockSource)
+        {
+            return new BlockCommandSender(core, (CommandBlockSource)spongeSender);
+        }
+        else
+        {
+            return new WrappedCommandSender(core, spongeSender);
+        }
     }
 
+
     @Override
-    public Command setUsage(String usage)
+    public Optional<CommandResult> process(org.spongepowered.api.util.command.CommandSource source,
+                                           String arguments) throws CommandException
     {
-        // Not supported by our commands
-        return this;
+        try
+        {
+            long delta = System.currentTimeMillis();
+            CommandSource wrapSender = wrapSender(getModule().getCore(), source);
+            boolean ran = this.command.execute(newInvocation(wrapSender, label, args));
+            delta = System.currentTimeMillis() - delta;
+            if (delta > 1000 / 20 / 3) // third of a tick
+            {
+                core.getLog().warn("The following command used more than third a tick:\n   {} {} | {}ms ({}%)", label, String.join(" ", args), delta, delta * 100 / (1000 / 20) );
+            }
+            core.getCommandManager().logExecution(wrapSender, ran, this.command, args);
+            return ran;
+        }
+        catch (Exception e)
+        {
+            core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}", command.getDescriptor().getName());
+            return false;
+        }
     }
 
     @Override
-    public String getUsage()
+    public List<String> getSuggestions(org.spongepowered.api.util.command.CommandSource source, String arguments) throws CommandException
     {
-        return this.command.getDescriptor().getUsage(null);
+        CommandSource wrapSender = wrapSender(getModule().getCore(), source);
+        CommandInvocation invocation = newInvocation(wrapSender, label, args);
+        List<String> suggestions = this.command.getSuggestions(invocation);
+        core.getCommandManager().logTabCompletion(wrapSender, command, args);
+        if (suggestions == null)
+        {
+            suggestions = Collections.emptyList();
+        }
+        Collections.sort(suggestions);
+        return suggestions;
     }
 
-    @Override
     public String getPermission()
     {
         if (this.command.getDescriptor() instanceof CubeCommandDescriptor)
@@ -153,97 +155,31 @@ public class WrappedCommand extends Command
     }
 
     @Override
-    public boolean testPermissionSilent(CommandSender target)
+    public boolean testPermission(org.spongepowered.api.util.command.CommandSource source)
     {
         final String permission = this.getPermission();
-        if ((permission == null) || (permission.length() == 0))
+        if ((permission == null) || (permission.isEmpty()))
         {
             return true;
         }
-        return target.hasPermission(permission);
+        return source.hasPermission(permission);
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args)
+    public Optional<Text> getShortDescription(org.spongepowered.api.util.command.CommandSource source)
     {
-        try
-        {
-            long delta = System.currentTimeMillis();
-            CommandSource source = wrapSender(getModule().getCore(), sender);
-            boolean ran = this.command.execute(newInvocation(source, label, args));
-            delta = System.currentTimeMillis() - delta;
-            if (delta > 1000 / 20 / 3) // third of a tick
-            {
-                core.getLog().warn("The following command used more than third a tick:\n   {} {} | {}ms ({}%)", label, String.join(" ", args), delta, delta * 100 / (1000 / 20) );
-            }
-            core.getCommandManager().logExecution(source, ran, this.command, args);
-            return ran;
-        }
-        catch (Exception e)
-        {
-            core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}", command.getDescriptor().getName());
-            return false;
-        }
-    }
-
-    private CommandInvocation newInvocation(CommandSource source, String label, String[] args)
-    {
-        //this.command.getDescriptor().valueFor(DispatcherProperty.class).getDispatcher().getBaseDispatcher()
-        String commandLine = label;
-        if (args.length > 0)
-        {
-            commandLine += " " + StringUtils.implode(" ", args);
-        }
-
-        return new CommandInvocation(source, commandLine, core.getCommandManager().getProviderManager()).subInvocation(command);
+        return Optional.of(Texts.of(command.getDescriptor().getDescription()));
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String label, String[] args) throws IllegalArgumentException
+    public Optional<Text> getHelp(org.spongepowered.api.util.command.CommandSource source)
     {
-        CommandSource source = wrapSender(getModule().getCore(), sender);
-        CommandInvocation invocation = newInvocation(source, label, args);
-        List<String> suggestions = this.command.getSuggestions(invocation);
-        core.getCommandManager().logTabCompletion(source, command, args);
-        if (suggestions == null)
-        {
-            suggestions = Collections.emptyList();
-        }
-        Collections.sort(suggestions);
-        return suggestions;
+        return null;
     }
 
-    public HelpTopic getHelpTopic()
+    @Override
+    public Text getUsage(org.spongepowered.api.util.command.CommandSource source)
     {
-        return helpTopic;
-    }
-
-    public void setHelpTopic(HelpTopic helpTopic)
-    {
-        this.helpTopic = helpTopic;
-    }
-
-    private static de.cubeisland.engine.core.command.CommandSender wrapSender(Core core, org.bukkit.command.CommandSender bukkitSender)
-    {
-        if (bukkitSender instanceof de.cubeisland.engine.core.command.CommandSender)
-        {
-            return (de.cubeisland.engine.core.command.CommandSender)bukkitSender;
-        }
-        else if (bukkitSender instanceof Player)
-        {
-            return core.getUserManager().getExactUser(bukkitSender.getName());
-        }
-        else if (bukkitSender instanceof org.bukkit.command.ConsoleCommandSender)
-        {
-            return core.getCommandManager().getConsoleSender();
-        }
-        else if (bukkitSender instanceof org.bukkit.command.BlockCommandSender)
-        {
-            return new BlockCommandSender(core, (org.bukkit.command.BlockCommandSender)bukkitSender);
-        }
-        else
-        {
-            return new WrappedCommandSender(core, bukkitSender);
-        }
+        return Texts.of(command.getDescriptor().getUsage()); // TODO
     }
 }

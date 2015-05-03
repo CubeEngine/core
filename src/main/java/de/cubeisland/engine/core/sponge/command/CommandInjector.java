@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.sponge.command;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -28,7 +29,7 @@ import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.alias.AliasDescriptor;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.sponge.BukkitCoreConfiguration;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeDescriptor;
@@ -39,6 +40,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.help.HelpTopic;
+import org.spongepowered.api.service.command.CommandService;
+import org.spongepowered.api.util.command.CommandMapping;
 
 import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
 import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
@@ -48,37 +51,20 @@ import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
  */
 public class CommandInjector
 {
-    protected final BukkitCore core;
-    private final Field commandMapField;
-    private SimpleCommandMap commandMap;
-    private Map<String, HelpTopic> helpTopicMap;
+    protected final SpongeCore core;
+    private final CommandService dispatcher;
     private Field knownCommandField;
 
     @SuppressWarnings("unchecked")
-    public CommandInjector(BukkitCore core)
+    public CommandInjector(SpongeCore core)
     {
         this.core = core;
-
-        this.commandMapField = findFirstField(core.getServer(), SimpleCommandMap.class);
-
-        this.helpTopicMap = getFieldValue(core.getServer().getHelpMap(), "helpTopics", Map.class);
+        this.dispatcher = core.getGame().getCommandDispatcher();
     }
 
-    @SuppressWarnings("unchecked")
-    protected synchronized Map<String, Command> getKnownCommands()
+    protected synchronized Map<String, Collection<CommandMapping>> getKnownCommands()
     {
-        return getFieldValue(getCommandMap(), knownCommandField, Map.class);
-    }
-
-    protected final SimpleCommandMap getCommandMap()
-    {
-        SimpleCommandMap map = getFieldValue(this.core.getServer(), commandMapField, SimpleCommandMap.class);
-        if (this.commandMap != map)
-        {
-            this.knownCommandField = findFirstField(map, Map.class, 1);
-        }
-        this.commandMap = map;
-        return map;
+        return dispatcher.getAll().asMap();
     }
 
     public synchronized void registerCommand(CommandBase command)

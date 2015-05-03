@@ -31,44 +31,27 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import de.cubeisland.engine.core.sponge.BukkitCore;
-import de.cubeisland.engine.core.sponge.BukkitUtils;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.module.Module;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Spider;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.material.Step;
-import org.bukkit.material.WoodenStep;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.util.BlockIterator;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.world.Location;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
-import static de.cubeisland.engine.core.util.BlockUtil.isInvertedStep;
 import static de.cubeisland.engine.core.util.BlockUtil.isNonObstructingSolidBlock;
-import static org.bukkit.Material.*;
-import static org.bukkit.block.BlockFace.DOWN;
-import static org.bukkit.block.BlockFace.UP;
+import static org.spongepowered.api.service.permission.SubjectData.GLOBAL_CONTEXT;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -88,7 +71,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      * @param core
      * @param player
      */
-    public User(Core core, OfflinePlayer player)
+    public User(Core core, org.spongepowered.api.entity.player.User player)
     {
         super(player.getUniqueId());
         this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
@@ -233,7 +216,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
+        return Texts.of(this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params));
     }
 
     /**
@@ -279,10 +262,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             return this.entity.getLocale();
         }
         Locale locale = null;
-        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
-        if (onlinePlayer != null)
+        Optional<Player> player = getPlayer();
+        if (player.isPresent())
         {
-            locale = BukkitUtils.getLocaleFromSender(onlinePlayer);
+            locale = player.get().getLocale();
         }
         if (locale == null)
         {
@@ -302,19 +285,16 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public int getPing()
     {
-        Player onlinePlayer = this.getOfflinePlayer().getPlayer();
-        if (onlinePlayer != null)
+        Optional<Player> player = getPlayer();
+        if (player.isPresent())
         {
-            return BukkitUtils.getPing(onlinePlayer);
+            return player.get().getConnection().getPing();
         }
-        else
-        {
-            return -1;
-        }
+        return -1;
     }
 
     @Override
-    public long getLastPlayed()
+    public Date getLastPlayed()
     {
         if (this.isOnline())
         {
@@ -325,103 +305,22 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
     {
-        Block block = location.getBlock();
-        Block block1Up = block.getRelative(UP);
-        // Search for 2 non occluding blocks
-        if ((location.getY() + 1 < location.getWorld().getMaxHeight())) // on top of the world
+        Optional<Location> safeLocation = ((SpongeCore)core).getGame().getTeleportHelper().getSafeLocation(location);
+        if (safeLocation.isPresent())
         {
-            while (block.getType().isSolid() || block1Up.getType().isSolid())
-            {
-                // signpost OR plates ...
-                if ((!block.getType().isSolid() || isNonObstructingSolidBlock(block.getType()))
-                 && (!block1Up.getType().isSolid() || isNonObstructingSolidBlock(block1Up.getType())))
-                {
-                    break;
-                }
-                if (!block1Up.getType().isSolid()) // block on top is non Solid
-                {
-                    Block block2Up = block1Up.getRelative(UP);
-                    if (block2Up.getY() != 0) // ignore wrap around
-                    {
-                        BlockState bs = block.getState();
-                        BlockState bs2 = block2Up.getState();
-                        if ((bs.getData() instanceof Step || bs.getData() instanceof  WoodenStep)
-                         && (bs2.getData() instanceof Step || bs2.getData() instanceof WoodenStep))
-                        {
-                            if (!isInvertedStep(bs.getData()) && isInvertedStep(bs2.getData()))
-                            {
-                                block.getRelative(UP);
-                                break; // allow tp
-                            }
-                        }
-                    }
-                    // If block & block2Up are Steps in the right direction add 0.5 to y and exit
-                }
-                block1Up = block1Up.getRelative(UP);
-                block = block.getRelative(UP);
-            }
+            location = safeLocation.get();
         }
-        Block standOn = block.getRelative(DOWN); // Standing on
-        if (!this.isFlying())
-        {
-            while (standOn.getType() == AIR)
-            {
-                Block rel = standOn.getRelative(DOWN);
-                if (rel.getY() > block.getY() || rel.getY() < 0) // wrap around from below
-                {
-                    return false;
-                }
-                standOn = rel;
-            }
-        }
-        if (standOn.getType() == STATIONARY_LAVA || standOn.getType() == LAVA)
-        {
-            standOn = standOn.getWorld().getHighestBlockAt(location);
 
-            int blockX = location.getBlockX();
-            int blockZ = location.getBlockZ();
-            boolean found = false;
-            for (int i = -5; i <= 5; i+=2)
-            {
-                for (int j = -5; j <= 5; j+=2)
-                {
-                    Block highestBlockAt = standOn.getWorld().getHighestBlockAt(blockX + i, blockZ + j);
-                    if (highestBlockAt.getType() != STATIONARY_LAVA && highestBlockAt.getType() != LAVA)
-                    {
-                        standOn = highestBlockAt;
-                        found = true;
-                        break;
-                    }
-                }
-                if (found)
-                {
-                    break;
-                }
-            }
-            location.setX(standOn.getX());
-            location.setZ(standOn.getZ());
-        }
-        double y = standOn.getY() + 1;
-        if (standOn.getType() == FENCE || standOn.getType() == NETHER_FENCE)
-        {
-            y += 0.5;
-        }
-        block1Up = standOn.getRelative(UP);
-        if (block1Up.getType() == Material.STEP || block1Up.getType() == WOOD_STEP)
-        {
-            if (!isInvertedStep(standOn.getState().getData()))
-            {
-                y += 0.5;
-            }
-        }
+
         if (keepDirection)
         {
-            final Location loc = this.getLocation();
-            location.setPitch(loc.getPitch());
-            location.setYaw(loc.getYaw());
+            this.setLocationAndRotation(location, getRotation());
         }
-        location.setY(y);
-        return this.teleport(location, cause);
+        else
+        {
+            this.setLocation(location);
+        }
+        return true;
     }
 
     public boolean isPasswordSet()
@@ -442,105 +341,27 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void setPermission(String permission, boolean b)
     {
-        PluginManager pm = Bukkit.getServer().getPluginManager();
-        Permission perm;
-        if (b)
-        {
-            perm = pm.getPermission(this.getName());
-        }
-        else
-        {
-            perm = pm.getPermission("-" + this.getName());
-        }
-        perm.getChildren().put(permission, b);
-        this.recalculatePermissions();
+        getPlayer().get().getData().setPermission(GLOBAL_CONTEXT, permission, Tristate.fromBoolean(b)); // TODO context
     }
 
     public void setPermission(Map<String, Boolean> permissions)
     {
-        this.setPermission(permissions, this.getPlayer());
-    }
-
-    /**
-     * Use this method to assign permissions to a user while logging in
-     *
-     * @param permissions a map of permissions
-     * @param player the player
-     */
-    public void setPermission(Map<String, Boolean> permissions, Player player)
-    {
-        String posName = this.getName();
-        String negName = "-" + this.getName();
-        PluginManager pm = Bukkit.getServer().getPluginManager();
-        Permission posPerm = pm.getPermission(posName);
-        Permission negPerm = pm.getPermission(negName);
-        Map<String, Boolean> positive;
-        Map<String, Boolean> negative;
-        if (posPerm == null)
-        {
-            pm.addPermission(posPerm = new Permission(posName, PermissionDefault.FALSE, new HashMap<String, Boolean>()));
-            positive = posPerm.getChildren();
-        }
-        else
-        {
-            positive = posPerm.getChildren();
-        }
-        if (negPerm == null)
-        {
-            pm.addPermission(negPerm = new Permission(negName, PermissionDefault.FALSE, new HashMap<String, Boolean>()));
-            negative = negPerm.getChildren();
-        }
-        else
-        {
-            negative = negPerm.getChildren();
-        }
-        positive.clear();
-        negative.clear();
         for (Entry<String, Boolean> entry : permissions.entrySet())
         {
-            String perm = entry.getKey();
-            if (perm.endsWith("*") && (perm.startsWith("-cubeengine.") || perm.startsWith("cubeengine.")))
-            {
-                continue;
-            }
-            if (entry.getValue())
-            {
-                positive.put(perm, true);
-            }
-            else
-            {
-                negative.put(perm, false);
-            }
+            this.setPermission(entry.getKey(), entry.getValue());
         }
-        PermissionAttachment attachment = null;
-        if (player.getEffectivePermissions() != null)
-        {
-            for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions())
-            {
-                if (attachmentInfo.getAttachment() != null && attachmentInfo.getAttachment().getPlugin() != null && attachmentInfo.getAttachment().getPlugin() instanceof BukkitCore)
-                {
-                    attachment = attachmentInfo.getAttachment();
-                    break;
-                }
-            }
-        }
-        if (attachment == null)
-        {
-            attachment = player.addAttachment((Plugin)this.core);
-            attachment.setPermission(posPerm, true);
-            attachment.setPermission(negPerm, true);
-        }
-        player.recalculatePermissions();
     }
 
     public boolean isInvulnerable()
     {
-        return BukkitUtils.isInvulnerable(this);
+        return getData(InvulnerabilityData.class).isPresent();
     }
 
     public void setInvulnerable(boolean state)
     {
-        BukkitUtils.setInvulnerable(this, state);
+        InvulnerabilityData data = ((SpongeCore)core).getGame().getRegistry().getManipulatorRegistry().getBuilder(InvulnerabilityData.class).get().create();
+        data.setInvulnerableTicks(100000000);
+        offer(data);
     }
 
     public UInteger getWorldId()
@@ -642,7 +463,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     private InetSocketAddress address = null;
     public void refreshIP()
     {
-        address = this.getPlayer().getAddress();
+        address = this.getPlayer().get().getConnection().getAddress();
     }
 
     @Override

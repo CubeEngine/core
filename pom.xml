@@ -60,6 +60,19 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
             <version>2.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.0-beta9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.0-beta9</version>
             <scope>provided</scope>
         </dependency>
         <!--
@@ -216,6 +229,11 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.cubeisland.engine</groupId>
+            <artifactId>modularity-asm</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -262,7 +280,7 @@
                 <configuration>
                     <artifactSet>
                         <excludes>
-                            <exclude>org.bukkit:*</exclude>
+                            <exclude>org.spongepowered:*</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>

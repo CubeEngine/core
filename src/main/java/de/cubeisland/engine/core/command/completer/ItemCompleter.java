@@ -22,12 +22,14 @@ import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.core.util.matcher.Match;
+import org.spongepowered.api.item.ItemType;
 
 public class ItemCompleter implements Completer
 {
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
-        return Arrays.asList(String.valueOf(Match.material().material(invocation.currentToken()).getId()));
+        ItemType material = Match.material().material(invocation.currentToken());
+        return Arrays.asList(String.valueOf(material.getId()));
     }
 }

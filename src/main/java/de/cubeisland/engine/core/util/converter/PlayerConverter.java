@@ -25,25 +25,29 @@ import de.cubeisland.engine.core.Core;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
+import org.spongepowered.api.GameProfile;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.entity.player.User;
 
-public class PlayerConverter extends SimpleConverter<OfflinePlayer>
+public class PlayerConverter extends SimpleConverter<User>
 {
     private final Server server;
 
-    public PlayerConverter(Core core)
+    public PlayerConverter(Server server)
     {
-        this.server = ((Plugin)core).getServer();
+        this.server = server;
     }
 
     @Override
-    public Node toNode(OfflinePlayer object)
+    public Node toNode(User object)
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public OfflinePlayer fromNode(Node node) throws ConversionException
+    public User fromNode(Node node) throws ConversionException
     {
+        // TODO #waitforsponge https://github.com/SpongePowered/SpongeAPI/issues/528
         if (node instanceof StringNode)
         {
             return this.server.getOfflinePlayer(((StringNode)node).getValue());

@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.core.task;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
@@ -52,7 +54,7 @@ public interface TaskManager extends Cleanable
      * @param runnable the task
      * @return the ID of the task
      */
-    int runTask(Module module, Runnable runnable);
+    Optional<UUID> runTask(Module module, Runnable runnable);
 
     /**
      * Schedules a delayed task for a module with the given delay on the main server thread
@@ -62,7 +64,7 @@ public interface TaskManager extends Cleanable
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    int runTaskDelayed(Module module, Runnable runnable, long delay);
+    Optional<UUID> runTaskDelayed(Module module, Runnable runnable, long delay);
 
     /**
      * Schedules a repeating task for a module with the given delay and interval
@@ -73,7 +75,7 @@ public interface TaskManager extends Cleanable
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    int runTimer(Module module, Runnable runnable, long delay, long interval);
+    Optional<UUID> runTimer(Module module, Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a asynchronous delayed task for a module
@@ -82,7 +84,7 @@ public interface TaskManager extends Cleanable
      * @param runnable the task
      * @return the ID of the task
      */
-    int runAsynchronousTask(Module module, Runnable runnable);
+    Optional<UUID> runAsynchronousTask(Module module, Runnable runnable);
 
     /**
      * Schedules a asynchronous delayed task for a module with the given delay
@@ -92,7 +94,7 @@ public interface TaskManager extends Cleanable
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay);
+    Optional<UUID> runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay);
 
     /**
      * Schedules a asynchronous repeating task for a module with the given delay and interval
@@ -103,7 +105,7 @@ public interface TaskManager extends Cleanable
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
+    Optional<UUID> runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a method for execution on the main server thread
@@ -117,10 +119,11 @@ public interface TaskManager extends Cleanable
     /**
      * Cancels a task of a module
      *
-     * @param module the module
      * @param ID     the taskID
+     * @param module the module
+     * @param uuid
      */
-    void cancelTask(Module module, int ID);
+    void cancelTask(Module module, UUID uuid);
 
     void cancelTasks(Module module);
 

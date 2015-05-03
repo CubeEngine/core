@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.core.world;
 
-import org.bukkit.World;
+import org.spongepowered.api.world.World;
 
 public class ConfigWorld
 {

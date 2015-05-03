@@ -17,22 +17,26 @@
  */
 package de.cubeisland.engine.core.user;
 
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.attachment.Attachment;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
 
 public abstract class UserAttachment extends Attachment<User>
 {
-    public void onJoin(String joinMessage)
+    public void onJoin(Text joinMessage)
     {}
 
-    public void onQuit(String quitMessage)
+    public void onQuit(Text quitMessage)
     {}
 
-    public void onKick(String kickMessage)
+    public void onKick(Optional<Literal> kickMessage)
     {}
 
-    public void onChat(String format, String message)
+    public void onChat(String format, Text message)
     {}
 
     public void onCommand(String commandline)
     {}
+
 }

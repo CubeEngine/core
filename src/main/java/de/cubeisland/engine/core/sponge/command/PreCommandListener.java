@@ -21,52 +21,43 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import de.cubeisland.engine.core.sponge.BukkitCore;
 import de.cubeisland.engine.core.sponge.BukkitUtils;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.ServerCommandEvent;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.message.CommandEvent;
+import org.spongepowered.api.util.command.CommandSource;
 
-import static de.cubeisland.engine.core.util.StringUtils.explode;
 import static de.cubeisland.engine.core.util.StringUtils.implode;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEUTRAL;
+import static org.spongepowered.api.event.Order.POST;
 
-public class PreCommandListener implements Listener
+public class PreCommandListener
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final CommandInjector injector;
 
-    public PreCommandListener(BukkitCore core)
+    public PreCommandListener(SpongeCore core)
     {
         this.core = core;
         this.injector = core.getCommandManager().getInjector();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void handleCommand(PlayerCommandPreprocessEvent event)
+    @Subscribe(order = POST)
+    private void handleCommand(CommandEvent event)
     {
-        event.setCancelled(isCommandMissing(event.getPlayer(), event.getMessage().substring(1)));
+        event.setCancelled(isCommandMissing(event.getSource(), event.getCommand()));
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    private void handleCommand(ServerCommandEvent event)
+    private boolean isCommandMissing(CommandSource sender, String label)
     {
-        isCommandMissing(event.getSender(), event.getCommand());
-    }
-
-    private boolean isCommandMissing(CommandSender sender, String message)
-    {
-        message = message.trim();
-        if (message.isEmpty())
+        label = label.trim();
+        if (label.isEmpty())
         {
             return false;
         }
-        String label = explode(" ", message)[0].toLowerCase(Locale.ENGLISH);
+        //String label = explode(" ", label)[0].toLowerCase(Locale.ENGLISH);
         if (this.injector.getCommand(label) == null)
         {
             final Locale language = BukkitUtils.getLocaleFromSender(sender);

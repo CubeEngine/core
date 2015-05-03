@@ -21,43 +21,49 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import de.cubeisland.engine.core.Core;
+import java.util.concurrent.TimeUnit;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.TaskManager;
 import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
+import org.spongepowered.api.service.scheduler.SynchronousScheduler;
+import org.spongepowered.api.service.scheduler.Task;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
-public class BukkitTaskManager implements TaskManager
+public class SpongeTaskManager implements TaskManager
 {
-    private final BukkitCore corePlugin;
-    private final BukkitScheduler bukkitScheduler;
-    private final Map<Module, Set<Integer>> moduleTasks;
+    private final SpongeCore corePlugin;
+    private AsynchronousScheduler asyncScheduler;
+    private SynchronousScheduler syncScheduler;
+    private final Map<Module, Set<UUID>> moduleTasks;
     private final CoreThreadFactory threadFactory;
     private final Map<String, ModuleThreadFactory> moduleThreadFactories;
 
-    public BukkitTaskManager(Core core, BukkitScheduler bukkitScheduler)
+    public SpongeTaskManager(SpongeCore core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
     {
-        this.corePlugin = (BukkitCore)core;
+        this.corePlugin = core;
+        this.asyncScheduler = asyncScheduler;
+        this.syncScheduler = syncScheduler;
         this.threadFactory = new CoreThreadFactory(core);
-        this.bukkitScheduler = bukkitScheduler;
         this.moduleTasks = new ConcurrentHashMap<>();
         this.moduleThreadFactories = new HashMap<>();
     }
 
-    private Set<Integer> getModuleIDs(Module module)
+    private Set<UUID> getModuleIDs(Module module)
     {
         return this.getModuleIDs(module, true);
     }
 
-    private Set<Integer> getModuleIDs(Module module, boolean create)
+    private Set<UUID> getModuleIDs(Module module, boolean create)
     {
-        Set<Integer> IDs = this.moduleTasks.get(module);
+        Set<UUID> IDs = this.moduleTasks.get(module);
         if (create && IDs == null)
         {
             this.moduleTasks.put(module, IDs = new HashSet<>());
@@ -83,83 +89,61 @@ public class BukkitTaskManager implements TaskManager
     }
 
     @Override
-    public int runTask(Module module, Runnable runnable)
+    public Optional<UUID> runTask(Module module, Runnable runnable)
     {
         return this.runTaskDelayed(module, runnable, 0);
     }
 
     @Override
-    public int runTaskDelayed(Module module, Runnable runnable, long delay)
+    public Optional<UUID> runTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final Set<Integer> tasks = this.getModuleIDs(module);
-        final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.scheduleSyncDelayedTask(this.corePlugin, task, delay);
-        if (taskID > -1)
-        {
-            task.taskID = taskID;
-            tasks.add(taskID);
-        }
-        return taskID;
+        return addTaskId(module, syncScheduler.runTaskAfter(corePlugin, runnable, delay));
     }
 
     @Override
-    public int runTimer(Module module, Runnable runnable, long delay, long interval)
+    public Optional<UUID> runTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final Set<Integer> tasks = this.getModuleIDs(module);
-        final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.runTaskTimer(this.corePlugin, task, delay, interval).getTaskId();
-        if (taskID > -1)
-        {
-            task.taskID = taskID;
-            tasks.add(taskID);
-        }
-        return taskID;
+        return addTaskId(module, syncScheduler.runRepeatingTaskAfter(corePlugin, runnable, delay, interval));
     }
 
     @Override
-    public int runAsynchronousTask(Module module, Runnable runnable)
+    public Optional<UUID> runAsynchronousTask(Module module, Runnable runnable)
     {
         return this.runAsynchronousTaskDelayed(module, runnable, 0);
     }
 
     @Override
-    public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
+    public Optional<UUID> runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
+        return addTaskId(module, asyncScheduler.runTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS, delay * 50));
+    }
 
-        final Set<Integer> tasks = this.getModuleIDs(module);
-        final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.runTaskLaterAsynchronously(this.corePlugin, task, delay).getTaskId();
-        if (taskID > -1)
+    private Optional<UUID> addTaskId(Module module, Optional<Task> task)
+    {
+        final Set<UUID> tasks = this.getModuleIDs(module);
+        if (task.isPresent())
         {
-            task.taskID = taskID;
-            tasks.add(taskID);
+            tasks.add(task.get().getUniqueId());
+            return Optional.of(task.get().getUniqueId());
         }
-        return taskID;
+        return Optional.absent();
     }
 
     @Override
-    public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
+    public Optional<UUID> runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        final Set<Integer> tasks = this.getModuleIDs(module);
-        final Task task = new Task(runnable, tasks);
-        final int taskID = this.bukkitScheduler.runTaskTimerAsynchronously(this.corePlugin, task, delay, interval).getTaskId();
-        if (taskID > -1)
-        {
-            task.taskID = taskID;
-            tasks.add(taskID);
-        }
-        return taskID;
+        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS, delay * 50, interval * 50));
     }
 
     @Override
@@ -170,25 +154,35 @@ public class BukkitTaskManager implements TaskManager
     }
 
     @Override
-    public void cancelTask(Module module, int ID)
+    public void cancelTask(Module module, UUID uuid)
     {
-        this.bukkitScheduler.cancelTask(ID);
-        Set<Integer> IDs = this.getModuleIDs(module, false);
-        if (IDs != null)
+        Optional<Task> task = syncScheduler.getTaskById(uuid);
+        if (task.isPresent())
         {
-            IDs.remove(ID);
+            task.get().cancel();
+        }
+        task = asyncScheduler.getTaskById(uuid);
+        if (task.isPresent())
+        {
+            task.get().cancel();
+        }
+
+        Set<UUID> moduleIDs = getModuleIDs(module);
+        if (moduleIDs != null)
+        {
+            moduleIDs.remove(uuid);
         }
     }
 
     @Override
     public void cancelTasks(Module module)
     {
-        Set<Integer> taskIDs = this.moduleTasks.remove(module);
+        Set<UUID> taskIDs = this.moduleTasks.remove(module);
         if (taskIDs != null)
         {
-            for (Integer taskID : taskIDs)
+            for (UUID taskID : taskIDs)
             {
-                this.bukkitScheduler.cancelTask(taskID);
+                cancelTask(module, taskID);
             }
         }
     }
@@ -226,13 +220,13 @@ public class BukkitTaskManager implements TaskManager
         this.moduleThreadFactories.clear();
     }
 
-    private class Task implements Runnable
+    private class CETask implements Runnable
     {
         protected int taskID;
         private final Runnable task;
         private final Set<Integer> taskIDs;
 
-        public Task(Runnable task, Set<Integer> taskIDs)
+        public CETask(Runnable task, Set<Integer> taskIDs)
         {
             this.task = task;
             this.taskIDs = taskIDs;

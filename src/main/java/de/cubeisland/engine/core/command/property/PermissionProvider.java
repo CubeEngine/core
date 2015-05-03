@@ -19,7 +19,7 @@ package de.cubeisland.engine.core.command.property;
 
 import de.cubeisland.engine.butler.util.property.AbstractProperty;
 import de.cubeisland.engine.core.permission.Permission;
-import org.bukkit.permissions.Permissible;
+import org.spongepowered.api.service.permission.Subject;
 
 public class PermissionProvider extends AbstractProperty<Permission>
 {
@@ -28,7 +28,7 @@ public class PermissionProvider extends AbstractProperty<Permission>
         super(value);
     }
 
-    public boolean isAuthorized(Permissible permissible)
+    public boolean isAuthorized(Subject permissible)
     {
         return value().isAuthorized(permissible);
     }

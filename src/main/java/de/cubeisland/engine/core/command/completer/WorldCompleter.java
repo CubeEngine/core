@@ -21,21 +21,25 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.util.StringUtils.startsWithIgnoreCase;
 
 public class WorldCompleter implements Completer
 {
-    private final Server server = Bukkit.getServer();
+    private Server server;
+
+    public WorldCompleter(Server server)
+    {
+        this.server = server;
+    }
 
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
         List<String> offers = new ArrayList<>();
-        for (World world : this.server.getWorlds())
+        for (World world : server.getWorlds())
         {
             final String name = world.getName();
             if (startsWithIgnoreCase(name, invocation.currentToken()))

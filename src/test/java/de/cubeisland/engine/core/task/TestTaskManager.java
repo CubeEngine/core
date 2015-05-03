@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.core.task;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.core.task.thread.CoreThreadFactory;
@@ -38,37 +40,37 @@ public class TestTaskManager implements TaskManager
     }
 
     @Override
-    public int runTask(Module module, Runnable runnable)
+    public Optional<UUID> runTask(Module module, Runnable runnable)
     {
         return 0;
     }
 
     @Override
-    public int runTaskDelayed(Module module, Runnable runnable, long delay)
+    public Optional<UUID> runTaskDelayed(Module module, Runnable runnable, long delay)
     {
         return 0;
     }
 
     @Override
-    public int runTimer(Module module, Runnable runnable, long delay, long interval)
+    public Optional<UUID> runTimer(Module module, Runnable runnable, long delay, long interval)
     {
         return 0;
     }
 
     @Override
-    public int runAsynchronousTask(Module module, Runnable runnable)
+    public Optional<UUID> runAsynchronousTask(Module module, Runnable runnable)
     {
         return 0;
     }
 
     @Override
-    public int runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
+    public Optional<UUID> runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
         return 0;
     }
 
     @Override
-    public int runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
+    public Optional<UUID> runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
         return 0;
     }
@@ -80,7 +82,7 @@ public class TestTaskManager implements TaskManager
     }
 
     @Override
-    public void cancelTask(Module module, int ID)
+    public void cancelTask(Module module, UUID uuid)
     {
 
     }

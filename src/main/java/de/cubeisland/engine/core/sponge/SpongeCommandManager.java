@@ -73,19 +73,17 @@ import de.cubeisland.engine.core.user.UserList.UserListReader;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
-import org.bukkit.Difficulty;
-import org.bukkit.DyeColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Villager.Profession;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.data.types.DyeColor;
+import org.spongepowered.api.data.types.Profession;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
-public class BukkitCommandManager extends DispatcherCommand implements CommandManager
+public class SpongeCommandManager extends DispatcherCommand implements CommandManager
 {
     private final CommandInjector injector;
     private final ConsoleCommandSender consoleSender;
@@ -103,7 +101,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         return (CommandManagerDescriptor)super.getDescriptor();
     }
 
-    public BukkitCommandManager(BukkitCore core, CommandInjector injector)
+    public SpongeCommandManager(SpongeCore core, CommandInjector injector)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
@@ -120,8 +118,8 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         this.providerManager = new ProviderManager();
         providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
 
-        providerManager.register(core, new PlayerCompleter(), User.class, OfflinePlayer.class);
-        providerManager.register(core, new WorldCompleter(), World.class);
+        providerManager.register(core, new PlayerCompleter(), User.class, org.spongepowered.api.entity.player.User.class);
+        providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);
         providerManager.register(core, new ModuleCompleter(core), Module.class);
         providerManager.register(core, new PlayerListCompleter(core), PlayerListCompleter.class);
 
@@ -141,7 +139,7 @@ public class BukkitCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new EntityTypeReader(), EntityType.class);
         providerManager.register(core, new DyeColorReader(), DyeColor.class);
         providerManager.register(core, new ProfessionReader(), Profession.class);
-        providerManager.register(core, new OfflinePlayerReader(core), OfflinePlayer.class);
+        providerManager.register(core, new OfflinePlayerReader(core), org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new EnvironmentReader(), Environment.class);
         providerManager.register(core, new DifficultyReader(), Difficulty.class);
         providerManager.register(core, new LogLevelReader(), LogLevel.class);

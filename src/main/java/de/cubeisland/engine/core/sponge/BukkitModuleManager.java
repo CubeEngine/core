@@ -22,14 +22,13 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
-import org.bukkit.plugin.PluginManager;
 
 public class BukkitModuleManager extends BaseModuleManager
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final PluginManager pluginManager;
 
-    public BukkitModuleManager(BukkitCore core, ClassLoader parentClassLoader)
+    public BukkitModuleManager(SpongeCore core, ClassLoader parentClassLoader)
     {
         super(core, new BukkitServiceManager(core), new BukkitModuleLoader(core, parentClassLoader));
         this.pluginManager = core.getServer().getPluginManager();
@@ -44,23 +43,18 @@ public class BukkitModuleManager extends BaseModuleManager
 
     void init()
     {
-        this.core.getServer().getScheduler().runTask(this.core, new Runnable()
-        {
-            @Override
-            public void run()
+        this.core.getServer().getScheduler().runTask(this.core, (Runnable)() -> {
+            synchronized (BukkitModuleManager.this)
             {
-                synchronized (BukkitModuleManager.this)
+                for (Module module : getModules())
                 {
-                    for (Module module : getModules())
+                    try
                     {
-                        try
-                        {
-                            module.onStartupFinished();
-                        }
-                        catch (Exception ex)
-                        {
-                            module.getLog().warn(ex, "An uncaught exception occurred during onFinishLoading()");
-                        }
+                        module.onStartupFinished();
+                    }
+                    catch (Exception ex)
+                    {
+                        module.getLog().warn(ex, "An uncaught exception occurred during onFinishLoading()");
                     }
                 }
             }

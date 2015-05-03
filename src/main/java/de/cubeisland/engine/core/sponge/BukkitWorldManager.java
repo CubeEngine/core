@@ -18,20 +18,20 @@
 package de.cubeisland.engine.core.sponge;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
-import net.minecraft.server.v1_8_R2.RegionFileCache;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.jooq.DSLContext;
 import org.jooq.Result;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -39,58 +39,53 @@ import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
 
 public class BukkitWorldManager extends AbstractWorldManager
 {
-    private final BukkitCore core;
+    private final SpongeCore core;
     private final Server server;
 
-    public BukkitWorldManager(final BukkitCore core)
+    public BukkitWorldManager(final SpongeCore core)
     {
         super(core);
         this.core = core;
-        this.server = core.getServer();
+        this.server = core.getGame().getServer();
 
-        core.addInitHook(new Runnable() {
-            @Override
-            public void run()
+        core.addInitHook(() -> {
+            DSLContext dsl = database.getDSL();
+            Result<WorldEntity> worldEntities = dsl.selectFrom(TABLE_WORLD).fetch();
+            Collection<World> loadedWorlds = server.getWorlds();
+            for (WorldEntity entity : worldEntities)
             {
-                DSLContext dsl = database.getDSL();
-                Result<WorldEntity> worldEntities = dsl.selectFrom(TABLE_WORLD).fetch();
-                List<World> loadedWorlds = server.getWorlds();
-                for (WorldEntity entity : worldEntities)
+                World world = server.getWorld(entity.getWorldUUID()).get();
+                if (loadedWorlds.contains(world))
                 {
-                    World world = server.getWorld(entity.getWorldUUID());
-                    if (loadedWorlds.contains(world))
-                    {
-                        loadedWorlds.remove(world);
-                        worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
-                        worldUUIDs.add(world.getUID());
-                    }
+                    loadedWorlds.remove(world);
+                    worlds.put(world.getName(), entity);
+                    worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
+                    worldUUIDs.add(world.getUniqueId());
                 }
-                if (!loadedWorlds.isEmpty()) // new worlds?
+            }
+            if (!loadedWorlds.isEmpty()) // new worlds?
+            {
+                for (World world : loadedWorlds)
                 {
-                    for (World world : loadedWorlds)
-                    {
-                        WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);
-                        entity.insertAsync();
-                        worlds.put(world.getName(), entity);
-                        worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
-                        worldUUIDs.add(world.getUID());
-                    }
+                    WorldEntity entity = dsl.newRecord(TABLE_WORLD).newWorld(world);
+                    entity.insertAsync();
+                    worlds.put(world.getName(), entity);
+                    worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
+                    worldUUIDs.add(world.getUniqueId());
                 }
             }
         });
     }
 
     @Override
-    public World createWorld(WorldCreator creator)
+    public World createWorld(WorldProperties properties)
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
-
-        return this.server.createWorld(creator);
+        return this.server.loadWorld(properties).get();
     }
 
     @Override
-    public World getWorld(String name)
+    public Optional<World> getWorld(String name)
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
         expectNotNull(name, "The world name must not be null!");
@@ -99,7 +94,7 @@ public class BukkitWorldManager extends AbstractWorldManager
     }
 
     @Override
-    public World getWorld(UUID uid)
+    public Optional<World> getWorld(UUID uid)
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
         expectNotNull(uid, "The world UUID must not be null!");

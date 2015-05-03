@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.sponge.BukkitCore;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import org.bukkit.OfflinePlayer;
 
 public class OfflinePlayerReader implements ArgumentReader<OfflinePlayer>
@@ -40,6 +40,6 @@ public class OfflinePlayerReader implements ArgumentReader<OfflinePlayer>
         {
             throw new ReaderException("Players do not start with -");
         }
-        return ((BukkitCore)this.core).getServer().getOfflinePlayer(invocation.consume(1));
+        return ((SpongeCore)this.core).getServer().getOfflinePlayer(invocation.consume(1));
     }
 }

@@ -18,17 +18,19 @@
 package de.cubeisland.engine.core.command.sender;
 
 import de.cubeisland.engine.core.Core;
-import org.bukkit.block.Block;
+import org.spongepowered.api.util.command.source.CommandBlockSource;
+import org.spongepowered.api.world.Location;
 
-public class BlockCommandSender extends WrappedCommandSender
+public class BlockCommandSender extends WrappedCommandSender implements CommandBlockSource
 {
-    public BlockCommandSender(Core core, org.bukkit.command.BlockCommandSender sender)
+    public BlockCommandSender(Core core, CommandBlockSource sender)
     {
         super(core, sender);
     }
 
-    public Block getBlock()
+    public Location getBlock()
     {
-        return ((org.bukkit.command.BlockCommandSender)this.getWrappedSender()).getBlock();
+        CommandBlockSource source = (CommandBlockSource)this.getWrappedSender();
+        return source.getLocation();
     }
 }

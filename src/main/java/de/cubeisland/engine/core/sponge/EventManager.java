@@ -25,10 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
+import org.spongepowered.api.event.Event;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
@@ -37,14 +34,14 @@ import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
  */
 public class EventManager
 {
-    private final BukkitCore corePlugin;
-    private final PluginManager pm;
-    private final ConcurrentMap<Module, Set<Listener>> listenerMap;
+    private final SpongeCore corePlugin;
+    private final ConcurrentMap<Module, Set<Object>> listenerMap;
+    private final org.spongepowered.api.service.event.EventManager eventManager;
 
     public EventManager(Core core)
     {
-        this.corePlugin = (BukkitCore)core;
-        this.pm = this.corePlugin.getServer().getPluginManager();
+        this.corePlugin = (SpongeCore)core;
+        eventManager = this.corePlugin.getGame().getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
     }
 
@@ -55,16 +52,16 @@ public class EventManager
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager registerListener(Module module, Listener listener)
+    public EventManager registerListener(Module module, Object listener)
     {
-        Set<Listener> listeners = this.listenerMap.get(module);
+        Set<Object> listeners = this.listenerMap.get(module);
         if (listeners == null)
         {
             this.listenerMap.put(module, listeners = new HashSet<>());
         }
         listeners.add(listener);
 
-        this.pm.registerEvents(listener, this.corePlugin);
+        eventManager.register(this.corePlugin, listener);
         return this;
     }
 
@@ -75,15 +72,15 @@ public class EventManager
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager removeListener(Module module, Listener listener)
+    public EventManager removeListener(Module module, Object listener)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(listener, "The listener must not be null!");
 
-        Set<Listener> listeners = this.listenerMap.get(module);
+        Set<Object> listeners = this.listenerMap.get(module);
         if (listeners != null && listeners.remove(listener))
         {
-            HandlerList.unregisterAll(listener);
+            eventManager.unregister(listener);
         }
         return this;
     }
@@ -98,12 +95,12 @@ public class EventManager
     {
         expectNotNull(module, "The module must not be null!");
 
-        Set<Listener> listeners = this.listenerMap.remove(module);
+        Set<Object> listeners = this.listenerMap.remove(module);
         if (listeners != null)
         {
-            for (Listener listener : listeners)
+            for (Object listener : listeners)
             {
-                HandlerList.unregisterAll(listener);
+                eventManager.unregister(listener);
             }
         }
         return this;
@@ -116,16 +113,15 @@ public class EventManager
      */
     public EventManager removeListeners()
     {
-        Iterator<Entry<Module, Set<Listener>>> it = this.listenerMap.entrySet().iterator();
+        Iterator<Entry<Module, Set<Object>>> it = this.listenerMap.entrySet().iterator();
         while (it.hasNext())
         {
-            for (Listener listener : it.next().getValue())
+            for (Object listener : it.next().getValue())
             {
-                HandlerList.unregisterAll(listener);
+                eventManager.unregister(listener);
             }
             it.remove();
         }
-        HandlerList.unregisterAll(this.corePlugin);
         return this;
     }
 
@@ -138,7 +134,7 @@ public class EventManager
      */
     public <T extends Event> T fireEvent(T event)
     {
-        this.pm.callEvent(event);
+        this.eventManager.post(event);
         return event;
     }
 }

@@ -23,8 +23,9 @@ import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.spongepowered.api.text.Text;
 
-public interface CommandSender extends org.bukkit.command.CommandSender, CommandSource
+public interface CommandSender extends org.spongepowered.api.util.command.CommandSource, CommandSource
 {
     UUID NON_PLAYER_UUID = new UUID(0, 0);
 
@@ -39,9 +40,6 @@ public interface CommandSender extends org.bukkit.command.CommandSender, Command
 
     @Override
     Locale getLocale();
-
-    @Override
-    void sendMessage(String message);
 
     String getTranslation(MessageType type, String message, Object... params);
 

@@ -17,9 +17,7 @@
  */
 package de.cubeisland.engine.core.util;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class GuardedItemStack
 {

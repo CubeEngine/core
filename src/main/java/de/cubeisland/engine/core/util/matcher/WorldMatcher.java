@@ -22,6 +22,7 @@ import java.util.List;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.StringUtils;
 import org.bukkit.World;
+import org.spongepowered.api.world.World;
 
 public class WorldMatcher
 {
@@ -32,7 +33,7 @@ public class WorldMatcher
         {
             return null;
         }
-        return CubeEngine.getCore().getWorldManager().getWorld(match);
+        return CubeEngine.getCore().getWorldManager().getWorld(match).get();
     }
 
     /**
