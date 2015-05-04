@@ -22,7 +22,7 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.NEGATIVE;
 

@@ -18,14 +18,8 @@
 package de.cubeisland.engine.core.util;
 
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Step;
-import org.bukkit.material.WoodenStep;
-import org.bukkit.util.BlockIterator;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.world.Location;
 
 public class LocationUtil
 {
@@ -37,7 +31,7 @@ public class LocationUtil
         while (blockIterator.hasNext())
         {
             curDist++;
-            Block next = blockIterator.next();
+            Location next = blockIterator.next();
             Location loc = new Location(null, 0,0,0);
             if (passed && !next.getType().isSolid())
             {
@@ -71,7 +65,7 @@ public class LocationUtil
             {
                 return null;
             }
-            if (next.getType().isSolid() || next.getType() == Material.SUGAR_CANE_BLOCK)
+            if (next.getType().isSolid() || next.getType() == BlockTypes.REEDS)
             {
                 passed = true;
             }

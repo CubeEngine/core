@@ -122,8 +122,8 @@ public class VanillaCommands
         long time = System.currentTimeMillis();
         I18n i18n = this.core.getI18n();
         this.core.getGame().getServer().reload();
-        context.sendMessage(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
-                                           MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
+        context.sendMessage(Texts.of(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
+                                           MILLISECONDS.toSeconds(System.currentTimeMillis() - time))));
     }
 
     @Command(desc = "Changes the difficulty level of the server")
@@ -168,7 +168,7 @@ public class VanillaCommands
                 return;
             }
             context.sendTranslated(NEUTRAL, "The following users are operators:");
-            context.sendMessage(" ");
+            context.sendMessage(Texts.of(" "));
             for (org.spongepowered.api.entity.player.User opPlayer : ops)
             {
                 context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", opPlayer, new Date(opPlayer.getLastPlayed()));
@@ -251,7 +251,7 @@ public class VanillaCommands
 
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
                                plugins.size(), modules.size());
-        context.sendMessage(" ");
+        context.sendMessage(Texts.of(" "));
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + core.getVersion() + ")");
 
         for (Module m : modules)
@@ -415,7 +415,7 @@ public class VanillaCommands
             {
                 context.sendTranslated(POSITIVE, "The whitelist is enabled!.");
             }
-            context.sendMessage(" ");
+            context.sendMessage(Texts.of(" "));
             if (whitelist.isEmpty())
             {
                 context.sendTranslated(NEUTRAL, "There are currently no whitelisted players!");
@@ -425,7 +425,7 @@ public class VanillaCommands
                 context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
                 for (org.spongepowered.api.entity.player.User player : whitelist)
                 {
-                    context.sendMessage(" - " + player.getName());
+                    context.sendMessage(Texts.of(" - " + player.getName()));
                 }
             }
             Set<org.spongepowered.api.entity.player.User> operators = this.core.getGame().getServer().getOperators();
@@ -434,7 +434,7 @@ public class VanillaCommands
                 context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
                 for (org.spongepowered.api.entity.player.User operator : operators)
                 {
-                    context.sendMessage(" - " + operator.getName());
+                    context.sendMessage(Texts.of(" - " + operator.getName()));
                 }
             }
         }

@@ -36,8 +36,6 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.Version;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 import static de.cubeisland.engine.core.util.ChatFormat.BRIGHT_GREEN;
 import static de.cubeisland.engine.core.util.ChatFormat.RED;

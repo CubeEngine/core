@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core.command.result;
 
+import java.util.UUID;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.core.CubeEngine;
@@ -25,7 +27,7 @@ import de.cubeisland.engine.core.module.Module;
 public abstract class LongRunningResult implements CommandResult
 {
     private boolean isDone = false;
-    private int taskId = -1;
+    private Optional<UUID> taskId;
     private Module module;
 
     public LongRunningResult(Module module)
@@ -40,10 +42,10 @@ public abstract class LongRunningResult implements CommandResult
             LongRunningResult.this.run(context);
             if (isDone)
             {
-                module.getCore().getTaskManager().cancelTask(module, taskId);
+                module.getCore().getTaskManager().cancelTask(module, taskId.get());
             }
         }, 0, 1);
-        if (this.taskId == -1)
+        if (!taskId.isPresent())
         {
             throw new RuntimeException("Failed to schedule the task for the long running command result!");
         }

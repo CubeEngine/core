@@ -22,7 +22,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.permissions.Permission;
 
 public class ApiUser extends ApiCommandSender
 {
@@ -59,23 +58,11 @@ public class ApiUser extends ApiCommandSender
     }
 
     @Override
-    public boolean isPermissionSet(Permission perm)
-    {
-        return true;
-    }
-
-    @Override
     public boolean hasPermission(String name)
     {
         de.cubeisland.engine.core.module.service.Permission permission = getCore().getModuleManager().getServiceManager().getServiceImplementation(
             de.cubeisland.engine.core.module.service.Permission.class);
         return permission.has(user.getWorld(), user, name);
-    }
-
-    @Override
-    public boolean hasPermission(Permission perm)
-    {
-        return this.hasPermission(perm.getName());
     }
 
     @Override

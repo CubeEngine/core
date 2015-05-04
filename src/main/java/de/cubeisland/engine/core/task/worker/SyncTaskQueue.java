@@ -22,7 +22,7 @@ import java.util.Queue;
 import java.util.UUID;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.sponge.SpongeCore;
-import org.bukkit.scheduler.BukkitScheduler;
+import de.cubeisland.engine.core.sponge.SpongeTaskManager;
 import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -34,7 +34,7 @@ public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
     private final SpongeCore corePlugin;
-    private final SynchronousScheduler scheduler;
+    private final SpongeTaskManager scheduler;
     private final Queue<Runnable> taskQueue;
     private UUID taskID;
     private boolean isShutdown;
@@ -47,7 +47,7 @@ public class SyncTaskQueue implements TaskQueue
     public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = (SpongeCore)core;
-        this.scheduler = this.corePlugin.getGame().getSyncScheduler();
+        this.scheduler = this.corePlugin.getTaskManager();
         this.taskQueue = taskQueue;
         this.taskID = null;
         this.isShutdown = false;
@@ -57,7 +57,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.taskQueue.isEmpty())
         {
-            this.scheduler.cancelTask(this.taskID);
+            this.scheduler.cancelTask(corePlugin.getModuleManager().getCoreModule(), this.taskID);
             return;
         }
         this.taskQueue.poll().run();
@@ -81,7 +81,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.scheduler.scheduleSyncRepeatingTask(this.corePlugin, this.workerTask, 0, 1);
+            this.taskID = this.scheduler.runTimer(corePlugin.getModuleManager().getCoreModule(), this.workerTask, 0, 1).get();
         }
     }
 
@@ -110,15 +110,15 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.isRunning())
         {
-            this.scheduler.cancelTask(this.taskID);
-            this.taskID = -1;
+            this.scheduler.cancelTask(corePlugin.getModuleManager().getCoreModule(), this.taskID);
+            this.taskID = null;
         }
     }
 
     @Override
     public synchronized boolean isRunning()
     {
-        return this.taskID > -1;
+        return this.taskID != null;
     }
 
     @Override

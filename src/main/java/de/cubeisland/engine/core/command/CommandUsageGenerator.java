@@ -27,7 +27,7 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.command.property.PermissionProvider;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import org.bukkit.permissions.Permissible;
+import org.spongepowered.api.service.permission.Subject;
 
 import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
@@ -51,9 +51,9 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
 
     private void checkPermission(CommandSource source, Parameter parameter)
     {
-        if (parameter.hasProperty(PermissionProvider.class) && source instanceof Permissible)
+        if (parameter.hasProperty(PermissionProvider.class) && source instanceof Subject)
         {
-            if (!parameter.valueFor(PermissionProvider.class).isAuthorized((Permissible)(source)))
+            if (!parameter.valueFor(PermissionProvider.class).isAuthorized((Subject)(source)))
             {
                 throw new PermissionDeniedException(parameter.valueFor(PermissionProvider.class));
             }

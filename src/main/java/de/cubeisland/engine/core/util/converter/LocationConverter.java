@@ -27,8 +27,6 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.world.WorldManager;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;

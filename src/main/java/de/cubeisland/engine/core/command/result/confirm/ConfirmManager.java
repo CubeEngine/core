@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.UUID;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandSender;
@@ -35,7 +36,7 @@ public class ConfirmManager
 {
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
-    private final Map<CommandSender, Queue<Pair<Module, Integer>>> confirmationTimeoutTasks;
+    private final Map<CommandSender, Queue<Pair<Module, UUID>>> confirmationTimeoutTasks;
     private final Core core;
 
     public ConfirmManager(CommandManager cm, Core core)
@@ -65,12 +66,12 @@ public class ConfirmManager
         pendingConfirmations.add(confirmResult);
         this.pendingConfirmations.put(sender, pendingConfirmations);
 
-        Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
+        Queue<Pair<Module, UUID>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
         if (confirmationTimeoutTasks == null)
         {
             confirmationTimeoutTasks = new LinkedList<>();
         }
-        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager().runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
+        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager().runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT).get()));
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
 
@@ -103,12 +104,12 @@ public class ConfirmManager
             return null;
         }
 
-        Queue<Pair<Module, Integer>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
+        Queue<Pair<Module, UUID>> confirmationTimeoutTasks = this.confirmationTimeoutTasks.get(sender);
         if (confirmationTimeoutTasks == null)
         {
             confirmationTimeoutTasks = new LinkedList<>();
         }
-        Pair<Module, Integer> pair = confirmationTimeoutTasks.poll();
+        Pair<Module, UUID> pair = confirmationTimeoutTasks.poll();
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
         this.core.getTaskManager().cancelTask(pair.getLeft(), pair.getRight());
 

@@ -22,7 +22,6 @@ import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.Material;
 import org.spongepowered.api.item.ItemType;
 
 public class MaterialConverter extends SimpleConverter<ItemType>

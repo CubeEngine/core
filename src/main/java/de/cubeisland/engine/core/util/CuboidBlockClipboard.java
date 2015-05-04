@@ -20,7 +20,6 @@ package de.cubeisland.engine.core.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.SingleClassConverter;
@@ -33,12 +32,10 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.sponge.NBTUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
-import net.minecraft.server.v1_8_R2.NBTTagInt;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
+
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.sponge.NBTUtils.convertNBTToNode;
 
@@ -76,7 +73,7 @@ public class CuboidBlockClipboard
             {
                 for (int z = 0; z < this.size.z; ++z)
                 {
-                    data[x][y][z] = new BlockData(world.getBlockAt(x+minimum.x,y+minimum.y,z+ minimum.z),minimum);
+                    data[x][y][z] = new BlockData(world.getBlock(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
                 }
             }
         }
@@ -94,7 +91,7 @@ public class CuboidBlockClipboard
         this.relative = relative;
     }
 
-    private Map<Byte,Material> mappedMaterials;
+    private Map<Byte,BlockType> mappedMaterials;
 
     public void applyToWorld(World world, BlockVector3 relative)
     {
@@ -106,9 +103,7 @@ public class CuboidBlockClipboard
                 for (int x = 0; x < this.size.x; ++x)
                 {
                     BlockData blockData = this.data[x][y][z];
-                    BlockState state = world.getBlockAt(relative.x + x,
-                                                        relative.y + y,
-                                                        relative.z + z).getState();
+                    BlockState state = world.getBlock(relative.x + x, relative.y + y, relative.z + z);
                     state.setType(blockData.material);
                     state.setRawData(blockData.data);
                     state.update(true,false);
@@ -124,11 +119,11 @@ public class CuboidBlockClipboard
 
     private class BlockData
     {
-        public Material material;
+        public BlockType material;
         private byte data;
         private NBTTagCompound nbt; // x,y,z are relative to origin
 
-        private BlockData(Block block, BlockVector3 relative)
+        private BlockData(BlockState block, BlockVector3 relative)
         {
             this.material = block.getType();
             this.data = block.getData();
@@ -150,7 +145,7 @@ public class CuboidBlockClipboard
             return clone;
         }
 
-        public BlockData(Material mat, byte b)
+        public BlockData(BlockType mat, byte b)
         {
             this.material = mat;
             this.data = b;
@@ -182,7 +177,7 @@ public class CuboidBlockClipboard
             }
             ListNode tileEntities = ListNode.emptyList();
             result.set("tileentities", tileEntities);
-            Map<Material,Byte> materials = new HashMap<>();
+            Map<BlockType,Byte> materials = new HashMap<>();
             object.mappedMaterials = new HashMap<>();
             Byte[] blocks = new Byte[object.size.x * object.size.y * object.size.z];
             Byte[] bData = new Byte[object.size.x * object.size.y * object.size.z];
@@ -229,7 +224,7 @@ public class CuboidBlockClipboard
                     int width = manager.convertFromNode(mappedNodes.get("width"), Integer.class);
                     int height = manager.convertFromNode(mappedNodes.get("height"), Integer.class);
                     int length = manager.convertFromNode(mappedNodes.get("length"), Integer.class);
-                    Map<Byte,Material> mappedMaterials = manager.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
+                    Map<Byte,BlockType> mappedMaterials = manager.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
                     Byte[] blocks = manager.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
                     Byte[] data = manager.convertFromNode(mappedNodes.get("data"),Byte[].class);
                     Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<>();
@@ -276,7 +271,7 @@ public class CuboidBlockClipboard
                         {
                             for (int x = 0; x < width; ++x)
                             {
-                                Material mat = mappedMaterials.get(blocks[i]);
+                                BlockType mat = mappedMaterials.get(blocks[i]);
                                 result.data[x][y][z] = result.new BlockData(mat,data[i]);
                                 i++;
                             }

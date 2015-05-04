@@ -21,8 +21,8 @@ import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.AnimalTamer;
+import org.spongepowered.api.entity.Tamer;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_GREEN;
 
@@ -41,13 +41,13 @@ public class CommandSenderFormatter extends ReflectedFormatter
     }
 
     @Format
-    public String format(CommandSender sender, MacroContext context)
+    public String format(CommandSource sender, MacroContext context)
     {
         return this.format(sender.getName(), context);
     }
 
     @Format
-    public String format(AnimalTamer tamer, MacroContext context) // includes OfflinePlayer as it implements AnimalTamer
+    public String format(Tamer tamer, MacroContext context) // includes OfflinePlayer as it implements AnimalTamer
     {
         return this.format(tamer.getName(), context);
     }

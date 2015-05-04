@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.entity.EntityType;
+import org.spongepowered.api.entity.EntityType;
 
 public class EntityTypeReader implements ArgumentReader<EntityType>
 {

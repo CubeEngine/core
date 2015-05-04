@@ -22,7 +22,7 @@ import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
 import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
-import org.bukkit.World;
+import org.spongepowered.api.world.World;
 
 @Names("world")
 public class WorldFormatter extends ReflectedFormatter

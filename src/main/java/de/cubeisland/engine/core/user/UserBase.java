@@ -26,6 +26,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.sponge.BukkitUtils;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.data.manipulators.entities.ExperienceHolderData;
 import org.spongepowered.api.data.manipulators.entities.FlyingData;
@@ -34,13 +35,19 @@ import org.spongepowered.api.data.manipulators.entities.GameModeData;
 import org.spongepowered.api.data.manipulators.entities.HealthData;
 import org.spongepowered.api.data.manipulators.entities.IgniteableData;
 import org.spongepowered.api.data.manipulators.entities.JoinData;
+import org.spongepowered.api.data.manipulators.entities.PassengerData;
 import org.spongepowered.api.data.manipulators.entities.SneakingData;
+import org.spongepowered.api.data.manipulators.entities.VehicleData;
 import org.spongepowered.api.data.manipulators.entities.VelocityData;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameMode;
+import org.spongepowered.api.entity.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Projectile;
+import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -49,8 +56,10 @@ import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.source.LocatedSource;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.weather.Weather;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
@@ -107,27 +116,6 @@ public class UserBase implements Player
         }
     }
 
-    @Override
-    public String getPlayerListName()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getPlayerListName();
-        }
-        return null;
-    }
-
-    @Override
-    public void setPlayerListName(String string)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().setPlayerListName(string);
-        }
-    }
-
     public InetSocketAddress getAddress()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -171,8 +159,6 @@ public class UserBase implements Player
         return player.isPresent() && player.get().getData(SneakingData.class).isPresent();
     }
 
-
-
     @Override
     @Deprecated
     public void updateInventory()
@@ -183,6 +169,7 @@ public class UserBase implements Player
             player.get().updateInventory();
         }
     }
+
     @Override
     public void setPlayerTime(long l, boolean bln)
     {
@@ -192,7 +179,6 @@ public class UserBase implements Player
             player.get().setPlayerTime(l, bln);
         }
     }
-
 
     @Override
     public void resetPlayerTime()
@@ -417,88 +403,29 @@ public class UserBase implements Player
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            return player.get().getE();
+            return player.get().getEyeLocation();
         }
         return null;
     }
-
-    @Override
-    public List<Block> getLineOfSight(HashSet<Byte> hs, int i)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getLineOfSight(hs, i);
-        }
-        return null;
-    }
-
-    @Override
-    public Block getTargetBlock(HashSet<Byte> hs, int i)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getTargetBlock(hs, i);
-        }
-        return null;
-    }
-
-    @Override
-    public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hs, int i)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getLastTwoTargetBlocks(hs, i);
-        }
-        return null;
-    }
-
 
     @Override
     public <T extends Projectile> T launchProjectile(Class<T> type)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().launchProjectile(type);
-        }
-        return null;
+        return getPlayer().transform(input -> input.launchProjectile(type)).orNull();
     }
 
     @Override
     public <T extends Projectile> T launchProjectile(Class<T> type, Vector3d vector)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().launchProjectile(type, vector);
-        }
-        return null;
+        return getPlayer().transform(input -> input.launchProjectile(type, vector)).orNull();
     }
 
-
-
-    @Override
     public void damage(double v)
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            player.get().damage(v);
-        }
-    }
-
-
-
-    @Override
-    public void damage(double v, Entity entity)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().damage(v, entity);
+            player.get().getHealthData().damage(v);
         }
     }
 
@@ -522,7 +449,6 @@ public class UserBase implements Player
         getOfflinePlayer().getData(HealthData.class).get().setMaxHealth(v);
     }
 
-
     @Override
     public Location getLocation()
     {
@@ -532,38 +458,38 @@ public class UserBase implements Player
     @Override
     public Location getLocation(Location loc)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
+        return getPlayer().transform(Player::getLocation).orNull();
+        NBTTagCompound data = this.getData();
+        if (data != null)
         {
-            return player.get().getLocation(loc);
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
+            World world = this.getWorld();
+            loc.setWorld(world);
+            if (world != null)
             {
-                World world = this.getWorld();
-                loc.setWorld(world);
-                if (world != null)
+                NBTTagList list = data.getList("Pos", NBT_ID_DOUBLE);
+                if (list != null)
                 {
-                    NBTTagList list = data.getList("Pos", NBT_ID_DOUBLE);
-                    if (list != null)
-                    {
-                        loc.setX(list.d(0));
-                        loc.setY(list.d(1));
-                        loc.setZ(list.d(2));
-                        list = data.getList("Rotation", NBT_ID_FLOAT);
-                        if (list != null)
-                        {
-                            loc.setPitch(list.e(0));
-                            loc.setYaw(list.e(1));
-                        }
-                        return loc;
-                    }
+                    loc.setX(list.d(0));
+                    loc.setY(list.d(1));
+                    loc.setZ(list.d(2));
+
+                    return loc;
                 }
             }
         }
-        return null;
+    }
+
+    public Vector3d getRotation()
+    {
+        return getPlayer().transform(Player::getRotation).orNull();
+        NBTTagCompound data = this.getData();
+        list = data.getList("Rotation", NBT_ID_FLOAT);
+        if (list != null)
+        {
+            loc.setPitch(list.e(0));
+            loc.setYaw(list.e(1));
+        }
+        return rotation;
     }
 
     public void setVelocity(Vector3d vector)
@@ -578,21 +504,12 @@ public class UserBase implements Player
     @Override
     public World getWorld()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
+        return getPlayer().transform(LocatedSource::getWorld).orNull();
+        NBTTagCompound data = this.getData();
+        if (data != null)
         {
-            return player.get().getWorld();
+            return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
         }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong(
-                    "WorldUUIDLeast")));
-            }
-        }
-        return null;
     }
 
     @Override
@@ -607,44 +524,38 @@ public class UserBase implements Player
         return this.teleport(lctn, TeleportCause.PLUGIN);
     }
 
-
     @Override
     public boolean teleport(Location lctn, TeleportCause tc)
     {
         expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
-
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
             return player.get().teleport(lctn, tc);
         }
-        else
+        NBTTagCompound data = this.getData();
+        if (data != null)
         {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                NBTTagList list = new NBTTagList();
-                list.add(new NBTTagDouble(lctn.getX()));
-                list.add(new NBTTagDouble(lctn.getY()));
-                list.add(new NBTTagDouble(lctn.getZ()));
-                data.set("Pos", list);
+            NBTTagList list = new NBTTagList();
+            list.add(new NBTTagDouble(lctn.getX()));
+            list.add(new NBTTagDouble(lctn.getY()));
+            list.add(new NBTTagDouble(lctn.getZ()));
+            data.set("Pos", list);
 
-                list = new NBTTagList();
-                list.add(new NBTTagFloat(lctn.getPitch()));
-                list.add(new NBTTagFloat(lctn.getYaw()));
-                data.set("Rotation", list);
+            list = new NBTTagList();
+            list.add(new NBTTagFloat(lctn.getPitch()));
+            list.add(new NBTTagFloat(lctn.getYaw()));
+            data.set("Rotation", list);
 
-                UUID id = lctn.getWorld().getUID();
-                data.setLong("WorldUUIDMost", id.getMostSignificantBits());
-                data.setLong("WorldUUIDLeast", id.getLeastSignificantBits());
+            UUID id = lctn.getWorld().getUID();
+            data.setLong("WorldUUIDMost", id.getMostSignificantBits());
+            data.setLong("WorldUUIDLeast", id.getLeastSignificantBits());
 
-                this.saveData();
-            }
+            this.saveData();
         }
         return false;
     }
 
-    @Override
     public boolean teleport(Entity entity)
     {
         if (entity == null)
@@ -675,8 +586,6 @@ public class UserBase implements Player
         return null;
     }
 
-
-
     public void setFireTicks(int i)
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -697,13 +606,6 @@ public class UserBase implements Player
     }
 
     @Override
-    public boolean isDead()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().isDead();
-    }
-
-    @Override
     public Server getServer()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -713,8 +615,6 @@ public class UserBase implements Player
         }
         return Bukkit.getServer();
     }
-
-
 
     @Override
     public void setLastDamageCause(EntityDamageEvent ede)
@@ -732,18 +632,6 @@ public class UserBase implements Player
         return this.getOfflinePlayer().getUniqueId();
     }
 
-
-
-    @Override
-    public void playEffect(EntityEffect ee)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().playEffect(ee);
-        }
-    }
-
     @Override
     public EntityType getType()
     {
@@ -752,84 +640,17 @@ public class UserBase implements Player
         {
             return player.get().getType();
         }
-        return null;
+        return EntityTypes.PLAYER;
     }
 
-    @Override
-    public boolean isInsideVehicle()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().isInsideVehicle();
-    }
-
-    @Override
-    public boolean leaveVehicle()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().leaveVehicle();
-    }
-
-    @Override
     public Entity getVehicle()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            return player.get().getVehicle();
+            return player.get().getData(PassengerData.class).transform(PassengerData::getVehicle).orNull();
         }
         return null;
-    }
-
-    @Override
-    public void setMetadata(String string, MetadataValue mv)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().setMetadata(string, mv);
-        }
-    }
-
-    @Override
-    public List<MetadataValue> getMetadata(String string)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getMetadata(string);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean hasMetadata(String string)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().hasMetadata(string);
-    }
-
-    @Override
-    public void removeMetadata(String string, Plugin plugin)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().removeMetadata(string, plugin);
-        }
-    }
-
-    @Override
-    public boolean isPermissionSet(String string)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().isPermissionSet(string);
-    }
-
-    @Override
-    public boolean isPermissionSet(Permission prmsn)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().isPermissionSet(prmsn);
     }
 
     @Override
@@ -838,89 +659,6 @@ public class UserBase implements Player
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         return player.isPresent() && player.get().hasPermission(string);
     }
-
-    @Override
-    public boolean hasPermission(Permission prmsn)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().hasPermission(prmsn);
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().addAttachment(plugin, string, bln);
-        }
-        return null;
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().addAttachment(plugin);
-        }
-        return null;
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String string, boolean bln, int i)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().addAttachment(plugin, string, bln, i);
-        }
-        return null;
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, int i)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().addAttachment(plugin, i);
-        }
-        return null;
-    }
-
-    @Override
-    public void removeAttachment(PermissionAttachment pa)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().removeAttachment(pa);
-        }
-    }
-
-    @Override
-    public void recalculatePermissions()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().recalculatePermissions();
-        }
-    }
-
-    @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getEffectivePermissions();
-        }
-        return null;
-    }
-
     @Override
     public boolean isOp()
     {
@@ -931,50 +669,6 @@ public class UserBase implements Player
     public void setOp(boolean bln)
     {
         this.getOfflinePlayer().setOp(bln);
-    }
-
-    @Override
-    public boolean isConversing()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().isConversing();
-    }
-
-    @Override
-    public void acceptConversationInput(String string)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().acceptConversationInput(string);
-        }
-    }
-
-    @Override
-    public boolean beginConversation(Conversation c)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        return player.isPresent() && player.get().beginConversation(c);
-    }
-
-    @Override
-    public void abandonConversation(Conversation c)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().abandonConversation(c);
-        }
-    }
-
-    @Override
-    public void abandonConversation(Conversation c, ConversationAbandonedEvent cae)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().abandonConversation(c, cae);
-        }
     }
 
     public void sendMessage(String string)
@@ -1065,7 +759,6 @@ public class UserBase implements Player
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-
             return player.get().getEnderChest();
         }
         Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
@@ -1077,8 +770,9 @@ public class UserBase implements Player
     }
 
     @Override
-    public void setPlayerWeather(WeatherType wt)
+    public void setPlayerWeather(Weather wt)
     {
+
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {

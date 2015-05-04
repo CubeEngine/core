@@ -43,10 +43,14 @@ import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
+import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.monster.Spider;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
@@ -216,7 +220,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        return Texts.of(this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params));
+        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
     }
 
     /**
@@ -298,9 +302,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     {
         if (this.isOnline())
         {
-            return 0;
+            return new Date();
         }
-        return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
+        return super.getLastPlayed();
+        // TODO do we still need this? return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
     }
 
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
@@ -412,12 +417,12 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             double detectDistance = 1;
             while (iterator.hasNext())
             {
-                Block block = iterator.next();
+                Location block = iterator.next();
                 detectDistance += 0.015;
                 block.getLocation(blockLoc).add(0.5, 0.5, 0.5);
                 for (Entity entity : list)
                 {
-                    if (entity.getLocation(entityLoc).distanceSquared(blockLoc) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
+                    if (entity.getLocation().distanceSquared(blockLoc) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
                     {
                         targets.add(entity);
                     }
@@ -439,7 +444,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return true;
         }
-        else if (o instanceof OfflinePlayer)
+        else if (o instanceof org.spongepowered.api.entity.player.User)
         {
             return this.getOfflinePlayer().equals(o);
         }
@@ -447,9 +452,9 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return ((CommandSender)o).getUniqueId().equals(this.getUniqueId());
         }
-        else if (o instanceof org.bukkit.command.CommandSender)
+        else if (o instanceof CommandSource)
         {
-            return ((org.bukkit.command.CommandSender)o).getName().equals(this.getName());
+            return ((CommandSource)o).getName().equals(this.getName());
         }
         return false;
     }
@@ -488,7 +493,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void banIp(CommandSender source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source.getName(), reason, created, expire));
+        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source.getName(), Texts.of(reason), created, expire));
     }
 
     public void ban(CommandSender source, String reason)
@@ -503,7 +508,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void ban(CommandSender source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new UserBan(this.getName(), source.getName(), reason, created, expire));
+        this.getCore().getBanManager().addBan(new UserBan(this, source.getName(), Texts.of(reason), created, expire));
     }
 
     public UserEntity getEntity()
@@ -511,7 +516,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return entity;
     }
 
-    public Iterator<Block> getLineOfSight(int maxDistance)
+    public Iterator<Location> getLineOfSight(int maxDistance)
     {
         if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
             maxDistance = Bukkit.getServer().getViewDistance() * 16;
@@ -519,12 +524,12 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return new BlockIterator(this, maxDistance);
     }
 
-    public Block getTargetBlock(int maxDistance)
+    public Location getTargetBlock(int maxDistance)
     {
-        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
+        Iterator<Location> lineOfSight = this.getLineOfSight(maxDistance);
         while (lineOfSight.hasNext())
         {
-            Block next = lineOfSight.next();
+            Location next = lineOfSight.next();
             if (next.getType().isSolid() && !isNonObstructingSolidBlock(next.getType()))
             {
                 return next;
@@ -533,13 +538,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return null;
     }
 
-    public Block getTargetBlock(int maxDistance, Material... transparent)
+    public Location getTargetBlock(int maxDistance, BlockType... transparent)
     {
-        Iterator<Block> lineOfSight = this.getLineOfSight(maxDistance);
-        List<Material> list = Arrays.asList(transparent);
+        Iterator<Location> lineOfSight = this.getLineOfSight(maxDistance);
+        List<BlockType> list = Arrays.asList(transparent);
         while (lineOfSight.hasNext())
         {
-            Block next = lineOfSight.next();
+            Location next = lineOfSight.next();
             if (!list.contains(next.getType()))
             {
                 return next;

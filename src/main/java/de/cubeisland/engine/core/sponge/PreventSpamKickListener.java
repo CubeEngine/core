@@ -17,12 +17,10 @@
  */
 package de.cubeisland.engine.core.sponge;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerKickEvent;
+import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.entity.player.PlayerKickEvent;
 
-public class PreventSpamKickListener implements Listener
+public class PreventSpamKickListener
 {
     private final SpongeCore core;
 
@@ -31,7 +29,7 @@ public class PreventSpamKickListener implements Listener
         this.core = core;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @Subscribe(order = LOWEST, ignoreCancelled = true)
     public void onKick(PlayerKickEvent event)
     {
         if (event.getReason().equals("disconnect.spam") && core.perms().SPAM.isAuthorized(event.getPlayer()))

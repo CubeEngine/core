@@ -20,17 +20,13 @@ package de.cubeisland.engine.core.webapi.sender;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.util.formatter.MessageType;
-import org.bukkit.Server;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
+import org.spongepowered.api.Server;
 
 public abstract class ApiCommandSender implements CommandSender
 {
@@ -71,43 +67,7 @@ public abstract class ApiCommandSender implements CommandSender
         return ((SpongeCore)this.core).getServer();
     }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value)
-    {
-        return null;
-    }
 
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin)
-    {
-        return null;
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, String name, boolean value, int ticks)
-    {
-        return null;
-    }
-
-    @Override
-    public PermissionAttachment addAttachment(Plugin plugin, int ticks)
-    {
-        return null;
-    }
-
-    @Override
-    public void removeAttachment(PermissionAttachment attachment)
-    {}
-
-    @Override
-    public void recalculatePermissions()
-    {}
-
-    @Override
-    public Set<PermissionAttachmentInfo> getEffectivePermissions()
-    {
-        return Collections.emptySet();
-    }
 
     @Override
     public void setOp(boolean value)

@@ -17,6 +17,8 @@
  */
 package de.cubeisland.engine.core.command.result;
 
+import java.util.UUID;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.core.module.Module;
@@ -40,9 +42,9 @@ public abstract class DelayedResult implements CommandResult
     @Override
     public void process(final CommandInvocation context)
     {
-        final int taskId = module.getCore().getTaskManager().runTaskDelayed(module, () -> DelayedResult.this.run(context), this.delay);
+        Optional<UUID> uuid = module.getCore().getTaskManager().runTaskDelayed(module, () -> DelayedResult.this.run(context), this.delay);
 
-        if (taskId == -1)
+        if (!uuid.isPresent())
         {
             throw new RuntimeException("Failed to schedule the task for the delayed command result!");
         }

@@ -55,25 +55,7 @@ public class ApiServerSender extends ApiCommandSender
     }
 
     @Override
-    public boolean isPermissionSet(String name)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isPermissionSet(Permission perm)
-    {
-        return true;
-    }
-
-    @Override
     public boolean hasPermission(String name)
-    {
-        return true;
-    }
-
-    @Override
-    public boolean hasPermission(Permission perm)
     {
         return true;
     }

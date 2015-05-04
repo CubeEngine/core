@@ -17,12 +17,13 @@
  */
 package de.cubeisland.engine.core.command.completer;
 
-import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
+
+import static java.util.stream.Collectors.toList;
 
 public class ModuleCompleter implements Completer
 {
@@ -36,15 +37,10 @@ public class ModuleCompleter implements Completer
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
-        List<String> result = new ArrayList<>();
         String token = invocation.currentToken();
-        for (Module module : core.getModuleManager().getModules())
-        {
-            if (module.getId().startsWith(token))
-            {
-                result.add(module.getId());
-            }
-        }
-        return result;
+        return core.getModuleManager().getModules().stream()
+                          .map(Module::getId)
+                          .filter(id -> id.startsWith(token))
+                          .collect(toList());
     }
 }

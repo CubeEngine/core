@@ -24,29 +24,27 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleClassLoader;
 import de.cubeisland.engine.core.module.service.ServiceManager;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.ServicesManager;
 
-public class BukkitServiceManager extends ServiceManager implements ServicesManager
+public class SpongeServiceManager extends ServiceManager implements org.spongepowered.api.service.ServiceManager
 {
     private final SpongeCore core;
-    private final ServicesManager servicesManager;
+    private final org.spongepowered.api.service.ServiceManager servicesManager;
     private final Map<Class<?>, Module> serviceMap;
     private final Map<Module, List<Object>> providerMap;
 
-    public BukkitServiceManager(SpongeCore core)
+    public SpongeServiceManager(SpongeCore core)
     {
         super(core);
         this.core = core;
-        this.servicesManager = core.getServer().getServicesManager();
+        this.servicesManager = core.getGame().getServiceManager();
         this.serviceMap = new HashMap<>();
         this.providerMap = new HashMap<>();
     }
+
 
     public <T> void register(Class<T> service, T provider, Module module, ServicePriority priority)
     {
@@ -139,20 +137,6 @@ public class BukkitServiceManager extends ServiceManager implements ServicesMana
     public <T> boolean isProvidedFor(Class<T> service)
     {
         return servicesManager.isProvidedFor(service);
-    }
-
-    @Override
-    @Deprecated
-    public <T> void register(Class<T> service, T provider, Plugin plugin, ServicePriority priority)
-    {
-        throw new UnsupportedOperationException("Module should not use this!");
-    }
-
-    @Override
-    @Deprecated
-    public void unregisterAll(Plugin plugin)
-    {
-        throw new UnsupportedOperationException("Module should not use this!");
     }
 
     @Override

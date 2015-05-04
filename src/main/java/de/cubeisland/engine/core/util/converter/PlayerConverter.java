@@ -21,11 +21,6 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.core.Core;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
-import org.spongepowered.api.GameProfile;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.User;
 

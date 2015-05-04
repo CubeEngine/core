@@ -20,13 +20,31 @@ package de.cubeisland.engine.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import org.bukkit.World.Environment;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.world.DimensionType;
 
-public class EnvironmentReader implements ArgumentReader<Environment>
+// TODO generic CatalogType Reader
+public class EnvironmentReader implements ArgumentReader<DimensionType>
 {
-    @Override
-    public Environment read(Class type, CommandInvocation invocation) throws ReaderException
+    private final GameRegistry registry;
+
+    public EnvironmentReader(Game game)
     {
-        return Environment.valueOf(invocation.consume(1).toUpperCase());
+        registry = game.getRegistry();
+    }
+
+    @Override
+    public DimensionType read(Class type, CommandInvocation invocation) throws ReaderException
+    {
+        String token = invocation.consume(1);
+        for (DimensionType dimensionType : registry.getAllOf(DimensionType.class))
+        {
+            if (dimensionType.getName().equalsIgnoreCase(token))
+            {
+                return dimensionType;
+            }
+        }
+        throw new ReaderException(""); // TODO error message
     }
 }

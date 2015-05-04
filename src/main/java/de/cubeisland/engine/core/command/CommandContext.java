@@ -23,6 +23,7 @@ import de.cubeisland.engine.core.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.spongepowered.api.text.Texts;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -48,7 +49,7 @@ public class CommandContext extends ParameterizedContext
 
     public void sendMessage(String message)
     {
-        ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(message);
+        ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(Texts.of(message));
     }
 
     public void sendTranslated(MessageType type, String message, Object... args)

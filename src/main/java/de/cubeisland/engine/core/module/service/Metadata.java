@@ -18,7 +18,7 @@
 package de.cubeisland.engine.core.module.service;
 
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.World;
+import org.spongepowered.api.world.World;
 
 public interface Metadata
 {

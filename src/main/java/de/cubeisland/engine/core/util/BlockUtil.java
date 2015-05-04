@@ -255,7 +255,7 @@ public class BlockUtil
      *
      * @return the top-data
      */
-    public static byte getTopDoorDataOnPlace(Material doorType, Location placeLocation, Player player)
+    public static byte getTopDoorDataOnPlace(BlockType doorType, Location placeLocation, Player player)
     {
         byte dir1 = 0;
         byte dir2 = 0;
@@ -274,10 +274,10 @@ public class BlockUtil
                 dir1 = 1;
                 break;
         }
-        Material negLocType = placeLocation.clone().add(-dir1, 0, -dir2).getBlock().getType();
-        Material negLocUpType = placeLocation.clone().add(-dir1, 1, -dir2).getBlock().getType();
-        Material posgLocType = placeLocation.clone().add(dir1, 0, dir2).getBlock().getType();
-        Material posLocUpType = placeLocation.clone().add(dir1, 1, dir2).getBlock().getType();
+        BlockType negLocType = placeLocation.clone().add(-dir1, 0, -dir2).getBlock().getType();
+        BlockType negLocUpType = placeLocation.clone().add(-dir1, 1, -dir2).getBlock().getType();
+        BlockType posgLocType = placeLocation.clone().add(dir1, 0, dir2).getBlock().getType();
+        BlockType posLocUpType = placeLocation.clone().add(dir1, 1, dir2).getBlock().getType();
         int hingeBlockSide1 = (isHingeBlock(negLocType) ? 1 : 0) + (isHingeBlock(negLocUpType) ? 1 : 0);
         int hingeBlockSide2 = (isHingeBlock(posgLocType) ? 1 : 0) + (isHingeBlock(posLocUpType) ? 1 : 0);
         boolean foundDoorSide1 = negLocType == doorType || negLocUpType == doorType;
@@ -285,7 +285,7 @@ public class BlockUtil
         return (byte)(8 | (((foundDoorSide1 && !foundDoorSide2) || (hingeBlockSide2 > hingeBlockSide1)) ? 1 : 0));
     }
 
-    private static boolean isHingeBlock(Material material)
+    private static boolean isHingeBlock(BlockType material)
     {
         net.minecraft.server.v1_8_R2.Block block = getBlockForId(material.getId());
         // called in ItemDoor.place(...)

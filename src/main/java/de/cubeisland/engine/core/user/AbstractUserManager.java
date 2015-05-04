@@ -49,9 +49,9 @@ import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.Bukkit;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
@@ -305,7 +305,7 @@ public abstract class AbstractUserManager implements UserManager
             }
         }
         ConsoleCommandSender cSender = this.core.getCommandManager().getConsoleSender();
-        cSender.sendMessage(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params));
+        cSender.sendMessage(Texts.of(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params)));
     }
 
     @Override
@@ -409,7 +409,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(message);
+            user.kick(Texts.of(message));
         }
     }
 
@@ -418,7 +418,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(user.getTranslation(NONE, message, params));
+            user.kick(Texts.of(user.getTranslation(NONE, message, params)));
         }
     }
 

@@ -17,8 +17,9 @@
  */
 package de.cubeisland.engine.core.util;
 
-import org.bukkit.Location;
-import org.bukkit.World;
+import com.flowpowered.math.vector.Vector3d;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 /**
  * A Location in a world (without the world)
@@ -40,7 +41,7 @@ public class WorldLocation
         this.pitch = pitch;
     }
 
-    public WorldLocation(Location location)
+    public WorldLocation(Location location, Vector3d rotation)
     {
         this.x = location.getX();
         this.y = location.getY();

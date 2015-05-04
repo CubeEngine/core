@@ -19,9 +19,8 @@ package de.cubeisland.engine.core.world;
 
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.sponge.CubeEvent;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.event.HandlerList;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 public class WorldSetSpawnEvent extends CubeEvent
 {
@@ -43,18 +42,5 @@ public class WorldSetSpawnEvent extends CubeEvent
     public Location getNewLocation()
     {
         return location;
-    }
-
-    private static final HandlerList handlers = new HandlerList();
-
-    @Override
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
     }
 }

@@ -20,10 +20,11 @@ package de.cubeisland.engine.core.util.formatter;
 import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
 import org.bukkit.block.Biome;
+import org.spongepowered.api.world.biome.BiomeType;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_AQUA;
 
-public class BiomeFormatter extends AbstractFormatter<Biome>
+public class BiomeFormatter extends AbstractFormatter<BiomeType>
 {
     public BiomeFormatter()
     {
@@ -32,8 +33,8 @@ public class BiomeFormatter extends AbstractFormatter<Biome>
     }
 
     @Override
-    public String process(Biome object, MacroContext context)
+    public String process(BiomeType object, MacroContext context)
     {
-        return object.name(); // TODO translation ?
+        return object.getName(); // TODO translation ?
     }
 }

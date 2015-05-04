@@ -18,9 +18,9 @@
 package de.cubeisland.engine.core.module.service;
 
 import de.cubeisland.engine.core.command.CommandSender;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.player.User;
+import org.spongepowered.api.world.World;
 
 public interface Permission
 {
@@ -28,25 +28,25 @@ public interface Permission
     boolean isEnabled();
     boolean hasSuperPermsCompat();
 
-    boolean has(World world, OfflinePlayer player, String permission);
+    boolean has(World world, User player, String permission);
     boolean has(CommandSender sender, String permission);
 
-    boolean add(World world, OfflinePlayer player, String permission);
+    boolean add(World world, User player, String permission);
     boolean addTemporary(World world, Player player, String permission);
 
-    boolean remove(World world, OfflinePlayer player, String permission);
-    boolean removeTemporary(World world, OfflinePlayer player, String permission);
+    boolean remove(World world, User player, String permission);
+    boolean removeTemporary(World world, User player, String permission);
 
     boolean has(World world, String role, String permission);
     boolean add(World world, String role, String permission);
     boolean remove(World world, String role, String permission);
 
-    boolean hasRole(World world, OfflinePlayer player, String role);
-    boolean addRole(World world, OfflinePlayer player, String role);
-    boolean removeRole(World world, OfflinePlayer player, String role);
+    boolean hasRole(World world, User player, String role);
+    boolean addRole(World world, User player, String role);
+    boolean removeRole(World world, User player, String role);
 
-    String[] getRoles(World world, OfflinePlayer player);
-    String getDominantRole(World world, OfflinePlayer player);
+    String[] getRoles(World world, User player);
+    String getDominantRole(World world, User player);
 
     boolean hasRoleSupport();
     String[] getRoles(World world);

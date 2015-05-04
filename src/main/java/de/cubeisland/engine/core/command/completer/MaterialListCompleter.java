@@ -19,50 +19,43 @@ package de.cubeisland.engine.core.command.completer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.core.util.StringUtils;
-import org.bukkit.Material;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.block.BlockType;
+
+import static java.util.stream.Collectors.toList;
+import static org.spongepowered.api.block.BlockTypes.AIR;
 
 public class MaterialListCompleter implements Completer
 {
-    private final Game game;
+    private final GameRegistry registry;
 
+    // TODO register completer
     public MaterialListCompleter(Game game)
     {
-        this.game = game;
+        registry = game.getRegistry();
     }
 
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
-        String token = invocation.currentToken();
-        List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
-        String lastToken = token.substring(token.lastIndexOf(",")+1,token.length()).toUpperCase();
-        List<String> matches = new ArrayList<>();
-        for (ItemType material : this.allTypes())
-        {
-            if (material.isBlock() && material != Material.AIR && material.getName().startsWith(lastToken) && !tokens.contains(material.getName()))
-            {
-                matches.add(token.substring(0, token.lastIndexOf(",") + 1) + material.getName());
-            }
-        }
-        return matches;
-    }
+        String fullToken = invocation.currentToken();
+        List<String> tokens = Arrays.asList(StringUtils.explode(",", fullToken));
+        int splitAt = fullToken.lastIndexOf(",");
+        String lastToken = fullToken.substring(splitAt +1,fullToken.length()).toUpperCase();
+        String firstTokens = fullToken.substring(0, splitAt + 1);
 
-    private Collection<ItemType> allTypes()
-    {
-        Set<ItemType> allTypes = new HashSet<>();
-        for (Set<ItemType> types : game.getRegistry().getGameDictionary().getAllItems().values())
-        {
-            allTypes.addAll(types);
-        }
-        return allTypes;
+        return registry.getAllOf(BlockType.class).stream()
+                       .filter(m -> m != AIR)
+                       .map(BlockType::getName)
+                       .filter(n -> n.startsWith(lastToken))
+                       .filter(n -> !tokens.contains(n))
+                       .map(n -> firstTokens + n)
+                       .collect(toList());
     }
 }

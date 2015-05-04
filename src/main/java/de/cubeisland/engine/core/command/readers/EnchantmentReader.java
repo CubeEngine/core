@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.command.readers;
 
+import java.util.stream.Collectors;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.SilentException;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
@@ -26,40 +27,32 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
-import static org.bukkit.Material.AIR;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
-    public static String getPossibleEnchantments(ItemStack item)
+    private GameRegistry registry;
+    public EnchantmentReader(Game game)
     {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (Enchantment enchantment : Enchantment.values())
-        {
-            if (item == null || item.getType() == AIR || enchantment.canEnchantItem(item))
-            {
-                if (first)
-                {
-                    sb.append(ChatFormat.YELLOW).append(Match.enchant().nameFor(enchantment));
-                    first = false;
-                }
-                else
-                {
-                    sb.append(ChatFormat.WHITE).append(", ").append(ChatFormat.YELLOW).append(Match.enchant()
-                                                                                                   .nameFor(enchantment));
-                }
-            }
-        }
-        if (sb.length() == 0)
+        registry = game.getRegistry();
+    }
+
+    public static String getPossibleEnchantments(GameRegistry registry, ItemStack item)
+    {
+        String collect = registry.getAllOf(Enchantment.class).stream()
+                                 .filter(e -> item == null || e.canBeAppliedToStack(item))
+                                 .map(Match.enchant()::nameFor)
+                                 .collect(Collectors.joining(ChatFormat.WHITE + ", " + ChatFormat.YELLOW));
+        if (collect.isEmpty())
         {
             return null;
         }
-        return sb.toString();
+        return ChatFormat.YELLOW + collect;
     }
 
     @Override
@@ -70,7 +63,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         if (enchantment == null)
         {
             User sender = (User)invocation.getCommandSource();
-            String possibleEnchs = getPossibleEnchantments(sender.getItemInHand());
+            String possibleEnchs = getPossibleEnchantments(registry, sender.getItemInHand().orNull());
 
             sender.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)
@@ -91,7 +84,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     public Enchantment getDefault(CommandInvocation invocation)
     {
         User sender = (User)invocation.getCommandSource();
-        sender.sendTranslated(POSITIVE, "Following Enchantments are availiable:\n{input#enchs}", EnchantmentReader.getPossibleEnchantments(null));
+        sender.sendTranslated(POSITIVE, "Following Enchantments are availiable:\n{input#enchs}", getPossibleEnchantments(registry, null));
         throw new TooFewArgumentsException();
     }
 }

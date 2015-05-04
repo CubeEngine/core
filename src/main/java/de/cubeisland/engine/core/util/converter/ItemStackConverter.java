@@ -23,7 +23,6 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter extends SimpleConverter<ItemStack>

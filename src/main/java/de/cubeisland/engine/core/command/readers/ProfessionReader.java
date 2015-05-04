@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.core.util.matcher.Match;
-import org.bukkit.entity.Villager.Profession;
+import org.spongepowered.api.data.types.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>
 {

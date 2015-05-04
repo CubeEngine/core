@@ -18,28 +18,14 @@
 package de.cubeisland.engine.core.user;
 
 import de.cubeisland.engine.core.Core;
-import org.bukkit.event.HandlerList;
 
 /**
  * Gets fired once the User is loaded (AND saved to database)
  */
 public class UserLoadedEvent extends UserEvent
 {
-    private static final HandlerList handlers = new HandlerList();
-
     public UserLoadedEvent(Core core, User user)
     {
         super(core, user);
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
-    }
-
-    @Override
-    public HandlerList getHandlers()
-    {
-        return handlers;
     }
 }

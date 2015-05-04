@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.StringUtils;
-import org.bukkit.World;
 import org.spongepowered.api.world.World;
 
 public class WorldMatcher

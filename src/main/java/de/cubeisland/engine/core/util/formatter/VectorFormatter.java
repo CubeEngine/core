@@ -25,8 +25,8 @@ import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
 import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_AQUA;
-import static org.bukkit.ChatColor.GOLD;
-import static org.bukkit.ChatColor.WHITE;
+import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
+import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
 
 @Names("vector")
 public class VectorFormatter extends ReflectedFormatter

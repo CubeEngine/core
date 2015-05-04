@@ -54,10 +54,8 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         }
         if (invocation.currentToken().contains(","))
         {
-            for (List<User> list : ((List<List<User>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation)))
-            {
-                users.addAll(list);
-            }
+            ((List<List<User>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation))
+                .forEach(users::addAll);
             return users;
         }
         String token = invocation.currentToken();

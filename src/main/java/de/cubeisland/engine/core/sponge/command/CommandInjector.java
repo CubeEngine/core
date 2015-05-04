@@ -35,16 +35,8 @@ import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.CubeDescriptor;
 import de.cubeisland.engine.core.command.HelpCommand;
 import de.cubeisland.engine.core.module.Module;
-import org.bukkit.command.Command;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.help.HelpTopic;
 import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.util.command.CommandMapping;
-
-import static de.cubeisland.engine.core.util.ReflectionUtils.findFirstField;
-import static de.cubeisland.engine.core.util.ReflectionUtils.getFieldValue;
 
 /**
  * Injects CubeEngine commands directly into Bukkits CommandMap

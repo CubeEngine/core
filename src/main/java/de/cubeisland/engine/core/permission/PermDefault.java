@@ -19,21 +19,9 @@ package de.cubeisland.engine.core.permission;
 
 public enum PermDefault
 {
-    TRUE(PermissionDefault.TRUE),
-    FALSE(PermissionDefault.FALSE),
-    OP(PermissionDefault.OP),
-    NOT_OP(PermissionDefault.NOT_OP),
-    DEFAULT(PermissionDefault.OP);
-
-    private final PermissionDefault value;
-
-    private PermDefault(PermissionDefault value)
-    {
-        this.value = value;
-    }
-
-    public PermissionDefault getValue()
-    {
-        return this.value;
-    }
+    TRUE,
+    FALSE,
+    OP,
+    NOT_OP,
+    DEFAULT
 }

@@ -22,6 +22,7 @@ import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleInfo;
 import de.cubeisland.engine.core.module.exception.MissingPluginDependencyException;
 import de.cubeisland.engine.core.module.exception.ModuleDependencyException;
+import org.spongepowered.api.plugin.PluginManager;
 
 public class BukkitModuleManager extends BaseModuleManager
 {
@@ -30,20 +31,20 @@ public class BukkitModuleManager extends BaseModuleManager
 
     public BukkitModuleManager(SpongeCore core, ClassLoader parentClassLoader)
     {
-        super(core, new BukkitServiceManager(core), new BukkitModuleLoader(core, parentClassLoader));
-        this.pluginManager = core.getServer().getPluginManager();
+        super(core, new SpongeServiceManager(core), new BukkitModuleLoader(core, parentClassLoader));
+        this.pluginManager = core.getGame().getPluginManager();
         this.core = core;
     }
 
     @Override
-    public BukkitServiceManager getServiceManager()
+    public SpongeServiceManager getServiceManager()
     {
-        return (BukkitServiceManager)super.getServiceManager();
+        return (SpongeServiceManager)super.getServiceManager();
     }
 
     void init()
     {
-        this.core.getServer().getScheduler().runTask(this.core, (Runnable)() -> {
+        this.core.getTaskManager().runTask(this.core.getModuleManager().getCoreModule(), () -> {
             synchronized (BukkitModuleManager.this)
             {
                 for (Module module : getModules())
@@ -67,7 +68,7 @@ public class BukkitModuleManager extends BaseModuleManager
         super.verifyDependencies(info);
         for (String plugin : info.getPluginDependencies())
         {
-            if (this.pluginManager.getPlugin(plugin) == null)
+            if (!this.pluginManager.getPlugin(plugin).isPresent())
             {
                 throw new MissingPluginDependencyException(plugin);
             }

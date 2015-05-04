@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import de.cubeisland.engine.core.user.User;
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.ItemStack;
 
 public class InventoryUtil
 {
@@ -33,10 +31,10 @@ public class InventoryUtil
         List<ItemStack> list = new ArrayList<>();
         for (ItemStack item : items)
         {
-            if (item.getAmount() > 64)
+            if (item.getQuantity() > 64)
             {
-                int amount = item.getAmount();
-                item.setAmount(64);
+                int amount = item.getQuantity();
+                item.setQuantity(64);
                 while (amount > 64)
                 {
                     ItemStack itemToAdd = item.clone();
@@ -45,7 +43,7 @@ public class InventoryUtil
                 }
                 if (amount > 0)
                 {
-                    item.setAmount(amount);
+                    item.setQuantity(amount);
                     list.add(item);
                 }
             }

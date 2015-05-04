@@ -37,7 +37,6 @@ public class PlayerCompleter implements Completer
         return !(sender instanceof User) || ((User)sender).canSee(user);
     }
 
-
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {

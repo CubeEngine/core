@@ -31,6 +31,7 @@ import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
 import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.core.util.ChatFormat.*;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
@@ -72,8 +73,9 @@ public class HelpCommand implements CommandBase
             labels.remove(labels.size() - 1);
         }
 
-        sender.sendTranslated(grey, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
-        sender.sendMessage(" ");
+        sender.sendTranslated(grey, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(
+            new String[labels.size()])));
+        sender.sendMessage(Texts.of(" "));
 
         if (helpTarget instanceof DispatcherCommand)
         {
@@ -82,7 +84,7 @@ public class HelpCommand implements CommandBase
                 || !(commands.iterator().next() instanceof HelpCommand))) // is Empty ignoring HelpCommand
             {
                 sender.sendTranslated(NEUTRAL, "The following sub-commands are available:");
-                sender.sendMessage(" ");
+                sender.sendMessage(Texts.of(" "));
                 for (CommandBase command : commands)
                 {
                     if (command instanceof HelpCommand
@@ -90,15 +92,16 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(YELLOW + command.getDescriptor().getName() + WHITE + ": " +
-                                         GREY + sender.getTranslation(NONE, command.getDescriptor().getDescription()));
+                    sender.sendMessage(
+                        Texts.of(YELLOW + command.getDescriptor().getName() + WHITE + ": " +
+                                         GREY + sender.getTranslation(NONE, command.getDescriptor().getDescription())));
             }
-                sender.sendMessage(" ");
+                sender.sendMessage(Texts.of(" "));
             }
             else if (helpTarget instanceof ParametricContainerCommand)
             {
                 sender.sendTranslated(NEGATIVE, "No actions are available");
-                sender.sendMessage(" ");
+                sender.sendMessage(Texts.of(" "));
             }
         }
 

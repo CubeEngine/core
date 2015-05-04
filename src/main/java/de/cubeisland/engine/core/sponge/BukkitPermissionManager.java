@@ -44,14 +44,14 @@ import static java.util.Locale.ENGLISH;
 public class BukkitPermissionManager implements PermissionManager
 {
     private final PluginManager pm;
-    private final Map<String, org.bukkit.permissions.Permission> wildcards;
+    private final Map<String, Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Log logger;
 
     private boolean startup;
-    private Map<String, org.bukkit.permissions.Permission> permissions;
-    private Set<org.bukkit.permissions.Permission> defaultPermTrue;
-    private Set<org.bukkit.permissions.Permission> defaultPermFalse;
+    private Map<String, Permission> permissions;
+    private Set<Permission> defaultPermTrue;
+    private Set<Permission> defaultPermFalse;
 
     @SuppressWarnings("unchecked")
     public BukkitPermissionManager(SpongeCore core)
@@ -62,11 +62,11 @@ public class BukkitPermissionManager implements PermissionManager
         {
             Field field = SimplePluginManager.class.getDeclaredField("permissions");
             field.setAccessible(true);
-            this.permissions = (Map<String, org.bukkit.permissions.Permission>)field.get(this.pm);
+            this.permissions = (Map<String, Permission>)field.get(this.pm);
             field = SimplePluginManager.class.getDeclaredField("defaultPerms");
             field.setAccessible(true);
-            Map<Boolean,Set<org.bukkit.permissions.Permission>> defaultPerms =
-                (Map<Boolean, Set<org.bukkit.permissions.Permission>>)field.get(this.pm);
+            Map<Boolean,Set<Permission>> defaultPerms =
+                (Map<Boolean, Set<Permission>>)field.get(this.pm);
             this.defaultPermTrue = defaultPerms.get(true);
             this.defaultPermFalse =  defaultPerms.get(false);
         }
@@ -85,7 +85,7 @@ public class BukkitPermissionManager implements PermissionManager
         this.registerPermission(core.getModuleManager().getCoreModule(), Permission.BASE);
     }
 
-    private void registerBukkitPermission(org.bukkit.permissions.Permission permission)
+    private void registerBukkitPermission(Permission permission)
     {
         try
         {
@@ -117,18 +117,18 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
-    private org.bukkit.permissions.Permission registerWildcard(Module module, String perm, PermDefault def)
+    private Permission registerWildcard(Module module, String perm, PermDefault def)
     {
         perm += ".*";
 
-        org.bukkit.permissions.Permission bWildcard = this.wildcards.get(perm);
+        Permission bWildcard = this.wildcards.get(perm);
         if (bWildcard == null || bWildcard.getDefault() != def.getValue())
         {
             if (bWildcard != null)
             {
                 this.pm.removePermission(bWildcard);
             }
-            this.registerBukkitPermission(bWildcard = new org.bukkit.permissions.Permission(perm, def.getValue()));
+            this.registerBukkitPermission(bWildcard = new Permission(perm, def.getValue()));
             this.getPermissions(module).add(perm);
         }
 
@@ -145,7 +145,7 @@ public class BukkitPermissionManager implements PermissionManager
         return perms;
     }
 
-    private org.bukkit.permissions.Permission registerPermission(Module module, String perm, PermDefault permDefault)
+    private Permission registerPermission(Module module, String perm, PermDefault permDefault)
     {
         expect(CubeEngine.isMainThread(), "Permissions may only be registered from the main thread!");
         expectNotNull(module, "The module must not be null!");
@@ -154,7 +154,7 @@ public class BukkitPermissionManager implements PermissionManager
 
         perm = perm.toLowerCase(ENGLISH);
 
-        org.bukkit.permissions.Permission bPermission = this.permissions.get(perm);
+        Permission bPermission = this.permissions.get(perm);
         if (bPermission == null || bPermission.getDefault() != permDefault.getValue())
         {
             if (bPermission != null)
@@ -168,7 +168,7 @@ public class BukkitPermissionManager implements PermissionManager
                 throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
             }
 
-            bPermission = new org.bukkit.permissions.Permission(perm, permDefault.getValue());
+            bPermission = new Permission(perm, permDefault.getValue());
             this.registerBukkitPermission(bPermission);
 
             this.getPermissions(module).add(perm);
@@ -179,8 +179,8 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        org.bukkit.permissions.Permission mainBPerm;
-        org.bukkit.permissions.Permission mainBWCPerm = null;
+        Permission mainBPerm;
+        Permission mainBWCPerm = null;
         if (permission.isWildcard())
         {
             mainBPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
@@ -198,7 +198,7 @@ public class BukkitPermissionManager implements PermissionManager
         // search/register direct parents and add parent to bukkitperm
         for (Permission parentPerm : permission.getParents())
         {
-            org.bukkit.permissions.Permission bParent;
+            Permission bParent;
             if (parentPerm.isWildcard() || parentPerm.getChildren().contains(permission))
             {
                 bParent = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
@@ -216,7 +216,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
         for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
         {
-            org.bukkit.permissions.Permission bChild = pm.getPermission(attached.getName() + (attached.isWildcard() ? ".*" : ""));
+            Permission bChild = pm.getPermission(attached.getName() + (attached.isWildcard() ? ".*" : ""));
             if (bChild != null)
             {
                 addParentIfNotExists(bChild, mainBPerm);
@@ -225,7 +225,7 @@ public class BukkitPermissionManager implements PermissionManager
         }
     }
 
-    private static void addParentIfNotExists(org.bukkit.permissions.Permission child, org.bukkit.permissions.Permission parent)
+    private static void addParentIfNotExists(Permission child, Permission parent)
     {
         Boolean set = parent.getChildren().get(child.getName());
         if (set == null || !set)
@@ -316,7 +316,7 @@ public class BukkitPermissionManager implements PermissionManager
         {
             throw new NullPointerException("The permission must not be null!");
         }
-        org.bukkit.permissions.Permission perm = this.pm.getPermission(permission);
+        Permission perm = this.pm.getPermission(permission);
         if (perm == null)
         {
             return null;

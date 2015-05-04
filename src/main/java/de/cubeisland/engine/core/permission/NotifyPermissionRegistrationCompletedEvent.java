@@ -26,7 +26,6 @@ import org.bukkit.event.HandlerList;
  */
 public class NotifyPermissionRegistrationCompletedEvent extends CubeEvent
 {
-    private static final HandlerList handlers = new HandlerList();
     private final Module module;
     private final Permission[] permissions;
 
@@ -46,16 +45,5 @@ public class NotifyPermissionRegistrationCompletedEvent extends CubeEvent
     public Permission[] getPermissions()
     {
         return permissions;
-    }
-
-    @Override
-    public HandlerList getHandlers()
-    {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList()
-    {
-        return handlers;
     }
 }
