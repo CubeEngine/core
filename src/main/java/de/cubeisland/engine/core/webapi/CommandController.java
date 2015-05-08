@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.core.webapi;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,16 +42,11 @@ public class CommandController
         User authUser = request.getAuthUser();
         final ApiCommandSender sender = authUser == null ? new ApiServerSender(core, mapper) : new ApiUser(core, authUser, mapper);
 
-        Future<ApiResponse> future = core.getTaskManager().callSync(new Callable<ApiResponse>()
-        {
-            @Override
-            public ApiResponse call() throws Exception
-            {
-                core.getCommandManager().runCommand(sender, command);
-                ApiResponse apiResponse = new ApiResponse();
-                apiResponse.setContent(sender.flush());
-                return apiResponse;
-            }
+        Future<ApiResponse> future = core.getTaskManager().callSync(() -> {
+            core.getCommandManager().runCommand(sender, command);
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setContent(sender.flush());
+            return apiResponse;
         });
         try
         {

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.sponge;
 
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.entity.player.PlayerKickEvent;
 
@@ -29,10 +30,10 @@ public class PreventSpamKickListener
         this.core = core;
     }
 
-    @Subscribe(order = LOWEST, ignoreCancelled = true)
+    @Subscribe(order = Order.EARLY, ignoreCancelled = true)
     public void onKick(PlayerKickEvent event)
     {
-        if (event.getReason().equals("disconnect.spam") && core.perms().SPAM.isAuthorized(event.getPlayer()))
+        if ("disconnect.spam".equals(event.getReason().get().getContent()) && core.perms().SPAM.isAuthorized(event.getPlayer()))
         {
             event.setCancelled(true);
         }

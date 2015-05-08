@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.permission;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.cubeisland.engine.core.user.User;
 import org.spongepowered.api.service.permission.Subject;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
@@ -239,6 +240,14 @@ public class Permission
 
         return permissible.hasPermission(this.getFullName());
     }
+
+    public boolean isAuthorized(User user)
+    {
+        expectNotNull(user, "The permissible may not be null!");
+
+        return user.hasPermission(this.getFullName());
+    }
+
 
     public String getName()
     {

@@ -46,18 +46,6 @@ public class ApiUser extends ApiCommandSender
     }
 
     @Override
-    public boolean isOp()
-    {
-        return user.isOp();
-    }
-
-    @Override
-    public boolean isPermissionSet(String name)
-    {
-        return true;
-    }
-
-    @Override
     public boolean hasPermission(String name)
     {
         de.cubeisland.engine.core.module.service.Permission permission = getCore().getModuleManager().getServiceManager().getServiceImplementation(
@@ -74,6 +62,6 @@ public class ApiUser extends ApiCommandSender
     @Override
     public String getDisplayName()
     {
-        return user.getDisplayName();
+        return user.getDisplayName().toString();
     }
 }

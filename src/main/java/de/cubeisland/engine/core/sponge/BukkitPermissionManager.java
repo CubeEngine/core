@@ -43,7 +43,6 @@ import static java.util.Locale.ENGLISH;
 
 public class BukkitPermissionManager implements PermissionManager
 {
-    private final PluginManager pm;
     private final Map<String, Permission> wildcards;
     private final Map<Module, Set<String>> modulePermissionMap;
     private final Log logger;

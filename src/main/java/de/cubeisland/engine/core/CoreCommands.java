@@ -163,17 +163,15 @@ public class CoreCommands extends ContainerCommand
             {
                 if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    Text msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!");
-                    msg = msg.builder().append(Texts.of("\n")).append(context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.")).build();
-
-                    this.banManager.addBan(new UserBan(context.getName(), context.getName(), msg,
+                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n" + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
+                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getName(), Texts.of(msg),
                         new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
 
                     if (!core.getGame().getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(),msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(), Texts.of(msg), new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
                     }
-                    context.kick(msg);
+                    context.kick(Texts.of(msg));
                 }
             }
             fails.put(context.getUniqueId(),System.currentTimeMillis());

@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
@@ -36,23 +38,19 @@ import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.world.TableWorld.TABLE_WORLD;
+import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractWorldManager implements WorldManager
 {
-    protected final Map<String, WorldEntity> worlds;
-    protected final Map<UInteger, World> worldIds;
-    protected final Set<UUID> worldUUIDs;
-    private final Map<String, Map<String, ChunkGenerator>> generatorMap;
+    protected final Map<String, WorldEntity> worlds = new HashMap<>();
+    protected final Map<UInteger, World> worldIds = new HashMap<>();
+    protected final Set<UUID> worldUUIDs = new HashSet<>();
 
     protected final Database database;
 
     public AbstractWorldManager(Core core)
     {
         this.database = core.getDB();
-        this.worlds = new HashMap<>();
-        this.worldIds = new HashMap<>();
-        this.worldUUIDs = new HashSet<>();
-        this.generatorMap = new HashMap<>();
     }
 
     @Override
@@ -93,9 +91,9 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity entity = this.worlds.get(name);
         if (entity == null)
         {
-            World world = this.getWorld(name);
-            if (world == null) return null;
-            return this.getWorldId(world);
+            Optional<World> world = this.getWorld(name);
+            if (!world.isPresent()) return null;
+            return this.getWorldId(world.get());
         }
         return entity.getValue(TABLE_WORLD.KEY);
     }
@@ -119,62 +117,15 @@ public abstract class AbstractWorldManager implements WorldManager
     }
 
     @Override
-    public synchronized void registerGenerator(Module module, String id, ChunkGenerator generator)
-    {
-        expectNotNull(id, "The ID must nto be null!");
-        expectNotNull(generator, "The generator must not be null!");
-
-        Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
-        if (moduleGenerators == null)
-        {
-            this.generatorMap.put(module.getId(), moduleGenerators = new HashMap<>(1));
-        }
-        moduleGenerators.put(id.toLowerCase(Locale.ENGLISH), generator);
-    }
-
-    @Override
-    public synchronized ChunkGenerator getGenerator(Module module, String id)
-    {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(id, "The ID must nto be null!");
-
-        Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
-        if (moduleGenerators != null)
-        {
-            return moduleGenerators.get(id.toLowerCase(Locale.ENGLISH));
-        }
-        return null;
-    }
-
-    @Override
-    public synchronized void removeGenerator(Module module, String id)
-    {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(id, "The ID must nto be null!");
-
-        Map<String, ChunkGenerator> moduleGenerators = this.generatorMap.get(module.getId());
-        if (moduleGenerators != null)
-        {
-            moduleGenerators.remove(id.toLowerCase(Locale.ENGLISH));
-        }
-    }
-
-    @Override
-    public synchronized void removeGenerators(Module module)
-    {
-        this.generatorMap.remove(module.getId());
-    }
-
-    @Override
     public boolean unloadWorld(String worldName, boolean save)
     {
-        return this.unloadWorld(this.getWorld(worldName), save);
+        return this.unloadWorld(this.getWorld(worldName).get(), save);
     }
 
     @Override
     public boolean deleteWorld(String worldName) throws IOException
     {
-        return this.deleteWorld(this.getWorld(worldName));
+        return this.deleteWorld(this.getWorld(worldName).get());
     }
 
 
@@ -184,17 +135,11 @@ public abstract class AbstractWorldManager implements WorldManager
         this.worlds.clear();
         this.worldIds.clear();
         this.worldUUIDs.clear();
-        this.generatorMap.clear();
     }
 
     @Override
     public List<String> getWorldNames()
     {
-        List<String> worlds = new ArrayList<>();
-        for (World world : this.getWorlds())
-        {
-            worlds.add(world.getName());
-        }
-        return worlds;
+        return this.getWorlds().stream().map(World::getName).collect(toList());
     }
 }

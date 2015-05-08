@@ -45,6 +45,7 @@ import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Profiler;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.data.manipulators.entities.JoinData;
 import org.spongepowered.api.data.manipulators.entities.WhitelistData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -122,8 +123,8 @@ public class VanillaCommands
         long time = System.currentTimeMillis();
         I18n i18n = this.core.getI18n();
         this.core.getGame().getServer().reload();
-        context.sendMessage(Texts.of(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
-                                           MILLISECONDS.toSeconds(System.currentTimeMillis() - time))));
+        context.sendMessage(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
+                                           MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
     }
 
     @Command(desc = "Changes the difficulty level of the server")
@@ -168,14 +169,14 @@ public class VanillaCommands
                 return;
             }
             context.sendTranslated(NEUTRAL, "The following users are operators:");
-            context.sendMessage(Texts.of(" "));
+            context.sendMessage(" ");
             for (org.spongepowered.api.entity.player.User opPlayer : ops)
             {
-                context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", opPlayer, new Date(opPlayer.getLastPlayed()));
+                context.sendTranslated(POSITIVE, " - {user} (Last seen: {date:notime})", opPlayer, opPlayer.getData(JoinData.class).get().getLastPlayed());
             }
             return;
         }
-        if (!(player.hasPlayedBefore() || player.isOnline()) && !force)
+        if (!(player.getData(JoinData.class).isPresent() || player.isOnline()) && !force)
         {
             context.sendTranslated(NEGATIVE, "{user} has never played on this server!", player);
             context.sendTranslated(NEGATIVE, "If you still want to op him, use the -force flag.");
@@ -415,7 +416,7 @@ public class VanillaCommands
             {
                 context.sendTranslated(POSITIVE, "The whitelist is enabled!.");
             }
-            context.sendMessage(Texts.of(" "));
+            context.sendMessage(" ");
             if (whitelist.isEmpty())
             {
                 context.sendTranslated(NEUTRAL, "There are currently no whitelisted players!");
@@ -425,7 +426,7 @@ public class VanillaCommands
                 context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
                 for (org.spongepowered.api.entity.player.User player : whitelist)
                 {
-                    context.sendMessage(Texts.of(" - " + player.getName()));
+                    context.sendMessage(" - " + player.getName());
                 }
             }
             Set<org.spongepowered.api.entity.player.User> operators = this.core.getGame().getServer().getOperators();
@@ -434,7 +435,7 @@ public class VanillaCommands
                 context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
                 for (org.spongepowered.api.entity.player.User operator : operators)
                 {
-                    context.sendMessage(Texts.of(" - " + operator.getName()));
+                    context.sendMessage(" - " + operator.getName());
                 }
             }
         }
@@ -448,7 +449,6 @@ public class VanillaCommands
                 return;
             }
             this.core.getGame().getServer().setHasWhitelist(true);
-            BukkitUtils.saveServerProperties();
             context.sendTranslated(POSITIVE, "The whitelist is now enabled.");
         }
 
@@ -461,7 +461,6 @@ public class VanillaCommands
                 return;
             }
             this.core.getGame().getServer().setHasWhitelist(false);
-            BukkitUtils.saveServerProperties();
             context.sendTranslated(POSITIVE, "The whitelist is now disabled.");
         }
 

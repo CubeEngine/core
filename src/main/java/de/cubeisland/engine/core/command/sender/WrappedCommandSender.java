@@ -28,12 +28,12 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
-public class WrappedCommandSender implements CommandSender
+public class WrappedCommandSender<W extends CommandSource> implements CommandSender
 {
     private final Core core;
-    private final CommandSource wrapped;
+    private final W wrapped;
 
-    public WrappedCommandSender(Core core, CommandSource sender)
+    public WrappedCommandSender(Core core, W sender)
     {
         this.core = core;
         this.wrapped = sender;
@@ -58,31 +58,19 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public String getName()
     {
-        return this.getWrappedSender().getName();
+        return this.getWrappedSender().getIdentifier();
     }
 
     @Override
     public String getDisplayName()
     {
-        return this.getName();
-    }
-
-    @Override
-    public boolean isAuthorized(Permission perm)
-    {
-        return this.getWrappedSender().hasPermission(perm.getName());
+        return this.getWrappedSender().getName();
     }
 
     @Override
     public Locale getLocale()
     {
         return Locale.getDefault();
-    }
-
-    @Override
-    public Server getServer()
-    {
-        return this.getWrappedSender().getServer();
     }
 
     @Override
@@ -94,9 +82,8 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public void sendTranslated(MessageType type, String message, Object... params)
     {
-        this.sendMessage(Texts.of(this.getTranslation(type, message, params)));
+        this.sendMessage(this.getTranslation(type, message, params));
     }
-
 
     @Override
     public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
@@ -108,7 +95,7 @@ public class WrappedCommandSender implements CommandSender
     @Override
     public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        this.sendMessage(Texts.of(this.getTranslationN(type, n, singular, plural, params)));
+        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
     }
 
     @Override
@@ -117,7 +104,7 @@ public class WrappedCommandSender implements CommandSender
         return this.getWrappedSender().hasPermission(name);
     }
 
-    public CommandSource getWrappedSender()
+    public W getWrappedSender()
     {
         return this.wrapped;
     }
@@ -145,5 +132,11 @@ public class WrappedCommandSender implements CommandSender
     public int hashCode()
     {
         return this.getWrappedSender().hashCode();
+    }
+
+    @Override
+    public void sendMessage(String msg)
+    {
+        getWrappedSender().sendMessage(Texts.of(msg));
     }
 }

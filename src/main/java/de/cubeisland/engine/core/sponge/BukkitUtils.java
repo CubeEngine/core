@@ -18,22 +18,13 @@
 package de.cubeisland.engine.core.sponge;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Locale;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.module.Module;
-
 import org.apache.logging.log4j.LogManager;
-
 import org.spongepowered.api.data.properties.BurningFuelProperty;
 import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.living.Living;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -44,29 +35,9 @@ import sun.misc.SignalHandler;
 public class BukkitUtils
 {
     private static CommandLogFilter commandFilter = null;
-    private static Field dragonTarget;
 
     private BukkitUtils()
     {}
-
-    public static Locale getLocaleFromSender(CommandSource sender)
-    {
-
-        if (sender instanceof de.cubeisland.engine.core.command.CommandSender)
-        {
-            return ((de.cubeisland.engine.core.command.CommandSender)sender).getLocale();
-        }
-        Locale locale = null;
-        if (sender instanceof Player)
-        {
-            locale = ((Player)sender).getLocale();
-        }
-        if (locale == null)
-        {
-            return Locale.getDefault();
-        }
-        return locale;
-    }
 
     public static void disableCommandLogging()
     {
@@ -88,24 +59,13 @@ public class BukkitUtils
     }
     public static synchronized void cleanup()
     {
-        dragonTarget = null;
         resetCommandLogging();
-    }
-
-    public static void saveServerProperties()
-    {
-        getCraftServer().getServer().getPropertyManager().savePropertiesFile();
     }
 
     public static void wipeWhitelist()
     {
         WhiteList whitelist = getCraftServer().getHandle().getWhitelist();
         new ClearJsonList(whitelist);
-    }
-
-    private static Item getItem(Material m)
-    {
-        return (Item)Item.REGISTRY.a(m.getId());
     }
 
     /**
@@ -120,7 +80,7 @@ public class BukkitUtils
         {
             return item.getDurability() == 3; // pufferfish
         }
-        return getItem(item.getType()).j(null) != null; // Items that can be brewed return a String here else null
+        return Item.REGISTRY.a(item.getType().getId()).j(null) != null; // Items that can be brewed return a String here else null
     }
 
     public static boolean isFuel(ItemStack item)
@@ -201,60 +161,6 @@ public class BukkitUtils
         {}
     }
 
-    public static Player getOfflinePlayerAsPlayer(User player)
-    {
-        MinecraftServer minecraftServer = DedicatedServer.getServer();
-
-        //Create and load the target EntityPlayer
-        EntityPlayer entityPlayer = new EntityPlayer(DedicatedServer.getServer(), minecraftServer.getWorldServer(0), new GameProfile(player.getUniqueId(), player.getName()),
-                             new PlayerInteractManager(minecraftServer.getWorldServer(0)));
-        entityPlayer.getBukkitEntity().loadData();
-        return entityPlayer.getBukkitEntity();
-    }
-
-    public static Living getTarget(Living hunter) {
-        if (hunter == null) return null;
-        EntityLiving entity = ((CraftLivingEntity) hunter).getHandle();
-        if (entity == null) return null;
-        try
-        {
-            if (entity instanceof EntityGhast)
-            {
-                return (LivingEntity)((EntityGhast)entity).getGoalTarget().getBukkitEntity();
-            }
-            if(entity instanceof EntityEnderDragon)
-            {
-                if (dragonTarget == null)
-                {
-                    dragonTarget = entity.getClass().getDeclaredField("by"); // used by EntityTargetEvent in EntityEnderDragon
-                    dragonTarget.setAccessible(true);
-                }
-                return (LivingEntity)((Entity)dragonTarget.get(entity)).getBukkitEntity();
-            }
-            return null;
-        }
-        catch (Exception ex)
-        {
-            CubeEngine.getCore().getLog().warn(ex, "Could not get Target of Ghast or Enderdragon");
-            return null;
-        }
-    }
-
-    public static double getEntitySpeed(Living entity)
-    {
-        return (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).getValue();
-    }
-
-    public static void setEntitySpeed(Living entity, double value)
-    {
-        (((CraftLivingEntity)entity).getHandle()).getAttributeInstance(GenericAttributes.d).setValue(value);
-    }
-
-    static boolean isAnsiSupported(Server server)
-    {
-        return ((CraftServer)server).getReader().getTerminal().isAnsiSupported();
-    }
-
     /**
      * Teleport player & entities crossworld (including passengers)
      *
@@ -283,14 +189,7 @@ public class BukkitUtils
                 entity.passenger = null;
                 if (teleport(module, passenger, to))
                 {
-                    module.getCore().getTaskManager().runTaskDelayed(module, new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            passenger.mount(entity);
-                        }
-                    }, 0);
+                    module.getCore().getTaskManager().runTaskDelayed(module, () -> passenger.mount(entity), 0);
                 }
             }
 

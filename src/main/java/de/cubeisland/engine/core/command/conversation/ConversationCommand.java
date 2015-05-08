@@ -81,6 +81,7 @@ public abstract class ConversationCommand extends ContainerCommand
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 
+    /* TODO Chat Tabcompletion Events
     @Subscribe
     public void onTabComplete(ChatTabCompleteEvent event)
     {
@@ -96,6 +97,7 @@ public abstract class ConversationCommand extends ContainerCommand
             }
         }
     }
+    */
 
     /**
      * Adds a user to this chat-commands internal list

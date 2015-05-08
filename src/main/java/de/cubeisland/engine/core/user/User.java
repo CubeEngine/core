@@ -43,7 +43,10 @@ import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.data.DataManipulator;
+import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.monster.Spider;
@@ -247,12 +250,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         this.sendMessage(this.getCore().getI18n().composeMessage(this.getLocale(), type, message, params));
     }
 
-    @Override
-    public boolean isAuthorized(de.cubeisland.engine.core.permission.Permission perm)
-    {
-        return this.hasPermission(perm.getName());
-    }
-
     /**
      * Returns the users configured locale
      *
@@ -308,7 +305,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         // TODO do we still need this? return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
     }
 
-    public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
+    public boolean safeTeleport(Location location, boolean keepDirection)
     {
         Optional<Location> safeLocation = ((SpongeCore)core).getGame().getTeleportHelper().getSafeLocation(location);
         if (safeLocation.isPresent())
@@ -316,14 +313,14 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             location = safeLocation.get();
         }
 
-
         if (keepDirection)
         {
-            this.setLocationAndRotation(location, getRotation());
+            this.teleport(location);
+            // TODO rotation stays? this.setRotation(getRotation());
         }
         else
         {
-            this.setLocation(location);
+            this.teleport(location);
         }
         return true;
     }
@@ -361,6 +358,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     {
         return getData(InvulnerabilityData.class).isPresent();
     }
+
 
     public void setInvulnerable(boolean state)
     {
@@ -518,6 +516,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public Iterator<Location> getLineOfSight(int maxDistance)
     {
+
         if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
             maxDistance = Bukkit.getServer().getViewDistance() * 16;
         }

@@ -93,7 +93,6 @@ public class ModuleInfo
         expectNotNull(config.name, "The module doesn't seem to have a name.");
 
         this.name = config.name.trim();
-        Validate.notEmpty(this.name, "The module name seems to be empty.");
 
         this.path = path;
         this.id = nameToId(config.name);

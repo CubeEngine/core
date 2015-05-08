@@ -19,7 +19,6 @@ package de.cubeisland.engine.core.util.formatter;
 
 import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import org.bukkit.block.Biome;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import static de.cubeisland.engine.core.util.ChatFormat.DARK_AQUA;

@@ -18,19 +18,23 @@
 package de.cubeisland.engine.core.sponge;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandBuilder;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.DispatcherCommand;
-import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
-import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
-import de.cubeisland.engine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.butler.ProviderManager;
+import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
+import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
+import de.cubeisland.engine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.sponge.command.CommandInjector;
 import de.cubeisland.engine.core.command.CommandManager;
 import de.cubeisland.engine.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.core.command.CommandOrigin;
@@ -47,11 +51,11 @@ import de.cubeisland.engine.core.command.readers.BooleanReader;
 import de.cubeisland.engine.core.command.readers.ByteReader;
 import de.cubeisland.engine.core.command.readers.CommandSenderReader;
 import de.cubeisland.engine.core.command.readers.DifficultyReader;
+import de.cubeisland.engine.core.command.readers.DimensionTypeReader;
 import de.cubeisland.engine.core.command.readers.DoubleReader;
 import de.cubeisland.engine.core.command.readers.DyeColorReader;
 import de.cubeisland.engine.core.command.readers.EnchantmentReader;
 import de.cubeisland.engine.core.command.readers.EntityTypeReader;
-import de.cubeisland.engine.core.command.readers.EnvironmentReader;
 import de.cubeisland.engine.core.command.readers.FloatReader;
 import de.cubeisland.engine.core.command.readers.IntReader;
 import de.cubeisland.engine.core.command.readers.ItemStackReader;
@@ -67,10 +71,10 @@ import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
+import de.cubeisland.engine.core.sponge.command.ProxyCallable;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserList.UserListReader;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import org.spongepowered.api.data.types.DyeColor;
@@ -78,6 +82,10 @@ import org.spongepowered.api.data.types.Profession;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.service.command.CommandService;
+import org.spongepowered.api.util.command.CommandMapping;
+import org.spongepowered.api.util.command.CommandResult;
+import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
@@ -85,13 +93,15 @@ import static de.cubeisland.engine.core.contract.Contract.expect;
 
 public class SpongeCommandManager extends DispatcherCommand implements CommandManager
 {
-    private final CommandInjector injector;
     private final ConsoleCommandSender consoleSender;
     private final Log commandLogger;
     private final ConfirmManager confirmManager;
     private final PaginationManager paginationManager;
     private final ProviderManager providerManager;
     private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
+    private final CommandService baseDispatcher;
+
+    private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
 
     private Core core;
 
@@ -101,13 +111,13 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         return (CommandManagerDescriptor)super.getDescriptor();
     }
 
-    public SpongeCommandManager(SpongeCore core, CommandInjector injector)
+    public SpongeCommandManager(SpongeCore core)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
+        this.baseDispatcher = core.getGame().getCommandDispatcher();
 
         this.consoleSender = new ConsoleCommandSender(core);
-        this.injector = injector;
 
         this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 
@@ -131,7 +141,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new DoubleReader(), Double.class, double.class);
 
         providerManager.register(core, new BooleanReader(core), Boolean.class, boolean.class);
-        providerManager.register(core, new EnchantmentReader(), Enchantment.class);
+        providerManager.register(core, new EnchantmentReader(core.getGame()), Enchantment.class);
         providerManager.register(core, new ItemStackReader(), ItemStack.class);
         providerManager.register(core, new UserReader(core), User.class);
         providerManager.register(core, new CommandSenderReader(core), CommandSender.class);
@@ -140,8 +150,8 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new DyeColorReader(), DyeColor.class);
         providerManager.register(core, new ProfessionReader(), Profession.class);
         providerManager.register(core, new OfflinePlayerReader(core), org.spongepowered.api.entity.player.User.class);
-        providerManager.register(core, new EnvironmentReader(), Environment.class);
-        providerManager.register(core, new DifficultyReader(), Difficulty.class);
+        providerManager.register(core, new DimensionTypeReader(core.getGame()), DimensionType.class);
+        providerManager.register(core, new DifficultyReader(core.getGame()), Difficulty.class);
         providerManager.register(core, new LogLevelReader(), LogLevel.class);
 
         UserListReader userListReader = new UserListReader();
@@ -156,15 +166,30 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         return providerManager;
     }
 
-    public CommandInjector getInjector()
-    {
-        return injector;
-    }
-
     @Override
     public void removeCommand(String name, boolean completely)
     {
-        this.injector.removeCommand(name, completely);
+        Optional<? extends CommandMapping> mapping = baseDispatcher.get(name);
+        if (mapping.isPresent())
+        {
+            if (completely)
+            {
+                baseDispatcher.removeMapping(mapping.get());
+                // TODO remove all alias
+            }
+            else
+            {
+                if (mapping.get().getCallable() instanceof ProxyCallable)
+                {
+                    baseDispatcher.removeMapping(mapping.get());
+                    removeCommand(getCommand(((ProxyCallable)mapping.get().getCallable()).getAlias()));
+                }
+                else
+                {
+                    throw new UnsupportedOperationException("Only WrappedCommands can ");
+                }
+            }
+        }
     }
 
     @Override
@@ -176,44 +201,66 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public void removeCommands(Module module)
     {
-        this.injector.removeCommands(module);
+        Set<CommandMapping> byModule = mappings.get(module);
+        if (byModule != null)
+        {
+            byModule.forEach(baseDispatcher::removeMapping);
+        }
     }
 
     @Override
     public void removeCommands()
     {
-        this.injector.removeCommands();
+        // TODO remove all registered commands by us
     }
 
     @Override
     public void clean()
     {
-        this.injector.shutdown();
+        removeCommands();
     }
 
     @Override
     public boolean addCommand(CommandBase command)
     {
+        Module module = core.getModuleManager().getCoreModule();
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
-            Module module = ((CubeDescriptor)command.getDescriptor()).getModule();
+            module = ((CubeDescriptor)command.getDescriptor()).getModule();
             Permission perm = module.getBasePermission().childWildcard("command");
             Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
             childPerm.setParent(perm);
             this.core.getPermissionManager().registerPermission(module, childPerm);
         }
         boolean b = super.addCommand(command);
-        // TODO handle perm when removing cmd from parent
-        this.injector.registerCommand(command); // register at sponge
+
+        Optional<CommandMapping> mapping = registerSpongeCommand(command.getDescriptor().getName());
+        if (mapping.isPresent())
+        {
+            Set<CommandMapping> byModule = mappings.get(module);
+            if (byModule == null)
+            {
+                byModule = new HashSet<>();
+                mappings.put(module, byModule);
+            }
+            byModule.add(mapping.get());
+            return b;
+        }
+        module.getLog().warn("Command was not registered successfully!");
         return b;
+    }
+
+    private Optional<CommandMapping> registerSpongeCommand(String name)
+    {
+        return baseDispatcher.register(core, new ProxyCallable(core, this, name), name);
     }
 
     @Override
     public boolean runCommand(CommandSender sender, String commandLine)
     {
         expect(CubeEngine.isMainThread(), "Commands may only be called synchronously!");
-
-        return this.injector.dispatchCommand(sender, commandLine);
+        Optional<CommandResult> process = baseDispatcher.process(sender.getCommandSource().get(), commandLine);
+        return process.isPresent();
     }
 
     @Override
@@ -223,29 +270,29 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    public void logExecution(CommandSource sender, boolean ran, CommandBase command, String[] args)
+    public void logExecution(CommandSource sender, boolean ran, String command, String args)
     {
-        CommandDescriptor descriptor = command.getDescriptor();
+        CommandDescriptor descriptor = getCommand(command).getDescriptor();
         if (descriptor instanceof CubeCommandDescriptor && ((CubeCommandDescriptor)descriptor).isLoggable())
         {
             if (ran)
             {
-                this.commandLogger.debug("execute {} {}: {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
+                this.commandLogger.debug("execute {} {}: {}", sender.getName(), descriptor.getName(), args);
             }
             else
             {
-                this.commandLogger.debug("failed {} {}; {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
+                this.commandLogger.debug("failed {} {}; {}", sender.getName(), descriptor.getName(), args);
             }
         }
     }
 
     @Override
-    public void logTabCompletion(CommandSource sender, CommandBase command, String[] args)
+    public void logTabCompletion(CommandSource sender, String command, String args)
     {
-        CommandDescriptor descriptor = command.getDescriptor();
+        CommandDescriptor descriptor = getCommand(command).getDescriptor();
         if (descriptor instanceof CubeCommandDescriptor && ((CubeCommandDescriptor)descriptor).isLoggable())
         {
-            this.commandLogger.debug("getSuggestions {} {}: {}", sender.getName(), descriptor.getName(), StringUtils.implode(" ", args));
+            this.commandLogger.debug("getSuggestions {} {}: {}", sender.getName(), descriptor.getName(), args);
         }
     }
 
@@ -289,4 +336,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             }
         }
     }
+
+
 }

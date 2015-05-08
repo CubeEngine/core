@@ -150,7 +150,7 @@ public class SpongeTaskManager implements TaskManager
     public <T> Future<T> callSync(Callable<T> callable)
     {
         expectNotNull(callable, "The callable must not be null!");
-        return this.bukkitScheduler.callSyncMethod(this.corePlugin, callable);
+        return this.syncScheduler.runTask(corePlugin, callable);
     }
 
     @Override
@@ -188,15 +188,15 @@ public class SpongeTaskManager implements TaskManager
     }
 
     @Override
-    public boolean isCurrentlyRunning(int taskID)
+    public boolean isCurrentlyRunning(UUID taskID)
     {
-        return this.bukkitScheduler.isCurrentlyRunning(taskID);
+        this.syncScheduler.getTaskById(taskID); // TODO
     }
 
     @Override
-    public boolean isQueued(int taskID)
+    public boolean isQueued(UUID taskID)
     {
-        return this.bukkitScheduler.isQueued(taskID);
+        this.syncScheduler.getTaskById(taskID); // TODO
     }
 
     @Override

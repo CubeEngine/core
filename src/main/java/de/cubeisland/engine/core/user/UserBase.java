@@ -19,15 +19,13 @@ package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.sponge.BukkitUtils;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Server;
+import org.spongepowered.api.data.DataManipulator;
+import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.manipulators.entities.ExperienceHolderData;
 import org.spongepowered.api.data.manipulators.entities.FlyingData;
 import org.spongepowered.api.data.manipulators.entities.FoodData;
@@ -37,7 +35,6 @@ import org.spongepowered.api.data.manipulators.entities.IgniteableData;
 import org.spongepowered.api.data.manipulators.entities.JoinData;
 import org.spongepowered.api.data.manipulators.entities.PassengerData;
 import org.spongepowered.api.data.manipulators.entities.SneakingData;
-import org.spongepowered.api.data.manipulators.entities.VehicleData;
 import org.spongepowered.api.data.manipulators.entities.VelocityData;
 import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.Entity;
@@ -45,15 +42,11 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.gamemode.GameMode;
-import org.spongepowered.api.entity.player.tab.TabList;
 import org.spongepowered.api.entity.projectile.Projectile;
-import org.spongepowered.api.entity.projectile.source.ProjectileSource;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.types.CarriedInventory;
-import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.source.LocatedSource;
@@ -64,13 +57,10 @@ import org.spongepowered.api.world.weather.Weather;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 
 /**
- * Wrapper around the BukkitPlayer/OfflinePlayer
+ * Wrapper around the Sponge Player/User
  */
-public class UserBase implements Player
+public class UserBase
 {
-    private static final int NBT_ID_TAGCOMPOUND = 10;
-    private static final int NBT_ID_DOUBLE = 6;
-    private static final int NBT_ID_FLOAT = 5;
     private final UUID uuid;
     User cachedOfflinePlayer = null;
 
@@ -97,19 +87,19 @@ public class UserBase implements Player
         return cachedOfflinePlayer;
     }
 
-    public Text getDisplayName()
+    public String getDisplayName()
     {
-        Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            return player.get().getDisplayNameData().getDisplayName();
+            return player.get().getDisplayNameData().getDisplayName().toString();
         }
-        return Texts.of(this.getOfflinePlayer().getName());
+        return this.getOfflinePlayer().getName();
     }
 
     public void setDisplayName(String string)
     {
-        Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().getDisplayNameData().setDisplayName(Texts.of(string));
@@ -118,7 +108,7 @@ public class UserBase implements Player
 
     public InetSocketAddress getAddress()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             return player.get().getConnection().getAddress();
@@ -126,64 +116,48 @@ public class UserBase implements Player
         return null;
     }
 
-    @Override
     public void kick(Literal reason)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().kick(reason);
         }
     }
 
-    @Override
     public void chat(String string)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().chat(string);
         }
     }
 
-    @Override
     public boolean performCommand(String string)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         return player.isPresent() && player.get().run(string);
     }
 
     public boolean isSneaking()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         return player.isPresent() && player.get().getData(SneakingData.class).isPresent();
     }
 
-    @Override
-    @Deprecated
-    public void updateInventory()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().updateInventory();
-        }
-    }
-
-    @Override
     public void setPlayerTime(long l, boolean bln)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().setPlayerTime(l, bln);
         }
     }
 
-    @Override
     public void resetPlayerTime()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().resetPlayerTime();
@@ -238,32 +212,29 @@ public class UserBase implements Player
         foodData.setFoodLevel(d);
     }
 
-    @Override
     public boolean getAllowFlight()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         return player.isPresent() && player.get().getAllowFlight();
     }
 
-    @Override
     public void setAllowFlight(boolean bln)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().setAllowFlight(bln);
         }
     }
 
-    @Override
     public void hidePlayer(Player playerToHide)
     {
-        final Player player = this.getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             if (playerToHide instanceof User)
             {
-                playerToHide = playerToHide.getPlayer();
+                playerToHide = playerToHide.getPlayer().get();
             }
             if (playerToHide != null)
             {
@@ -272,15 +243,14 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void showPlayer(Player playerToShow)
     {
-        final Player player = this.getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             if (playerToShow instanceof User)
             {
-                playerToShow = playerToShow.getPlayer();
+                playerToShow = playerToShow.getPlayer().get();
             }
             if (playerToShow != null)
             {
@@ -289,30 +259,15 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public boolean canSee(Player playerToCheck)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         return player.isPresent() && player.get().canSee(playerToCheck);
     }
 
-    @Override
     public boolean isOnGround()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().isOnGround();
-        }
-        else
-        {
-            NBTTagCompound data = this.getData();
-            if (data != null)
-            {
-                return data.getBoolean("OnGround");
-            }
-        }
-        return true;
+        return getPlayer().transform(Entity::isOnGround).or(true);
     }
 
     public boolean isFlying()
@@ -320,29 +275,32 @@ public class UserBase implements Player
         return getOfflinePlayer().getData(FlyingData.class).isPresent();
     }
 
-    @Override
     public void setFlying(boolean bln)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().setFlying(bln);
+            if (bln)
+            {
+                player.get().getOrCreate(FlyingData.class);
+            }
+            else
+            {
+                player.get().remove(FlyingData.class);
+            }
         }
     }
 
-    @Override
     public String getName()
     {
         return this.getOfflinePlayer().getName();
     }
 
-    @Override
     public CarriedInventory<? extends Carrier> getInventory()
     {
         return getOfflinePlayer().getInventory();
     }
 
-    @Override
     public Optional<Inventory> getOpenInventory()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -350,10 +308,9 @@ public class UserBase implements Player
         {
             return player.get().getOpenInventory();
         }
-        return null;
+        return Optional.absent();
     }
 
-    @Override
     public void openInventory(Inventory invntr)
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -363,7 +320,6 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void closeInventory()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -373,13 +329,11 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public Optional<ItemStack> getItemInHand()
     {
         return getOfflinePlayer().getItemInHand();
     }
 
-    @Override
     public void setItemInHand(ItemStack is)
     {
         getOfflinePlayer().setItemInHand(is);
@@ -397,7 +351,6 @@ public class UserBase implements Player
     }
 
 
-    @Override
     public Location getEyeLocation()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -408,16 +361,9 @@ public class UserBase implements Player
         return null;
     }
 
-    @Override
     public <T extends Projectile> T launchProjectile(Class<T> type)
     {
         return getPlayer().transform(input -> input.launchProjectile(type)).orNull();
-    }
-
-    @Override
-    public <T extends Projectile> T launchProjectile(Class<T> type, Vector3d vector)
-    {
-        return getPlayer().transform(input -> input.launchProjectile(type, vector)).orNull();
     }
 
     public void damage(double v)
@@ -444,21 +390,10 @@ public class UserBase implements Player
         return getOfflinePlayer().getData(HealthData.class).get().getMaxHealth();
     }
 
-    public void setMaxHealth(double v)
-    {
-        getOfflinePlayer().getData(HealthData.class).get().setMaxHealth(v);
-    }
-
-    @Override
     public Location getLocation()
     {
-        return this.getLocation(new Location(null, 0, 0, 0));
-    }
-
-    @Override
-    public Location getLocation(Location loc)
-    {
         return getPlayer().transform(Player::getLocation).orNull();
+         /*  // TODO
         NBTTagCompound data = this.getData();
         if (data != null)
         {
@@ -477,11 +412,22 @@ public class UserBase implements Player
                 }
             }
         }
+        */
+    }
+
+    public void setRotation(Vector3d vector)
+    {
+        if (getPlayer().isPresent())
+        {
+            getPlayer().get().setRotation(vector);
+        }
+        // TODO offline
     }
 
     public Vector3d getRotation()
     {
         return getPlayer().transform(Player::getRotation).orNull();
+        /* // TODO
         NBTTagCompound data = this.getData();
         list = data.getList("Rotation", NBT_ID_FLOAT);
         if (list != null)
@@ -490,6 +436,7 @@ public class UserBase implements Player
             loc.setYaw(list.e(1));
         }
         return rotation;
+        */
     }
 
     public void setVelocity(Vector3d vector)
@@ -501,38 +448,28 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public World getWorld()
     {
         return getPlayer().transform(LocatedSource::getWorld).orNull();
+        /* TODO offline World
         NBTTagCompound data = this.getData();
         if (data != null)
         {
             return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
         }
+        */
     }
 
-    @Override
     public boolean teleport(Location lctn)
-    {
-        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
-
-        if (lctn == null)
-        {
-            return false;
-        }
-        return this.teleport(lctn, TeleportCause.PLUGIN);
-    }
-
-    @Override
-    public boolean teleport(Location lctn, TeleportCause tc)
     {
         expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            return player.get().teleport(lctn, tc);
+            player.get().setLocation(lctn);
+            return true;
         }
+        /* TODO offline TP
         NBTTagCompound data = this.getData();
         if (data != null)
         {
@@ -553,6 +490,7 @@ public class UserBase implements Player
 
             this.saveData();
         }
+        */
         return false;
     }
 
@@ -563,16 +501,6 @@ public class UserBase implements Player
             return false;
         }
         return this.teleport(entity.getLocation());
-    }
-
-    @Override
-    public boolean teleport(Entity entity, TeleportCause tc)
-    {
-        if (entity == null)
-        {
-            return false;
-        }
-        return this.teleport(entity.getLocation(), tc);
     }
 
     @Override
@@ -595,44 +523,11 @@ public class UserBase implements Player
         }
     }
 
-    @Override
-    public void remove()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().remove();
-        }
-    }
-
-    @Override
-    public Server getServer()
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.getServer();
-        }
-        return Bukkit.getServer();
-    }
-
-    @Override
-    public void setLastDamageCause(EntityDamageEvent ede)
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().setLastDamageCause(ede);
-        }
-    }
-
-    @Override
     public UUID getUniqueId()
     {
         return this.getOfflinePlayer().getUniqueId();
     }
 
-    @Override
     public EntityType getType()
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -653,19 +548,17 @@ public class UserBase implements Player
         return null;
     }
 
-    @Override
     public boolean hasPermission(String string)
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         return player.isPresent() && player.get().hasPermission(string);
     }
-    @Override
+
     public boolean isOp()
     {
         return this.getOfflinePlayer().isOp();
     }
 
-    @Override
     public void setOp(boolean bln)
     {
         this.getOfflinePlayer().setOp(bln);
@@ -673,16 +566,17 @@ public class UserBase implements Player
 
     public void sendMessage(String string)
     {
-        sendMessage(Texts.of(string));
+        if (getPlayer().isPresent())
+        {
+            getPlayer().get().sendMessage(Texts.of(string));
+        }
     }
 
-    @Override
     public boolean isOnline()
     {
         return this.getOfflinePlayer().isOnline();
     }
 
-    @Override
     public Optional<Player> getPlayer()
     {
         return this.getOfflinePlayer().getPlayer();
@@ -703,7 +597,6 @@ public class UserBase implements Player
         return this.getOfflinePlayer().getData(JoinData.class).get().hasJoinedBefore();
     }
 
-    @Override
     public void setFlySpeed(float value) throws IllegalArgumentException
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -713,7 +606,6 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void setWalkSpeed(float value) throws IllegalArgumentException
     {
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
@@ -723,17 +615,7 @@ public class UserBase implements Player
         }
     }
 
-    @Override
-    public void playSound(SoundType sound, Vector3d position, double volume, double pitch, double minVolume)
-    {
-        Optional<Player> player = getPlayer();
-        if (player.isPresent())
-        {
-            player.get().playSound(sound, position, volume, pitch, minVolume);
-        }
-    }
 
-    @Override
     public void playSound(SoundType sound, Vector3d position, double volume)
     {
         Optional<Player> player = getPlayer();
@@ -743,7 +625,6 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void playSound(SoundType sound, Vector3d position, double volume, double pitch)
     {
         Optional<Player> player = getPlayer();
@@ -753,71 +634,43 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public Inventory getEnderChest()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             return player.get().getEnderChest();
         }
-        Player offlinePlayer = BukkitUtils.getOfflinePlayerAsPlayer(this.getOfflinePlayer());
-        if (offlineplayer.get().hasPlayedBefore())
-        {
-            return offlineplayer.get().getEnderChest();
-        }
+        // TODO
         return null;
     }
 
-    @Override
     public void setPlayerWeather(Weather wt)
     {
 
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().setPlayerWeather(wt);
         }
     }
 
-    @Override
     public void resetPlayerWeather()
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
+        final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
             player.get().resetPlayerWeather();
         }
     }
 
-    @Override
-    public Scoreboard getScoreboard()
+    public <T extends DataManipulator<T>> Optional<T> getData(Class<T> clazz)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getScoreboard();
-        }
-        return null;
+        return getOfflinePlayer().getData(clazz);
     }
 
-    @Override
-    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException
+    public <T extends DataManipulator<T>> DataTransactionResult offer(T manipulatorData)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().setScoreboard(scoreboard);
-        }
-    }
-
-    @Override
-    public void sendSignChange(Location location, String[] strings) throws IllegalArgumentException
-    {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            player.get().sendSignChange(location, strings);
-        }
+        return getOfflinePlayer().offer(manipulatorData);
     }
 }

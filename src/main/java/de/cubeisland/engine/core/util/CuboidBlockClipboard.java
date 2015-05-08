@@ -29,15 +29,15 @@ import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.sponge.NBTUtils;
 import de.cubeisland.engine.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
 
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import static de.cubeisland.engine.core.sponge.NBTUtils.convertNBTToNode;
 
 /**
  * A simple clipboard for blocks and TileEntity-Data
@@ -73,7 +73,7 @@ public class CuboidBlockClipboard
             {
                 for (int z = 0; z < this.size.z; ++z)
                 {
-                    data[x][y][z] = new BlockData(world.getBlock(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
+                    data[x][y][z] = new BlockData(world.getFullBlock(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
                 }
             }
         }
@@ -119,36 +119,13 @@ public class CuboidBlockClipboard
 
     private class BlockData
     {
+        private DataContainer dataContainer;
         public BlockType material;
-        private byte data;
-        private NBTTagCompound nbt; // x,y,z are relative to origin
 
-        private BlockData(BlockState block, BlockVector3 relative)
+        public BlockData(Location block, BlockVector3 relative)
         {
             this.material = block.getType();
-            this.data = block.getData();
-            this.nbt = NBTUtils.getTileEntityNBTAt(block.getLocation());
-            if (nbt != null)
-            {
-                nbt.set("x",new NBTTagInt(block.getX() - relative.x));
-                nbt.set("y",new NBTTagInt(block.getY() - relative.y));
-                nbt.set("z",new NBTTagInt(block.getZ() - relative.z));
-            }
-        }
-
-        public NBTTagCompound getRelativeNbtData(BlockVector3 relative)
-        {
-            NBTTagCompound clone = (NBTTagCompound)this.nbt.clone();
-            clone.set("x",new NBTTagInt(clone.getInt("x") + relative.x));
-            clone.set("y",new NBTTagInt(clone.getInt("y") + relative.y));
-            clone.set("z",new NBTTagInt(clone.getInt("z") + relative.z));
-            return clone;
-        }
-
-        public BlockData(BlockType mat, byte b)
-        {
-            this.material = mat;
-            this.data = b;
+            this.dataContainer = block.toContainer();
         }
     }
 

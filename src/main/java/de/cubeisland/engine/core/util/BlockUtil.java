@@ -21,8 +21,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import com.google.common.base.Optional;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.data.manipulators.blocks.AttachedData;
+import org.spongepowered.api.data.manipulators.blocks.PortionData;
+import org.spongepowered.api.data.types.PortionTypes;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -47,14 +50,8 @@ public class BlockUtil
         NORTH, WEST, EAST, SOUTH
     };
 
-    private static net.minecraft.server.v1_8_R2.Block getBlockForId(int id)
-    {
-        return (net.minecraft.server.v1_8_R2.Block)REGISTRY.a(id);
-    }
-
     /**
-     * Searches for blocks that ar
-     * e attached onto given block.
+     * Searches for blocks that are attached onto given block.
      *
      * @return the attached blocks
      */
@@ -63,10 +60,10 @@ public class BlockUtil
         Collection<Location> blocks = new HashSet<>();
         for (org.spongepowered.api.util.Direction bf : BLOCK_FACES)
         {
-            if (block.getRelative(bf).getState().getData() instanceof Attachable)
+            Optional<AttachedData> attached = block.getRelative(bf).getData(AttachedData.class);
+            if (attached.isPresent())
             {
-                if (((Attachable)block.getRelative(bf).getState().getData()).getAttachedFace().getOppositeFace().equals(
-                    bf))
+                if (attached.get().getFace().opposite().equals(bf))
                 {
                     blocks.add(block.getRelative(bf));
                 }
@@ -75,63 +72,31 @@ public class BlockUtil
         return blocks;
     }
 
+    public static Set<BlockType> DETACHABLE_FROM_BELOW = new HashSet<>(Arrays.asList(BROWN_MUSHROOM, CARROTS, DEADBUSH,
+                                                                                     DETECTOR_RAIL, POTATOES, WHEAT,
+                                                                                     POWERED_REPEATER,
+                                                                                     UNPOWERED_REPEATER, FLOWER_POT,
+                                                                                     IRON_DOOR, LEVER, TALLGRASS,
+                                                                                     MELON_STEM, NETHER_WART, PORTAL,
+                                                                                     GOLDEN_RAIL, ACTIVATOR_RAIL,
+                                                                                     POWERED_COMPARATOR,
+                                                                                     UNPOWERED_COMPARATOR,
+                                                                                     HEAVY_WEIGHTED_PRESSURE_PLATE,
+                                                                                     LIGHT_WEIGHTED_PRESSURE_PLATE,
+                                                                                     PUMPKIN_STEM, RAIL, RED_MUSHROOM,
+                                                                                     RED_FLOWER, REDSTONE_WIRE,
+                                                                                     REDSTONE_TORCH,
+                                                                                     UNLIT_REDSTONE_TORCH, SAPLING,
+                                                                                     STANDING_SIGN, WALL_SIGN, SKULL,
+                                                                                     SNOW, STONE_PRESSURE_PLATE, TORCH,
+                                                                                     TRIPWIRE, WATERLILY, WOODEN_DOOR,
+                                                                                     WOODEN_PRESSURE_PLATE,
+                                                                                     YELLOW_FLOWER, REEDS, CACTUS, SAND,
+                                                                                     GRAVEL));
+
     public static boolean isDetachableFromBelow(BlockType mat)
     {
-        switch (mat)
-        {
-            case BROWN_MUSHROOM:
-            case CARROTS:
-            case DEADBUSH:
-            case DETECTOR_RAIL:
-            case POTATOES:
-            case WHEAT:
-            case DIODE:
-            case DIODE_BLOCK_OFF:
-            case DIODE_BLOCK_ON:
-            case FLOWER_POT:
-            case IRON_DOOR:
-            case IRON_DOOR_BLOCK:
-            case LEVER:
-            case LONG_GRASS:
-            case MELON_STEM:
-            case NETHER_WARTS:
-            case PORTAL:
-            case POWERED_RAIL:
-            case ACTIVATOR_RAIL:
-            case REDSTONE_COMPARATOR_OFF:
-            case REDSTONE_COMPARATOR_ON:
-            case GOLD_PLATE:
-            case IRON_PLATE:
-            case PUMPKIN_STEM:
-            case RAILS:
-            case RED_MUSHROOM:
-            case RED_ROSE:
-            case REDSTONE:
-            case REDSTONE_TORCH_OFF:
-            case REDSTONE_TORCH_ON:
-            case REDSTONE_WIRE:
-            case SAPLING:
-            case SIGN:
-            case SIGN_POST:
-            case SKULL:
-            case SNOW:
-            case STONE_PLATE:
-            case TORCH:
-            case TRIPWIRE:
-            case WATER_LILY:
-            case WHEAT:
-            case WOOD_DOOR:
-            case WOOD_PLATE:
-            case WOODEN_DOOR:
-            case YELLOW_FLOWER:
-            case SUGAR_CANE_BLOCK:
-            case CACTUS:
-            case SAND:
-            case GRAVEL:
-                return true;
-            default:
-                return false;
-        }
+        return DETACHABLE_FROM_BELOW.contains(mat);
     }
 
     public static Collection<Location> getDetachableBlocksOnTop(Location block)
@@ -177,9 +142,14 @@ public class BlockUtil
         return false;
     }
 
-    public static boolean isInvertedStep(MaterialData stepData)
+    public static boolean isInvertedStep(Location location)
     {
-        return (stepData.getData() & 0x8) == 0x8;
+        Optional<PortionData> data = location.getData(PortionData.class);
+        if (data.isPresent())
+        {
+            return data.get().getValue() == PortionTypes.TOP;
+        }
+        return false;
     }
 
     /**
@@ -242,11 +212,6 @@ public class BlockUtil
         return NON_OBSTRUCTING_SOLID_BLOCKS.contains(material);
     }
 
-    public static boolean isPowerSource(BlockType type)
-    {
-        return getBlockForId(type.getId()).isPowerSource();
-    }
-
     /**
      * On BlockPlaceEvent a door will orientate its hinge according to the returned data for the top door-half
      *
@@ -255,8 +220,11 @@ public class BlockUtil
      *
      * @return the top-data
      */
+    /*
+    // TODO remove if logic no longer needed
     public static byte getTopDoorDataOnPlace(BlockType doorType, Location placeLocation, Player player)
     {
+
         byte dir1 = 0;
         byte dir2 = 0;
         switch ((int)Math.floor(((player.getLocation().getYaw() + 180.0F) * 4.0F / 360.0F) - 0.5D) & 3)
@@ -283,7 +251,9 @@ public class BlockUtil
         boolean foundDoorSide1 = negLocType == doorType || negLocUpType == doorType;
         boolean foundDoorSide2 = posgLocType == doorType || posLocUpType == doorType;
         return (byte)(8 | (((foundDoorSide1 && !foundDoorSide2) || (hingeBlockSide2 > hingeBlockSide1)) ? 1 : 0));
+
     }
+
 
     private static boolean isHingeBlock(BlockType material)
     {
@@ -291,6 +261,12 @@ public class BlockUtil
         // called in ItemDoor.place(...)
         return block.isOccluding(); // return (this.material.k()) && (d()) && (!isPowerSource());
     }
+
+    private static net.minecraft.server.v1_8_R2.Block getBlockForId(int id)
+    {
+        return (net.minecraft.server.v1_8_R2.Block)REGISTRY.a(id);
+    }
+*/
 
     public static Location getHighestBlockAt(Location loc)
     {

@@ -17,35 +17,13 @@
  */
 package de.cubeisland.engine.core.command.sender;
 
-import java.util.Locale;
 import de.cubeisland.engine.core.sponge.SpongeCore;
 import org.spongepowered.api.util.command.source.ConsoleSource;
 
-public class ConsoleCommandSender extends WrappedCommandSender implements ConsoleSource
+public class ConsoleCommandSender extends WrappedCommandSender<ConsoleSource>
 {
-    public static final String NAME = ":console";
-
     public ConsoleCommandSender(SpongeCore core)
     {
         super(core, core.getGame().getServer().getConsole());
     }
-
-    @Override
-    public String getName()
-    {
-        return NAME;
-    }
-
-    @Override
-    public String getDisplayName()
-    {
-        return this.getCore().getI18n().translate(Locale.getDefault(), "Console");
-    }
-
-    @Override
-    public boolean hasPermission(String name)
-    {
-        return true;
-    }
-
 }

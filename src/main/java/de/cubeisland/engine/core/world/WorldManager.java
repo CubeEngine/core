@@ -42,10 +42,6 @@ public interface WorldManager extends Cleanable
     boolean deleteWorld(String worldName) throws IOException;
     boolean deleteWorld(World world) throws IOException;
     Set<World> getWorlds();
-    void registerGenerator(Module module, String id, ChunkGenerator generator);
-    ChunkGenerator getGenerator(Module module, String id);
-    void removeGenerator(Module module, String id);
-    void removeGenerators(Module module);
 
     WorldEntity getWorldEntity(World world);
 

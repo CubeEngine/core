@@ -21,7 +21,7 @@ import de.cubeisland.engine.core.Core;
 import org.spongepowered.api.util.command.source.CommandBlockSource;
 import org.spongepowered.api.world.Location;
 
-public class BlockCommandSender extends WrappedCommandSender implements CommandBlockSource
+public class BlockCommandSender extends WrappedCommandSender<CommandBlockSource>
 {
     public BlockCommandSender(Core core, CommandBlockSource sender)
     {
@@ -30,7 +30,6 @@ public class BlockCommandSender extends WrappedCommandSender implements CommandB
 
     public Location getBlock()
     {
-        CommandBlockSource source = (CommandBlockSource)this.getWrappedSender();
-        return source.getLocation();
+        return getWrappedSender().getLocation();
     }
 }

@@ -43,7 +43,7 @@ public class PermissionFilter implements Filter
         CommandSource source = invocation.getCommandSource();
         if (source instanceof CommandSender)
         {
-            if (!((CommandSender)source).isAuthorized(permission))
+            if (!((CommandSender)source).hasPermission(permission.getFullName()))
             {
                 throw new PermissionDeniedException(permission);
             }

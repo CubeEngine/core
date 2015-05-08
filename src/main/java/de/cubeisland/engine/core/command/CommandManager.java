@@ -60,9 +60,9 @@ public interface CommandManager extends Cleanable, Dispatcher
 
     ConsoleCommandSender getConsoleSender();
 
-    void logExecution(CommandSource sender, boolean ran, CommandBase cubeCommand, String[] args);
+    void logExecution(CommandSource sender, boolean ran, String alias, String args);
 
-    void logTabCompletion(CommandSource sender, CommandBase cubeCommand, String[] args);
+    void logTabCompletion(CommandSource sender, String alias, String args);
 
     ConfirmManager getConfirmManager();
 

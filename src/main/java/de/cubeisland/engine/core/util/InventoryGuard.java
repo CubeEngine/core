@@ -118,12 +118,9 @@ public class InventoryGuard
     @Subscribe
     public void onInventoryClose(InventoryCloseEvent event)
     {
-        if ((event.getInventory().equals(this.inventory)
-                || (event.getInventory().getHolder() != null
-                && event.getInventory().getHolder().getInventory().equals(this.inventory)))
-                && event.getPlayer() instanceof Player)
+        if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getViewer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
@@ -131,14 +128,12 @@ public class InventoryGuard
                 {
                     this.module.getCore().getEventManager().removeListener(this.module, this); // no user left to check
                 }
-                for (Runnable runner : this.onClose)
-                {
-                    runner.run();
-                }
+                this.onClose.forEach(Runnable::run);
             }
         }
     }
 
+    /* // TODO inventory dragging
     @Subscribe
     @SuppressWarnings("deprecation")
     public void onInventoryDrag(InventoryDragEvent event)
@@ -204,17 +199,16 @@ public class InventoryGuard
             }
         }
     }
+    */
 
+    /* TODO InventoryClick
     @Subscribe
     @SuppressWarnings("deprecation")
     public void onInventoryClick(InventoryClickEvent event)
     {
-        if ((event.getInventory().equals(this.inventory)
-                || (event.getInventory().getHolder() != null
-                    && event.getInventory().getHolder().getInventory().equals(this.inventory)))
-            && event.getWhoClicked() instanceof Player)
+        if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
         {
-            User user = this.module.getCore().getUserManager().getExactUser(event.getWhoClicked().getUniqueId());
+            User user = this.module.getCore().getUserManager().getExactUser(event.getViewer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 if (event.getAction() == NOTHING)
@@ -363,6 +357,7 @@ public class InventoryGuard
             }
         }
     }
+    */
 
     private void runOnChange()
     {
@@ -394,6 +389,7 @@ public class InventoryGuard
         return false;
     }
 
+    /* TODO
     private boolean hasAllowIn(ItemStack itemStackToGoIn, ItemStack itemStackAtPosition, InventoryAction action)
     {
         for (GuardedItemStack guardedItem : this.noBlockIn)
@@ -428,6 +424,7 @@ public class InventoryGuard
         }
         return false;
     }
+
 
     private boolean hasAllowOut(ItemStack itemStackToOut, ItemStack item, InventoryAction action)
     {
@@ -471,6 +468,7 @@ public class InventoryGuard
         }
         return false;
     }
+    */
 
     public void addOnClose(Runnable run)
     {

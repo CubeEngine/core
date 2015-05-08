@@ -490,7 +490,7 @@ public class ApiServer
     public void setWhitelist(Set<InetAddress> newWhitelist)
     {
         expectNotNull(newWhitelist, "The whitelist must not be null!");
-        Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
+        // TODO Validate.noNullElements(newWhitelist, "The whitelist must not contain null values!");
 
         this.whitelist.clear();
         this.whitelist.addAll(newWhitelist);
@@ -557,7 +557,7 @@ public class ApiServer
     public void setBlacklist(Set<InetAddress> newBlacklist)
     {
         expectNotNull(newBlacklist, "The blacklist must not be null!");
-        Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
+        // TODO Validate.noNullElements(newBlacklist, "The blacklist must not contain null values!");
 
         this.blacklist.clear();
         this.blacklist.addAll(newBlacklist);
@@ -603,7 +603,7 @@ public class ApiServer
     public void setAuthorizedList(Set<InetAddress> newAuthorizedlist)
     {
         expectNotNull(newAuthorizedlist, "The autorizedlist must not be null!");
-        Validate.noNullElements(newAuthorizedlist, "The autorizedlist must not contain null values!");
+        // TODO Validate.noNullElements(newAuthorizedlist, "The autorizedlist must not contain null values!");
 
         this.authorizedList.clear();
         this.authorizedList.addAll(newAuthorizedlist);

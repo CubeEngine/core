@@ -94,13 +94,13 @@ public class TestTaskManager implements TaskManager
     }
 
     @Override
-    public boolean isCurrentlyRunning(int taskID)
+    public boolean isCurrentlyRunning(UUID taskID)
     {
         return false;
     }
 
     @Override
-    public boolean isQueued(int taskID)
+    public boolean isQueued(UUID taskID)
     {
         return false;
     }

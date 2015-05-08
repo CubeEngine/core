@@ -25,11 +25,11 @@ import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.world.DimensionType;
 
 // TODO generic CatalogType Reader
-public class EnvironmentReader implements ArgumentReader<DimensionType>
+public class DimensionTypeReader implements ArgumentReader<DimensionType>
 {
     private final GameRegistry registry;
 
-    public EnvironmentReader(Game game)
+    public DimensionTypeReader(Game game)
     {
         registry = game.getRegistry();
     }

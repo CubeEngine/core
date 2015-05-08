@@ -28,48 +28,56 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleClassLoader;
 import de.cubeisland.engine.core.module.service.ServiceManager;
+import org.spongepowered.api.service.ProviderExistsException;
+import org.spongepowered.api.service.ProvisioningException;
+import org.spongepowered.api.service.ServiceReference;
 
 public class SpongeServiceManager extends ServiceManager implements org.spongepowered.api.service.ServiceManager
 {
     private final SpongeCore core;
     private final org.spongepowered.api.service.ServiceManager servicesManager;
-    private final Map<Class<?>, Module> serviceMap;
-    private final Map<Module, List<Object>> providerMap;
+    private final Map<Object, List<Object>> providerMap;
 
     public SpongeServiceManager(SpongeCore core)
     {
         super(core);
         this.core = core;
         this.servicesManager = core.getGame().getServiceManager();
-        this.serviceMap = new HashMap<>();
         this.providerMap = new HashMap<>();
     }
 
-
-    public <T> void register(Class<T> service, T provider, Module module, ServicePriority priority)
+    @Override
+    public <T> void setProvider(Object plugin, Class<T> service, T provider) throws ProviderExistsException
     {
-        this.servicesManager.register(service, provider, this.core, priority);
-        synchronized (this.serviceMap)
+        List<Object> list = providerMap.get(plugin);
+        if (list == null)
         {
-            if (!this.serviceMap.containsKey(service))
-            {
-                if (service.getClassLoader() instanceof ModuleClassLoader)
-                {
-                    this.serviceMap.put(service, module);
-                }
-            }
+            list = new ArrayList<>();
+            providerMap.put(plugin, list);
         }
-
-        synchronized (this.providerMap)
-        {
-            List<Object> providers = this.providerMap.get(module);
-            if (providers == null)
-            {
-                this.providerMap.put(module, providers = new ArrayList<>());
-            }
-            providers.add(provider);
-        }
+        list.add(provider);
+        servicesManager.setProvider(plugin, service, provider);
     }
+
+    @Override
+    public <T> Optional<T> provide(Class<T> service)
+    {
+        return provide(service);
+    }
+
+    @Override
+    public <T> ServiceReference<T> potentiallyProvide(Class<T> service)
+    {
+        return potentiallyProvide(service);
+    }
+
+    @Override
+    public <T> T provideUnchecked(Class<T> service) throws ProvisioningException
+    {
+        return provideUnchecked(service);
+    }
+
+    //------------------------------------------- TODO remove old stuff
 
     public void unregisterAll(Module module)
     {
@@ -101,60 +109,5 @@ public class SpongeServiceManager extends ServiceManager implements org.spongepo
                 }
             }
         }
-    }
-
-    @Override
-    public <T> T load(Class<T> service)
-    {
-        return servicesManager.load(service);
-    }
-
-    @Override
-    public <T> RegisteredServiceProvider<T> getRegistration(Class<T> service)
-    {
-        return servicesManager.getRegistration(service);
-    }
-
-    @Override
-    public List<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin)
-    {
-        return servicesManager.getRegistrations(plugin);
-    }
-
-    @Override
-    public <T> Collection<RegisteredServiceProvider<T>> getRegistrations(Class<T> service)
-    {
-        return servicesManager.getRegistrations(service);
-    }
-
-    @Override
-    public Collection<Class<?>> getKnownServices()
-    {
-        return servicesManager.getKnownServices();
-    }
-
-    @Override
-    public <T> boolean isProvidedFor(Class<T> service)
-    {
-        return servicesManager.isProvidedFor(service);
-    }
-
-    @Override
-    public void unregister(Class<?> service, Object provider)
-    {
-        servicesManager.unregister(service, provider);
-    }
-
-    @Override
-    public void unregister(Object provider)
-    {
-        servicesManager.unregister(provider);
-    }
-
-    @Override
-    public void unregisterServices(Module module)
-    {
-        super.unregisterServices(module);
-        this.unregisterAll(module);
     }
 }

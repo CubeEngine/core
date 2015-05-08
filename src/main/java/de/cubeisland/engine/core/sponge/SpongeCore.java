@@ -44,10 +44,8 @@ import de.cubeisland.engine.core.command.result.paginated.PaginationCommands;
 import de.cubeisland.engine.core.filesystem.FileManager;
 import de.cubeisland.engine.core.i18n.I18n;
 import de.cubeisland.engine.core.logging.LogFactory;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.module.ModuleCommands;
 import de.cubeisland.engine.core.sponge.VanillaCommands.WhitelistCommand;
-import de.cubeisland.engine.core.sponge.command.CommandInjector;
 import de.cubeisland.engine.core.sponge.command.PreCommandListener;
 import de.cubeisland.engine.core.storage.database.Database;
 import de.cubeisland.engine.core.storage.database.mysql.MySQLDatabase;
@@ -113,7 +111,7 @@ public final class SpongeCore implements Core
     private Version version;
     private Database database;
     private BukkitPermissionManager permissionManager;
-    private BukkitUserManager userManager;
+    private SpongeUserManager userManager;
     private FileManager fileManager;
     private BukkitModuleManager moduleManager;
     private I18n i18n;
@@ -242,7 +240,7 @@ public final class SpongeCore implements Core
         this.eventManager = new EventManager(this);
 
         // depends on: executor, database, Server, core config and event registration
-        this.userManager = new BukkitUserManager(this);
+        this.userManager = new SpongeUserManager(this);
 
         // depends on: file manager, core config
         this.i18n = new I18n(this);
@@ -254,7 +252,7 @@ public final class SpongeCore implements Core
         this.permissionManager = new BukkitPermissionManager(this);
 
         // depends on: user manager, world manager, server, config, permission manager
-        this.commandManager = new SpongeCommandManager(this, new CommandInjector(this));
+        this.commandManager = new SpongeCommandManager(this);
         this.addInitHook(() -> game.getEventManager().register(SpongeCore.this, new PreCommandListener(SpongeCore.this)));
 
         // depends on: core module
@@ -506,32 +504,6 @@ public final class SpongeCore implements Core
         writer.write("\n\n\n");
     }
 
-
-    //region Plugin overrides
-    @Override
-    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id)
-    {
-        if (id == null)
-        {
-            return null;
-        }
-        String[] parts = id.split(":", 2);
-        if (parts.length < 2)
-        {
-            this.getLog().warn("CubeEngine was specified as a world generator, but no module was specified!");
-            return null;
-        }
-        Module module = this.getModuleManager().getModule(parts[0]);
-        if (module == null)
-        {
-            this.getLog().warn("The module {} wasn't found!");
-            return null;
-        }
-
-        return this.getWorldManager().getGenerator(module, parts[1].toLowerCase(Locale.ENGLISH));
-    }
-    //endregion
-
     //region Core getters
     @Override
     public Version getVersion()
@@ -558,7 +530,7 @@ public final class SpongeCore implements Core
     }
 
     @Override
-    public BukkitUserManager getUserManager()
+    public SpongeUserManager getUserManager()
     {
         return this.userManager;
     }

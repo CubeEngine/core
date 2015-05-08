@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
-import org.bukkit.permissions.Permission;
 
 public class ApiServerSender extends ApiCommandSender
 {
@@ -46,12 +45,6 @@ public class ApiServerSender extends ApiCommandSender
     public Locale getLocale()
     {
         return getCore().getI18n().getDefaultLanguage().getLocale();
-    }
-
-    @Override
-    public boolean isOp()
-    {
-        return true;
     }
 
     @Override

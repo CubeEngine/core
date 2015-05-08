@@ -25,7 +25,7 @@ import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import org.spongepowered.api.text.Text;
 
-public interface CommandSender extends org.spongepowered.api.util.command.CommandSource, CommandSource
+public interface CommandSender extends CommandSource
 {
     UUID NON_PLAYER_UUID = new UUID(0, 0);
 
@@ -36,7 +36,7 @@ public interface CommandSender extends org.spongepowered.api.util.command.Comman
 
     String getDisplayName();
 
-    boolean isAuthorized(Permission perm);
+    boolean hasPermission(String perm);
 
     @Override
     Locale getLocale();
@@ -51,4 +51,6 @@ public interface CommandSender extends org.spongepowered.api.util.command.Comman
 
     @Override
     UUID getUniqueId();
+
+    void sendMessage(String msg);
 }

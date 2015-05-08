@@ -53,33 +53,6 @@ public abstract class ApiCommandSender implements CommandSender
     }
 
     @Override
-    public void sendMessage(String[] strings)
-    {
-        for (String string : strings)
-        {
-            this.sendMessage(string);
-        }
-    }
-
-    @Override
-    public Server getServer()
-    {
-        return ((SpongeCore)this.core).getServer();
-    }
-
-
-
-    @Override
-    public void setOp(boolean value)
-    {}
-
-    @Override
-    public boolean isAuthorized(de.cubeisland.engine.core.permission.Permission perm)
-    {
-        return this.hasPermission(perm.getFullName());
-    }
-
-    @Override
     public String getTranslation(MessageType type, String message, Object... params)
     {
         return core.getI18n().translate(getLocale(), type, message, params);

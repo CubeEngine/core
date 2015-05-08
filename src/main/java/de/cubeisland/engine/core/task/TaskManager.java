@@ -133,7 +133,7 @@ public interface TaskManager extends Cleanable
      * @param taskID the task ID
      * @return true if there is a running task for this ID
      */
-    boolean isCurrentlyRunning(int taskID);
+    boolean isCurrentlyRunning(UUID taskID);
 
     /**
      * Checks whether the given task ID is
@@ -141,7 +141,7 @@ public interface TaskManager extends Cleanable
      * @param taskID the task ID
      * @return true if there is a task for this ID
      */
-    boolean isQueued(int taskID);
+    boolean isQueued(UUID taskID);
 
     /**
      * This method can be used to remove all objects related to the given module

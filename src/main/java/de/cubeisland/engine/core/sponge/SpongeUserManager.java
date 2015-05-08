@@ -45,15 +45,16 @@ import org.spongepowered.api.event.message.CommandEvent;
 
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
+import static java.util.stream.Collectors.toList;
 
 
-public class BukkitUserManager extends AbstractUserManager
+public class SpongeUserManager extends AbstractUserManager
 {
     private final SpongeCore core;
     protected ScheduledExecutorService nativeScheduler;
     protected Map<UUID, UUID> scheduledForRemoval;
 
-    public BukkitUserManager(final SpongeCore core)
+    public SpongeUserManager(final SpongeCore core)
     {
         super(core);
         this.core = core;
@@ -67,10 +68,8 @@ public class BukkitUserManager extends AbstractUserManager
             core.getGame().getEventManager().register(core, new UserListener());
             core.getGame().getEventManager().register(core, new AttachmentHookListener());
 
-            for (Player player : core.getGame().getServer().getOnlinePlayers())
-            {
-                onlineUsers.add(getExactUser(player.getUniqueId()));
-            }
+            onlineUsers.addAll(core.getGame().getServer().getOnlinePlayers().stream()
+                                   .map(p -> getExactUser(p.getUniqueId())).collect(toList()));
         });
     }
 
@@ -207,7 +206,7 @@ public class BukkitUserManager extends AbstractUserManager
         {
             final User user = getExactUser(event.getPlayer().getUniqueId());
             core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
-                synchronized (BukkitUserManager.this)
+                synchronized (SpongeUserManager.this)
                 {
                     if (!user.isOnline())
                     {
@@ -238,29 +237,14 @@ public class BukkitUserManager extends AbstractUserManager
             scheduledForRemoval.put(user.getUniqueId(), uid.get());
         }
 
-        @Subscribe(order = Order.POST)
-        public void onLogin(final PlayerLoginEvent event)
-        {
-            if (event.getResult() == ALLOWED)
-            {
-                User user = getExactUser(event.getPlayer(), true);
-                user.getWorld().getEntities().stream().
-                    filter(entity -> entity instanceof Player).
-                        filter(entity -> entity.getName().equals(user.getName())).
-                        forEach(entity -> {
-                            core.getLog().warn("A Players entity had to be removed manually ");
-                            entity.remove();
-                        });
-                onlineUsers.add(user);
-            }
-        }
-
-        @Subscribe(priority = EventPriority.LOWEST)
+        @Subscribe(order = Order.EARLY)
         public void onJoin(final PlayerJoinEvent event)
         {
             final User user = getExactUser(event.getPlayer());
             if (user != null)
             {
+                onlineUsers.add(user);
+
                 updateLastName(user);
                 user.refreshIP();
                 final UUID removalTask = scheduledForRemoval.get(user.getUniqueId());
@@ -277,13 +261,10 @@ public class BukkitUserManager extends AbstractUserManager
         @Override
         public void run()
         {
-            for (User user : cachedUserByUUID.values())
-            {
-                if (!user.isOnline() && scheduledForRemoval.get(user.getUniqueId()) > -1) // Do not delete users that will be deleted anyway
-                {
-                    removeCachedUser(user);
-                }
-            }
+            cachedUserByUUID.values().stream()
+                        .filter(user -> !user.isOnline())
+                        .filter(user -> scheduledForRemoval.containsKey(user.getUniqueId()))
+                            .forEach(SpongeUserManager.this::removeCachedUser);
         }
     }
 
