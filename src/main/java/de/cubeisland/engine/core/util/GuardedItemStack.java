@@ -18,6 +18,7 @@
 package de.cubeisland.engine.core.util;
 
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackComparators;
 
 public class GuardedItemStack
 {
@@ -34,16 +35,9 @@ public class GuardedItemStack
     {
         if (ignoreRepairCost)
         {
-            if (item.hasItemMeta() && other.hasItemMeta())
-            {
-                if (item.getItemMeta() instanceof Repairable && other.getItemMeta() instanceof Repairable)
-                {
-                    ItemMeta itemMeta = item.getItemMeta();
-                    ((Repairable)itemMeta).setRepairCost(((Repairable)other.getItemMeta()).getRepairCost());
-                    item.setItemMeta(itemMeta);
-                }
-            }
+            // TODO repair data
+            // set this itemstacks repair data to data of other then do normal compare
         }
-        return this.item.isSimilar(other);
+        return ItemStackComparators.ALL.compare(item, other) == 0;
     }
 }

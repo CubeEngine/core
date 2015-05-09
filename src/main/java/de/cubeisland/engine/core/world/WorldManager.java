@@ -37,8 +37,8 @@ public interface WorldManager extends Cleanable
     World getWorld(UInteger id);
     Optional<World> getWorld(String name);
     Optional<World> getWorld(UUID uid);
-    boolean unloadWorld(String worldName, boolean save);
-    boolean unloadWorld(World world, boolean save);
+    boolean unloadWorld(String worldName);
+    boolean unloadWorld(World world);
     boolean deleteWorld(String worldName) throws IOException;
     boolean deleteWorld(World world) throws IOException;
     Set<World> getWorlds();

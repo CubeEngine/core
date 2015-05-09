@@ -49,7 +49,7 @@ public class CommandContext extends ParameterizedContext
 
     public void sendMessage(String message)
     {
-        ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(Texts.of(message));
+        ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(message);
     }
 
     public void sendTranslated(MessageType type, String message, Object... args)

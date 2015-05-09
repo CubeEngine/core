@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandBuilder;
 import de.cubeisland.engine.butler.CommandDescriptor;
+import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.DispatcherCommand;
@@ -69,6 +70,7 @@ import de.cubeisland.engine.core.command.readers.WorldReader;
 import de.cubeisland.engine.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.sponge.command.ProxyCallable;
@@ -84,7 +86,6 @@ import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.util.command.CommandMapping;
-import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
@@ -259,8 +260,20 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     public boolean runCommand(CommandSender sender, String commandLine)
     {
         expect(CubeEngine.isMainThread(), "Commands may only be called synchronously!");
-        Optional<CommandResult> process = baseDispatcher.process(sender.getCommandSource().get(), commandLine);
-        return process.isPresent();
+        org.spongepowered.api.util.command.CommandSource source = null;
+        if (sender instanceof User)
+        {
+            source = ((User)sender).getPlayer().get();
+        }
+        else if (sender instanceof WrappedCommandSender)
+        {
+            source = ((WrappedCommandSender)sender).getWrappedSender();
+        }
+        if (source == null)
+        {
+            return execute(new CommandInvocation(sender, commandLine, providerManager));
+        }
+        return baseDispatcher.process(source, commandLine).isPresent();
     }
 
     @Override

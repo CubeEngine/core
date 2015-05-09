@@ -33,13 +33,6 @@ public interface PermissionManager extends Cleanable
     void registerPermission(Module module, Permission permission);
 
     /**
-     * Registered an array of permissions
-     *
-     * @param permissions the array of permissions
-     */
-    void registerPermissions(Module module, Permission[] permissions);
-
-    /**
      * Calls a {@link NotifyPermissionRegistrationCompletedEvent}.
      * Should be invoked manually after the registration of new permissions after {@link Module#onEnable()}
      *
@@ -62,20 +55,6 @@ public interface PermissionManager extends Cleanable
      * @param module the module
      */
     void removePermissions(Module module);
-
-    /**
-     * Removes all the permissions
-     */
-    void removePermissions();
-
-    /**
-     * Returns the PermDefault for the given permission
-     *
-     * @param permission the permission to search for
-     *
-     * @return the default value or null if the permission was not registered
-     */
-    PermDefault getDefaultFor(String permission);
 
     /**
      * Removes a permission of a module

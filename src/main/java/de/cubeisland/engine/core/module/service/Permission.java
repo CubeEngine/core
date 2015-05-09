@@ -26,7 +26,6 @@ public interface Permission
 {
     String getName();
     boolean isEnabled();
-    boolean hasSuperPermsCompat();
 
     boolean has(World world, User player, String permission);
     boolean has(CommandSender sender, String permission);

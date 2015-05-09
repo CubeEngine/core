@@ -389,22 +389,9 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     {
         if (this.getOfflinePlayer().isOnline())
         {
-            final Location blockLoc = new Location(null, 0, 0, 0);
-            final Location entityLoc = new Location(null, 0, 0, 0);
             final Location playerLoc = this.getLocation();
-            Comparator<Entity> compare = new Comparator<Entity>()
-            {
-                final Location l1 = new Location(null, 0, 0, 0);
-                final Location l2 = new Location(null, 0, 0, 0);
-
-                @Override
-                public int compare(Entity o1, Entity o2)
-                {
-                    o1.getLocation(l1);
-                    o2.getLocation(l2);
-                    return (int)(l1.distanceSquared(playerLoc) - l2.distanceSquared(playerLoc));
-                }
-            };
+            Comparator<Entity> compare = (o1, o2) -> (int)(o1.getLocation().getPosition().distanceSquared(playerLoc.getPosition()) -
+                                                           o2.getLocation().getPosition().distanceSquared(playerLoc.getPosition()));
             BlockIterator iterator = new BlockIterator(
                     this.getPlayer().getWorld(),
                     this.getLocation().toVector(),
@@ -417,10 +404,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             {
                 Location block = iterator.next();
                 detectDistance += 0.015;
-                block.getLocation(blockLoc).add(0.5, 0.5, 0.5);
+                block = block.add(.5,.5,.5);
                 for (Entity entity : list)
                 {
-                    if (entity.getLocation().distanceSquared(blockLoc) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
+                    if (entity.getLocation().getPosition().distanceSquared(block.getPosition()) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
                     {
                         targets.add(entity);
                     }
@@ -479,34 +466,34 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return this.address;
     }
 
-    public void banIp(CommandSender source, String reason)
+    public void banIp(CommandSource source, String reason)
     {
         this.banIp(source, reason, null);
     }
 
-    public void banIp(CommandSender source, String reason, Date expire)
+    public void banIp(CommandSource source, String reason, Date expire)
     {
         this.banIp(source, reason, new Date(System.currentTimeMillis()), expire);
     }
 
-    public void banIp(CommandSender source, String reason, Date created, Date expire)
+    public void banIp(CommandSource source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source.getName(), Texts.of(reason), created, expire));
+        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source, Texts.of(reason), created, expire));
     }
 
-    public void ban(CommandSender source, String reason)
+    public void ban(CommandSource source, String reason)
     {
         this.ban(source, reason, null);
     }
 
-    public void ban(CommandSender source, String reason, Date expire)
+    public void ban(CommandSource source, String reason, Date expire)
     {
         this.ban(source, reason, new Date(System.currentTimeMillis()), expire);
     }
 
-    public void ban(CommandSender source, String reason, Date created, Date expire)
+    public void ban(CommandSource source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new UserBan(this, source.getName(), Texts.of(reason), created, expire));
+        this.getCore().getBanManager().addBan(new UserBan(this.getOfflinePlayer(), source, Texts.of(reason), created, expire));
     }
 
     public UserEntity getEntity()
@@ -529,7 +516,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         while (lineOfSight.hasNext())
         {
             Location next = lineOfSight.next();
-            if (next.getType().isSolid() && !isNonObstructingSolidBlock(next.getType()))
+            if (next.getType().isSolidCube() && !isNonObstructingSolidBlock(next.getType()))
             {
                 return next;
             }

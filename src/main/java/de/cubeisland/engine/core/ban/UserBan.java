@@ -21,6 +21,8 @@ import java.util.Date;
 
 import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ChatFormat.*;
@@ -29,17 +31,17 @@ public class UserBan extends Ban<User>
 {
     private final User target;
 
-    public UserBan(User target, String source, Text reason)
+    public UserBan(User target, CommandSource source, Literal reason)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public UserBan(User target, String source, Text reason, Date expires)
+    public UserBan(User target, CommandSource source, Literal reason, Date expires)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public UserBan(User target, String source, Text reason, Date created, Date expires)
+    public UserBan(User target, CommandSource source, Literal reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
         expectNotNull(target, "The user must not be null!");

@@ -17,85 +17,33 @@
  */
 package de.cubeisland.engine.core.util.matcher;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import de.cubeisland.engine.core.CoreResource;
-import de.cubeisland.engine.core.CubeEngine;
-import de.cubeisland.engine.core.util.AliasMapFormat;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.Living;
+import org.spongepowered.api.entity.living.Villager;
+import org.spongepowered.api.entity.living.animal.Animal;
+import org.spongepowered.api.entity.living.monster.Monster;
+import org.spongepowered.api.entity.projectile.Projectile;
 
 /**
  * This Matcher provides methods to match Entities.
  */
 public class EntityMatcher
 {
-    private final Map<EntityType, String> reverseNameMap = new HashMap<>();
     private final Map<String, EntityType> nameMap = new HashMap<>();
+    private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
 
-    EntityMatcher()
+    EntityMatcher(Game game)
     {
-        TreeMap<String, List<String>> entityList = this.readEntities();
-        for (Entry<String, List<String>> entry : entityList.entrySet())
+        for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
         {
-            try
-            {
-                EntityType entityType = EntityType.valueOf(entry.getKey());
-                boolean first = true;
-                for (String name : entry.getValue())
-                {
-                    if (first)
-                    {
-                        this.reverseNameMap.put(entityType, name);
-                    }
-                    this.nameMap.put(name.toLowerCase(Locale.ENGLISH), entityType);
-                    first = false;
-                }
-            }
-            catch (IllegalArgumentException ex)
-            {
-                CubeEngine.getLog().warn("Unknown EntityType: {}", entry.getKey());
-            }
+            nameMap.put(type.getName(), type);
         }
-    }
-
-    /**
-     * Loads in the file with the saved entity-names
-     *
-     * @return the loaded entities with corresponding names
-     */
-    private TreeMap<String, List<String>> readEntities()
-    {
-        try
-        {
-            Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.ENTITIES.getTarget());
-            TreeMap<String, List<String>> entityList = new TreeMap<>();
-            AliasMapFormat.parseStringList(file, entityList, false);
-            try (InputStream is = CubeEngine.getFileManager().getSourceOf(file))
-            {
-                if (AliasMapFormat.parseStringList(is, entityList, true))
-                {
-                    CubeEngine.getLog().info("Updated entities.txt");
-                    AliasMapFormat.parseAndSaveStringListMap(entityList, file);
-                }
-            }
-            return entityList;
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new IllegalStateException("enchantments.txt is corrupted!", ex);
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalStateException("Error while reading enchantments.txt", ex);
-        }
+        // TODO read entity names
     }
 
     /**
@@ -117,8 +65,7 @@ public class EntityMatcher
         {
             try
             {
-                short entityId = Short.parseShort(s);
-                return EntityType.fromId(entityId);
+                return legacyIds.get(Short.parseShort(s));
             }
             catch (NumberFormatException ignored)
             {}
@@ -140,7 +87,7 @@ public class EntityMatcher
     public EntityType mob(String s)
     {
         EntityType type = this.any(s);
-        if (type != null && type.isAlive())
+        if (type != null && Living.class.isAssignableFrom(type.getEntityClass()))
         {
             return type;
         }
@@ -211,16 +158,6 @@ public class EntityMatcher
         return null;
     }
 
-    public EntityType living(String s)
-    {
-        EntityType type = this.any(s);
-        if (type != null && type.isAlive())
-        {
-            return type;
-        }
-        return null;
-    }
-
     /**
      * Returns if this EntityType can be spawned via SpawnEgg.
      */
@@ -236,7 +173,7 @@ public class EntityMatcher
      */
     public boolean isMonster(EntityType entityType)
     {
-        return Monster.class.isAssignableFrom(entityType.getEntityClass()) || entityType == EntityType.ENDER_DRAGON;
+        return Monster.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     /**
@@ -246,7 +183,7 @@ public class EntityMatcher
      */
     public boolean isFriendly(EntityType entityType)
     {
-        return this.isAnimal(entityType) || NPC.class.isAssignableFrom(entityType.getEntityClass());
+        return this.isAnimal(entityType) || Villager.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     /**
@@ -256,7 +193,7 @@ public class EntityMatcher
      */
     public boolean isAnimal(EntityType entityType)
     {
-        return Animals.class.isAssignableFrom(entityType.getEntityClass());
+        return Animal.class.isAssignableFrom(entityType.getEntityClass());
     }
 
     /**
@@ -274,15 +211,4 @@ public class EntityMatcher
         return this.reverseNameMap.get(type);
     }
 
-    public boolean isTameable(EntityType type)
-    {
-        switch (type)
-        {
-            case WOLF:
-            case OCELOT:
-                return true;
-            default:
-                return false;
-        }
-    }
 }

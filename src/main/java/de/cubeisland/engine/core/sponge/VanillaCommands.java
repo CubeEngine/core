@@ -252,7 +252,7 @@ public class VanillaCommands
 
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
                                plugins.size(), modules.size());
-        context.sendMessage(Texts.of(" "));
+        context.sendMessage(" ");
         context.sendMessage(" - " + BRIGHT_GREEN + core.getName() + RESET + " (" + core.getVersion() + ")");
 
         for (Module m : modules)
@@ -262,7 +262,7 @@ public class VanillaCommands
 
         for (PluginContainer p : plugins)
         {
-            if (p != this.core)
+            if (p.getInstance() != this.core)
             {
                 context.sendMessage(" - " + (p.isEnabled() ? BRIGHT_GREEN : RED) + p.getName() + RESET + " ("
                                         + p.getDescription().getVersion() + ")");
@@ -278,23 +278,19 @@ public class VanillaCommands
         context.sendTranslated(NEUTRAL, "Saving...");
         if (world != null)
         {
-            world.save();
-            for (Player player : world.getPlayers())
-            {
-                player.saveData();
-            }
+            core.getGame().getServer().saveWorldProperties(world.getProperties()); // TODO is this saving the world?
+            world.getEntities().stream().filter(entity -> entity instanceof Player).forEach(player -> player.saveData());
             context.sendTranslated(POSITIVE, "World {world} has been saved to disk!", world);
             return;
         }
         Profiler.startProfiling("save-worlds");
         for (World aWorld : this.core.getGame().getServer().getWorlds())
         {
-            aWorld.save();
+            core.getGame().getServer().saveWorldProperties(aWorld.getProperties()); // TODO is this saving the world?
         }
         this.core.getServer().savePlayers();
         context.sendTranslated(POSITIVE, "All worlds have been saved to disk!");
-        context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling(
-            "save-worlds", MILLISECONDS));
+        context.sendTranslated(POSITIVE, "The saving took {integer#time} milliseconds.", Profiler.endProfiling("save-worlds", MILLISECONDS));
     }
 
     @Command(desc = "Displays the version of the server or a given plugin")
@@ -346,6 +342,7 @@ public class VanillaCommands
         {
             showSourceVersion(context.getSource(), core.getSourceVersion());
         }
+        /* TODO if possible later get detailed descriptions
         context.sendTranslated(NEUTRAL, "Description: {input}", instance.getDescription().getDescription() == null ? "NONE" : instance.getDescription().getDescription());
         context.sendTranslated(NEUTRAL, "Website: {input}", instance.getDescription().getWebsite() == null ? "NONE" : instance.getDescription().getWebsite());
         context.sendTranslated(NEUTRAL, "Authors:");
@@ -353,6 +350,7 @@ public class VanillaCommands
         {
             context.sendMessage("   - " + ChatFormat.AQUA + author);
         }
+        */
     }
 
     @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
@@ -400,7 +398,7 @@ public class VanillaCommands
                 context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
                 return;
             }
-            player.remove(WhitelistData.class);
+            player.getOfflinePlayer().remove(WhitelistData.class);
             context.sendTranslated(POSITIVE, "{user} is not whitelisted anymore.", player.getName());
         }
 

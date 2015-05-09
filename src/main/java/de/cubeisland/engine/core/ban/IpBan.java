@@ -20,7 +20,8 @@ package de.cubeisland.engine.core.ban;
 import java.net.InetAddress;
 import java.util.Date;
 
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.core.util.ChatFormat.GOLD;
@@ -29,17 +30,17 @@ public class IpBan extends Ban<InetAddress>
 {
     private InetAddress address;
 
-    public IpBan(InetAddress address, String source, Text reason)
+    public IpBan(InetAddress address, CommandSource source, Literal reason)
     {
         this(address, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public IpBan(InetAddress address, String source, Text reason, Date expires)
+    public IpBan(InetAddress address, CommandSource source, Literal reason, Date expires)
     {
         this(address, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public IpBan(InetAddress address, String source, Text reason, Date created, Date expires)
+    public IpBan(InetAddress address, CommandSource source, Literal reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
         expectNotNull(address, "The address must not be null!");

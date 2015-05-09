@@ -208,24 +208,4 @@ public class BukkitUtils
             return entity.getBukkitEntity().teleport(to);
         }
     }
-
-    /**
-     * Clears given JsonList
-     */
-    public static class ClearJsonList extends JsonList
-    {
-        private ClearJsonList(JsonList toClear)
-        {
-            super(toClear.c());
-            try
-            {
-                this.save();
-                toClear.load();
-            }
-            catch (IOException e)
-            {
-                throw new IllegalStateException(e);
-            }
-        }
-    }
 }

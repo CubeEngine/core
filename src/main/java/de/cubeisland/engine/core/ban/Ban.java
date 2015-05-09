@@ -20,22 +20,24 @@ package de.cubeisland.engine.core.ban;
 import java.util.Date;
 
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
 
 public abstract class Ban<T>
 {
-    private String source;
-    private Text reason;
+    private CommandSource source;
+    private Literal reason;
     private Date created;
     private Date expires;
 
-    protected Ban(String source, Text reason, Date expires)
+    protected Ban(CommandSource source, Literal reason, Date expires)
     {
         this(source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    protected Ban(String source, Text reason, Date created, Date expires)
+    protected Ban(CommandSource source, Literal reason, Date created, Date expires)
     {
         expectNotNull(source, "The source must not be null");
         expectNotNull(reason, "The reason must not be null");
@@ -52,7 +54,7 @@ public abstract class Ban<T>
      *
      * @return the source as a string representation. never null!
      */
-    public String getSource()
+    public CommandSource getSource()
     {
         return source;
     }
@@ -62,7 +64,7 @@ public abstract class Ban<T>
      *
      * @param source the source as a string representation. may not be null!
      */
-    public void setSource(String source)
+    public void setSource(CommandSource source)
     {
         expectNotNull(source, "The source must not be null");
         this.source = source;
@@ -80,7 +82,7 @@ public abstract class Ban<T>
      *
      * @return the ban reason. never null!
      */
-    public Text getReason()
+    public Literal getReason()
     {
         return reason;
     }
@@ -90,7 +92,7 @@ public abstract class Ban<T>
      *
      * @param reason the ban reason. may not be null!
      */
-    public void setReason(Text reason)
+    public void setReason(Literal reason)
     {
         expectNotNull(reason, "The reason must not be null");
         this.reason = reason;

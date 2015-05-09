@@ -28,6 +28,8 @@ import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.data.manipulators.items.EnchantmentData;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -40,10 +42,10 @@ public class EnchantMatcher
     private final HashMap<String, Enchantment> bukkitnames;
     private final HashMap<Enchantment, String> enchantmentName;
 
-    EnchantMatcher()
+    EnchantMatcher(Game game)
     {
         this.bukkitnames = new HashMap<>();
-        for (Enchantment enchantment : Enchantment.values())
+        for (Enchantment enchantment : game.getRegistry().getAllOf(Enchantment.class))
         {
             this.bukkitnames.put(enchantment.getName(), enchantment);
         }
@@ -132,13 +134,6 @@ public class EnchantMatcher
     public Enchantment enchantment(String s)
     {
         Enchantment enchantment = this.enchantments.get(s.toLowerCase(Locale.ENGLISH));
-        try
-        {
-            int enchId = Integer.parseInt(s);
-            return Enchantment.getById(enchId);
-        }
-        catch (NumberFormatException ignored)
-        {}
         if (enchantment == null)
         {
             if (s.length() < 4)
@@ -173,12 +168,14 @@ public class EnchantMatcher
         }
         if (force)
         {
-            item.addUnsafeEnchantment(ench, enchStrength);
+            EnchantmentData data = item.getOrCreate(EnchantmentData.class).get();
+            data.setUnsafe(ench, enchStrength);
             return true;
         }
         try
         {
-            item.addEnchantment(ench, enchStrength);
+            EnchantmentData data = item.getOrCreate(EnchantmentData.class).get();
+            data.set(ench, enchStrength);
             return true;
         }
         catch (IllegalArgumentException ignored)

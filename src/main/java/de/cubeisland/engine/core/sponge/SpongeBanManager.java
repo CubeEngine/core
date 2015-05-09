@@ -21,19 +21,25 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import de.cubeisland.engine.core.ban.Ban;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
+import org.spongepowered.api.GameProfile;
+import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.service.ban.BanService;
+import org.spongepowered.api.util.ban.Ban.Ip;
 import org.spongepowered.api.util.ban.BanBuilder;
 
 import static de.cubeisland.engine.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
+import static java.util.stream.Collectors.toSet;
 
 public class SpongeBanManager implements BanManager
 {
@@ -54,13 +60,13 @@ public class SpongeBanManager implements BanManager
 
         if (ban instanceof UserBan)
         {
-            Bukkit.getBanList(NAME).addBan(ban.getTarget().toString(), ban.getReason(), ban.getExpires(),
-                                                ban.getSource());
+            manager.ban(banBuilder.user(((UserBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
+                ban.getExpires()).source(ban.getSource()).build());
         }
         else if (ban instanceof IpBan)
         {
-            Bukkit.getBanList(IP).addBan(((IpBan)ban).getTarget().getHostAddress(), ban.getReason(), ban.getExpires(),
-                                              ban.getSource());
+            manager.ban(banBuilder.address(((IpBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
+                ban.getExpires()).source(ban.getSource()).build());
         }
     }
 
@@ -68,12 +74,24 @@ public class SpongeBanManager implements BanManager
     public UserBan getUserBan(UUID uuid)
     {
         expect(isMainThread());
-        GameProfileBanEntry entry = (GameProfileBanEntry)this.profileBan.get(new GameProfile(uuid, null));
-        if (entry != null)
+        User user = getUserByUUID(uuid);
+        org.spongepowered.api.util.ban.Ban.User last = null;
+        for (org.spongepowered.api.util.ban.Ban.User ban : manager.getBansFor(user))
         {
-            return new UserBan(((GameProfile)entry.getKey()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            if (ban.isIndefinite())
+            {
+                return new UserBan(user, ban.getSource().orNull(), ban.getReason(), ban.getStartDate(), ban.getExpirationDate().orNull());
+            }
+            if (last == null || last.getStartDate().after(ban.getStartDate()))
+            {
+                last = ban;
+            }
         }
-        return null;
+        if (last == null)
+        {
+            return null;
+        }
+        return new UserBan(user, last.getSource().orNull(), last.getReason(), last.getStartDate(), last.getExpirationDate().orNull());
     }
 
     @Override
@@ -81,12 +99,24 @@ public class SpongeBanManager implements BanManager
     {
         expectNotNull(address, "The address must not be null!");
         expect(isMainThread());
-        IpBanEntry entry = (IpBanEntry)this.ipBans.get(address.toString());
-        if (entry != null)
+
+        Ip last = null;
+        for (Ip ban : manager.getBansFor(address))
         {
-            return new IpBan(address, entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires());
+            if (ban.isIndefinite())
+            {
+                return new IpBan(address, ban.getSource().orNull(), ban.getReason(), ban.getStartDate(), ban.getExpirationDate().orNull());
+            }
+            if (last == null || last.getStartDate().after(ban.getStartDate()))
+            {
+                last = ban;
+            }
         }
-        return null;
+        if (last == null)
+        {
+            return null;
+        }
+        return new IpBan(address, last.getSource().orNull(), last.getReason(), last.getStartDate(), last.getExpirationDate().orNull());
     }
 
     @Override
@@ -97,7 +127,8 @@ public class SpongeBanManager implements BanManager
         {
             return false;
         }
-        this.profileBan.remove(new GameProfile(uuid, null));
+        User user = getUserByUUID(uuid);
+        manager.pardon(user);
         return true;
     }
 
@@ -110,7 +141,7 @@ public class SpongeBanManager implements BanManager
         {
             return false;
         }
-        this.ipBans.remove(address.getHostAddress());
+        manager.pardon(address);
         return true;
     }
 
@@ -118,16 +149,15 @@ public class SpongeBanManager implements BanManager
     public boolean isUserBanned(UUID uuid)
     {
         expect(isMainThread());
-
-        return this.profileBan.isBanned(new GameProfile(uuid, null));
+        User user = getUserByUUID(uuid);
+        return manager.isBanned(user);
     }
 
     @Override
     public boolean isIpBanned(InetAddress address)
     {
         expect(isMainThread());
-
-        return this.ipBans.isBanned(new InetSocketAddress(address, 0));
+        return manager.isBanned(address);
     }
 
     @Override
@@ -135,24 +165,10 @@ public class SpongeBanManager implements BanManager
     public Set<IpBan> getIpBans()
     {
         expect(isMainThread());
-
-        String[] bannedIps = this.ipBans.getEntries();
-        Set<IpBan> bans = new HashSet<>();
-
-        for (String bannedIp : bannedIps)
-        {
-            try
-            {
-                IpBanEntry entry = (IpBanEntry)this.ipBans.get(bannedIp);
-                bans.add(new IpBan(InetAddress.getByName(bannedIp), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
-            }
-            catch (UnknownHostException e)
-            {
-                this.ipBans.remove(bannedIp);
-            }
-        }
-
-        return bans;
+        return manager.getIpBans().stream()
+                      .map(ban -> new IpBan(ban.getAddress(), ban.getSource().orNull(), ban.getReason(),
+                                            ban.getStartDate(), ban.getExpirationDate().orNull()))
+                      .collect(toSet());
     }
 
     @Override
@@ -160,14 +176,10 @@ public class SpongeBanManager implements BanManager
     public Set<UserBan> getUserBans()
     {
         expect(isMainThread());
-
-        Set<UserBan> bans = new HashSet<>();
-        for (JsonListEntry e : this.profileBan.getValues())
-        {
-            GameProfileBanEntry entry = (GameProfileBanEntry)e;
-            bans.add(new UserBan(((GameProfile)entry.getKey()).getName(), entry.getSource(), entry.getReason(), entry.getCreated(), entry.getExpires()));
-        }
-        return bans;
+        return manager.getUserBans().stream()
+                      .map(ban -> new UserBan((User)ban.getUser(), ban.getSource().orNull(), ban.getReason(), // TODO remove cast
+                                              ban.getStartDate(), ban.getExpirationDate().orNull()))
+                      .collect(toSet());
     }
 
     @Override

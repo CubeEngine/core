@@ -17,121 +17,37 @@
  */
 package de.cubeisland.engine.core.sponge;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.logging.LoggingUtil;
 import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.permission.NotifyPermissionRegistrationCompletedEvent;
-import de.cubeisland.engine.core.permission.PermDefault;
 import de.cubeisland.engine.core.permission.Permission;
 import de.cubeisland.engine.core.permission.PermissionManager;
-import de.cubeisland.engine.core.util.StringUtils;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
 import static de.cubeisland.engine.core.contract.Contract.expectNotNull;
-import static de.cubeisland.engine.core.permission.Permission.BASE;
-import static java.util.Locale.ENGLISH;
 
 public class BukkitPermissionManager implements PermissionManager
 {
-    private final Map<String, Permission> wildcards;
-    private final Map<Module, Set<String>> modulePermissionMap;
+    private final Map<String, Permission> permissions = new HashMap<>();
+    private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Log logger;
-
-    private boolean startup;
-    private Map<String, Permission> permissions;
-    private Set<Permission> defaultPermTrue;
-    private Set<Permission> defaultPermFalse;
 
     @SuppressWarnings("unchecked")
     public BukkitPermissionManager(SpongeCore core)
     {
-        this.startup = true;
-        this.pm = core.getServer().getPluginManager();
-        try
-        {
-            Field field = SimplePluginManager.class.getDeclaredField("permissions");
-            field.setAccessible(true);
-            this.permissions = (Map<String, Permission>)field.get(this.pm);
-            field = SimplePluginManager.class.getDeclaredField("defaultPerms");
-            field.setAccessible(true);
-            Map<Boolean,Set<Permission>> defaultPerms =
-                (Map<Boolean, Set<Permission>>)field.get(this.pm);
-            this.defaultPermTrue = defaultPerms.get(true);
-            this.defaultPermFalse =  defaultPerms.get(false);
-        }
-        catch (Exception ex)
-        {
-            core.getLog().info("Couldn't access the permission manager internals for fast permission registration, falling back to normal registration.");
-            this.startup = false;
-        }
-        this.wildcards = new HashMap<>(0);
-        this.modulePermissionMap = new HashMap<>(0);
         this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),
                                                   core.getTaskManager().getThreadFactory()));
         this.registerPermission(core.getModuleManager().getCoreModule(), Permission.BASE);
-    }
-
-    private void registerBukkitPermission(Permission permission)
-    {
-        try
-        {
-            if (this.startup)
-            {
-                this.permissions.put(permission.getName().toLowerCase(), permission);
-                if ((permission.getDefault() == OP) || (permission.getDefault() == TRUE))
-                {
-                    this.defaultPermTrue.add(permission);
-                }
-                if ((permission.getDefault() == NOT_OP) || (permission.getDefault() == TRUE))
-                {
-                    this.defaultPermFalse.add(permission);
-                }
-            }
-            else
-            {
-                this.pm.addPermission(permission);
-            }
-            if (permission.getName().endsWith("*"))
-            {
-                this.wildcards.put(permission.getName(), permission);
-            }
-            this.logger.debug("{} ({})", permission.getName(), permission.getDefault().name());
-        }
-        catch (IllegalArgumentException ignored)
-        {
-            this.logger.debug("{} ({}) duplicated", permission.getName(), permission.getDefault().name());
-        }
-    }
-
-    private Permission registerWildcard(Module module, String perm, PermDefault def)
-    {
-        perm += ".*";
-
-        Permission bWildcard = this.wildcards.get(perm);
-        if (bWildcard == null || bWildcard.getDefault() != def.getValue())
-        {
-            if (bWildcard != null)
-            {
-                this.pm.removePermission(bWildcard);
-            }
-            this.registerBukkitPermission(bWildcard = new Permission(perm, def.getValue()));
-            this.getPermissions(module).add(perm);
-        }
-
-        return bWildcard;
     }
 
     private Set<String> getPermissions(Module module)
@@ -144,101 +60,23 @@ public class BukkitPermissionManager implements PermissionManager
         return perms;
     }
 
-    private Permission registerPermission(Module module, String perm, PermDefault permDefault)
-    {
-        expect(CubeEngine.isMainThread(), "Permissions may only be registered from the main thread!");
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(perm, "The permission must not be null!");
-        expectNotNull(permDefault, "The permission default must not be null!");
-
-        perm = perm.toLowerCase(ENGLISH);
-
-        Permission bPermission = this.permissions.get(perm);
-        if (bPermission == null || bPermission.getDefault() != permDefault.getValue())
-        {
-            if (bPermission != null)
-            {
-                this.pm.removePermission(bPermission);
-            }
-            // Not yet registered:
-            String[] parts = StringUtils.explode(".", perm);
-            if (parts.length < 3 || !BASE.getName().equals(parts[0]) || !module.getId().equals(parts[1]))
-            {
-                throw new IllegalArgumentException("Permissions must start with 'cubeengine.<module>' !");
-            }
-
-            bPermission = new Permission(perm, permDefault.getValue());
-            this.registerBukkitPermission(bPermission);
-
-            this.getPermissions(module).add(perm);
-        }
-        return bPermission;
-    }
-
     @Override
     public void registerPermission(Module module, Permission permission)
     {
-        Permission mainBPerm;
-        Permission mainBWCPerm = null;
-        if (permission.isWildcard())
+        String fullName = permission.getFullName();
+        if (permissions.containsKey(fullName))
         {
-            mainBPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
-            mainBWCPerm = mainBPerm;
+            return; // already registered
+            // TODO check for updates?
         }
-        else
-        {
-            mainBPerm = this.registerPermission(module, permission.getName(), permission.getDefault());
-            if (permission.hasChildren()) // create wildcard perm-name.* (will contain perm-name)
-            {
-                mainBWCPerm = this.registerWildcard(module, permission.getName(), permission.getDefault());
-                addParentIfNotExists(mainBPerm, mainBWCPerm);
-            }
-        }
-        // search/register direct parents and add parent to bukkitperm
+        permissions.put(fullName, permission);
+        Set<String> byModule = getPermissions(module);
+        byModule.add(fullName);
+
+        // Register all Parents
         for (Permission parentPerm : permission.getParents())
         {
-            Permission bParent;
-            if (parentPerm.isWildcard() || parentPerm.getChildren().contains(permission))
-            {
-                bParent = this.registerWildcard(module, parentPerm.getName(), parentPerm.getDefault());
-            }
-            else
-            {
-                bParent = this.registerPermission(module, parentPerm.getName(), parentPerm.getDefault());
-            }
-            addParentIfNotExists(mainBPerm, bParent);
-            if (mainBWCPerm != null)
-            {
-                addParentIfNotExists(mainBWCPerm, bParent);
-            }
             this.registerPermission(module, parentPerm);
-        }
-        for (Permission attached : permission.getAttached()) // make sure attached permissions are attached
-        {
-            Permission bChild = pm.getPermission(attached.getName() + (attached.isWildcard() ? ".*" : ""));
-            if (bChild != null)
-            {
-                addParentIfNotExists(bChild, mainBPerm);
-            }
-            // else Permission not registered yet -> will register itself
-        }
-    }
-
-    private static void addParentIfNotExists(Permission child, Permission parent)
-    {
-        Boolean set = parent.getChildren().get(child.getName());
-        if (set == null || !set)
-        {
-            child.addParent(parent, true);
-        }
-    }
-
-    @Override
-    public void registerPermissions(Module module, Permission[] permissions)
-    {
-        for (Permission permission : permissions)
-        {
-            this.registerPermission(module, permission);
         }
     }
 
@@ -256,13 +94,10 @@ public class BukkitPermissionManager implements PermissionManager
         expect(!perm.equals(Permission.BASE.getName() + ".*"), "The CubeEngine wildcard permission must not be unregistered!");
 
         Set<String> perms = this.modulePermissionMap.get(module);
-        if (perms != null && perms.remove(perm))
+        if (perms != null)
         {
-            this.pm.removePermission(perm);
-            if (perm.endsWith("*"))
-            {
-                this.wildcards.remove(perm);
-            }
+            perms.remove(perm);
+            permissions.remove(perm);
         }
     }
 
@@ -280,79 +115,14 @@ public class BukkitPermissionManager implements PermissionManager
         Set<String> removedPerms = this.modulePermissionMap.remove(module);
         if (removedPerms != null)
         {
-            for (String perm : removedPerms)
-            {
-                this.pm.removePermission(perm);
-                if (perm.endsWith("*"))
-                {
-                    this.wildcards.remove(perm);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void removePermissions()
-    {
-        Iterator<Entry<Module, Set<String>>> modulesIter = this.modulePermissionMap.entrySet().iterator();
-        Entry<Module, Set<String>> entry;
-
-        while (modulesIter.hasNext())
-        {
-            entry = modulesIter.next();
-            modulesIter.remove();
-            for (String perm : entry.getValue())
-            {
-                this.pm.removePermission(perm);
-            }
-        }
-    }
-
-    @Override
-    public PermDefault getDefaultFor(String permission)
-    {
-        if (permission == null)
-        {
-            throw new NullPointerException("The permission must not be null!");
-        }
-        Permission perm = this.pm.getPermission(permission);
-        if (perm == null)
-        {
-            return null;
-        }
-        switch (perm.getDefault())
-        {
-            case TRUE:
-                return PermDefault.TRUE;
-            case FALSE:
-                return PermDefault.FALSE;
-            case OP:
-                return PermDefault.OP;
-            case NOT_OP:
-                return PermDefault.NOT_OP;
-            default:
-                return null;
+            permissions.keySet().removeAll(removedPerms);
         }
     }
 
     @Override
     public void clean()
     {
-        this.removePermissions();
-        this.wildcards.clear();
+        this.permissions.clear();
         this.modulePermissionMap.clear();
-    }
-
-    void calculatePermissions()
-    {
-        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(true))
-        {
-            permissible.recalculatePermissions();
-        }
-        for (Permissible permissible : this.pm.getDefaultPermSubscriptions(false))
-        {
-            permissible.recalculatePermissions();
-        }
-        this.startup = false;
     }
 }

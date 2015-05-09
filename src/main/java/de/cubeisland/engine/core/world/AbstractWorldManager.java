@@ -18,19 +18,15 @@
 package de.cubeisland.engine.core.world;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.core.Core;
-import de.cubeisland.engine.core.module.Module;
 import de.cubeisland.engine.core.storage.database.Database;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
@@ -117,9 +113,9 @@ public abstract class AbstractWorldManager implements WorldManager
     }
 
     @Override
-    public boolean unloadWorld(String worldName, boolean save)
+    public boolean unloadWorld(String worldName)
     {
-        return this.unloadWorld(this.getWorld(worldName).get(), save);
+        return this.unloadWorld(this.getWorld(worldName).get());
     }
 
     @Override

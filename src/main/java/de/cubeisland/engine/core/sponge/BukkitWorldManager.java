@@ -103,19 +103,10 @@ public class BukkitWorldManager extends AbstractWorldManager
     }
 
     @Override
-    public boolean unloadWorld(World world, boolean save)
+    public boolean unloadWorld(World world)
     {
         expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
-        if (!save)
-        {
-            this.core.getLog().warn(new IllegalArgumentException(), "This is unstable on CraftBukkit servers");
-        }
-        boolean success = this.server.unloadWorld(world, save);
-        if (success && !save)
-        {
-            RegionFileCache.a();
-        }
-        return success;
+        return this.server.unloadWorld(world);
     }
 
     @Override
@@ -125,12 +116,11 @@ public class BukkitWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        if (!this.unloadWorld(world, false))
+        if (!this.unloadWorld(world))
         {
             return false;
         }
-        // This can fail with a FileSystemException due to the file somehow still being in use
-        FileUtil.deleteRecursive(world.getWorldFolder().toPath());
+        FileUtil.deleteRecursive(world.getWorldFolder().toPath()); // TODO delay this until world is no longer loaded
         return true;
     }
 

@@ -62,7 +62,7 @@ import static de.cubeisland.engine.core.contract.Contract.expect;
 public class UserBase
 {
     private final UUID uuid;
-    User cachedOfflinePlayer = null;
+    org.spongepowered.api.entity.player.User cachedOfflinePlayer = null;
 
     public UserBase(UUID uuid)
     {
