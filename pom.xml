@@ -1,68 +1,21 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>de.cubeisland.engine.module</groupId>
-        <artifactId>parent</artifactId>
-        <version>1</version>
-    </parent>
 
     <groupId>de.cubeisland.engine</groupId>
-    <artifactId>core</artifactId>
-    <name>CubeEngine</name>
+    <artifactId>core-aggregator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <name>CubeEngine-Core Aggregator</name>
+    <packaging>pom</packaging>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
-        <minecraftVersion>1.8.3</minecraftVersion>
-        <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>cubeisland-repo</id>
-            <url>http://maven.cubeisland.de/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sponge-maven-repo</id>
-            <name>Sponge maven repo</name>
-            <url>http://repo.spongepowered.org/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>2.0</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
+        <!-- Sponge Dependencies -->
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -75,62 +28,8 @@
             <version>2.0-beta9</version>
             <scope>provided</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${bukkitVersion}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>yaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.googlecode.json-simple</groupId>
-                    <artifactId>json-simple</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>${bukkitVersion}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.fusesource.jansi</groupId>
-                    <artifactId>jansi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.fusesource.jansi</groupId>
-                    <artifactId>jansi-native</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.fusesource.jansi</groupId>
-                    <artifactId>jansi-project</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.fusesource.jansi</groupId>
-                    <artifactId>jansi-website</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>minecraft-server</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
+        <!-- InHouse Libraries -->
+
         <dependency>
             <groupId>de.cubeisland.engine</groupId>
             <artifactId>reflect-yaml</artifactId>
@@ -161,6 +60,7 @@
             <artifactId>butler</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!-- Other Libraries -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -229,105 +129,66 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>modularity-asm</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
-    <build>
-        <finalName>CubeEngine</finalName>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${basedir}/src/main/resources/</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>plugin.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${basedir}/src/main/resources/</directory>
-                <filtering>false</filtering>
-            </resource>
-            <resource>
-                <targetPath>./resources</targetPath>
-                <directory>${basedir}/src/main/resources/resources/</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
+    <distributionManagement>
+        <repository>
+            <id>cubeengine-repo</id>
+            <name>Release</name>
+            <url>http://maven.cubeengine.org/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>cubeengine-repo</id>
+            <name>Snapshot</name>
+            <url>http://maven.cubeengine.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
+
+    <modules>
+        <module>coremodule</module>
+        <module>bootstrap</module>
+    </modules>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>de.cubeisland.engine.core.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.4</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.6.1</version>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7</version>
                 <configuration>
-                    <artifactSet>
-                        <excludes>
-                            <exclude>org.spongepowered:*</exclude>
-                        </excludes>
-                    </artifactSet>
-                    <relocations>
-                        <!--
-                        <relocation>
-                          <pattern>com.fasterxml.jackson</pattern>
-                          <shadedPattern>${externalPackage}.jackson</shadedPattern>
-                        </relocation>
-                        -->
-                        <relocation>
-                            <pattern>io.netty</pattern>
-                            <shadedPattern>${externalPackage}.netty</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.jolbox.bonecp</pattern>
-                            <shadedPattern>${externalPackage}.bonecp</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.yaml.snakeyaml</pattern>
-                            <shadedPattern>${externalPackage}.snakeyaml</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.fusesource</pattern>
-                            <shadedPattern>${externalPackage}.jansi</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.mcstats</pattern>
-                            <shadedPattern>${externalPackage}.mcstats</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.ibm.icu</pattern>
-                            <shadedPattern>${externalPackage}.icu</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.ocpsoft.prettytime</pattern>
-                            <shadedPattern>${externalPackage}.prettytime</shadedPattern>
-                        </relocation>
-                    </relocations>
+                    <strictCheck>true</strictCheck>
+                    <header>header.txt</header>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
