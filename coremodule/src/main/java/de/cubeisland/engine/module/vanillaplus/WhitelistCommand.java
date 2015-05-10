@@ -1,4 +1,4 @@
-package de.cubeisland.engine.module.core.sponge;
+package de.cubeisland.engine.module.vanillaplus;
 
 import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
@@ -7,6 +7,7 @@ import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 import org.spongepowered.api.data.manipulators.entities.WhitelistData;
 

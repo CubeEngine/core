@@ -56,6 +56,8 @@ import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
+import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
+import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
 import de.cubeisland.engine.module.webapi.ApiConfig;
 import de.cubeisland.engine.module.webapi.ApiServer;
 import de.cubeisland.engine.module.webapi.CommandController;
