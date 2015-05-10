@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 import java.util.Locale;
 import java.util.UUID;
 import javax.persistence.Transient;
-import de.cubeisland.engine.module.core.storage.database.AsyncRecord;
+import de.cubeisland.engine.module.core.database.AsyncRecord;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.module.core.user.TableUser.TABLE_USER;

@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.core.world;
 
 import java.util.UUID;
 import javax.persistence.Transient;
-import de.cubeisland.engine.module.core.storage.database.AsyncRecord;
+import de.cubeisland.engine.module.core.database.AsyncRecord;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.world.TableWorld.TABLE_WORLD;

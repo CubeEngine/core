@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.storage.database;
+package de.cubeisland.engine.module.core.database;
 
-import de.cubeisland.engine.module.core.storage.database.mysql.Keys;
+import de.cubeisland.engine.module.core.database.mysql.Keys;
 import de.cubeisland.engine.module.core.util.Version;
 import org.jooq.Identity;
 import org.jooq.Record;

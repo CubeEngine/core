@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.storage.database.mysql;
+package de.cubeisland.engine.module.core.database.mysql;
 
-import de.cubeisland.engine.module.core.storage.database.DatabaseConfiguration;
+import de.cubeisland.engine.module.core.database.DatabaseConfiguration;
 import de.cubeisland.engine.reflect.annotations.Comment;
 
 /**

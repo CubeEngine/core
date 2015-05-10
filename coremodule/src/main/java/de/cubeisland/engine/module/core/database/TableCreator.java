@@ -15,21 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.storage.database;
+package de.cubeisland.engine.module.core.database;
 
-import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.task.thread.BaseThreadFactory;
+import java.sql.Connection;
+import java.sql.SQLException;
+import de.cubeisland.engine.module.core.util.Version;
+import org.jooq.Record;
+import org.jooq.Table;
 
-public class DatabaseThreadFactory extends BaseThreadFactory
+public interface TableCreator<T extends Record> extends Table<T>
 {
-    public DatabaseThreadFactory()
-    {
-        super(CubeEngine.class.getSimpleName() + " - " + Database.class.getSimpleName(), Database.class.getPackage().getName());
-    }
-
-    @Override
-    protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
-    {
-        return new Thread(threadGroup, r, name);
-    }
+    void createTable(Connection connection) throws SQLException;
+    Version getTableVersion();
 }

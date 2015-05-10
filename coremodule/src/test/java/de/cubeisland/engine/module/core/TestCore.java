@@ -30,7 +30,7 @@ import de.cubeisland.engine.module.core.logging.LogFactory;
 import de.cubeisland.engine.module.core.module.ModuleManager;
 import de.cubeisland.engine.module.core.module.TestModuleManager;
 import de.cubeisland.engine.module.core.permission.PermissionManager;
-import de.cubeisland.engine.module.core.storage.database.Database;
+import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.task.TestTaskManager;
 import de.cubeisland.engine.module.core.user.User;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.storage.database.mysql;
+package de.cubeisland.engine.module.core.database.mysql;
 
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
@@ -27,11 +27,11 @@ import java.util.concurrent.ExecutionException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.storage.database.AbstractDatabase;
-import de.cubeisland.engine.module.core.storage.database.DatabaseConfiguration;
-import de.cubeisland.engine.module.core.storage.database.Table;
-import de.cubeisland.engine.module.core.storage.database.TableCreator;
-import de.cubeisland.engine.module.core.storage.database.TableUpdateCreator;
+import de.cubeisland.engine.module.core.database.AbstractDatabase;
+import de.cubeisland.engine.module.core.database.DatabaseConfiguration;
+import de.cubeisland.engine.module.core.database.Table;
+import de.cubeisland.engine.module.core.database.TableCreator;
+import de.cubeisland.engine.module.core.database.TableUpdateCreator;
 import de.cubeisland.engine.module.core.util.Version;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;

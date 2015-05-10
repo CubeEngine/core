@@ -25,7 +25,7 @@ import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LogFactory;
 import de.cubeisland.engine.module.core.permission.PermissionManager;
-import de.cubeisland.engine.module.core.storage.database.Database;
+import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;

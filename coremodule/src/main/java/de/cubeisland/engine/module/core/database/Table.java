@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.storage.database;
+package de.cubeisland.engine.module.core.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.storage.database.mysql.Keys;
+import de.cubeisland.engine.module.core.database.mysql.Keys;
 import de.cubeisland.engine.module.core.util.Version;
 import org.jooq.DataType;
 import org.jooq.ForeignKey;

@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.storage.database.Database;
+import de.cubeisland.engine.module.core.database.Database;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.world.World;
