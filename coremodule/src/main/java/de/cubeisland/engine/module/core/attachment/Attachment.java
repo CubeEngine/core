@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core.attachment;
 
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 
 public abstract class Attachment<T extends AttachmentHolder>
 {

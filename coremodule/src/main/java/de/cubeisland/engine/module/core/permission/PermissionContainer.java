@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
 
 public abstract class PermissionContainer<T extends Module>
 {
@@ -58,12 +58,12 @@ public abstract class PermissionContainer<T extends Module>
     {
         for (Permission perm : getPermissions())
         {
-            module.getCore().getPermissionManager().registerPermission(module, perm);
+            module.getModulatiry().getStarted(PermissionManager.class).registerPermission(module, perm);
         }
     }
 
     public final Permission getBasePerm()
     {
-        return module.getBasePermission();
+        return module.getProvided(Permission.class);
     }
 }

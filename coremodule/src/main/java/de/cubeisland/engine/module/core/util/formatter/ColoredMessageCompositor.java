@@ -30,11 +30,11 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 
     public ColoredMessageCompositor(Core core)
     {
-        Reflector configFactory = core.getConfigFactory();
+        Reflector configFactory = core.getReflector();
         configFactory.getDefaultConverterManager().registerConverter(new MessageTypeConverter(), MessageType.class);
         configFactory.getDefaultConverterManager().registerConverter(new ChatFormatConverter(), ChatFormat.class);
 
-        this.colorConfiguration = core.getConfigFactory().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
+        this.colorConfiguration = core.getReflector().load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
             .registerMacro(new BooleanFormatter())

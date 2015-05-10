@@ -20,33 +20,23 @@ package de.cubeisland.engine.module.core.sponge;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.alias.Alias;
-import de.cubeisland.engine.butler.filter.Restricted;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Greed;
 import de.cubeisland.engine.butler.parametric.Named;
 import de.cubeisland.engine.butler.parametric.Optional;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.command.ContainerCommand;
-import de.cubeisland.engine.module.core.command.annotation.CommandPermission;
-import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.Profiler;
-import de.cubeisland.engine.module.core.permission.PermDefault;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.manipulators.entities.JoinData;
-import org.spongepowered.api.data.manipulators.entities.WhitelistData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Texts;
@@ -54,6 +44,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.butler.parameter.Parameter.INFINITE;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class VanillaCommands
@@ -98,6 +89,7 @@ public class VanillaCommands
         this.core.getGame().getServer().shutdown(Texts.of(message));
     }
 
+    /*
     @Command(desc = "Reloads the server.")
     public void reload(CommandSender context, @Optional @Greed(INFINITE) String message, @Flag boolean modules)
     {
@@ -123,6 +115,7 @@ public class VanillaCommands
         context.sendMessage(i18n.translate(locale, POSITIVE, "The reload is completed after {amount} seconds",
                                            MILLISECONDS.toSeconds(System.currentTimeMillis() - time)));
     }
+    */
 
     @Command(desc = "Changes the difficulty level of the server")
     public void difficulty(CommandSender context, @Optional Difficulty difficulty, @Named({"world", "w", "in"}) World world)
@@ -152,6 +145,7 @@ public class VanillaCommands
         }
     }
 
+    /* TODO override op commands in separate module
     @Command(desc = "Makes a player an operator")
     @CommandPermission(permDefault = PermDefault.FALSE)
     public void op(CommandSender context, @Optional org.spongepowered.api.entity.player.User player, @Flag boolean force) // TODO gameprofile instead?
@@ -240,31 +234,28 @@ public class VanillaCommands
         this.core.getLog().info("Player {} has been deopped by {}", player.getName(),
                                 context.getSource().getName());
     }
+    */
 
     @Command(desc = "Lists all loaded plugins")
     public void plugins(CommandSender context)
     {
         Collection<PluginContainer> plugins = this.core.getGame().getPluginManager().getPlugins();
-        Collection<Module> modules = this.core.getModuleManager().getModules();
+        Set<Module> modules = this.core.getModulatiry().getModules();
 
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
                                plugins.size(), modules.size());
         context.sendMessage(" ");
-        context.sendMessage(" - " + ChatFormat.BRIGHT_GREEN + core.getName() + ChatFormat.RESET + " (" + core.getVersion() + ")");
+        context.sendMessage(" - " + ChatFormat.BRIGHT_GREEN + "CubeEngine" + ChatFormat.RESET + " (" + core.getVersion() + ")");
 
         for (Module m : modules)
         {
-            context.sendMessage("   - " + (m.isEnabled() ? ChatFormat.BRIGHT_GREEN : ChatFormat.RED) + m.getName() + ChatFormat.RESET + " (" + m.getVersion() + ")");
+            context.sendMessage("   - " + m.getInformation().getName() + ChatFormat.RESET + " (" + m.getInformation().getVersion() + ")");
         }
 
-        for (PluginContainer p : plugins)
-        {
-            if (p.getInstance() != this.core)
-            {
-                context.sendMessage(" - " + (p.isEnabled() ? ChatFormat.BRIGHT_GREEN : ChatFormat.RED) + p.getName() + ChatFormat.RESET + " ("
-                                        + p.getDescription().getVersion() + ")");
-            }
-        }
+        plugins.stream().filter(p -> p.getInstance() != this.core)
+                        .forEach(p -> context.sendMessage(
+                            " - " + ChatFormat.BRIGHT_GREEN + p.getName() + ChatFormat.RESET + " (" + p.getVersion()
+                                + ")"));
     }
 
     // integrate /saveoff and /saveon and provide aliases
@@ -348,123 +339,5 @@ public class VanillaCommands
             context.sendMessage("   - " + ChatFormat.AQUA + author);
         }
         */
-    }
-
-    @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
-    public static class WhitelistCommand extends ContainerCommand
-    {
-        private final SpongeCore core;
-
-        public WhitelistCommand(SpongeCore core)
-        {
-            super(core.getModuleManager().getCoreModule());
-            this.core = core;
-        }
-
-        @Override
-        protected boolean selfExecute(CommandInvocation invocation)
-        {
-            if (invocation.isConsumed())
-            {
-                return this.getCommand("list").execute(invocation);
-            }
-            else if (invocation.tokens().size() - invocation.consumed() == 1)
-            {
-                return this.getCommand("add").execute(invocation);
-            }
-            return super.execute(invocation);
-        }
-
-        @Command(desc = "Adds a player to the whitelist.")
-        public void add(CommandSender context, User player)
-        {
-            if (player.getData(WhitelistData.class).isPresent())
-            {
-                context.sendTranslated(NEUTRAL, "{user} is already whitelisted.", player);
-                return;
-            }
-            player.offer(core.getGame().getRegistry().getBuilderOf(WhitelistData.class).get());
-            context.sendTranslated(POSITIVE, "{user} is now whitelisted.", player);
-        }
-
-        @Command(alias = "rm", desc = "Removes a player from the whitelist.")
-        public void remove(CommandSender context, User player)
-        {
-            if (!player.getData(WhitelistData.class).isPresent())
-            {
-                context.sendTranslated(NEUTRAL, "{user} is not whitelisted.", player);
-                return;
-            }
-            player.getOfflinePlayer().remove(WhitelistData.class);
-            context.sendTranslated(POSITIVE, "{user} is not whitelisted anymore.", player.getName());
-        }
-
-        @Command(desc = "Lists all the whitelisted players")
-        public void list(CommandSender context)
-        {
-            Set<org.spongepowered.api.entity.player.User> whitelist = this.core.getGame().getServer().getWhitelistedPlayers();
-            if (!this.core.getGame().getServer().hasWhitelist())
-            {
-                context.sendTranslated(NEUTRAL, "The whitelist is currently disabled.");
-            }
-            else
-            {
-                context.sendTranslated(POSITIVE, "The whitelist is enabled!.");
-            }
-            context.sendMessage(" ");
-            if (whitelist.isEmpty())
-            {
-                context.sendTranslated(NEUTRAL, "There are currently no whitelisted players!");
-            }
-            else
-            {
-                context.sendTranslated(NEUTRAL, "The following players are whitelisted:");
-                for (org.spongepowered.api.entity.player.User player : whitelist)
-                {
-                    context.sendMessage(" - " + player.getName());
-                }
-            }
-            Set<org.spongepowered.api.entity.player.User> operators = this.core.getGame().getServer().getOperators();
-            if (!operators.isEmpty())
-            {
-                context.sendTranslated(NEUTRAL, "The following players are OP and can bypass the whitelist");
-                for (org.spongepowered.api.entity.player.User operator : operators)
-                {
-                    context.sendMessage(" - " + operator.getName());
-                }
-            }
-        }
-
-        @Command(desc = "Enables the whitelisting")
-        public void on(CommandSender context)
-        {
-            if (this.core.getGame().getServer().hasWhitelist())
-            {
-                context.sendTranslated(NEGATIVE, "The whitelist is already enabled!");
-                return;
-            }
-            this.core.getGame().getServer().setHasWhitelist(true);
-            context.sendTranslated(POSITIVE, "The whitelist is now enabled.");
-        }
-
-        @Command(desc = "Disables the whitelisting")
-        public void off(CommandSender context)
-        {
-            if (!this.core.getGame().getServer().hasWhitelist())
-            {
-                context.sendTranslated(NEGATIVE, "The whitelist is already disabled!");
-                return;
-            }
-            this.core.getGame().getServer().setHasWhitelist(false);
-            context.sendTranslated(POSITIVE, "The whitelist is now disabled.");
-        }
-
-        @Command(desc = "Wipes the whitelist completely")
-        @Restricted(value = ConsoleCommandSender.class, msg = "This command is too dangerous for users!")
-        public void wipe(CommandSender context)
-        {
-            BukkitUtils.wipeWhitelist(); // TODO wipe it clean
-            context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");
-        }
     }
 }

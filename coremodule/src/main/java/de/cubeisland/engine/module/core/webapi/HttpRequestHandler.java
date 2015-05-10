@@ -41,6 +41,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 import static de.cubeisland.engine.module.core.webapi.MimeType.JSON;
+import static de.cubeisland.engine.module.core.webapi.RequestStatus.*;
 import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 import static io.netty.channel.ChannelFutureListener.CLOSE_ON_FAILURE;

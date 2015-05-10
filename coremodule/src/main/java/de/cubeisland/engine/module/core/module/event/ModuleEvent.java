@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.core.module.event;
 
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 
 /**
  * An Event containing the module for easier access.

@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.core.command;
 
 import java.lang.reflect.Method;
 import de.cubeisland.engine.butler.parametric.InvokableMethod;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * The origin of a Command in CubeEngine based on an invokable Method

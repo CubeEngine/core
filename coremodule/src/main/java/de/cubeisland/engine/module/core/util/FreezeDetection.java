@@ -18,35 +18,36 @@
 package de.cubeisland.engine.module.core.util;
 
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.task.TaskManager;
 
 public class FreezeDetection
 {
-    private final Core core;
+    private final SpongeCore core;
     private final TaskManager taskManager;
     private ScheduledExecutorService executor;
-    private int taskId;
+    private UUID taskId;
     private long lastHeartbeat;
     private final long freezeThreshold;
     private final ConcurrentLinkedQueue<Runnable> listeners = new ConcurrentLinkedQueue<>();
     private volatile boolean freezeNotified = false;
 
-    public FreezeDetection(Core core, long freezeThreshold)
+    public FreezeDetection(SpongeCore core, long freezeThreshold)
     {
         this(core, freezeThreshold, TimeUnit.SECONDS);
     }
 
-    public FreezeDetection(Core core, long freezeThreshold, TimeUnit unit)
+    public FreezeDetection(SpongeCore core, long freezeThreshold, TimeUnit unit)
     {
         this.core = core;
         this.taskManager = this.core.getTaskManager();
         this.executor = null;
-        this.taskId = -1;
         this.lastHeartbeat = -1;
         this.freezeThreshold = unit.toMillis(freezeThreshold);
     }
@@ -63,12 +64,12 @@ public class FreezeDetection
 
     public void start()
     {
-        this.taskId = this.taskManager.runAsynchronousTimer(core.getModuleManager().getCoreModule(), new HeartbeatLogger(), 0, 1);
-        if (this.taskId == -1)
+        this.taskId = this.taskManager.runAsynchronousTimer(core, new HeartbeatLogger(), 0, 1).orNull();
+        if (this.taskId == null)
         {
             throw new RuntimeException("Failed to schedule the heartbeat logging for freeze detection");
         }
-        this.executor = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
+        this.executor = Executors.newSingleThreadScheduledExecutor(core.getThreadFactory());
         this.executor.scheduleAtFixedRate(new FreezeDetector(), this.freezeThreshold, this.freezeThreshold, TimeUnit.MILLISECONDS);
 
         this.lastHeartbeat = System.currentTimeMillis();
@@ -76,10 +77,10 @@ public class FreezeDetection
 
     public void shutdown()
     {
-        if (this.taskId != -1)
+        if (this.taskId != null)
         {
-            this.taskManager.cancelTask(this.core.getModuleManager().getCoreModule(), this.taskId);
-            this.taskId = -1;
+            this.taskManager.cancelTask(this.core, this.taskId);
+            this.taskId = null;
         }
         if (this.executor != null)
         {

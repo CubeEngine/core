@@ -17,19 +17,18 @@
  */
 package de.cubeisland.engine.module.core;
 
+import java.util.concurrent.ThreadFactory;
 import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LogFactory;
-import de.cubeisland.engine.module.core.module.ModuleManager;
 import de.cubeisland.engine.module.core.permission.PermissionManager;
 import de.cubeisland.engine.module.core.storage.database.Database;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
-import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.webapi.ApiServer;
 import de.cubeisland.engine.module.core.world.WorldManager;
@@ -48,7 +47,7 @@ public interface Core
      *
      * @return the version
      */
-    Version getVersion();
+    String getVersion();
 
     /**
      * Returns the source version used to build the core
@@ -98,13 +97,6 @@ public interface Core
      * @return the engine logging
      */
     Log getLog();
-
-    /**
-     * This method returns the module manager
-     *
-     * @return the instance of the module manager
-     */
-    ModuleManager getModuleManager();
 
     /**
      * This method returns the internationalization API
@@ -171,5 +163,7 @@ public interface Core
 
     LogFactory getLogFactory();
 
-    Reflector getConfigFactory();
+    Reflector getReflector();
+
+    ThreadFactory getThreadFactory();
 }

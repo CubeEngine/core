@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.module.event;
 
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 
 /**
  * This event is fired when a module got disabled.

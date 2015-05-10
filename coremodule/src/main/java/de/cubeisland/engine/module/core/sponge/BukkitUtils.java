@@ -104,7 +104,7 @@ public class BukkitUtils
                     if (time - this.lastReceived <= 5000)
                     {
                         core.getLog().info("Shutting down the server now!");
-                        core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
+                        core.getTaskManager().runTask(core, () -> {
                             core.getGame().getServer().shutdown(Texts.of()); // tODO default message?
                             lastReceived = -1;
                         });
@@ -118,31 +118,6 @@ public class BukkitUtils
                 }
             });
 
-            try
-            {
-                Signal.handle(new Signal("HUP"), new SignalHandler() {
-                    private volatile boolean reloading = false;
-
-                    @Override
-                    public void handle(Signal signal)
-                    {
-                        if (!this.reloading)
-                        {
-                            this.reloading = true;
-                            core.getLog().info("Reloading the server!");
-                            core.getTaskManager().runTask(core.getModuleManager().getCoreModule(), () -> {
-                                core.getServer().reload();
-                                core.getLog().info("Done reloading the server!");
-                                reloading = false;
-                            });
-                        }
-                    }
-                });
-            }
-            catch (IllegalArgumentException e)
-            {
-                core.getLog().info("You're OS does not support the HUP signal! This can be ignored.");
-            }
         }
         catch (ClassNotFoundException ignored)
         {}

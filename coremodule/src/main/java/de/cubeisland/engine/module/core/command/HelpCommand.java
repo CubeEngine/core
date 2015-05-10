@@ -34,6 +34,10 @@ import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.text.Texts;
 
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+
 public class HelpCommand implements CommandBase
 {
     private static final SimpleCommandDescriptor helpDescriptor = new SimpleCommandDescriptor();
@@ -104,7 +108,7 @@ public class HelpCommand implements CommandBase
 
         if (descriptor instanceof CubeDescriptor)
         {
-            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getId() + "/" + StringUtils.implode("/", labels));
+            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getInformation().getName().toLowerCase() + "/" + StringUtils.implode("/", labels));
         }
         return true;
     }

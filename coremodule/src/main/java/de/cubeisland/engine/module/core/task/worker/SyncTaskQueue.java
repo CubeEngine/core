@@ -57,7 +57,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.taskQueue.isEmpty())
         {
-            this.scheduler.cancelTask(corePlugin.getModuleManager().getCoreModule(), this.taskID);
+            this.scheduler.cancelTask(corePlugin, this.taskID);
             return;
         }
         this.taskQueue.poll().run();
@@ -81,7 +81,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.scheduler.runTimer(corePlugin.getModuleManager().getCoreModule(), this.workerTask, 0, 1).get();
+            this.taskID = this.scheduler.runTimer(corePlugin, this.workerTask, 0, 1).get();
         }
     }
 
@@ -110,7 +110,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.isRunning())
         {
-            this.scheduler.cancelTask(corePlugin.getModuleManager().getCoreModule(), this.taskID);
+            this.scheduler.cancelTask(corePlugin, this.taskID);
             this.taskID = null;
         }
     }

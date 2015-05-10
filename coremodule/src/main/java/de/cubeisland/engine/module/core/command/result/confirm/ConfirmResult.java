@@ -19,9 +19,11 @@ package de.cubeisland.engine.module.core.command.result.confirm;
 
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.CommandContext;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.module.Module;
+
 
 /**
  * A result that should be confirmed via the /confirm command
@@ -42,7 +44,7 @@ public class ConfirmResult implements CommandResult
     @Override
     public void process(CommandInvocation context)
     {
-        module.getCore().getCommandManager().getConfirmManager().registerConfirmation(this, this.module, sender);
+        module.getModulatiry().getStarted(ConfirmManager.class).registerConfirmation(this, this.module, sender);
     }
 
     public void run()

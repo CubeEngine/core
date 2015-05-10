@@ -17,23 +17,24 @@
  */
 package de.cubeisland.engine.module.core.task.thread;
 
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.logscribe.LogLevel;
 
 public class CoreThreadFactory extends BaseThreadFactory
 {
-    private final Core core;
+    private final Log logger;
 
-    public CoreThreadFactory(Core core)
+    public CoreThreadFactory(Log logger)
     {
         super(CubeEngine.class.getSimpleName(), CubeEngine.class.getPackage().getName());
-        this.core = core;
+        this.logger = logger;
     }
 
     @Override
     protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        return new LoggingThread(threadGroup, r, name, this.core.getLog(), LogLevel.TRACE);
+        return new LoggingThread(threadGroup, r, name, logger, LogLevel.TRACE);
     }
 }

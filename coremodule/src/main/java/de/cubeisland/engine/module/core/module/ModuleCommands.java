@@ -19,7 +19,6 @@ package de.cubeisland.engine.module.core.module;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
@@ -29,58 +28,66 @@ import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.sponge.VanillaCommands;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
 import de.cubeisland.engine.module.core.command.CommandContext;
-import de.cubeisland.engine.module.core.module.exception.ModuleException;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
+
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 
 
 @Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
 {
-    private final ModuleManager mm;
+    private final SpongeCore core;
+    private final Modularity modularity;
     private final PluginManager pm;
 
-    public ModuleCommands(ModuleManager mm, PluginManager pm)
+    public ModuleCommands(SpongeCore core, Modularity modularity, PluginManager pm)
     {
-        super(mm.getCoreModule());
-        this.mm = mm;
+        super(core);
+        this.core = core;
+        this.modularity = modularity;
         this.pm = pm;
-        CoreModule coreModule = mm.getCoreModule();
-        coreModule.getCore().getCommandManager().getProviderManager().register(coreModule, new ModuleReader(mm));
+        core.getCommandManager().getProviderManager().register(core, new ModuleReader(modularity));
     }
 
-    public static class ModuleReader implements ArgumentReader<Module>
+    public static class ModuleReader implements ArgumentReader<de.cubeisland.engine.modularity.core.Module>
     {
-        private ModuleManager mm;
+        private Modularity mm;
 
-        public ModuleReader(ModuleManager mm)
+        public ModuleReader(Modularity mm)
         {
             this.mm = mm;
         }
 
         @Override
-        public Module read(Class type, CommandInvocation invocation) throws ReaderException
+        public de.cubeisland.engine.modularity.core.Module read(Class type, CommandInvocation invocation) throws ReaderException
         {
-            Module module = this.mm.getModule(invocation.consume(1));
-            if (module == null)
+            String name = invocation.consume(1);
+            for (de.cubeisland.engine.modularity.core.Module module : this.mm.getModules())
             {
-                throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "The given module could not be found!"));
+                if (module.getInformation().getName().equals(name))
+                {
+                    return module;
+                }
             }
-            return module;
-        }
+            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "The given module could not be found!"));        }
     }
 
     @Alias(value = "modules")
     @Command(alias = "show", desc = "Lists all the loaded modules")
     public void list(CommandContext context)
     {
-        Collection<Module> modules = this.mm.getModules();
+        Set<de.cubeisland.engine.modularity.core.Module> modules = this.modularity.getModules();
         if (modules.isEmpty())
         {
             context.sendTranslated(NEUTRAL, "There are no modules loaded!");
@@ -88,15 +95,15 @@ public class ModuleCommands extends ContainerCommand
         }
         context.sendTranslated(NEUTRAL, "These are the loaded modules.");
         context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
-        for (Module module : modules)
+        for (de.cubeisland.engine.modularity.core.Module module : modules)
         {
             if (module.isEnabled())
             {
-                context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getName());
+                context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getInformation().getName());
             }
             else
             {
-                context.sendMessage(" - " + ChatFormat.RED + module.getName());
+                context.sendMessage(" - " + ChatFormat.RED + module.getInformation().getName());
             }
         }
     }
@@ -104,7 +111,7 @@ public class ModuleCommands extends ContainerCommand
     @Command(desc = "Enables a module")
     public void enable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        if (this.mm.enableModule(module))
+        if (this.modularity.enableModule(module))
         {
             context.sendTranslated(POSITIVE, "The given module was successfully enabled!");
             return;
@@ -115,15 +122,15 @@ public class ModuleCommands extends ContainerCommand
     @Command(desc = "Disables a module")
     public void disable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        this.mm.disableModule(module);
-        context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getId());
+        this.modularity.disableModule(module);
+        context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getInformation().getName());
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
     public void unload(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        this.mm.unloadModule(module);
-        context.sendTranslated(POSITIVE, "The module {name#module} was successfully unloaded!", module.getId());
+        this.modularity.unloadModule(module);
+        context.sendTranslated(POSITIVE, "The module {name#module} was successfully unloaded!", module.getInformation().getName());
     }
 
     @Command(desc = "Reloads a module")
@@ -131,21 +138,21 @@ public class ModuleCommands extends ContainerCommand
     {
         try
         {
-            this.mm.reloadModule(module, file);
+            this.modularity.reloadModule(module, file);
             if (file)
             {
-                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getId());
+                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getInformation().getName());
             }
             else
             {
-                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded!", module.getId());
+                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded!", module.getInformation().getName());
             }
         }
         catch (ModuleException ex)
         {
             context.sendTranslated(NEGATIVE, "Failed to reload the module!");
             context.sendTranslated(NEUTRAL, "Check the server log for info.");
-            module.getCore().getLog().error(ex, "Failed to reload the module {}!", module.getName());
+            core.getLog().error(ex, "Failed to reload the module {}!", module.getInformation().getName());
         }
     }
 
@@ -157,7 +164,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The given file name is invalid!");
             return;
         }
-        Path modulesPath = mm.getCoreModule().getCore().getFileManager().getModulesPath();
+        Path modulesPath = core.getFileManager().getModulesPath();
         Path modulePath = modulesPath.resolve(filename + ".jar");
         if (!Files.exists(modulePath))
         {
@@ -171,10 +178,10 @@ public class ModuleCommands extends ContainerCommand
         }
         try
         {
-            Module module = mm.loadModule(modulePath);
-            if (mm.enableModule(module))
+            Module module = modularity.loadModule(modulePath);
+            if (modularity.enableModule(module))
             {
-                context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getName());
+                context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getInformation().getName());
             }
         }
         catch (ModuleAlreadyLoadedException e)
@@ -184,17 +191,17 @@ public class ModuleCommands extends ContainerCommand
         catch (ModuleException ex)
         {
             context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
-            mm.getCoreModule().getCore().getLog().error(ex, "Failed to load a module from file {}!", modulePath);
+            core.getLog().error(ex, "Failed to load a module from file {}!", modulePath);
         }
     }
 
     @Command(desc = "Get info about a module")
     public void info(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
     {
-        ModuleInfo moduleInfo = module.getInfo();
+        ModuleMetadata moduleInfo = module.getInformation();
         context.sendTranslated(POSITIVE, "Name: {input}", moduleInfo.getName());
         context.sendTranslated(POSITIVE, "Description: {input}", moduleInfo.getDescription());
-        context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion().toString());
+        context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion());
         if (source && moduleInfo.getSourceVersion() != null)
         {
             VanillaCommands.showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
@@ -222,7 +229,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(POSITIVE, "Module dependencies:");
             for (String dependency : dependencies.keySet())
             {
-                Module dep = this.mm.getModule(dependency);
+                Module dep = this.modularity.getModule(dependency);
                 if (dep != null && dep.isEnabled())
                 {
                     context.sendMessage(green + dependency);
@@ -238,7 +245,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(POSITIVE, "Module soft-dependencies:");
             for (String dependency : softDependencies.keySet())
             {
-                Module dep = this.mm.getModule(dependency);
+                Module dep = this.modularity.getModule(dependency);
                 if (dep != null && dep.isEnabled())
                 {
                     context.sendMessage(green + dependency);

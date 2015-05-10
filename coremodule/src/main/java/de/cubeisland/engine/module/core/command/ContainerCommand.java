@@ -22,17 +22,18 @@ import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.module.core.command.annotation.Unloggable;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.PermDefault;
 import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.core.permission.PermissionManager;
 
 public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 {
     public ContainerCommand(Module module)
     {
-        super(new CubeContainerCommandDescriptor(), module.getCore().getCommandManager().getCommandBuilder());
+        super(new CubeContainerCommandDescriptor(), module.getModulatiry().getStarted(CommandManager.class).getCommandBuilder());
 
         String permName = getDescriptor().getName();
         boolean checkPerm = true;
@@ -78,7 +79,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             Module module = descriptor.getModule();
             Permission childPerm = descriptor.getPermission();
             childPerm.setParent(this.getDescriptor().getPermission());
-            module.getCore().getPermissionManager().registerPermission(module, childPerm);
+            module.getModulatiry().getStarted(PermissionManager.class).registerPermission(module, childPerm);
         }
         return super.addCommand(command);
     }

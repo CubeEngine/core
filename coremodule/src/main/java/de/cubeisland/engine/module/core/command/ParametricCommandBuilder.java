@@ -83,7 +83,7 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
             def = perm.permDefault();
             checkPerm = perm.checkPermission();
         }
-        Permission permission = origin.getModule().getBasePermission().childWildcard("command").child(permName, def);
+        Permission permission = origin.getModule().getProvided(Permission.class).childWildcard("command").child(permName, def);
 
         descriptor.setPermission(permission, checkPerm);
 

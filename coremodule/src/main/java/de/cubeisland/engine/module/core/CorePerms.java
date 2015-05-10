@@ -17,15 +17,15 @@
  */
 package de.cubeisland.engine.module.core;
 
-import de.cubeisland.engine.module.core.module.CoreModule;
 import de.cubeisland.engine.module.core.permission.Permission;
-import de.cubeisland.engine.module.core.permission.PermissionContainer;
 import de.cubeisland.engine.module.core.permission.PermDefault;
+import de.cubeisland.engine.module.core.permission.PermissionContainer;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 
 @SuppressWarnings("all")
-public class CorePerms extends PermissionContainer<CoreModule>
+public class CorePerms extends PermissionContainer<SpongeCore>
 {
-    public CorePerms(CoreModule module)
+    public CorePerms(SpongeCore module)
     {
         super(module);
         this.registerAllPermissions();

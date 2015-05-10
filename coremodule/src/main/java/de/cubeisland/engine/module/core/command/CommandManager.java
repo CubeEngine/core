@@ -17,16 +17,15 @@
  */
 package de.cubeisland.engine.module.core.command;
 
-import de.cubeisland.engine.butler.CommandBase;
 import de.cubeisland.engine.butler.CommandBuilder;
 import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.ProviderManager;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.module.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.util.Cleanable;
 
 /**

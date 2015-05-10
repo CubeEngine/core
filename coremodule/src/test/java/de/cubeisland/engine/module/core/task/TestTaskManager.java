@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.module.core.task.thread.CoreThreadFactory;
 

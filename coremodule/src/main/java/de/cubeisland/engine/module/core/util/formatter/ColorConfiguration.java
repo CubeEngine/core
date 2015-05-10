@@ -22,6 +22,8 @@ import java.util.Map;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
+
 @SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml
 {

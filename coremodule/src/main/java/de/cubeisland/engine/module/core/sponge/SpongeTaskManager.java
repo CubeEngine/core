@@ -1,23 +1,22 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p/>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.cubeisland.engine.module.core.sponge;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.module.core.module.Module;
-import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.task.TaskManager;
-import de.cubeisland.engine.module.core.task.thread.CoreThreadFactory;
 import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
 import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.service.scheduler.Task;
@@ -43,17 +40,13 @@ public class SpongeTaskManager implements TaskManager
     private AsynchronousScheduler asyncScheduler;
     private SynchronousScheduler syncScheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
-    private final CoreThreadFactory threadFactory;
-    private final Map<String, ModuleThreadFactory> moduleThreadFactories;
 
     public SpongeTaskManager(SpongeCore core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
     {
         this.corePlugin = core;
         this.asyncScheduler = asyncScheduler;
         this.syncScheduler = syncScheduler;
-        this.threadFactory = new CoreThreadFactory(core);
         this.moduleTasks = new ConcurrentHashMap<>();
-        this.moduleThreadFactories = new HashMap<>();
     }
 
     private Set<UUID> getModuleIDs(Module module)
@@ -71,22 +64,6 @@ public class SpongeTaskManager implements TaskManager
         return IDs;
     }
 
-    @Override
-    public CoreThreadFactory getThreadFactory()
-    {
-        return this.threadFactory;
-    }
-
-    @Override
-    public synchronized ModuleThreadFactory getThreadFactory(Module module)
-    {
-        ModuleThreadFactory threadFactory = this.moduleThreadFactories.get(module.getId());
-        if (threadFactory == null)
-        {
-            this.moduleThreadFactories.put(module.getId(), threadFactory = new ModuleThreadFactory(module));
-        }
-        return threadFactory;
-    }
 
     @Override
     public Optional<UUID> runTask(Module module, Runnable runnable)
@@ -143,7 +120,8 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS, delay * 50, interval * 50));
+        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS,
+                                                                      delay * 50, interval * 50));
     }
 
     @Override
@@ -203,21 +181,6 @@ public class SpongeTaskManager implements TaskManager
     public synchronized void clean(Module module)
     {
         this.cancelTasks(module);
-        final ModuleThreadFactory factory = this.moduleThreadFactories.remove(module.getId());
-        if (factory != null)
-        {
-            factory.shutdown();
-        }
-    }
-
-    @Override
-    public synchronized void clean()
-    {
-        for (ModuleThreadFactory factory : this.moduleThreadFactories.values())
-        {
-            factory.shutdown();
-        }
-        this.moduleThreadFactories.clear();
     }
 
     private class CETask implements Runnable

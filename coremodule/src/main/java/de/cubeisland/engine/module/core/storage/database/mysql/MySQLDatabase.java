@@ -103,7 +103,7 @@ public class MySQLDatabase extends AbstractDatabase
 
     public static MySQLDatabase loadFromConfig(Core core, Path file)
     {
-        MySQLDatabaseConfiguration config = core.getConfigFactory().load(MySQLDatabaseConfiguration.class, file.toFile());
+        MySQLDatabaseConfiguration config = core.getReflector().load(MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);

@@ -21,11 +21,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.core.permission.PermissionManager;
+import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.entity.player.PlayerChatEvent;
@@ -38,11 +41,11 @@ public abstract class ConversationCommand extends ContainerCommand
     protected ConversationCommand(Module module)
     {
         super(module);
-        module.getCore().getEventManager().registerListener(module, this);
-        getDescriptor().setDispatcher(module.getCore().getCommandManager()); // needed for exceptionhandler
+        module.getModulatiry().getStarted(EventManager.class).registerListener(module, this);
+        getDescriptor().setDispatcher(module.getModulatiry().getStarted(CommandManager.class)); // needed for exceptionhandler
         Permission childPerm = getDescriptor().getPermission();
-        childPerm.setParent(module.getBasePermission().childWildcard("command"));
-        module.getCore().getPermissionManager().registerPermission(module, childPerm);
+        childPerm.setParent(module.getProvided(Permission.class).childWildcard("command"));
+        module.getModulatiry().getStarted(PermissionManager.class).registerPermission(module, childPerm);
         this.registerSubCommands();
     }
 
@@ -59,7 +62,7 @@ public abstract class ConversationCommand extends ContainerCommand
     @Subscribe
     public void onChatHandler(PlayerChatEvent event)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
+        User user = getModule().getModulatiry().getStarted(UserManager.class).getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(
@@ -76,7 +79,7 @@ public abstract class ConversationCommand extends ContainerCommand
 
     private CommandInvocation newInvocation(User user, String message)
     {
-        CommandManager cm = getModule().getCore().getCommandManager();
+        CommandManager cm = getModule().getModulatiry().getStarted(CommandManager.class);
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 

@@ -22,30 +22,28 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.contract.NotNull;
-import de.cubeisland.engine.module.core.module.Module;
-import de.cubeisland.engine.module.core.util.Pair;
 import de.cubeisland.engine.module.core.contract.Contract;
+import de.cubeisland.engine.module.core.contract.NotNull;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.util.Pair;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
-
-import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
 public class ConfirmManager
 {
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
     private final Map<CommandSender, Queue<Pair<Module, UUID>>> confirmationTimeoutTasks;
-    private final Core core;
+    private final SpongeCore core;
 
-    public ConfirmManager(CommandManager cm, Core core)
+    public ConfirmManager(CommandManager cm, SpongeCore core)
     {
         this.core = core;
         this.pendingConfirmations = new HashMap<>();
         confirmationTimeoutTasks = new HashMap<>();
-        cm.addCommands(cm, core.getModuleManager().getCoreModule(), new ConfirmCommand(this));
+        cm.addCommands(cm, core, new ConfirmCommand(this));
     }
 
     /**

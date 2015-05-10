@@ -19,11 +19,10 @@ package de.cubeisland.engine.module.core.command;
 
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parametric.context.ParameterizedContext;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
-import org.spongepowered.api.text.Texts;
 
 public class CommandContext extends ParameterizedContext
 {

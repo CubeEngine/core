@@ -82,7 +82,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public Version getVersion()
+    public String getVersion()
     {
         return this.version;
     }
@@ -110,7 +110,7 @@ public class TestCore implements Core
     {
         if (this.config == null)
         {
-            this.config = this.getConfigFactory().load(CoreConfiguration.class, this.getFileManager()
+            this.config = this.getReflector().load(CoreConfiguration.class, this.getFileManager()
                                                                                            .getDataPath()
                                                                                            .resolve("core.yml")
                                                                                            .toFile());
@@ -218,7 +218,7 @@ public class TestCore implements Core
     }
 
     @Override
-    public Reflector getConfigFactory()
+    public Reflector getReflector()
     {
         return this.configFactory;
     }

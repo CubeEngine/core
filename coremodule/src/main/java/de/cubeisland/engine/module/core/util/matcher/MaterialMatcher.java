@@ -65,9 +65,9 @@ public class MaterialMatcher
             FISHING_ROD,
             SHEARS)));
 
-    MaterialMatcher(Game game, ItemStackBuilder builder)
+    MaterialMatcher(Game game)
     {
-        this.builder = builder;
+        this.builder = game.getRegistry().getItemBuilder();
 
         // Read names from GameDirectory
         for (Entry<String, Set<ItemType>> entry : game.getRegistry().getGameDictionary().getAllItems().entrySet())

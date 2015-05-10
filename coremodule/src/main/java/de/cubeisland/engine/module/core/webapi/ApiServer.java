@@ -34,9 +34,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.PermDefault;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.permission.Permission;
@@ -91,7 +91,7 @@ public class ApiServer
         this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "WebAPI"),
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
-                                                  core.getTaskManager().getThreadFactory()));
+                                                  core.getThreadFactory()));
         this.log.addTarget(new LogProxyTarget(core.getLogFactory().getParent()));
         try
         {
@@ -153,8 +153,7 @@ public class ApiServer
 
             try
             {
-                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getTaskManager()
-                                                                                              .getThreadFactory()));
+                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getThreadFactory()));
                 serverBootstrap.group(this.eventLoopGroup.get())
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ApiServerInitializer(this.core, this))
@@ -223,12 +222,13 @@ public class ApiServer
                 {
                     route = StringUtils.deCamelCase(method.getName(), "/");
                 }
-                route = owner.getId() + "/" + route;
+                route = owner.getInformation().getName() + "/" + route;
                 route = HttpRequestHandler.normalizePath(route);
                 Permission perm = null;
                 if (aAction.needsAuth())
                 {
-                    perm = owner.getBasePermission().childWildcard("webapi");
+
+                    perm = owner.getProvided(Permission.class).childWildcard("webapi");
                     if (method.isAnnotationPresent(ApiPermission.class))
                     {
                         ApiPermission apiPerm = method.getAnnotation(ApiPermission.class);

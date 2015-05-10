@@ -23,12 +23,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.contract.Contract;
 import org.spongepowered.api.event.Event;
-
-import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
@@ -39,10 +36,10 @@ public class EventManager
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.service.event.EventManager eventManager;
 
-    public EventManager(Core core)
+    public EventManager(SpongeCore core)
     {
-        this.corePlugin = (SpongeCore)core;
-        eventManager = this.corePlugin.getGame().getEventManager();
+        this.corePlugin = core;
+        this.eventManager = core.getGame().getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
     }
 

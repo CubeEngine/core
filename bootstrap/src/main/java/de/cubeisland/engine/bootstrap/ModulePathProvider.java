@@ -15,34 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.command.completer;
+package de.cubeisland.engine.bootstrap;
 
-import java.util.List;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.completer.Completer;
+import java.io.File;
+import java.nio.file.Path;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.ValueProvider;
+import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 
-import static java.util.stream.Collectors.toList;
-
-public class ModuleCompleter implements Completer
+public class ModulePathProvider implements ValueProvider<Path>
 {
-    private Modularity modularity;
+    private final Path path;
 
-    public ModuleCompleter(Modularity modularity)
+    public ModulePathProvider(File dataFolder)
     {
-        this.modularity = modularity;
+        this.path = dataFolder.toPath();
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public Path get(DependencyInformation info, Modularity modularity)
     {
-        String token = invocation.currentToken();
-        return modularity.getModules().stream()
-                          .map(Module::getInformation)
-                          .map(ModuleMetadata::getName)
-                          .filter(id -> id.startsWith(token))
-                          .collect(toList());
+        if (info instanceof ModuleMetadata)
+        {
+            return path.resolve(((ModuleMetadata)info).getName());
+        }
+        throw new IllegalArgumentException(info.getIdentifier() + " is not a Module");
     }
 }

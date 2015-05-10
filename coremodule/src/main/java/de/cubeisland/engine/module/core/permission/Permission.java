@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.core.permission;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.contract.Contract;
 import org.spongepowered.api.service.permission.Subject;
@@ -240,7 +241,7 @@ public class Permission
         return permissible.hasPermission(this.getFullName());
     }
 
-    public boolean isAuthorized(User user)
+    public boolean isAuthorized(CommandSender user)
     {
         Contract.expectNotNull(user, "The permissible may not be null!");
 

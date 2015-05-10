@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.Match;
@@ -53,9 +53,6 @@ import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 
 public class I18n
 {
@@ -72,7 +69,7 @@ public class I18n
 
     public I18n(Core core)
     {
-        core.getConfigFactory().getDefaultConverterManager().registerConverter(new PluralExprConverter(),
+        core.getReflector().getDefaultConverterManager().registerConverter(new PluralExprConverter(),
                                                                                PluralExpr.class);
 
         this.core = core;

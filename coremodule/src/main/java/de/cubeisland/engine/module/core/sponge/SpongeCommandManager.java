@@ -34,6 +34,7 @@ import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
 import de.cubeisland.engine.butler.parametric.ParametricBuilder;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandManager;
@@ -44,7 +45,6 @@ import de.cubeisland.engine.module.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.module.core.command.CubeDescriptor;
 import de.cubeisland.engine.module.core.command.ExceptionHandler;
 import de.cubeisland.engine.module.core.command.ParametricCommandBuilder;
-import de.cubeisland.engine.module.core.command.completer.ModuleCompleter;
 import de.cubeisland.engine.module.core.command.completer.PlayerCompleter;
 import de.cubeisland.engine.module.core.command.completer.PlayerListCompleter;
 import de.cubeisland.engine.module.core.command.completer.WorldCompleter;
@@ -71,7 +71,6 @@ import de.cubeisland.engine.module.core.command.result.confirm.ConfirmManager;
 import de.cubeisland.engine.module.core.command.result.paginated.PaginationManager;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.module.core.command.sender.WrappedCommandSender;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.command.ProxyCallable;
 import de.cubeisland.engine.module.core.user.User;
@@ -104,7 +103,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
 
-    private Core core;
+    private SpongeCore core;
 
     @Override
     public CommandManagerDescriptor getDescriptor()
@@ -123,15 +122,18 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 
         this.commandLogger = core.getLogFactory().getLog(Core.class, "Commands");
-        this.confirmManager = new ConfirmManager(this, core);
+        this.confirmManager = new ConfirmManager(this, core); // TODO instead register as service
         this.paginationManager = new PaginationManager(core);
 
         this.providerManager = new ProviderManager();
         providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
 
+    }
+
+    public void registerReaders(SpongeCore core)
+    {
         providerManager.register(core, new PlayerCompleter(), User.class, org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);
-        providerManager.register(core, new ModuleCompleter(core), Module.class);
         providerManager.register(core, new PlayerListCompleter(core), PlayerListCompleter.class);
 
         providerManager.register(core, new ByteReader(), Byte.class, byte.class);
@@ -224,11 +226,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public boolean addCommand(CommandBase command)
     {
-        Module module = core.getModuleManager().getCoreModule();
+        Module module = core;
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
             module = ((CubeDescriptor)command.getDescriptor()).getModule();
-            Permission perm = module.getBasePermission().childWildcard("command");
+            Permission perm = module.getProvided(Permission.class).childWildcard("command");
             Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
             childPerm.setParent(perm);
             this.core.getPermissionManager().registerPermission(module, childPerm);
@@ -247,7 +249,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             byModule.add(mapping.get());
             return b;
         }
-        module.getLog().warn("Command was not registered successfully!");
+        module.getProvided(Log.class).warn("Command was not registered successfully!");
         return b;
     }
 

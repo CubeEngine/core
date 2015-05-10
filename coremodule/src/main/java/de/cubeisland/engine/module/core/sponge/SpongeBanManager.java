@@ -191,16 +191,6 @@ public class SpongeBanManager implements BanManager
 
     @Override
     public synchronized void reloadBans()
-    {
-        expect(isMainThread());
-        try
-        {
-            this.profileBan.load();
-            this.ipBans.load();
-        }
-        catch (IOException e)
-        {
-            throw new IllegalStateException(e);
-        }
+    {// TODO
     }
 }

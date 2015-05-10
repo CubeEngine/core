@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.ProviderManager;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.permission.Permission;
 
 public final class ReflectedApiHandler extends ApiHandler
@@ -42,7 +43,7 @@ public final class ReflectedApiHandler extends ApiHandler
         this.method = method;
         this.method.setAccessible(true);
         this.holder = holder;
-        this.providerManager = module.getCore().getCommandManager().getProviderManager();
+        this.providerManager = module.getModulatiry().getStarted(CommandManager.class).getProviderManager();
     }
 
     @Override

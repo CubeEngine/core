@@ -21,31 +21,14 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.module.core.module.Module;
-import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
-import de.cubeisland.engine.module.core.task.thread.CoreThreadFactory;
-import de.cubeisland.engine.module.core.util.Cleanable;
+import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * This class provides methods to register and cancel tasks and the global
  * ScheduledExecutorService is provided by this class.
  */
-public interface TaskManager extends Cleanable
+public interface TaskManager
 {
-    /**
-     * Returns the thread factory used by the CubeEngine to create its threads
-     *
-     * @return a ThreadFactory implementation
-     */
-    CoreThreadFactory getThreadFactory();
-
-    /**
-     * Returns a new thread factory for a module
-     *
-     * @return a ThreadFactory implementation
-     */
-    ModuleThreadFactory getThreadFactory(Module module);
-
 
     /**
      * Schedules a delayed task for a module
@@ -119,9 +102,8 @@ public interface TaskManager extends Cleanable
     /**
      * Cancels a task of a module
      *
-     * @param ID     the taskID
      * @param module the module
-     * @param uuid
+     * @param uuid the taskID
      */
     void cancelTask(Module module, UUID uuid);
 

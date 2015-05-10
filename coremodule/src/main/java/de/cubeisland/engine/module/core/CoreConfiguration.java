@@ -78,9 +78,6 @@ public class CoreConfiguration extends ReflectedYaml
 
         @Comment("How many Ticks after disconnecting a user should stay in the user manager")
         public int keepInMemory = 300;
-
-        @Comment("How many ticks after PlayerJoinEvent the AfterJoinEvent is fired")
-        public long afterJoinEventDelay = 1;
     }
 
     public LoggingSection logging;

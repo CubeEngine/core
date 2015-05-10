@@ -41,8 +41,9 @@ import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.module.core.filesystem.FileUtil;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.storage.database.Database;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.StringUtils;
@@ -61,7 +62,7 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
  */
 public abstract class AbstractUserManager implements UserManager
 {
-    private final Core core;
+    private final SpongeCore core;
     protected List<User> onlineUsers;
     protected ConcurrentHashMap<UUID, User> cachedUserByUUID = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<UInteger, User> cachedUserByDbId = new ConcurrentHashMap<>();
@@ -71,7 +72,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected final Database database;
 
-    public AbstractUserManager(final Core core)
+    public AbstractUserManager(final SpongeCore core)
     {
         this.database = core.getDB();
 
@@ -180,7 +181,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         UserEntity entity = this.database.getDSL().selectFrom(TableUser.TABLE_USER).where(TableUser.TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(
             TableUser.TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-        return entity == null ? null : new User(entity);
+        return entity == null ? null : new User(core, entity);
     }
 
     @Override
@@ -196,7 +197,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return null;
         }
-        user = new User(entity);
+        user = new User(core, entity);
         this.cacheUser(user);
         return user;
     }
@@ -304,7 +305,7 @@ public abstract class AbstractUserManager implements UserManager
             }
         }
         ConsoleCommandSender cSender = this.core.getCommandManager().getConsoleSender();
-        cSender.sendMessage(Texts.of(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params)));
+        cSender.sendMessage(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params));
     }
 
     @Override
@@ -556,7 +557,7 @@ public abstract class AbstractUserManager implements UserManager
             User user = this.cachedUserByDbId.get(entity.getKey());
             if (user == null)
             {
-                user = new User(entity);
+                user = new User(core, entity);
                 this.cacheUser(user);
             }
             return user;

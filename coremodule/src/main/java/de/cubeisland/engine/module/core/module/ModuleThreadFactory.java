@@ -18,6 +18,7 @@
 package de.cubeisland.engine.module.core.module;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.task.thread.BaseThreadFactory;
 import de.cubeisland.engine.module.core.task.thread.LoggingThread;
@@ -25,31 +26,29 @@ import de.cubeisland.engine.logscribe.LogLevel;
 
 public class ModuleThreadFactory extends BaseThreadFactory
 {
-    private final Module module;
+    private final Log log;
     private final UncaughtExceptionHandler exceptionHandler;
 
-    public ModuleThreadFactory(Module module)
+    public ModuleThreadFactory(ThreadGroup threadGroup, Log log)
     {
-        super(new ThreadGroup(
-            module.getCore().getTaskManager().getThreadFactory().getThreadGroup(),
-            CubeEngine.class.getSimpleName() + " - " + module.getName()), module.getClass().getPackage().getName()
-        );
-        this.module = module;
-        this.exceptionHandler = new UncaughtModuleExceptionHandler(module);
+        super(new ThreadGroup(threadGroup, CubeEngine.class.getSimpleName() + " - " + log.getId()),
+              log.getClass().getPackage().getName());
+        this.log = log;
+        this.exceptionHandler = new UncaughtModuleExceptionHandler(log);
     }
 
     @Override
     public Thread newThread(Runnable r)
     {
         Thread t = super.newThread(r);
-        t.setUncaughtExceptionHandler(new UncaughtModuleExceptionHandler(this.module));
+        t.setUncaughtExceptionHandler(new UncaughtModuleExceptionHandler(log));
         return t;
     }
 
     @Override
     protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        final LoggingThread thread = new LoggingThread(threadGroup, r, name, this.module.getLog(), LogLevel.TRACE);
+        final LoggingThread thread = new LoggingThread(threadGroup, r, name, log, LogLevel.TRACE);
         thread.setUncaughtExceptionHandler(this.exceptionHandler);
         return thread;
     }
@@ -57,17 +56,19 @@ public class ModuleThreadFactory extends BaseThreadFactory
 
     private static final class UncaughtModuleExceptionHandler implements UncaughtExceptionHandler
     {
-        private final Module module;
+        private final Log log;
 
-        public UncaughtModuleExceptionHandler(Module module)
+        public UncaughtModuleExceptionHandler(Log log)
         {
-            this.module = module;
+            this.log = log;
         }
 
         @Override
         public void uncaughtException(Thread t, Throwable e)
         {
-            this.module.onUncaughtException(t, e);
+            this.log.error("An uncaught exception occurred! This is a critical error and should be reported!");
+            this.log.error("The thread: {}", t.getName());
+            this.log.error("The error: {}", e.getLocalizedMessage(), e);
         }
     }
 }

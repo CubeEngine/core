@@ -17,8 +17,10 @@
  */
 package de.cubeisland.engine.module.core.logging;
 
+import java.util.concurrent.ThreadFactory;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
@@ -30,6 +32,7 @@ import org.apache.logging.log4j.core.Logger;
 public class LogFactory extends DefaultLogFactory
 {
     protected final Core core;
+    private final ThreadFactory threadFactory;
 
     private final Log exLog;
 
@@ -37,9 +40,10 @@ public class LogFactory extends DefaultLogFactory
     private final Log parent;
     private Log databaseLog;
 
-    public LogFactory(Core core, Logger baseLogger)
+    public LogFactory(Core core, Logger baseLogger, ThreadFactory threadFactory)
     {
         this.core = core;
+        this.threadFactory = threadFactory;
         this.parent = this.getLog(core.getClass());
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget(baseLogger);
         this.parent.addTarget(log4jProxyTarget);
@@ -48,7 +52,7 @@ public class LogFactory extends DefaultLogFactory
         exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Exceptions"),
                                             LoggingUtil.getFileFormat(true, false),
                                             true, LoggingUtil.getCycler(),
-                                            core.getTaskManager().getThreadFactory()));
+                                            threadFactory));
 
         ExceptionAppender exceptionAppender = new ExceptionAppender(this.exLog);
         exceptionAppender.start();
@@ -64,7 +68,7 @@ public class LogFactory extends DefaultLogFactory
             commands.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Commands"),
                                                    LoggingUtil.getFileFormat(true, false),
                                                    true, LoggingUtil.getCycler(),
-                                                   core.getTaskManager().getThreadFactory()));
+                                                   threadFactory));
         }
     }
 
@@ -81,7 +85,7 @@ public class LogFactory extends DefaultLogFactory
             AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Core"),
                                                          LoggingUtil.getFileFormat(true, true),
                                                          true, LoggingUtil.getCycler(),
-                                                         core.getTaskManager().getThreadFactory());
+                                                         threadFactory);
             target.setLevel(this.core.getConfiguration().logging.fileLevel);
             coreLog.addTarget(target);
             this.coreLog.addDelegate(this.getParent());
@@ -101,7 +105,7 @@ public class LogFactory extends DefaultLogFactory
             this.databaseLog = this.getLog(Core.class, "Database");
             AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Database"),
                                                          LoggingUtil.getFileFormat(true, false),
-                                                         true, LoggingUtil.getCycler(), core.getTaskManager().getThreadFactory());
+                                                         true, LoggingUtil.getCycler(), threadFactory);
             target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
             databaseLog.addTarget(target);
         }
@@ -110,8 +114,11 @@ public class LogFactory extends DefaultLogFactory
 
     public void shutdown(Module module)
     {
-        this.remove(module.getLog());
-        module.getLog().shutdown();
+        // TODO
+        Log log;
+        this.remove(log);
+        log.shutdown();
+
     }
 
     // TODO log-cycling on shutdown ?

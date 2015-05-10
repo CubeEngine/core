@@ -20,7 +20,7 @@ package de.cubeisland.engine.module.core.user;
 import java.util.Set;
 import java.util.UUID;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.Cleanable;

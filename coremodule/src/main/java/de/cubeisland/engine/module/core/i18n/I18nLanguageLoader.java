@@ -44,7 +44,7 @@ public class I18nLanguageLoader extends LanguageLoader
             // Search override Languages under CubeEngine/languages
             for (Path path : directoryStream)
             {
-                LocaleConfiguration config = core.getConfigFactory().load(LocaleConfiguration.class, path.toFile(), false);
+                LocaleConfiguration config = core.getReflector().load(LocaleConfiguration.class, path.toFile(), false);
                 this.configurations.put(config.getLocale(), config);
                 Locale[] clones = config.getClones();
                 if (clones != null)
@@ -60,7 +60,7 @@ public class I18nLanguageLoader extends LanguageLoader
             {
                 try (Reader reader = new InputStreamReader(url.openStream()))
                 {
-                    LocaleConfiguration config = core.getConfigFactory().load(LocaleConfiguration.class, reader);
+                    LocaleConfiguration config = core.getReflector().load(LocaleConfiguration.class, reader);
                     if (!this.configurations.containsKey(config.getLocale()))
                     {
                         this.configurations.put(config.getLocale(), config);

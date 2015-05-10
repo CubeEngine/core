@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.module.core.permission;
 
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
-import de.cubeisland.engine.module.core.module.Module;
 
 /**
  * Event gets called after a new Bukkit permission was registered by CubeEngine.
@@ -30,7 +30,7 @@ public class NotifyPermissionRegistrationCompletedEvent extends CubeEvent
 
     public NotifyPermissionRegistrationCompletedEvent(Module module, Permission[] permissions)
     {
-        super(module.getCore());
+        super(module);
 
         this.module = module;
         this.permissions = permissions;

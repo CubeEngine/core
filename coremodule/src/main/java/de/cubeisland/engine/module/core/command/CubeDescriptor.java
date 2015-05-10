@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core.command;
 
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.permission.Permission;
 
 public interface CubeDescriptor

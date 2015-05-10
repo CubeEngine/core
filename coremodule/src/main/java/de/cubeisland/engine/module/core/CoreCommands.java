@@ -1,6 +1,23 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
  * <p>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +64,13 @@ import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.module.core.permission.PermDefault;
+import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.text.Texts;
+
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITIVE;
 
 @Command(name = "cubeengine", alias = "ce",
     desc = "These are the basic commands of the CubeEngine.")
@@ -59,14 +81,14 @@ public class CoreCommands extends ContainerCommand
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
     private final UserManager um;
 
-    public CoreCommands(Core core)
+    public CoreCommands(SpongeCore core)
     {
-        super(core.getModuleManager().getCoreModule());
-        this.core = (SpongeCore)core;
+        super(core);
+        this.core = core;
         this.banManager = core.getBanManager();
         this.um = core.getUserManager();
 
-        core.getCommandManager().getProviderManager().register(core.getModuleManager().getCoreModule(),
+        core.getCommandManager().getProviderManager().register(core,
                                                                new FindUserReader());
     }
 
@@ -87,7 +109,7 @@ public class CoreCommands extends ContainerCommand
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        core.getModuleManager().reloadModules(file);
+        core.getModulatiry().reloadModules(file);
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }

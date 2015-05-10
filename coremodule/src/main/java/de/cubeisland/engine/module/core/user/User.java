@@ -35,18 +35,13 @@ import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.jooq.types.UInteger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.data.DataManipulator;
-import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.living.monster.Spider;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.Tristate;
@@ -87,9 +82,9 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      *
      * @param entity
      */
-    public User(UserEntity entity)
+    public User(SpongeCore core, UserEntity entity)
     {
-        super(entity.getUniqueId());
+        super(core.getGame(), entity.getUniqueId());
         this.core = CubeEngine.getCore();
         this.entity = entity;
         this.attachments = new HashMap<>();

@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.task;
 
 import java.util.UUID;
-import de.cubeisland.engine.module.core.module.Module;
+import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * This Task can be cancelled from the inside.
@@ -32,7 +32,7 @@ public abstract class Task implements Runnable
     public Task(Module module)
     {
         this.module = module;
-        this.tm = module.getCore().getTaskManager();
+        this.tm = module.getModulatiry().getStarted(TaskManager.class);
     }
 
     /**

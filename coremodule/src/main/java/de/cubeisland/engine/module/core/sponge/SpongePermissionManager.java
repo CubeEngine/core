@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.module.Module;
 import de.cubeisland.engine.module.core.permission.NotifyPermissionRegistrationCompletedEvent;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.permission.PermissionManager;
@@ -33,21 +33,21 @@ import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
-public class BukkitPermissionManager implements PermissionManager
+public class SpongePermissionManager implements PermissionManager
 {
     private final Map<String, Permission> permissions = new HashMap<>();
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Log logger;
 
     @SuppressWarnings("unchecked")
-    public BukkitPermissionManager(SpongeCore core)
+    public SpongePermissionManager(SpongeCore core)
     {
         this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),
-                                                  core.getTaskManager().getThreadFactory()));
-        this.registerPermission(core.getModuleManager().getCoreModule(), Permission.BASE);
+                                                  core.getThreadFactory()));
+        this.registerPermission(core, Permission.BASE);
     }
 
     private Set<String> getPermissions(Module module)
@@ -83,7 +83,7 @@ public class BukkitPermissionManager implements PermissionManager
     @Override
     public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
     {
-        module.getCore().getEventManager().fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
+        module.getModulatiry().getStarted(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
     }
 
     @Override
