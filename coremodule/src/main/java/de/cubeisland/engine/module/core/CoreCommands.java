@@ -40,16 +40,11 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 public class CoreCommands extends ContainerCommand
 {
     private final SpongeCore core;
-    private final BanManager banManager;
-    private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
-    private final UserManager um;
 
     public CoreCommands(SpongeCore core)
     {
         super(core);
         this.core = core;
-        this.banManager = core.getBanManager();
-        this.um = core.getUserManager();
 
         core.getCommandManager().getProviderManager().register(core,
                                                                new FindUserReader());
@@ -77,108 +72,7 @@ public class CoreCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
 
-    @Unloggable
-    @Command(alias = "setpw", desc = "Sets your password.")
-    public void setPassword(CommandContext context, String password, @Default User player)
-    {
-        if ((context.getSource().equals(player)))
-        {
-            um.setPassword(player, password);
-            context.sendTranslated(POSITIVE, "Your password has been set!");
-            return;
-        }
-        context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
-        um.setPassword(player, password);
-        context.sendTranslated(POSITIVE, "{user}'s password has been set!", player);
-    }
 
-    @Command(alias = "clearpw", desc = "Clears your password.")
-    public void clearPassword(CommandContext context,
-                              @Optional @Desc("* or a list of Players delimited by ,") UserList players)
-    {
-        CommandSender sender = context.getSource();
-        if (players == null)
-        {
-            if (!(sender instanceof User))
-            {
-                throw new TooFewArgumentsException();
-            }
-            this.um.resetPassword((User)sender);
-            sender.sendTranslated(POSITIVE, "Your password has been reset!");
-            return;
-        }
-        if (players.isAll())
-        {
-            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
-            um.resetAllPasswords();
-            sender.sendTranslated(POSITIVE, "All passwords reset!");
-            return;
-        }
-        User target = context.get(0);
-        if (!target.equals(context.getSource()))
-        {
-            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
-        }
-        this.um.resetPassword(target);
-        sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", target.getName());
-    }
-
-    @Unloggable
-    @Command(desc = "Logs you in with your password!")
-    @CommandPermission(permDefault = PermDefault.TRUE)
-    @Restricted(value = User.class, msg = "Only players can log in!")
-    public void login(User context, String password)
-    {
-        if (context.isLoggedIn())
-        {
-            context.sendTranslated(POSITIVE, "You are already logged in!");
-            return;
-        }
-        boolean isLoggedIn = um.login(context, password);
-        if (isLoggedIn)
-        {
-            context.sendTranslated(POSITIVE, "You logged in successfully!");
-            return;
-        }
-        context.sendTranslated(NEGATIVE, "Wrong password!");
-        if (this.core.getConfiguration().security.fail2ban)
-        {
-            if (fails.get(context.getUniqueId()) != null)
-            {
-                if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
-                {
-                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
-                        + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
-                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getPlayer().get(), Texts.of(
-                        msg), new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                        this.core.getConfiguration().security.banDuration))));
-
-                    if (!core.getGame().getServer().getOnlineMode())
-                    {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context.getPlayer().get(),
-                                                         Texts.of(msg), new Date(
-                            System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                                this.core.getConfiguration().security.banDuration))));
-                    }
-                    context.kick(Texts.of(msg));
-                }
-            }
-            fails.put(context.getUniqueId(), System.currentTimeMillis());
-        }
-    }
-
-    @Command(desc = "Logs you out!")
-    @Restricted(value = User.class, msg = "You might use /stop for this.")
-    public void logout(User context)
-    {
-        if (context.isLoggedIn())
-        {
-            context.logout();
-            context.sendTranslated(POSITIVE, "You're now logged out.");
-            return;
-        }
-        context.sendTranslated(NEUTRAL, "You're not logged in!");
-    }
 
     @Command(desc = "Shows the online mode")
     public void onlinemode(CommandSender context)
