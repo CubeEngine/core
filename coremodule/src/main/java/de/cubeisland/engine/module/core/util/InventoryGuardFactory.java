@@ -19,9 +19,9 @@ package de.cubeisland.engine.module.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.user.User;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;

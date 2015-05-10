@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.module.trash.Module;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.Match;
@@ -101,7 +101,7 @@ public class I18n
 
     public void registerModule(Module module)
     {
-        Path translations = module.getFolder().resolve("translations");
+        Path translations = module.getProvided(Path.class).resolve("translations");
         this.addPoFilesFromDirectory(translations);
         this.poFiles.addAll(getFilesFromJar("translations/", ".po", module.getClass()));
     }

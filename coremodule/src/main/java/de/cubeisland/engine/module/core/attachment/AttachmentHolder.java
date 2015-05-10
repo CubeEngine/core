@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.attachment;
 
 import java.util.Set;
-import de.cubeisland.engine.module.core.module.trash.Module;
+import de.cubeisland.engine.modularity.core.Module;
 
 public interface AttachmentHolder<T extends Attachment>
 {
