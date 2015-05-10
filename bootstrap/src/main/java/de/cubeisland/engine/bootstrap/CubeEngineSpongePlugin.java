@@ -18,20 +18,26 @@
 package de.cubeisland.engine.bootstrap;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.asm.AsmModularity;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.graph.Node;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.event.state.PostInitializationEvent;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
-import com.google.inject.Inject;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 
-@Plugin(id = "de.cubeisland.engine.core.sponge.SpongeCore", name = "CubeEngine Core", version = "1.0.0")
+@Plugin(id = "CubeEngine", name = "CubeEngine", version = "1.0.0")
 public class CubeEngineSpongePlugin
 {
     @Inject private PluginContainer instance;
@@ -47,9 +53,20 @@ public class CubeEngineSpongePlugin
         // During this state, the plugin gets ready for initialization.
         // Access to a default logger instance and access to information regarding preferred configuration file locations is available.
 
+        pluginLogger.info("Start CubeEngine...");
         Path moduleFolder = dataFolder.toPath().resolve("modules"); // Can contain jars or classes of modules
+        try
+        {
+            Files.createDirectories(moduleFolder);
+        }
+        catch (IOException e)
+        {
+            // TODO handle
+        }
+        pluginLogger.info("Load available Modules");
         modularity.load(moduleFolder.toFile());
-        // TODO provide instances to inject (game)
+        pluginLogger.info("done.");
+        modularity.getServiceManager().registerService(Game.class, game); // Provide Sponge Game
     }
 
     @Subscribe
@@ -57,8 +74,21 @@ public class CubeEngineSpongePlugin
     {
         // During this state, the plugin should finish any work needed in order to be functional.
         // Global event handlers and command registration are handled during initialization.
+        game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
-        // TODO start Modules and Services
+        pluginLogger.info("Starting Modules...");
+        start(modularity.getGraph().getRoot());
+        pluginLogger.info("done.");
+    }
+
+    private void start(Node node)
+    {
+        if (node.getInformation() != null)
+        {
+            pluginLogger.debug("Starting " + node.getInformation().getIdentifier());
+            modularity.getStarted(node.getInformation().getClassName());
+        }
+        node.getChildren().forEach(this::start);
     }
 
     @Subscribe

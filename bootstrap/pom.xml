@@ -55,6 +55,7 @@
     </repositories>
 
     <dependencies>
+        <!-- Sponge -->
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
@@ -62,6 +63,7 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+        <!-- Modularity -->
         <dependency>
             <groupId>de.cubeisland.engine</groupId>
             <artifactId>modularity-asm</artifactId>

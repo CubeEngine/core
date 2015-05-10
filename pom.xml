@@ -13,124 +13,6 @@
         <projectBase>${project.basedir}</projectBase>
     </properties>
 
-    <dependencies>
-        <!-- Sponge Dependencies -->
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.0-beta9</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.0-beta9</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- InHouse Libraries -->
-
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>reflect-yaml</artifactId>
-            <version>2.3.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>reflect-nbt</artifactId>
-            <version>2.3.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>logscribe-syslog</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>i18n</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>messagecompositor</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.cubeisland.engine</groupId>
-            <artifactId>butler</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <!-- Other Libraries -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.34</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-            <version>4.0.26.Final</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ocpsoft.prettytime</groupId>
-            <artifactId>prettytime</artifactId>
-            <version>3.2.7.Final</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.5.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP-java6</artifactId>
-            <version>2.3.5</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.6.2</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>1.6.2</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <distributionManagement>
         <repository>
             <id>cubeengine-repo</id>
@@ -143,7 +25,6 @@
             <url>http://maven.cubeengine.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
 
     <modules>
         <module>coremodule</module>
