@@ -1,37 +1,3 @@
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- *
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- * <p>
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
 package de.cubeisland.engine.module.core.sponge;
 
 import java.io.BufferedWriter;
@@ -53,7 +19,6 @@ import javax.inject.Inject;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.CoreCommands;
@@ -66,7 +31,6 @@ import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LogFactory;
 import de.cubeisland.engine.module.core.module.ModuleCommands;
-import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.command.PreCommandListener;
 import de.cubeisland.engine.module.core.storage.database.Database;
@@ -92,12 +56,12 @@ import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
-import de.cubeisland.engine.module.core.webapi.ApiConfig;
-import de.cubeisland.engine.module.core.webapi.ApiServer;
-import de.cubeisland.engine.module.core.webapi.CommandController;
-import de.cubeisland.engine.module.core.webapi.ConsoleLogEvent;
-import de.cubeisland.engine.module.core.webapi.InetAddressConverter;
-import de.cubeisland.engine.module.core.webapi.exception.ApiStartupException;
+import de.cubeisland.engine.module.webapi.ApiConfig;
+import de.cubeisland.engine.module.webapi.ApiServer;
+import de.cubeisland.engine.module.webapi.CommandController;
+import de.cubeisland.engine.module.webapi.ConsoleLogEvent;
+import de.cubeisland.engine.module.webapi.InetAddressConverter;
+import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.module.core.world.ConfigWorld;
 import de.cubeisland.engine.module.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.module.core.world.TableWorld;

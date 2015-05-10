@@ -1,37 +1,3 @@
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- *
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
-/**
- * This file is part of CubeEngine.
- * CubeEngine is licensed under the GNU General Public License Version 3.
- * <p>
- * CubeEngine is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p>
- * CubeEngine is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License
- * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
- */
 package de.cubeisland.engine.module.core;
 
 import java.util.Date;
@@ -49,6 +15,7 @@ import de.cubeisland.engine.butler.parametric.Desc;
 import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Optional;
 import de.cubeisland.engine.butler.parametric.Reader;
+import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
@@ -57,20 +24,16 @@ import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
 import de.cubeisland.engine.module.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.module.core.command.annotation.Unloggable;
+import de.cubeisland.engine.module.core.permission.PermDefault;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserList;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
-import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.module.core.permission.PermDefault;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.text.Texts;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 
 @Command(name = "cubeengine", alias = "ce",
     desc = "These are the basic commands of the CubeEngine.")

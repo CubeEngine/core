@@ -42,7 +42,7 @@ import de.cubeisland.engine.module.core.util.converter.LevelConverter;
 import de.cubeisland.engine.module.core.util.converter.UserConverter;
 import de.cubeisland.engine.module.core.util.converter.VersionConverter;
 import de.cubeisland.engine.module.core.util.matcher.Match;
-import de.cubeisland.engine.module.core.webapi.ApiServer;
+import de.cubeisland.engine.module.webapi.ApiServer;
 import de.cubeisland.engine.module.core.world.WorldManager;
 import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;

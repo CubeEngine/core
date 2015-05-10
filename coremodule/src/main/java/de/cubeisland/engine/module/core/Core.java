@@ -30,7 +30,7 @@ import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.module.core.util.matcher.Match;
-import de.cubeisland.engine.module.core.webapi.ApiServer;
+import de.cubeisland.engine.module.webapi.ApiServer;
 import de.cubeisland.engine.module.core.world.WorldManager;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.reflect.Reflector;
