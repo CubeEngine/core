@@ -26,7 +26,7 @@ import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.completer.ModuleCompleter;
-import de.cubeisland.engine.module.core.command.result.paginated.PaginationCommands;
+import de.cubeisland.engine.module.paginate.PaginationCommands;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LogFactory;

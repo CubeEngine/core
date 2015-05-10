@@ -15,13 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.command.result.confirm;
+package de.cubeisland.engine.module.confirm;
 
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.command.CommandContext;
-import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 
 
