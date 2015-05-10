@@ -17,12 +17,13 @@
  */
 package de.cubeisland.engine.module.core.user;
 
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 
 public class UserAuthorizedEvent extends UserEvent
 {
-    public UserAuthorizedEvent(Core core, User user)
+    public UserAuthorizedEvent(Module module, User user)
     {
-        super(core, user);
+        super(module, user);
     }
 }

@@ -1,39 +1,26 @@
 package de.cubeisland.engine.module.core;
 
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.filter.Restricted;
-import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.parametric.Default;
 import de.cubeisland.engine.butler.parametric.Desc;
 import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Optional;
 import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.module.core.ban.BanManager;
-import de.cubeisland.engine.module.core.ban.IpBan;
-import de.cubeisland.engine.module.core.ban.UserBan;
 import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
-import de.cubeisland.engine.module.core.command.annotation.CommandPermission;
-import de.cubeisland.engine.module.core.command.annotation.Unloggable;
-import de.cubeisland.engine.module.core.permission.PermDefault;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
-import de.cubeisland.engine.module.core.user.UserList;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
 import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.api.text.Texts;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITIVE;
 
 @Command(name = "cubeengine", alias = "ce",
     desc = "These are the basic commands of the CubeEngine.")

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.core.world;
 
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
 import org.spongepowered.api.world.Location;
@@ -27,7 +28,7 @@ public class WorldSetSpawnEvent extends CubeEvent
     private final World world;
     private final Location location;
 
-    public WorldSetSpawnEvent(Core core, World world, Location location)
+    public WorldSetSpawnEvent(Module core, World world, Location location)
     {
         super(core);
         this.world = world;

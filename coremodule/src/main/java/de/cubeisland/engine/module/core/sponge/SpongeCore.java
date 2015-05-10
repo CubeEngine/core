@@ -116,6 +116,16 @@ public final class SpongeCore extends Module implements Core
 
     private final ThreadFactory threadFactory;
 
+      /* TODO configprovider
+        T config = this.core.getReflector().create(clazz);
+        config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
+        if (config.reload(true))
+        {
+            this.getLog().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+        }
+        return config;
+        */
+
     public SpongeCore()
     {
         CubeEngine.initialize(this);

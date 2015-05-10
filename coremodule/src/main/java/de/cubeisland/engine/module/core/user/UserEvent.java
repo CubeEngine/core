@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.core.user;
 
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
 
@@ -27,7 +28,7 @@ public abstract class UserEvent extends CubeEvent
 {
     private final User user;
 
-    public UserEvent(Core core, User user)
+    public UserEvent(Module core, User user)
     {
         super(core);
         this.user = user;

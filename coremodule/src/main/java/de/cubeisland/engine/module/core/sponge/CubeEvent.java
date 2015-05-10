@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core.sponge;
 
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.modularity.core.Module;
 import org.spongepowered.api.event.AbstractEvent;
 
 /**
@@ -25,11 +25,11 @@ import org.spongepowered.api.event.AbstractEvent;
  */
 public abstract class CubeEvent extends AbstractEvent
 {
-    private final Core core;
+    private final Module module;
 
-    public CubeEvent(Core core)
+    public CubeEvent(Module module)
     {
-        this.core = core;
+        this.module = module;
     }
 
     /**
@@ -37,8 +37,8 @@ public abstract class CubeEvent extends AbstractEvent
      *
      * @return the core
      */
-    public Core getCore()
+    public Module getModule()
     {
-        return this.core;
+        return this.module;
     }
 }

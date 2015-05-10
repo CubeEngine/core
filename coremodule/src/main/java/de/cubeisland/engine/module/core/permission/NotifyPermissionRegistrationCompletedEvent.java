@@ -25,20 +25,12 @@ import de.cubeisland.engine.module.core.sponge.CubeEvent;
  */
 public class NotifyPermissionRegistrationCompletedEvent extends CubeEvent
 {
-    private final Module module;
     private final Permission[] permissions;
 
     public NotifyPermissionRegistrationCompletedEvent(Module module, Permission[] permissions)
     {
         super(module);
-
-        this.module = module;
         this.permissions = permissions;
-    }
-
-    public Module getModule()
-    {
-        return module;
     }
 
     public Permission[] getPermissions()

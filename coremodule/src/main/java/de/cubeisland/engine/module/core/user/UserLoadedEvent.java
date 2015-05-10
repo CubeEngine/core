@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.core.user;
 
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.Core;
 
 /**
@@ -24,8 +25,8 @@ import de.cubeisland.engine.module.core.Core;
  */
 public class UserLoadedEvent extends UserEvent
 {
-    public UserLoadedEvent(Core core, User user)
+    public UserLoadedEvent(Module module, User user)
     {
-        super(core, user);
+        super(module, user);
     }
 }
