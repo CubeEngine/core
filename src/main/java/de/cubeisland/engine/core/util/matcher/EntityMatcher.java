@@ -205,10 +205,4 @@ public class EntityMatcher
     {
         return Projectile.class.isAssignableFrom(entityType.getEntityClass());
     }
-
-    public String getNameFor(EntityType type)
-    {
-        return this.reverseNameMap.get(type);
-    }
-
 }

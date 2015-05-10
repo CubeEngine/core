@@ -47,7 +47,7 @@ public class ConfigWorld
     {
         if (this.world == null || !this.world.getName().equals(this.name))
         {
-            this.world = this.wm.getWorld(name);
+            this.world = this.wm.getWorld(name).get();
         }
         return this.world;
     }

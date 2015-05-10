@@ -78,9 +78,9 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      * @param core
      * @param player
      */
-    public User(Core core, org.spongepowered.api.entity.player.User player)
+    public User(SpongeCore core, org.spongepowered.api.entity.player.User player)
     {
-        super(player.getUniqueId());
+        super(core.getGame(), player.getUniqueId());
         this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
         this.attachments = new HashMap<>();
         this.core = core;
@@ -377,45 +377,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return null;
         }
-    }
-
-    /**
-     * Returns all entities in line of sight of this player
-     *
-     * @param distance the max distance
-     * @return a set of all entities in line of sight OR null if not online
-     */
-    public TreeSet<Entity> getTargets(int distance)
-    {
-        if (this.getOfflinePlayer().isOnline())
-        {
-            final Location playerLoc = this.getLocation();
-            Comparator<Entity> compare = (o1, o2) -> (int)(o1.getLocation().getPosition().distanceSquared(playerLoc.getPosition()) -
-                                                           o2.getLocation().getPosition().distanceSquared(playerLoc.getPosition()));
-            BlockIterator iterator = new BlockIterator(
-                    this.getPlayer().getWorld(),
-                    this.getLocation().toVector(),
-                    this.getEyeLocation().getDirection(),
-                    0, distance);
-            TreeSet<Entity> targets = new TreeSet<>(compare);
-            Collection<Entity> list = this.getNearbyEntities(distance, distance, distance);
-            double detectDistance = 1;
-            while (iterator.hasNext())
-            {
-                Location block = iterator.next();
-                detectDistance += 0.015;
-                block = block.add(.5,.5,.5);
-                for (Entity entity : list)
-                {
-                    if (entity.getLocation().getPosition().distanceSquared(block.getPosition()) < ((entity instanceof Spider) ? detectDistance + 0.5 : detectDistance))
-                    {
-                        targets.add(entity);
-                    }
-                }
-            }
-            return targets;
-        }
-        return null;
     }
 
     @Override

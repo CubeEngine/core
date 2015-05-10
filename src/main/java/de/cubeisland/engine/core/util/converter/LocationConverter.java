@@ -48,8 +48,8 @@ public class LocationConverter extends SingleClassConverter<Location>
         loc.put("x", location.getX());
         loc.put("y", location.getY());
         loc.put("z", location.getZ());
-        loc.put("yaw", location.getYaw()); // TODO Location + Direction
-        loc.put("pitch", location.getPitch()); // TODO Location + Direction
+        //loc.put("yaw", location.getYaw()); // TODO Location + Direction
+        //loc.put("pitch", location.getPitch()); // TODO Location + Direction
         return manager.convertToNode(loc);
     }
 
@@ -60,14 +60,13 @@ public class LocationConverter extends SingleClassConverter<Location>
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getValue();
-            World world = wm.getWorld(((StringNode)input.get("world")).getValue());
+            World world = wm.getWorld(((StringNode)input.get("world")).getValue()).get();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);
-            double yaw = manager.convertFromNode(input.get("yaw"), double.class);
-            double pitch = manager.convertFromNode(input.get("pitch"), double.class);
-
-            return new Location(world, x, y, z, (float)yaw, (float)pitch); // TODO Location + Direction
+            //double yaw = manager.convertFromNode(input.get("yaw"), double.class);
+            //double pitch = manager.convertFromNode(input.get("pitch"), double.class);
+            return new Location(world, x, y, z); // TODO Location + Direction
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

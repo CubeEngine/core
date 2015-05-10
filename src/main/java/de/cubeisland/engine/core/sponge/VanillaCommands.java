@@ -466,7 +466,7 @@ public class VanillaCommands
         @Restricted(value = ConsoleCommandSender.class, msg = "This command is too dangerous for users!")
         public void wipe(CommandSender context)
         {
-            BukkitUtils.wipeWhitelist();
+            BukkitUtils.wipeWhitelist(); // TODO wipe it clean
             context.sendTranslated(POSITIVE, "The whitelist was successfully wiped!");
         }
     }

@@ -29,16 +29,18 @@ public class WorldLocation
     public final double x;
     public final double y;
     public final double z;
-    public final float yaw;
-    public final float pitch;
+    public final double rx;
+    public final double ry;
+    public final double rz;
 
-    public WorldLocation(double x, double y, double z, float yaw, float pitch)
+    public WorldLocation(double x, double y, double z, double rx, double ry, double rz)
     {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.yaw = yaw;
-        this.pitch = pitch;
+        this.rx = rx;
+        this.ry = ry;
+        this.rz = rz;
     }
 
     public WorldLocation(Location location, Vector3d rotation)
@@ -46,12 +48,13 @@ public class WorldLocation
         this.x = location.getX();
         this.y = location.getY();
         this.z = location.getZ();
-        this.yaw = location.getYaw();
-        this.pitch = location.getPitch();
+        this.rx = rotation.getX();
+        this.ry = rotation.getY();
+        this.rz = rotation.getZ();
     }
 
     public final Location getLocationIn(World world)
     {
-        return new Location(world, x,y,z, yaw, pitch);
+        return new Location(world, x,y,z);
     }
 }

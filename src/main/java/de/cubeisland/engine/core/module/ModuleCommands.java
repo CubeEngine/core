@@ -36,6 +36,7 @@ import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.module.exception.ModuleException;
 import de.cubeisland.engine.core.util.Version;
+import org.spongepowered.api.plugin.PluginManager;
 
 import static de.cubeisland.engine.core.util.ChatFormat.BRIGHT_GREEN;
 import static de.cubeisland.engine.core.util.ChatFormat.RED;
@@ -46,11 +47,13 @@ import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 public class ModuleCommands extends ContainerCommand
 {
     private final ModuleManager mm;
+    private final PluginManager pm;
 
-    public ModuleCommands(ModuleManager mm)
+    public ModuleCommands(ModuleManager mm, PluginManager pm)
     {
         super(mm.getCoreModule());
         this.mm = mm;
+        this.pm = pm;
         CoreModule coreModule = mm.getCoreModule();
         coreModule.getCore().getCommandManager().getProviderManager().register(coreModule, new ModuleReader(mm));
     }
@@ -254,8 +257,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(POSITIVE, "Plugin dependencies:");
             for (String dependency : pluginDependencies)
             {
-                Plugin dep = Bukkit.getPluginManager().getPlugin(dependency);
-                if (dep != null && dep.isEnabled())
+                if (pm.isLoaded(dependency))
                 {
                     context.sendMessage(green + dependency);
                 }

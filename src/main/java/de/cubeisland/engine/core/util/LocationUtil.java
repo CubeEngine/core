@@ -25,51 +25,7 @@ public class LocationUtil
 {
     public static Location getBlockBehindWall(User user, int maxDistanceToWall, int maxThicknessOfWall)
     {
-        BlockIterator blockIterator = new BlockIterator(user, maxDistanceToWall + maxThicknessOfWall);
-        int curDist = 0;
-        boolean passed = false;
-        while (blockIterator.hasNext())
-        {
-            curDist++;
-            Location next = blockIterator.next();
-            Location loc = new Location(null, 0,0,0);
-            if (passed && !next.getType().isSolid())
-            {
-                MaterialData topData = next.getRelative(BlockFace.UP).getState().getData();
-                boolean onHalf = false;
-                next.getLocation(loc);
-                if (topData.getItemType().isSolid())
-                {
-                    MaterialData botData = next.getRelative(BlockFace.DOWN).getState().getData();
-                    if ((topData instanceof Step || topData instanceof WoodenStep) && (botData instanceof Step || botData instanceof WoodenStep)
-                        && BlockUtil.isInvertedStep(topData) && !BlockUtil.isInvertedStep(botData))
-                    {
-                        onHalf = true;
-                    }
-                    else if (!next.getRelative(BlockFace.DOWN).getType().isSolid())
-                    {
-                        loc = loc.add(0, -1, 0);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                loc = loc.add(0.5, - (onHalf ? 1.5 : 1) ,0.5);
-                Location userLoc = user.getLocation();
-                loc.setYaw(userLoc.getYaw());
-                loc.setPitch(userLoc.getPitch());
-                return loc;
-            }
-            if (curDist >= maxDistanceToWall)
-            {
-                return null;
-            }
-            if (next.getType().isSolid() || next.getType() == BlockTypes.REEDS)
-            {
-                passed = true;
-            }
-        }
+        // TODO
         return null;
     }
 

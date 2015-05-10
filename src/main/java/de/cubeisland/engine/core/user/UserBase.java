@@ -21,9 +21,12 @@ import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.core.CubeEngine;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.data.DataManipulator;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.manipulators.entities.ExperienceHolderData;
@@ -55,17 +58,20 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.weather.Weather;
 
 import static de.cubeisland.engine.core.contract.Contract.expect;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Wrapper around the Sponge Player/User
  */
 public class UserBase
 {
+    protected final Game game;
     private final UUID uuid;
     org.spongepowered.api.entity.player.User cachedOfflinePlayer = null;
 
-    public UserBase(UUID uuid)
+    public UserBase(Game game, UUID uuid)
     {
+        this.game = game;
         this.uuid = uuid;
     }
 
@@ -73,7 +79,7 @@ public class UserBase
     {
         if (this.cachedOfflinePlayer == null)
         {
-            this.cachedOfflinePlayer = Bukkit.getPlayer(uuid);
+            this.cachedOfflinePlayer = game.getServer().getPlayer(uuid).orNull();
             if (cachedOfflinePlayer == null)
             {
                 this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
@@ -503,15 +509,13 @@ public class UserBase
         return this.teleport(entity.getLocation());
     }
 
-    @Override
-    public List<Entity> getNearbyEntities(double d, double d1, double d2)
+    public List<Entity> getNearbyEntities(double radius)
     {
-        final Optional<Player> player = this.getOfflinePlayer().getPlayer();
-        if (player.isPresent())
-        {
-            return player.get().getNearbyEntities(d, d1, d2);
-        }
-        return null;
+        Vector3d center = getLocation().getPosition();
+        double squared = radius * radius;
+        return getWorld().getEntities().stream()
+                  .filter(e ->  center.distanceSquared(e.getLocation().getPosition()) < squared)
+                  .collect(toList());
     }
 
     public void setFireTicks(int i)

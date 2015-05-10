@@ -17,12 +17,14 @@
  */
 package de.cubeisland.engine.core.util.converter;
 
+import com.google.common.base.Optional;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.core.util.matcher.Match;
+import org.spongepowered.api.data.manipulators.items.DurabilityData;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter extends SimpleConverter<ItemStack>
@@ -34,7 +36,12 @@ public class ItemStackConverter extends SimpleConverter<ItemStack>
         {
             return NullNode.emptyNode();
         }
-        return StringNode.of(object.getItem().getName() + ":" + object.getDurability());
+        Optional<DurabilityData> dura = object.getData(DurabilityData.class);
+        if (dura.isPresent())
+        {
+            return StringNode.of(object.getItem().getName() + ":" + dura.get().getDurability());
+        }
+        return StringNode.of(object.getItem().getName());
     }
 
     @Override

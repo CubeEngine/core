@@ -1,17 +1,17 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,38 +23,37 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.filter.Restricted;
-import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.parametric.Flag;
-import de.cubeisland.engine.butler.parametric.Default;
-import de.cubeisland.engine.butler.parametric.Desc;
-import de.cubeisland.engine.butler.parametric.Optional;
-import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.butler.parametric.Command;
+import de.cubeisland.engine.butler.parametric.Default;
+import de.cubeisland.engine.butler.parametric.Desc;
+import de.cubeisland.engine.butler.parametric.Flag;
+import de.cubeisland.engine.butler.parametric.Optional;
+import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.core.ban.BanManager;
 import de.cubeisland.engine.core.ban.IpBan;
 import de.cubeisland.engine.core.ban.UserBan;
-import de.cubeisland.engine.core.sponge.SpongeCore;
-import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.CommandContext;
 import de.cubeisland.engine.core.command.CommandSender;
+import de.cubeisland.engine.core.command.ContainerCommand;
 import de.cubeisland.engine.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.core.command.annotation.Unloggable;
+import de.cubeisland.engine.core.sponge.SpongeCore;
 import de.cubeisland.engine.core.user.User;
 import de.cubeisland.engine.core.user.UserList;
 import de.cubeisland.engine.core.user.UserManager;
 import de.cubeisland.engine.core.util.Profiler;
 import de.cubeisland.engine.logscribe.LogLevel;
 import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.core.permission.PermDefault.TRUE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.*;
 
 @Command(name = "cubeengine", alias = "ce",
-         desc = "These are the basic commands of the CubeEngine.")
+    desc = "These are the basic commands of the CubeEngine.")
 public class CoreCommands extends ContainerCommand
 {
     private final SpongeCore core;
@@ -69,7 +68,8 @@ public class CoreCommands extends ContainerCommand
         this.banManager = core.getBanManager();
         this.um = core.getUserManager();
 
-        core.getCommandManager().getProviderManager().register(core.getModuleManager().getCoreModule(), new FindUserReader());
+        core.getCommandManager().getProviderManager().register(core.getModuleManager().getCoreModule(),
+                                                               new FindUserReader());
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
@@ -79,9 +79,9 @@ public class CoreCommands extends ContainerCommand
         final long startTime = System.currentTimeMillis();
 
         PluginManager pm = core.getGame().getPluginManager();
-        pm.disablePlugin(this.core);
-        pm.enablePlugin(this.core);
-        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!", System.currentTimeMillis() - startTime);
+
+        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!",
+                               System.currentTimeMillis() - startTime);
     }
 
     @Command(desc = "Reloads all of the modules!")
@@ -110,7 +110,8 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(alias = "clearpw", desc = "Clears your password.")
-    public void clearPassword(CommandContext context, @Optional @Desc("* or a list of Players delimited by ,") UserList players)
+    public void clearPassword(CommandContext context,
+                              @Optional @Desc("* or a list of Players delimited by ,") UserList players)
     {
         CommandSender sender = context.getSource();
         if (players == null)
@@ -163,18 +164,23 @@ public class CoreCommands extends ContainerCommand
             {
                 if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n" + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
-                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getName(), Texts.of(msg),
-                        new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
+                        + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
+                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getPlayer().get(), Texts.of(
+                        msg), new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
+                        this.core.getConfiguration().security.banDuration))));
 
                     if (!core.getGame().getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(),context.getName(), Texts.of(msg), new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(this.core.getConfiguration().security.banDuration))));
+                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context.getPlayer().get(),
+                                                         Texts.of(msg), new Date(
+                            System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
+                                this.core.getConfiguration().security.banDuration))));
                     }
                     context.kick(Texts.of(msg));
                 }
             }
-            fails.put(context.getUniqueId(),System.currentTimeMillis());
+            fails.put(context.getUniqueId(), System.currentTimeMillis());
         }
     }
 
@@ -222,14 +228,13 @@ public class CoreCommands extends ContainerCommand
             context.sendTranslated(POSITIVE, "New log level successfully set!");
             return;
         }
-        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}", core.getLog().getLevel().getName());
+        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}",
+                               core.getLog().getLevel().getName());
     }
 
     @Command(alias = "finduser", desc = "Searches for a user in the database")
     public void searchuser(CommandContext context,
-        @Reader(FindUserReader.class)
-        @Desc("The name to search for")
-        User name)
+                           @Reader(FindUserReader.class) @Desc("The name to search for") User name)
     {
         if (name.getName().equalsIgnoreCase(context.getString(0)))
         {

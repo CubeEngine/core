@@ -34,7 +34,7 @@ public class PlayerCompleter implements Completer
 {
     private static boolean canSee(CommandSender sender, User user)
     {
-        return !(sender instanceof User) || ((User)sender).canSee(user);
+        return !(sender instanceof User) || ((User)sender).canSee(user.getPlayer().orNull());
     }
 
     @Override

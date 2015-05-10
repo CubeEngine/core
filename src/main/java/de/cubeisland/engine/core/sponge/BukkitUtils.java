@@ -20,6 +20,7 @@ package de.cubeisland.engine.core.sponge;
 import java.io.IOException;
 import de.cubeisland.engine.core.module.Module;
 import org.apache.logging.log4j.LogManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.data.properties.BurningFuelProperty;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.ItemTypes;
@@ -62,11 +63,6 @@ public class BukkitUtils
         resetCommandLogging();
     }
 
-    public static void wipeWhitelist()
-    {
-        WhiteList whitelist = getCraftServer().getHandle().getWhitelist();
-        new ClearJsonList(whitelist);
-    }
 
     /**
      * Returns true if given material is allowed to be placed in the top brewingstand slot
@@ -76,11 +72,7 @@ public class BukkitUtils
      */
     public static boolean canBePlacedInBrewingstand(ItemStack item)
     {
-        if (item.getType() == ItemTypes.FISH)
-        {
-            return item.getDurability() == 3; // pufferfish
-        }
-        return Item.REGISTRY.a(item.getType().getId()).j(null) != null; // Items that can be brewed return a String here else null
+        return false; // TODO isBrewable
     }
 
     public static boolean isFuel(ItemStack item)
@@ -90,10 +82,7 @@ public class BukkitUtils
 
     public static boolean isSmeltable(ItemStack item)
     {
-        net.minecraft.server.v1_8_R2.ItemStack nmss = CraftItemStack.asNMSCopy(item);
-        // TileEntityFurnace private canBurn() checks this first for null
-        // If the result of that item being cooked is null, it is not cookable
-        return RecipesFurnace.getInstance().getResult(nmss) != null;
+        return false; // TODO isSmeltable?
     }
 
     static void setSignalHandlers(final SpongeCore core)
@@ -166,6 +155,7 @@ public class BukkitUtils
      *
      * Thanks to bergerkiller (https://forums.bukkit.org/threads/teleport-entity-including-passenger.55903/)
      */
+    /*
     public static boolean teleport(Module module, final Entity entity, final Location to)
     {
         WorldServer newworld = ((CraftWorld)to.getWorld()).getHandle();
@@ -208,4 +198,5 @@ public class BukkitUtils
             return entity.getBukkitEntity().teleport(to);
         }
     }
+    */
 }

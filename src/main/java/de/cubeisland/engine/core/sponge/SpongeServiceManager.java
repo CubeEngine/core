@@ -17,22 +17,12 @@
  */
 package de.cubeisland.engine.core.sponge;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import com.google.common.base.Optional;
-import de.cubeisland.engine.core.module.Module;
-import de.cubeisland.engine.core.module.ModuleClassLoader;
 import de.cubeisland.engine.core.module.service.ServiceManager;
-import org.spongepowered.api.service.ProviderExistsException;
-import org.spongepowered.api.service.ProvisioningException;
-import org.spongepowered.api.service.ServiceReference;
 
-public class SpongeServiceManager extends ServiceManager implements org.spongepowered.api.service.ServiceManager
+public class SpongeServiceManager extends ServiceManager // TODO delegate registered services to Sponge ServiceManager once Modularity is in use
 {
     private final SpongeCore core;
     private final org.spongepowered.api.service.ServiceManager servicesManager;
@@ -44,70 +34,5 @@ public class SpongeServiceManager extends ServiceManager implements org.spongepo
         this.core = core;
         this.servicesManager = core.getGame().getServiceManager();
         this.providerMap = new HashMap<>();
-    }
-
-    @Override
-    public <T> void setProvider(Object plugin, Class<T> service, T provider) throws ProviderExistsException
-    {
-        List<Object> list = providerMap.get(plugin);
-        if (list == null)
-        {
-            list = new ArrayList<>();
-            providerMap.put(plugin, list);
-        }
-        list.add(provider);
-        servicesManager.setProvider(plugin, service, provider);
-    }
-
-    @Override
-    public <T> Optional<T> provide(Class<T> service)
-    {
-        return provide(service);
-    }
-
-    @Override
-    public <T> ServiceReference<T> potentiallyProvide(Class<T> service)
-    {
-        return potentiallyProvide(service);
-    }
-
-    @Override
-    public <T> T provideUnchecked(Class<T> service) throws ProvisioningException
-    {
-        return provideUnchecked(service);
-    }
-
-    //------------------------------------------- TODO remove old stuff
-
-    public void unregisterAll(Module module)
-    {
-        synchronized (this.providerMap)
-        {
-            List<Object> providers = this.providerMap.remove(module);
-            if (providers != null)
-            {
-                for (Object provider : providers)
-                {
-                    this.unregister(provider);
-                }
-            }
-        }
-        synchronized (this.serviceMap)
-        {
-            Iterator<Entry<Class<?>, Module>> it = this.serviceMap.entrySet().iterator();
-            Entry<Class<?>, Module> entry;
-            while (it.hasNext())
-            {
-                entry = it.next();
-                if (entry.getValue().equals(module))
-                {
-                    for (RegisteredServiceProvider<?> registration : getRegistrations(entry.getKey()))
-                    {
-                        this.unregister(entry.getKey(), registration.getProvider());
-                    }
-                    it.remove();
-                }
-            }
-        }
     }
 }

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.core.task;
 
+import java.util.UUID;
 import de.cubeisland.engine.core.module.Module;
 
 /**
@@ -24,7 +25,7 @@ import de.cubeisland.engine.core.module.Module;
  */
 public abstract class Task implements Runnable
 {
-    private int taskid;
+    private UUID taskid;
     private final Module module;
     private final TaskManager tm;
 
@@ -50,7 +51,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runAsynchronousTimer(this.module, this, delay, repeat);
+        this.taskid = this.tm.runAsynchronousTimer(this.module, this, delay, repeat).get();
     }
 
     /**
@@ -60,7 +61,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncTask(int delay)
     {
-        this.taskid = this.tm.runAsynchronousTaskDelayed(this.module, this, delay);
+        this.taskid = this.tm.runAsynchronousTaskDelayed(this.module, this, delay).get();
     }
 
     /**
@@ -71,7 +72,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runTimer(this.module, this, delay, repeat);
+        this.taskid = this.tm.runTimer(this.module, this, delay, repeat).get();
     }
 
     /**
@@ -81,6 +82,6 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncTask(int delay)
     {
-        this.taskid = this.tm.runTaskDelayed(this.module, this, delay);
+        this.taskid = this.tm.runTaskDelayed(this.module, this, delay).get();
     }
 }

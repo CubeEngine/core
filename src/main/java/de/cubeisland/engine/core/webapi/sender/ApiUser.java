@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.core.Core;
+import de.cubeisland.engine.core.module.service.Permission;
 import de.cubeisland.engine.core.user.User;
 
 public class ApiUser extends ApiCommandSender
@@ -48,9 +49,7 @@ public class ApiUser extends ApiCommandSender
     @Override
     public boolean hasPermission(String name)
     {
-        de.cubeisland.engine.core.module.service.Permission permission = getCore().getModuleManager().getServiceManager().getServiceImplementation(
-            de.cubeisland.engine.core.module.service.Permission.class);
-        return permission.has(user.getWorld(), user, name);
+        return user.hasPermission(name);
     }
 
     @Override
