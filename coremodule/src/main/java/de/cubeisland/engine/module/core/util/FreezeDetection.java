@@ -24,12 +24,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.TaskManager;
 
 public class FreezeDetection
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final TaskManager taskManager;
     private ScheduledExecutorService executor;
     private UUID taskId;
@@ -38,12 +38,12 @@ public class FreezeDetection
     private final ConcurrentLinkedQueue<Runnable> listeners = new ConcurrentLinkedQueue<>();
     private volatile boolean freezeNotified = false;
 
-    public FreezeDetection(SpongeCore core, long freezeThreshold)
+    public FreezeDetection(CoreModule core, long freezeThreshold)
     {
         this(core, freezeThreshold, TimeUnit.SECONDS);
     }
 
-    public FreezeDetection(SpongeCore core, long freezeThreshold, TimeUnit unit)
+    public FreezeDetection(CoreModule core, long freezeThreshold, TimeUnit unit)
     {
         this.core = core;
         this.taskManager = this.core.getModularity().start(TaskManager.class);

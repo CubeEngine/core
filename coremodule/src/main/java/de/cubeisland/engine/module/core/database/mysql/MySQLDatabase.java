@@ -38,7 +38,7 @@ import de.cubeisland.engine.module.core.database.TableCreator;
 import de.cubeisland.engine.module.core.database.TableUpdateCreator;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
@@ -60,7 +60,7 @@ public class MySQLDatabase extends AbstractDatabase
     private final MappedSchema mappedSchema;
     private Log logger;
 
-    public MySQLDatabase(SpongeCore core, MySQLDatabaseConfiguration config) throws SQLException
+    public MySQLDatabase(CoreModule core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
         this.config = config;
@@ -118,7 +118,7 @@ public class MySQLDatabase extends AbstractDatabase
         this.settings.setExecuteLogging(false);
     }
 
-    public static MySQLDatabase loadFromConfig(SpongeCore core, Path file)
+    public static MySQLDatabase loadFromConfig(CoreModule core, Path file)
     {
         MySQLDatabaseConfiguration config = core.getModularity().start(Reflector.class).load(
             MySQLDatabaseConfiguration.class, file.toFile());

@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 
@@ -34,9 +33,9 @@ import static de.cubeisland.engine.module.core.util.StringUtils.startsWithIgnore
  */
 public class PlayerCompleter implements Completer
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public PlayerCompleter(SpongeCore core)
+    public PlayerCompleter(CoreModule core)
     {
 
         this.core = core;

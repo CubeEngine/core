@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
@@ -30,10 +30,10 @@ import org.spongepowered.api.util.command.CommandSource;
 
 public class WrappedCommandSender<W extends CommandSource> implements CommandSender
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final W wrapped;
 
-    public WrappedCommandSender(SpongeCore core, W sender)
+    public WrappedCommandSender(CoreModule core, W sender)
     {
         this.core = core;
         this.wrapped = sender;
@@ -50,7 +50,7 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     }
 
     @Override
-    public SpongeCore getCore()
+    public CoreModule getCore()
     {
         return this.core;
     }

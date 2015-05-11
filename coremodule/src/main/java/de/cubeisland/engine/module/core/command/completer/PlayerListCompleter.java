@@ -22,15 +22,15 @@ import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 
 public class PlayerListCompleter implements Completer
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public PlayerListCompleter(SpongeCore core)
+    public PlayerListCompleter(CoreModule core)
     {
         this.core = core;
     }

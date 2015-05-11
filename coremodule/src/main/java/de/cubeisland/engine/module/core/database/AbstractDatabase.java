@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -44,10 +44,10 @@ public abstract class AbstractDatabase implements Database
 {
     private final ExecutorService executor;
 
-    protected final SpongeCore core;
+    protected final CoreModule core;
     protected final ThreadFactory threadFactory;
 
-    protected AbstractDatabase(SpongeCore core)
+    protected AbstractDatabase(CoreModule core)
     {
         this.core = core;
         this.threadFactory = new DatabaseThreadFactory();

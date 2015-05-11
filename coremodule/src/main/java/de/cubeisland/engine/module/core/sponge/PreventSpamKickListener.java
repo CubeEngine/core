@@ -23,9 +23,9 @@ import org.spongepowered.api.event.entity.player.PlayerKickEvent;
 
 public class PreventSpamKickListener
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public PreventSpamKickListener(SpongeCore core)
+    public PreventSpamKickListener(CoreModule core)
     {
         this.core = core;
     }

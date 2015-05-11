@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 public class McUUID
 {
@@ -53,9 +53,9 @@ public class McUUID
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private SpongeCore core;
+    private CoreModule core;
 
-    public McUUID(SpongeCore core)
+    public McUUID(CoreModule core)
     {
         this.core = core;
     }

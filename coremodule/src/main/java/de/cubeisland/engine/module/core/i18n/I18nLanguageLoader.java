@@ -32,14 +32,14 @@ import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.language.LanguageLoader;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.reflect.Reflector;
 
 public class I18nLanguageLoader extends LanguageLoader
 {
     private final Map<Locale, LocaleConfiguration> configurations = new HashMap<>();
 
-    public I18nLanguageLoader(SpongeCore core)
+    public I18nLanguageLoader(CoreModule core)
     {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getFileManager().getLanguagePath(), FileExtensionFilter.YAML))
         {

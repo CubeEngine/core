@@ -31,9 +31,8 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
@@ -48,11 +47,11 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 @Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final Modularity modularity;
     private final PluginManager pm;
 
-    public ModuleCommands(SpongeCore core, Modularity modularity, PluginManager pm)
+    public ModuleCommands(CoreModule core, Modularity modularity, PluginManager pm)
     {
         super(core);
         this.core = core;

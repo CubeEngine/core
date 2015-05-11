@@ -114,7 +114,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
 
-    private SpongeCore core;
+    private CoreModule core;
 
     @Override
     public CommandManagerDescriptor getDescriptor()
@@ -123,7 +123,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Inject
-    public SpongeCommandManager(SpongeCore core)
+    public SpongeCommandManager(CoreModule core)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
@@ -135,7 +135,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
 
 
-        this.commandLogger = core.getModularity().start(LogFactory.class).getLog(SpongeCore.class, "Commands");
+        this.commandLogger = core.getModularity().start(LogFactory.class).getLog(CoreModule.class, "Commands");
         if (core.getConfiguration().logging.logCommands)
         {
             commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Commands"),
@@ -151,7 +151,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     }
 
-    public void registerReaders(SpongeCore core, EventManager em)
+    public void registerReaders(CoreModule core, EventManager em)
     {
         I18n i18n = core.getModularity().start(I18n.class);
 

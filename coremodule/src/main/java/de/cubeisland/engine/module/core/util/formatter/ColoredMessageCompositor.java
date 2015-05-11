@@ -20,7 +20,7 @@ package de.cubeisland.engine.module.core.util.formatter;
 import java.util.Locale;
 
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
@@ -29,7 +29,7 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 {
     private ColorConfiguration colorConfiguration;
 
-    public ColoredMessageCompositor(SpongeCore core)
+    public ColoredMessageCompositor(CoreModule core)
     {
         Reflector reflector = core.getModularity().start(Reflector.class);
         reflector.getDefaultConverterManager().registerConverter(new MessageTypeConverter(), MessageType.class);

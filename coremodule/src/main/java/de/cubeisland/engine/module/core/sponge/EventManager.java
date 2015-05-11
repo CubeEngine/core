@@ -32,11 +32,11 @@ import org.spongepowered.api.event.Event;
  */
 public class EventManager
 {
-    private final SpongeCore corePlugin;
+    private final CoreModule corePlugin;
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.service.event.EventManager eventManager;
 
-    public EventManager(SpongeCore core)
+    public EventManager(CoreModule core)
     {
         this.corePlugin = core;
         this.eventManager = core.getGame().getEventManager();

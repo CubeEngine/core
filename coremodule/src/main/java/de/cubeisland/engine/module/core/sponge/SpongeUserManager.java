@@ -41,7 +41,6 @@ import de.cubeisland.engine.module.core.user.UserLoadedEvent;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.user.TableUser;
-import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
@@ -59,12 +58,12 @@ import static java.util.stream.Collectors.toList;
 @Version(1)
 public class SpongeUserManager extends AbstractUserManager
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     protected ScheduledExecutorService nativeScheduler;
     protected Map<UUID, UUID> scheduledForRemoval;
 
     @Inject
-    public SpongeUserManager(final SpongeCore core)
+    public SpongeUserManager(final CoreModule core)
     {
         super(core);
         this.core = core;

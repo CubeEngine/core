@@ -51,11 +51,11 @@ import static de.cubeisland.engine.module.core.world.TableWorld.TABLE_WORLD;
 @Version(1)
 public class SpongeWorldManager extends AbstractWorldManager
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final Server server;
 
     @Inject
-    public SpongeWorldManager(final SpongeCore core, Reflector reflector)
+    public SpongeWorldManager(final CoreModule core, Reflector reflector)
     {
         super(core);
         this.core = core;

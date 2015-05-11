@@ -21,17 +21,15 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
-import de.cubeisland.engine.module.core.util.matcher.Match;
-import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.item.Enchantment;
 
 public class EnchantmentConverter extends SimpleConverter<Enchantment>
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public EnchantmentConverter(SpongeCore core)
+    public EnchantmentConverter(CoreModule core)
     {
 
         this.core = core;

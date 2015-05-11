@@ -19,13 +19,9 @@ package de.cubeisland.engine.module.core.sponge;
 
 import de.cubeisland.engine.module.core.task.TaskManager;
 import org.apache.logging.log4j.LogManager;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.data.properties.BurningFuelProperty;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.world.Location;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -84,7 +80,7 @@ public class BukkitUtils
         return false; // TODO isSmeltable?
     }
 
-    static void setSignalHandlers(final SpongeCore core)
+    static void setSignalHandlers(final CoreModule core)
     {
         try
         {

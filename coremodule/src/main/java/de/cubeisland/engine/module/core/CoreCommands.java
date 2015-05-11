@@ -15,7 +15,7 @@ import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
@@ -28,9 +28,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITI
     desc = "These are the basic commands of the CubeEngine.")
 public class CoreCommands extends ContainerCommand
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public CoreCommands(SpongeCore core)
+    public CoreCommands(CoreModule core)
     {
         super(core);
         this.core = core;
@@ -115,7 +115,7 @@ public class CoreCommands extends ContainerCommand
 
         private final UserManager um;
 
-        public FindUserReader(SpongeCore core)
+        public FindUserReader(CoreModule core)
         {
             um = core.getModularity().start(UserManager.class);
         }

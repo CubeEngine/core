@@ -21,15 +21,15 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.item.ItemType;
 
 public class MaterialConverter extends SimpleConverter<ItemType>
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public MaterialConverter(SpongeCore core)
+    public MaterialConverter(CoreModule core)
     {
 
         this.core = core;

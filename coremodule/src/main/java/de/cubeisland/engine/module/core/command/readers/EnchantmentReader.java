@@ -24,13 +24,10 @@ import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
-import de.cubeisland.engine.module.core.util.matcher.Match;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -42,9 +39,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITI
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
     private GameRegistry registry;
-    private SpongeCore core;
+    private CoreModule core;
 
-    public EnchantmentReader(SpongeCore core)
+    public EnchantmentReader(CoreModule core)
     {
         this.core = core;
         registry = core.getGame().getRegistry();

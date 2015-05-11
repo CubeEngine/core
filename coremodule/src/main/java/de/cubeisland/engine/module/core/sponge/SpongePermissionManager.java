@@ -48,9 +48,9 @@ public class SpongePermissionManager implements PermissionManager
 
     @SuppressWarnings("unchecked")
     @Inject
-    public SpongePermissionManager(SpongeCore core, LogFactory factory, ThreadFactory threadFactory)
+    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory)
     {
-        this.logger = factory.getLog(SpongeCore.class, "Permissions");
+        this.logger = factory.getLog(CoreModule.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),

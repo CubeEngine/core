@@ -23,23 +23,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public abstract class ApiCommandSender implements CommandSender
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private ObjectMapper mapper;
     private final List<String> messages = new ArrayList<>();
 
-    public ApiCommandSender(SpongeCore core, ObjectMapper mapper)
+    public ApiCommandSender(CoreModule core, ObjectMapper mapper)
     {
         this.core = core;
         this.mapper = mapper;
     }
 
     @Override
-    public SpongeCore getCore()
+    public CoreModule getCore()
     {
         return this.core;
     }

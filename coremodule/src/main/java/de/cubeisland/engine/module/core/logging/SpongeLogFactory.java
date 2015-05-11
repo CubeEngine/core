@@ -19,21 +19,19 @@ package de.cubeisland.engine.module.core.logging;
 
 import java.util.concurrent.ThreadFactory;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 
 import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
 public class SpongeLogFactory extends DefaultLogFactory
 {
-    protected final SpongeCore core;
+    protected final CoreModule core;
     private final ThreadFactory threadFactory;
 
     private final Log exLog;
@@ -42,7 +40,7 @@ public class SpongeLogFactory extends DefaultLogFactory
     private final Log parent;
     private Log databaseLog;
 
-    public SpongeLogFactory(SpongeCore core, Logger baseLogger, ThreadFactory threadFactory)
+    public SpongeLogFactory(CoreModule core, Logger baseLogger, ThreadFactory threadFactory)
     {
         this.core = core;
         this.threadFactory = threadFactory;
@@ -50,7 +48,7 @@ public class SpongeLogFactory extends DefaultLogFactory
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget(baseLogger);
         this.parent.addTarget(log4jProxyTarget);
 
-        exLog = this.getLog(SpongeCore.class, "Exceptions");
+        exLog = this.getLog(CoreModule.class, "Exceptions");
         exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Exceptions"),
                                             LoggingUtil.getFileFormat(true, false),
                                             true, LoggingUtil.getCycler(),

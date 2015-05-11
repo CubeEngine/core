@@ -20,14 +20,14 @@ package de.cubeisland.engine.module.core.command;
 import java.util.Locale;
 import java.util.UUID;
 import de.cubeisland.engine.butler.CommandSource;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public interface CommandSender extends CommandSource
 {
     UUID NON_PLAYER_UUID = new UUID(0, 0);
 
-    SpongeCore getCore();
+    CoreModule getCore();
 
     @Override
     String getName();

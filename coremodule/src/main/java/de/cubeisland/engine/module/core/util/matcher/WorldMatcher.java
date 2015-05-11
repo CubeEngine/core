@@ -20,17 +20,16 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 public class WorldMatcher
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public WorldMatcher(SpongeCore core)
+    public WorldMatcher(CoreModule core)
     {
 
         this.core = core;

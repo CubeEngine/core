@@ -23,7 +23,7 @@ import java.util.List;
 import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
@@ -51,7 +51,7 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(SpongeCore core, Inventory inventory, User[] users)
+    public InventoryGuard(CoreModule core, Inventory inventory, User[] users)
     {
         this.inventory = inventory;
         this.users = new HashSet<>(Arrays.asList(users));

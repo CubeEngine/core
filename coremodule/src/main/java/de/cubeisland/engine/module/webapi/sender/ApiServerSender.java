@@ -22,11 +22,11 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 public class ApiServerSender extends ApiCommandSender
 {
-    public ApiServerSender(SpongeCore core, ObjectMapper mapper)
+    public ApiServerSender(CoreModule core, ObjectMapper mapper)
     {
         super(core, mapper);
     }

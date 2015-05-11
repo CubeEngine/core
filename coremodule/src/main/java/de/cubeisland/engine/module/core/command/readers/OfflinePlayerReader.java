@@ -21,14 +21,14 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.entity.player.User;
 
 public class OfflinePlayerReader implements ArgumentReader<User>
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public OfflinePlayerReader(SpongeCore core)
+    public OfflinePlayerReader(CoreModule core)
     {
         this.core = core;
     }
@@ -40,6 +40,6 @@ public class OfflinePlayerReader implements ArgumentReader<User>
         {
             throw new ReaderException("Players do not start with -");
         }
-        return ((SpongeCore)this.core).getGame().getOfflinePlayer(invocation.consume(1));
+        return ((CoreModule)this.core).getGame().getOfflinePlayer(invocation.consume(1));
     }
 }

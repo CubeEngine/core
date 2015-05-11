@@ -22,7 +22,7 @@ import java.util.concurrent.Future;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.module.core.command.CommandManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.webapi.sender.ApiCommandSender;
@@ -32,9 +32,9 @@ import de.cubeisland.engine.module.webapi.sender.ApiUser;
 public class CommandController
 {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public CommandController(SpongeCore core)
+    public CommandController(CoreModule core)
     {
         this.core = core;
     }

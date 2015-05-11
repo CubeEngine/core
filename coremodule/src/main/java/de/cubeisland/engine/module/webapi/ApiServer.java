@@ -41,7 +41,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.permission.PermDefault;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
@@ -62,7 +62,7 @@ import static java.util.Locale.ENGLISH;
  */
 public class ApiServer
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final Log log;
     private final AtomicInteger maxContentLength = new AtomicInteger(1048576);
     private final AtomicBoolean compress = new AtomicBoolean(false);
@@ -88,7 +88,7 @@ public class ApiServer
     private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
 
 
-    public ApiServer(SpongeCore core)
+    public ApiServer(CoreModule core)
     {
         this.core = core;
         LogFactory logFactory = core.getModularity().start(LogFactory.class);

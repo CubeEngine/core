@@ -18,9 +18,7 @@
 package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.manipulators.items.EnchantmentData;
 import org.spongepowered.api.item.Enchantment;
@@ -32,9 +30,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 public class EnchantMatcher
 {
     private final HashMap<String, Enchantment> spongeNames;
-    private SpongeCore core;
+    private CoreModule core;
 
-    EnchantMatcher(SpongeCore core, Game game)
+    EnchantMatcher(CoreModule core, Game game)
     {
         this.core = core;
         this.spongeNames = new HashMap<>();

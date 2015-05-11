@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.cubeisland.engine.module.core.command.CommandManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.channel.ChannelFuture;
@@ -52,7 +52,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final Log log;
-    private final SpongeCore core;
+    private final CoreModule core;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
@@ -60,7 +60,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
 
     private ChannelHandlerContext last;
 
-    public WebSocketRequestHandler(SpongeCore core, ApiServer server, ObjectMapper mapper, User authUser)
+    public WebSocketRequestHandler(CoreModule core, ApiServer server, ObjectMapper mapper, User authUser)
     {
         this.core = core;
         this.server = server;

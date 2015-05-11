@@ -30,7 +30,7 @@ import de.cubeisland.engine.module.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.module.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.SpongeCommandManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.UserManager;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
@@ -44,11 +44,11 @@ import org.spongepowered.api.util.command.source.ConsoleSource;
 
 public class ProxyCallable implements CommandCallable
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final SpongeCommandManager manager;
     private final String alias;
 
-    public ProxyCallable(SpongeCore core, SpongeCommandManager manager, String alias)
+    public ProxyCallable(CoreModule core, SpongeCommandManager manager, String alias)
     {
         this.core = core;
         this.manager = manager;

@@ -32,7 +32,7 @@ import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.ChatFormat;
@@ -51,10 +51,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class VanillaCommands
 {
     private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
-    private final SpongeCore core;
+    private final CoreModule core;
     private final UserManager um;
 
-    public VanillaCommands(SpongeCore core)
+    public VanillaCommands(CoreModule core)
     {
         this.core = core;
         this.um = core.getModularity().start(UserManager.class);
@@ -327,7 +327,7 @@ public class VanillaCommands
         context.sendMessage(" ");
         context.sendTranslated(NEUTRAL.and(ChatFormat.UNDERLINE), "Plugin information:");
         context.sendMessage(" ");
-        if (instance.get().getInstance() instanceof SpongeCore && source)
+        if (instance.get().getInstance() instanceof CoreModule && source)
         {
             showSourceVersion(context.getSource(), core.getSourceVersion());
         }

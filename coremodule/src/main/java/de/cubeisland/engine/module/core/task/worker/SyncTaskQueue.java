@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.TaskManager;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
@@ -32,18 +32,18 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    private final SpongeCore corePlugin;
+    private final CoreModule corePlugin;
     private final TaskManager scheduler;
     private final Queue<Runnable> taskQueue;
     private UUID taskID;
     private boolean isShutdown;
 
-    public SyncTaskQueue(SpongeCore core)
+    public SyncTaskQueue(CoreModule core)
     {
         this(core, new LinkedList<Runnable>());
     }
 
-    public SyncTaskQueue(SpongeCore core, Queue<Runnable> taskQueue)
+    public SyncTaskQueue(CoreModule core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = core;
         this.scheduler = this.corePlugin.getModularity().start(TaskManager.class);

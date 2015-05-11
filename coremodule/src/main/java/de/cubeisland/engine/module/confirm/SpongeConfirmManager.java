@@ -30,7 +30,7 @@ import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.contract.Contract;
 import de.cubeisland.engine.module.core.contract.NotNull;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.Pair;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
@@ -41,10 +41,10 @@ public class SpongeConfirmManager implements ConfirmManager
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
     private final Map<CommandSender, Queue<Pair<Module, UUID>>> confirmationTimeoutTasks;
-    private final SpongeCore core;
+    private final CoreModule core;
 
     @Inject
-    public SpongeConfirmManager(CommandManager cm, SpongeCore core)
+    public SpongeConfirmManager(CommandManager cm, CoreModule core)
     {
         this.core = core;
         this.pendingConfirmations = new HashMap<>();

@@ -24,7 +24,6 @@ import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logscribe.target.file.format.FileFormat;
 import de.cubeisland.engine.logscribe.target.file.format.LogFileFormat;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
 
 public class LoggingUtil
 {

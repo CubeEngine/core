@@ -23,17 +23,16 @@ import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
-import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.data.manipulators.items.DurabilityData;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter extends SimpleConverter<ItemStack>
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public ItemStackConverter(SpongeCore core)
+    public ItemStackConverter(CoreModule core)
     {
 
         this.core = core;

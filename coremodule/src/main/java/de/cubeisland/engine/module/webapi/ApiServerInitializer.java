@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.webapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
@@ -29,11 +29,11 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final ApiServer server;
     private final ObjectMapper objectMapper;
 
-    ApiServerInitializer(SpongeCore core, ApiServer server)
+    ApiServerInitializer(CoreModule core, ApiServer server)
     {
         this.core = core;
         this.server = server;

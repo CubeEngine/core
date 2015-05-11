@@ -20,13 +20,12 @@ package de.cubeisland.engine.module.core.util.matcher;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
-import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 
 public class Match
 {
-    public Match(SpongeCore core, Game game)
+    public Match(CoreModule core, Game game)
     {
         Log logger = core.getProvided(Log.class);
         Modularity modulatiry = core.getModularity();

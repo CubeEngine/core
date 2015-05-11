@@ -20,17 +20,16 @@ package de.cubeisland.engine.module.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
-import de.cubeisland.engine.module.core.util.matcher.Match;
 import org.spongepowered.api.entity.EntityType;
 
 public class EntityTypeReader implements ArgumentReader<EntityType>
 {
 
-    private SpongeCore core;
+    private CoreModule core;
 
-    public EntityTypeReader(SpongeCore core)
+    public EntityTypeReader(CoreModule core)
     {
 
         this.core = core;

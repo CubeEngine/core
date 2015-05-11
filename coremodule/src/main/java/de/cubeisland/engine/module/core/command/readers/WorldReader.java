@@ -25,7 +25,7 @@ import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.world.WorldManager;
 import org.spongepowered.api.world.World;
@@ -34,9 +34,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
 
 public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public WorldReader(SpongeCore core)
+    public WorldReader(CoreModule core)
     {
         this.core = core;
     }

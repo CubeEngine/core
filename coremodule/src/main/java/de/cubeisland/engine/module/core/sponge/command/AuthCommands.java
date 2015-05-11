@@ -18,7 +18,7 @@ import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.annotation.CommandPermission;
 import de.cubeisland.engine.module.core.command.annotation.Unloggable;
 import de.cubeisland.engine.module.core.permission.PermDefault;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserList;
 import de.cubeisland.engine.module.core.user.UserManager;
@@ -28,13 +28,13 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 
 public class AuthCommands
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final BanManager banManager;
     private final UserManager um;
 
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
-    public AuthCommands(SpongeCore core)
+    public AuthCommands(CoreModule core)
     {
         this.core = core;
         this.banManager = core.getModularity().start(BanManager.class);

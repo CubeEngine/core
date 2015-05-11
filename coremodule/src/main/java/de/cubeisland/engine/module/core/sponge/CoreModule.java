@@ -80,11 +80,7 @@ import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
-/**
- * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
- */
-
-public final class SpongeCore extends Module
+public final class CoreModule extends Module
 {
     //region Core fields
     private BukkitCoreConfiguration config;
@@ -138,10 +134,10 @@ public final class SpongeCore extends Module
         this.config = reflector.load(BukkitCoreConfiguration.class, dataFolder.resolve("core.yml").toFile());
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
-        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(SpongeCore.class.getName()), threadFactory);
+        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()), threadFactory);
         serviceManager.registerService(LogFactory.class, logFactory);
 
-        logger = logFactory.getLog(SpongeCore.class, "Core");
+        logger = logFactory.getLog(CoreModule.class, "Core");
         AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fileManager, "Core"),
                                                      LoggingUtil.getFileFormat(true, true),
                                                      true, LoggingUtil.getCycler(),

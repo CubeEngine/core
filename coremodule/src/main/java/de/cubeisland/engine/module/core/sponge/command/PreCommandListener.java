@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
-import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Subscribe;
@@ -39,9 +38,9 @@ import static org.spongepowered.api.event.Order.POST;
 
 public class PreCommandListener
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public PreCommandListener(SpongeCore core)
+    public PreCommandListener(CoreModule core)
     {
         this.core = core;
     }

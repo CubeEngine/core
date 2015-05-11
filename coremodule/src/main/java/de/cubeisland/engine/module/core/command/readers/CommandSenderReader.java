@@ -27,14 +27,14 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 
 public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>, Completer
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public CommandSenderReader(SpongeCore core)
+    public CommandSenderReader(CoreModule core)
     {
         this.core = core;
     }

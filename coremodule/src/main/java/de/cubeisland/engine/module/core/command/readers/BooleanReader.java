@@ -24,16 +24,16 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 
 public class BooleanReader implements ArgumentReader<Boolean>
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     private final Set<String> yesStrings;
     private final Set<String> noStrings;
 
-    public BooleanReader(SpongeCore core)
+    public BooleanReader(CoreModule core)
     {
         this.core = core;
         this.yesStrings = new HashSet<>();

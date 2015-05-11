@@ -7,7 +7,7 @@ import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import org.spongepowered.api.data.manipulators.entities.WhitelistData;
 
@@ -18,9 +18,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITI
 @Command(name = "whitelist", desc = "Allows you to manage your whitelist")
 public class WhitelistCommand extends ContainerCommand
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public WhitelistCommand(SpongeCore core)
+    public WhitelistCommand(CoreModule core)
     {
         super(core);
         this.core = core;

@@ -45,7 +45,7 @@ public class SpongeBanManager implements BanManager
     private final BanBuilder banBuilder;
 
     @Inject
-    public SpongeBanManager(SpongeCore core)
+    public SpongeBanManager(CoreModule core)
     {
         manager = core.getGame().getServiceManager().provide(BanService.class).get();
         banBuilder = core.getGame().getRegistry().getBuilderOf(BanBuilder.class).get();

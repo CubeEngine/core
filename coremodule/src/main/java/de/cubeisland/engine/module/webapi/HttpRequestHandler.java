@@ -25,10 +25,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.module.service.Permission;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.webapi.exception.ApiRequestException;
@@ -57,11 +56,11 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Log log;
-    private final SpongeCore core;
+    private final CoreModule core;
     private final ApiServer server;
     private ObjectMapper objectMapper;
 
-    HttpRequestHandler(SpongeCore core, ApiServer server, ObjectMapper mapper)
+    HttpRequestHandler(CoreModule core, ApiServer server, ObjectMapper mapper)
     {
         this.core = core;
         this.server = server;

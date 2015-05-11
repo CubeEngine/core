@@ -41,13 +41,13 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 @Version(1)
 public class SpongeTaskManager implements TaskManager
 {
-    private final SpongeCore corePlugin;
+    private final CoreModule corePlugin;
     private AsynchronousScheduler asyncScheduler;
     private SynchronousScheduler syncScheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
 
     @Inject
-    public SpongeTaskManager(SpongeCore core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
+    public SpongeTaskManager(CoreModule core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
     {
         this.corePlugin = core;
         this.asyncScheduler = asyncScheduler;

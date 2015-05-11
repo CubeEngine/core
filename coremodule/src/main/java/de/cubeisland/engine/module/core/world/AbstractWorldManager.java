@@ -28,8 +28,7 @@ import java.util.UUID;
 import com.google.common.base.Optional;
 
 import de.cubeisland.engine.module.core.database.Database;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
-import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.world.World;
@@ -46,7 +45,7 @@ public abstract class AbstractWorldManager implements WorldManager
 
     protected final Database database;
 
-    public AbstractWorldManager(SpongeCore core)
+    public AbstractWorldManager(CoreModule core)
     {
         this.database = core.getModularity().start(Database.class);
     }

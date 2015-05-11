@@ -24,7 +24,7 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.user.UserManager;
 import org.spongepowered.api.event.Subscribe;
@@ -42,10 +42,10 @@ public class SpongePaginationManager implements PaginationManager
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
-    private SpongeCore core;
+    private CoreModule core;
 
     @Inject
-    public SpongePaginationManager(EventManager em, CommandManager cm, SpongeCore core)
+    public SpongePaginationManager(EventManager em, CommandManager cm, CoreModule core)
     {
         this.core = core;
         cm.addCommands(cm, core, new PaginationCommands(this));

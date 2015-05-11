@@ -3,16 +3,16 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.types.Profession;
 
 public class ProfessionMatcher
 {
     private final Map<String, Profession> professions = new HashMap<>();
-    private SpongeCore core;
+    private CoreModule core;
 
-    public ProfessionMatcher(SpongeCore core, Game game)
+    public ProfessionMatcher(CoreModule core, Game game)
     {
         this.core = core;
         for (Profession profession : game.getRegistry().getAllOf(Profession.class))

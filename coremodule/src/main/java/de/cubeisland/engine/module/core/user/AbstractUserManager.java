@@ -46,13 +46,12 @@ import de.cubeisland.engine.module.core.filesystem.FileUtil;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.util.Triplet;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
-import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
@@ -66,7 +65,7 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
  */
 public abstract class AbstractUserManager implements UserManager
 {
-    private final SpongeCore core;
+    private final CoreModule core;
     protected List<User> onlineUsers;
     protected ConcurrentHashMap<UUID, User> cachedUserByUUID = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<UInteger, User> cachedUserByDbId = new ConcurrentHashMap<>();
@@ -76,7 +75,7 @@ public abstract class AbstractUserManager implements UserManager
 
     protected final Database database;
 
-    public AbstractUserManager(final SpongeCore core)
+    public AbstractUserManager(final CoreModule core)
     {
         this.database = core.getModularity().start(Database.class);
 

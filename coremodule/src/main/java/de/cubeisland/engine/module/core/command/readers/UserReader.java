@@ -23,7 +23,7 @@ import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
 
@@ -34,9 +34,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
  */
 public class UserReader implements ArgumentReader<User>, DefaultValue<User>
 {
-    private final SpongeCore core;
+    private final CoreModule core;
 
-    public UserReader(SpongeCore core)
+    public UserReader(CoreModule core)
     {
         this.core = core;
     }

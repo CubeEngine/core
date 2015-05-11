@@ -29,14 +29,14 @@ import de.cubeisland.engine.butler.parameter.TooManyArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.module.core.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler
 {
-    private SpongeCore core;
+    private CoreModule core;
 
-    public ExceptionHandler(SpongeCore core)
+    public ExceptionHandler(CoreModule core)
     {
         this.core = core;
     }

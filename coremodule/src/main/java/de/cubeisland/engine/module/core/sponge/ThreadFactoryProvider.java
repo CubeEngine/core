@@ -16,7 +16,7 @@ public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
     public ThreadFactory get(DependencyInformation info, Modularity modularity)
     {
         Log log = modularity.getProvider(Log.class).get(info, modularity);
-        if (info.getClassName().equals(SpongeCore.class.getName()))
+        if (info.getClassName().equals(CoreModule.class.getName()))
         {
             if (coreThreadFactory == null)
             {

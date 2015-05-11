@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -77,9 +77,9 @@ public class MaterialMatcher
                                                                                       GOLDEN_LEGGINGS, GOLDEN_BOOTS,
                                                                                       FLINT_AND_STEEL, BOW, FISHING_ROD,
                                                                                       SHEARS)));
-    private SpongeCore core;
+    private CoreModule core;
 
-    MaterialMatcher(SpongeCore core, Game game)
+    MaterialMatcher(CoreModule core, Game game)
     {
         this.core = core;
         this.builder = game.getRegistry().getItemBuilder();

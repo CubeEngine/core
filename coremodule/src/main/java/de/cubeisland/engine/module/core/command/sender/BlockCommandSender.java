@@ -18,13 +18,13 @@
 package de.cubeisland.engine.module.core.command.sender;
 
 
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.util.command.source.CommandBlockSource;
 import org.spongepowered.api.world.Location;
 
 public class BlockCommandSender extends WrappedCommandSender<CommandBlockSource>
 {
-    public BlockCommandSender(SpongeCore core, CommandBlockSource sender)
+    public BlockCommandSender(CoreModule core, CommandBlockSource sender)
     {
         super(core, sender);
     }

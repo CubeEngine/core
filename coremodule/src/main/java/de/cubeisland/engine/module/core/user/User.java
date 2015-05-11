@@ -32,14 +32,13 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Module;
 
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.world.WorldManager;
@@ -65,7 +64,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
-    private final SpongeCore core;
+    private final CoreModule core;
 
     /**
      * Do not instantiate outside of {@link UserManager} implementations
@@ -73,7 +72,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      * @param core
      * @param player
      */
-    public User(SpongeCore core, org.spongepowered.api.entity.player.User player)
+    public User(CoreModule core, org.spongepowered.api.entity.player.User player)
     {
         super(core, player.getUniqueId());
         this.entity = core.getDB().getDSL().newRecord(TableUser.TABLE_USER).newUser(player);
@@ -86,7 +85,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      *
      * @param entity
      */
-    public User(SpongeCore core, UserEntity entity)
+    public User(CoreModule core, UserEntity entity)
     {
         super(core, entity.getUniqueId());
         this.core = core;
@@ -95,7 +94,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public SpongeCore getCore()
+    public CoreModule getCore()
     {
         return this.core;
     }
@@ -303,7 +302,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean safeTeleport(Location location, boolean keepDirection)
     {
-        Optional<Location> safeLocation = ((SpongeCore)core).getGame().getTeleportHelper().getSafeLocation(location);
+        Optional<Location> safeLocation = ((CoreModule)core).getGame().getTeleportHelper().getSafeLocation(location);
         if (safeLocation.isPresent())
         {
             location = safeLocation.get();
@@ -358,7 +357,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void setInvulnerable(boolean state)
     {
-        InvulnerabilityData data = ((SpongeCore)core).getGame().getRegistry().getManipulatorRegistry().getBuilder(InvulnerabilityData.class).get().create();
+        InvulnerabilityData data = ((CoreModule)core).getGame().getRegistry().getManipulatorRegistry().getBuilder(InvulnerabilityData.class).get().create();
         data.setInvulnerableTicks(100000000);
         offer(data);
     }

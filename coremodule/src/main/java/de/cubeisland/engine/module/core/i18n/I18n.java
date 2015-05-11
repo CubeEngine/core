@@ -40,11 +40,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import de.cubeisland.engine.modularity.core.Module;
 
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
-import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
@@ -60,7 +58,7 @@ import de.cubeisland.engine.reflect.Reflector;
 
 public class I18n
 {
-    final SpongeCore core;
+    final CoreModule core;
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
@@ -71,7 +69,7 @@ public class I18n
         return compositor;
     }
 
-    public I18n(SpongeCore core, Path translationPath)
+    public I18n(CoreModule core, Path translationPath)
     {
         core.getModularity().start(Reflector.class).getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
 
