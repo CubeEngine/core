@@ -32,13 +32,11 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.module.core.util.Cleanable;
 import de.cubeisland.engine.module.core.contract.Contract;
 import org.slf4j.Logger;
 
-import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -79,7 +77,7 @@ public class FileManager implements Cleanable
                 folderCreateAttributes = new FileAttribute[0];
             }
 
-            final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
+            final Path linkSource = Paths.get(System.getProperty("user.dir", "."), "CubeEngine");
 
             this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
 

@@ -35,6 +35,7 @@ import org.spongepowered.api.util.ban.BanBuilder;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.module.core.sponge.CoreModule.isMainThread;
 import static java.util.stream.Collectors.toSet;
 
 @ServiceImpl(BanManager.class)
@@ -91,6 +92,10 @@ public class SpongeBanManager implements BanManager
             return null;
         }
         return new UserBan(user, last.getSource().orNull(), last.getReason(), last.getStartDate(), last.getExpirationDate().orNull());
+    }
+
+    private User getUserByUUID(UUID uuid)
+    {
     }
 
     @Override

@@ -28,7 +28,6 @@ import de.cubeisland.engine.converter.node.ListNode;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
 

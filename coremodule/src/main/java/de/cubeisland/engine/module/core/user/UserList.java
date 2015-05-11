@@ -25,7 +25,6 @@ import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandSender;
 
 import static de.cubeisland.engine.module.core.util.StringUtils.startsWithIgnoreCase;

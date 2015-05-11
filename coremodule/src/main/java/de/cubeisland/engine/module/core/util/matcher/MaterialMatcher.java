@@ -79,7 +79,7 @@ public class MaterialMatcher
                                                                                       SHEARS)));
     private CoreModule core;
 
-    MaterialMatcher(CoreModule core, Game game)
+    public MaterialMatcher(CoreModule core, Game game)
     {
         this.core = core;
         this.builder = game.getRegistry().getItemBuilder();

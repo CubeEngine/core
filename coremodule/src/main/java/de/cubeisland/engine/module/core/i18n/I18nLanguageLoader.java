@@ -32,6 +32,7 @@ import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.language.LanguageLoader;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.reflect.Reflector;
 
@@ -41,7 +42,8 @@ public class I18nLanguageLoader extends LanguageLoader
 
     public I18nLanguageLoader(CoreModule core)
     {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getFileManager().getLanguagePath(), FileExtensionFilter.YAML))
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getModularity().start(
+            FileManager.class).getLanguagePath(), FileExtensionFilter.YAML))
         {
             // Search override Languages under CubeEngine/languages
             for (Path path : directoryStream)

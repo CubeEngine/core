@@ -20,14 +20,23 @@ package de.cubeisland.engine.module.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.core.util.matcher.ProfessionMatcher;
 import org.spongepowered.api.data.types.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>
 {
+    private CoreModule core;
+
+    public ProfessionReader(CoreModule core)
+    {
+
+        this.core = core;
+    }
+
     @Override
     public Profession read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return Match.profession().profession(invocation.consume(1));
+        return core.getModularity().start(ProfessionMatcher.class).profession(invocation.consume(1));
     }
 }

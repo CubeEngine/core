@@ -38,7 +38,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 import static java.nio.file.attribute.PosixFilePermissions.fromString;
@@ -63,7 +63,7 @@ public class FileUtil
     public static List<String> readStringList(Path file) throws IOException
     {
         expectNotNull(file, "The file must not be null!");
-        try (BufferedReader reader = Files.newBufferedReader(file, CubeEngine.CHARSET))
+        try (BufferedReader reader = Files.newBufferedReader(file, CoreModule.CHARSET))
         {
             return readStringList(reader);
         }
@@ -132,7 +132,7 @@ public class FileUtil
      */
     public static void saveFile(String string, Path file) throws IOException
     {
-        try (Writer out = Files.newBufferedWriter(file, CubeEngine.CHARSET))
+        try (Writer out = Files.newBufferedWriter(file, CoreModule.CHARSET))
         {
             out.write(string);
         }

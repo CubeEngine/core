@@ -20,7 +20,6 @@ package de.cubeisland.engine.module.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
 import org.spongepowered.api.data.types.DyeColor;
 

@@ -27,7 +27,6 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.filesystem.FileUtil;
 import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.module.core.world.AbstractWorldManager;
@@ -45,6 +44,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.module.core.sponge.CoreModule.isMainThread;
 import static de.cubeisland.engine.module.core.world.TableWorld.TABLE_WORLD;
 
 @ServiceImpl(WorldManager.class)
@@ -97,14 +97,14 @@ public class SpongeWorldManager extends AbstractWorldManager
     @Override
     public World createWorld(WorldProperties properties)
     {
-        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expect(isMainThread(), "Must be executed from main thread!");
         return this.server.loadWorld(properties).get();
     }
 
     @Override
     public Optional<World> getWorld(String name)
     {
-        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expect(isMainThread() , "Must be executed from main thread!");
         expectNotNull(name, "The world name must not be null!");
 
         return this.server.getWorld(name);
@@ -113,7 +113,7 @@ public class SpongeWorldManager extends AbstractWorldManager
     @Override
     public Optional<World> getWorld(UUID uid)
     {
-        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expect(isMainThread() , "Must be executed from main thread!");
         expectNotNull(uid, "The world UUID must not be null!");
 
         return this.server.getWorld(uid);
@@ -122,7 +122,7 @@ public class SpongeWorldManager extends AbstractWorldManager
     @Override
     public boolean unloadWorld(World world)
     {
-        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expect(isMainThread() , "Must be executed from main thread!");
         return this.server.unloadWorld(world);
     }
 
@@ -144,7 +144,7 @@ public class SpongeWorldManager extends AbstractWorldManager
     @Override
     public Set<World> getWorlds()
     {
-        expect(CubeEngine.isMainThread() , "Must be executed from main thread!");
+        expect(isMainThread() , "Must be executed from main thread!");
 
         return new HashSet<>(this.server.getWorlds());
     }

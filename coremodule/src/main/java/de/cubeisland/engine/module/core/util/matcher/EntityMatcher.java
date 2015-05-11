@@ -39,7 +39,7 @@ public class EntityMatcher
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
     private CoreModule core;
 
-    EntityMatcher(CoreModule core, Game game)
+    public EntityMatcher(CoreModule core, Game game)
     {
         this.core = core;
         for (EntityType type : game.getRegistry().getAllOf(EntityType.class))

@@ -7,7 +7,6 @@ import java.util.UUID;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.DataManipulator;

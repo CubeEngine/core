@@ -28,9 +28,11 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.filesystem.FileUtil;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 
 /**
@@ -41,9 +43,11 @@ public class TimeMatcher
 
     private final Map<Long, List<String>> timeToName;
     private final Map<String, Long> nameToTime;
+    private CoreModule core;
 
-    public TimeMatcher()
+    public TimeMatcher(CoreModule core)
     {
+        this.core = core;
         timeToName = this.loadFromFile();
         nameToTime = new HashMap<>();
         for (Entry<Long, List<String>> entry : timeToName.entrySet())
@@ -53,8 +57,8 @@ public class TimeMatcher
                 Long old = nameToTime.put(name, entry.getKey());
                 if (old != null)
                 {
-                    CubeEngine.getLog().warn("Duplicate Time-Name \"{}\" for values: ({}|{})",
-                                             name, old, entry.getKey());
+                    core.getProvided(Log.class).warn("Duplicate Time-Name \"{}\" for values: ({}|{})", name, old,
+                                                     entry.getKey());
                 }
             }
         }
@@ -64,16 +68,16 @@ public class TimeMatcher
     {
         try
         {
-            Path file = CubeEngine.getFileManager().getDataPath().resolve(CoreResource.TIMES.getTarget());
+            Path file = core.getProvided(FileManager.class).getDataPath().resolve(CoreResource.TIMES.getTarget());
             List<String> input = FileUtil.readStringList(file);
             Map<Long,List<String>> readTime = new TreeMap<>();
             this.loadFromFile(readTime, input);
-            try (InputStream is = CubeEngine.getFileManager().getSourceOf(file))
+            try (InputStream is = core.getProvided(FileManager.class).getSourceOf(file))
             {
                 List<String> jarinput = FileUtil.readStringList(is);
                 if (jarinput != null && this.loadFromFile(readTime, jarinput))
                 {
-                    CubeEngine.getLog().info("Updated times.txt");
+                    core.getProvided(Log.class).info("Updated times.txt");
                     StringBuilder sb = new StringBuilder();
                     for (Entry<Long, List<String>> entry : readTime.entrySet())
                     {
@@ -170,7 +174,7 @@ public class TimeMatcher
      */
     public Long matchTimeValue(String timeName)
     {
-        String match = Match.string().matchString(timeName, this.nameToTime.keySet());
+        String match = core.getProvided(StringMatcher.class).matchString(timeName, this.nameToTime.keySet());
         if (match == null)
         {
             return this.parseTime(timeName);

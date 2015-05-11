@@ -32,7 +32,7 @@ public class EnchantMatcher
     private final HashMap<String, Enchantment> spongeNames;
     private CoreModule core;
 
-    EnchantMatcher(CoreModule core, Game game)
+    public EnchantMatcher(CoreModule core, Game game)
     {
         this.core = core;
         this.spongeNames = new HashMap<>();

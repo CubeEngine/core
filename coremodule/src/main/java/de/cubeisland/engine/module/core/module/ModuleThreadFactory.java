@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.core.module;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.thread.BaseThreadFactory;
 import de.cubeisland.engine.module.core.task.thread.LoggingThread;
 import de.cubeisland.engine.logscribe.LogLevel;
@@ -31,7 +31,7 @@ public class ModuleThreadFactory extends BaseThreadFactory
 
     public ModuleThreadFactory(ThreadGroup threadGroup, Log log)
     {
-        super(new ThreadGroup(threadGroup, CubeEngine.class.getSimpleName() + " - " + log.getId()),
+        super(new ThreadGroup(threadGroup, CoreModule.class.getSimpleName() + " - " + log.getId()),
               log.getClass().getPackage().getName());
         this.log = log;
         this.exceptionHandler = new UncaughtModuleExceptionHandler(log);

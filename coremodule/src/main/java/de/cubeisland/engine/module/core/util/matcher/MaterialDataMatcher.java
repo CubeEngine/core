@@ -18,16 +18,19 @@
 package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.HashMap;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.types.DyeColor;
 
 public class MaterialDataMatcher
 {
+    private CoreModule core;
     private final Game game;
     private HashMap<String, DyeColor> dyeColors;
 
-    MaterialDataMatcher(Game game)
+    public MaterialDataMatcher(CoreModule core, Game game)
     {
+        this.core = core;
         this.game = game;
 
         initDataValues(game);
@@ -51,7 +54,7 @@ public class MaterialDataMatcher
      */
     public DyeColor colorData(String data)
     {
-        String match = Match.string().matchString(data, dyeColors.keySet());
+        String match = core.getModularity().start(StringMatcher.class).matchString(data, dyeColors.keySet());
         if (match == null)
         {
             return null;

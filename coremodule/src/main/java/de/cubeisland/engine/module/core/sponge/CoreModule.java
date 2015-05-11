@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -26,7 +27,6 @@ import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.mysql.MySQLDatabase;
@@ -55,7 +55,14 @@ import de.cubeisland.engine.module.core.util.converter.UserConverter;
 import de.cubeisland.engine.module.core.util.converter.VersionConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
-import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
+import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
+import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
+import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
+import de.cubeisland.engine.module.core.util.matcher.ProfessionMatcher;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
+import de.cubeisland.engine.module.core.util.matcher.TimeMatcher;
+import de.cubeisland.engine.module.core.util.matcher.WorldMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.module.core.world.TableWorld;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
@@ -82,9 +89,10 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
 public final class CoreModule extends Module
 {
+    public static final Charset CHARSET = Charset.forName("UTF-8");
+
     //region Core fields
     private BukkitCoreConfiguration config;
-    private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
     private CorePerms corePerms;
     //endregion
@@ -97,21 +105,33 @@ public final class CoreModule extends Module
     @Inject private org.slf4j.Logger pluginLogger;
     private Log logger;
 
-      /* TODO configprovider
-        T config = this.core.getReflector().create(clazz);
-        config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
-        if (config.reload(true))
-        {
-            this.getLog().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
-        }
-        return config;
-        */
+    private static Thread mainThread = Thread.currentThread();
+    static boolean isMainThread()
+    {
+        return Thread.currentThread().equals(mainThread);
+    }
+
+    public static Thread getMainThread()
+    {
+        return mainThread;
+    }
+
+
+    /* TODO configprovider
+      T config = this.core.getReflector().create(clazz);
+      config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
+      if (config.reload(true))
+      {
+          this.getLog().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+      }
+      return config;
+      */
     @Override
     public void onEnable()
     {
-        ServiceManager serviceManager = getModularity().getServiceManager();
+        ServiceManager sm = getModularity().getServiceManager();
 
-        serviceManager.registerService(McUUID.class, new McUUID(this));
+        sm.registerService(McUUID.class, new McUUID(this));
 
         ThreadFactoryProvider threadFactoryProvider = new ThreadFactoryProvider();
         ThreadFactory threadFactory = threadFactoryProvider.get(getInformation(), getModularity());
@@ -119,7 +139,7 @@ public final class CoreModule extends Module
         // FileManager
         FileManager fileManager = new FileManager(pluginLogger, dataFolder);
 
-        serviceManager.registerService(FileManager.class, fileManager);
+        sm.registerService(FileManager.class, fileManager);
 
         fileManager.dropResources(CoreResource.values());
         fileManager.clearTempDir();
@@ -127,7 +147,7 @@ public final class CoreModule extends Module
         // Reflector
         Reflector reflector = new Reflector();
 
-        serviceManager.registerService(Reflector.class, new Reflector());
+        sm.registerService(Reflector.class, new Reflector());
         registerConverters(reflector);
 
         // Core Configuration - depends on Reflector
@@ -135,7 +155,7 @@ public final class CoreModule extends Module
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
         SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()), threadFactory);
-        serviceManager.registerService(LogFactory.class, logFactory);
+        sm.registerService(LogFactory.class, logFactory);
 
         logger = logFactory.getLog(CoreModule.class, "Core");
         AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fileManager, "Core"),
@@ -149,12 +169,12 @@ public final class CoreModule extends Module
         getModularity().registerProvider(Log.class, new LogProvider(logFactory));
         getModularity().registerProvider(ThreadFactory.class, threadFactoryProvider);
         getModularity().registerProvider(Permission.class, new BasePermissionProvider(Permission.BASE));
-        serviceManager.registerService(AsynchronousScheduler.class, game.getAsyncScheduler());
-        serviceManager.registerService(SynchronousScheduler.class, game.getSyncScheduler());
+        sm.registerService(AsynchronousScheduler.class, game.getAsyncScheduler());
+        sm.registerService(SynchronousScheduler.class, game.getSyncScheduler());
 
         // I18n - depends on FileManager / CoreConfig
         I18n i18n = new I18n(this, fileManager.getTranslationPath());
-        serviceManager.registerService(I18n.class, i18n);
+        sm.registerService(I18n.class, i18n);
 
 
         // SIG INT Handler - depends on TaskManager / CoreConfig / Logger
@@ -175,7 +195,7 @@ public final class CoreModule extends Module
             try
             {
                 apiServer.start();
-                serviceManager.registerService(ApiServer.class, apiServer);
+                sm.registerService(ApiServer.class, apiServer);
                 ConsoleLogEvent e = new ConsoleLogEvent(apiServer);
                 e.start();
                 ((Logger)LogManager.getLogger()).addAppender(e);
@@ -202,10 +222,18 @@ public final class CoreModule extends Module
         database.registerTable(TableUser.class);
         database.registerTable(TableWorld.class);
 
-        serviceManager.registerService(Database.class, database);
+        sm.registerService(Database.class, database);
 
 
-        this.matcherManager = new Match(this, game);
+            sm.registerService(MaterialDataMatcher.class, new MaterialDataMatcher(this, game));
+            sm.registerService(MaterialMatcher.class, new MaterialMatcher(this, game));
+            sm.registerService(EnchantMatcher.class, new EnchantMatcher(this, game));
+            sm.registerService(ProfessionMatcher.class, new ProfessionMatcher(this, game));
+            sm.registerService(EntityMatcher.class, new EntityMatcher(this, game));
+            sm.registerService(StringMatcher.class, new StringMatcher(logger));
+            sm.registerService(TimeMatcher.class, new TimeMatcher(this));
+            sm.registerService(WorldMatcher.class, new WorldMatcher(this));
+
         this.inventoryGuard = new InventoryGuardFactory(this);
 
         // WorldManager - depends on Database
@@ -302,9 +330,9 @@ public final class CoreModule extends Module
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(threadDumpFolder.resolve(new SimpleDateFormat(
-            "yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CubeEngine.CHARSET))
+            "yyyy.MM.dd--HHmmss", Locale.US).format(new Date()) + ".dump"), CHARSET))
         {
-            Thread main = CubeEngine.getMainThread();
+            Thread main = getMainThread();
             int i = 1;
 
             dumpStackTrace(writer, main, main.getStackTrace(), i);

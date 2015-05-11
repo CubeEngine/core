@@ -16,15 +16,13 @@
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.cubeisland.engine.module.core.database;
-
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.task.thread.BaseThreadFactory;
 
 public class DatabaseThreadFactory extends BaseThreadFactory
 {
     public DatabaseThreadFactory()
     {
-        super(CubeEngine.class.getSimpleName() + " - " + Database.class.getSimpleName(), Database.class.getPackage().getName());
+        super("CubeEngine" + " - " + Database.class.getSimpleName(), Database.class.getPackage().getName());
     }
 
     @Override

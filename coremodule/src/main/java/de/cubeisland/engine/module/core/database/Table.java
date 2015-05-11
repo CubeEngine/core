@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.database.mysql.Keys;
 import de.cubeisland.engine.module.core.util.Version;
 import org.jooq.DataType;

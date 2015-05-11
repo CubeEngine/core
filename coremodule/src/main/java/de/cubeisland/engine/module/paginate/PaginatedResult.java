@@ -20,11 +20,8 @@ package de.cubeisland.engine.module.paginate;
 import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.result.CommandResult;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandContext;
-import de.cubeisland.engine.module.core.command.CommandManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;

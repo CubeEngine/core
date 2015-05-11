@@ -42,7 +42,6 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.module.core.command.CommandOrigin;
@@ -101,6 +100,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
+import static de.cubeisland.engine.module.core.sponge.CoreModule.isMainThread;
 
 @ServiceImpl(CommandManager.class)
 @Version(1)
@@ -174,10 +174,10 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new WorldReader(core), World.class);
         providerManager.register(core, new EntityTypeReader(core), EntityType.class);
         providerManager.register(core, new DyeColorReader(core.getModularity().start(MaterialDataMatcher.class)), DyeColor.class);
-        providerManager.register(core, new ProfessionReader(), Profession.class);
+        providerManager.register(core, new ProfessionReader(core), Profession.class);
         providerManager.register(core, new OfflinePlayerReader(core), org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new DimensionTypeReader(core.getGame()), DimensionType.class);
-        providerManager.register(core, new DifficultyReader(core.getGame()), Difficulty.class);
+        providerManager.register(core, new DifficultyReader(core), Difficulty.class);
         providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);
 
         UserListReader userListReader = new UserListReader(core.getModularity());
@@ -288,7 +288,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public boolean runCommand(CommandSender sender, String commandLine)
     {
-        expect(CubeEngine.isMainThread(), "Commands may only be called synchronously!");
+        expect(isMainThread(), "Commands may only be called synchronously!");
         org.spongepowered.api.util.command.CommandSource source = null;
         if (sender instanceof User)
         {

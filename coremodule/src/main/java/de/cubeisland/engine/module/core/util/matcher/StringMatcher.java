@@ -27,7 +27,6 @@ import java.util.TreeMap;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.CubeEngine;
 
 public class StringMatcher
 {

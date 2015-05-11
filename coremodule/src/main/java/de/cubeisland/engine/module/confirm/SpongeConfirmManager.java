@@ -31,6 +31,7 @@ import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.contract.Contract;
 import de.cubeisland.engine.module.core.contract.NotNull;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.util.Pair;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
@@ -77,7 +78,8 @@ public class SpongeConfirmManager implements ConfirmManager
         {
             confirmationTimeoutTasks = new LinkedList<>();
         }
-        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getTaskManager().runTaskDelayed(module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT).get()));
+        confirmationTimeoutTasks.add(new Pair<>(module, this.core.getModularity().start(TaskManager.class).runTaskDelayed(
+            module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT).get()));
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
 
@@ -119,7 +121,7 @@ public class SpongeConfirmManager implements ConfirmManager
         }
         Pair<Module, UUID> pair = confirmationTimeoutTasks.poll();
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
-        this.core.getTaskManager().cancelTask(pair.getLeft(), pair.getRight());
+        this.core.getModularity().start(TaskManager.class).cancelTask(pair.getLeft(), pair.getRight());
 
         Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender);
         if (pendingConfirmations == null)

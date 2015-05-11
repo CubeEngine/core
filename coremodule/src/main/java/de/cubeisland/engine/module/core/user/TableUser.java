@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.database.AutoIncrementTable;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.TableUpdateCreator;

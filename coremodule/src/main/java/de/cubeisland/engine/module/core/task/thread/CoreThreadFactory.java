@@ -19,8 +19,8 @@ package de.cubeisland.engine.module.core.task.thread;
 
 import de.cubeisland.engine.logscribe.Log;
 
-import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 public class CoreThreadFactory extends BaseThreadFactory
 {
@@ -28,7 +28,7 @@ public class CoreThreadFactory extends BaseThreadFactory
 
     public CoreThreadFactory(Log logger)
     {
-        super(CubeEngine.class.getSimpleName(), CubeEngine.class.getPackage().getName());
+        super("CubeEngine", CoreModule.class.getPackage().getName());
         this.logger = logger;
     }
 
