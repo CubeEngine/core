@@ -32,7 +32,7 @@ public abstract class Task implements Runnable
     public Task(Module module)
     {
         this.module = module;
-        this.tm = module.getModulatiry().getStarted(TaskManager.class);
+        this.tm = module.getModulatiry().start(TaskManager.class);
     }
 
     /**

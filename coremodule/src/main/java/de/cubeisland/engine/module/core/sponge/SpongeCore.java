@@ -114,7 +114,7 @@ public final class SpongeCore extends Module implements Core
     @Inject private org.slf4j.Logger pluginLogger;
     private Log logger;
 
-    private final ThreadFactory threadFactory;
+    private ThreadFactory threadFactory;
 
       /* TODO configprovider
         T config = this.core.getReflector().create(clazz);
@@ -125,8 +125,8 @@ public final class SpongeCore extends Module implements Core
         }
         return config;
         */
-
-    public SpongeCore()
+    @Override
+    public void onEnable()
     {
         CubeEngine.initialize(this);
 
@@ -165,11 +165,6 @@ public final class SpongeCore extends Module implements Core
         // I18n - depends on FileManager / CoreConfig
         this.i18n = new I18n(this);
 
-    }
-
-    @Override
-    public void onLoad()
-    {
         // TaskManager
         this.taskManager = new SpongeTaskManager(this, game.getAsyncScheduler(), game.getSyncScheduler());
 
@@ -181,12 +176,7 @@ public final class SpongeCore extends Module implements Core
         {
             BukkitUtils.setSignalHandlers(this);
         }
-    }
 
-
-    @Override
-    public void onEnable()
-    {
         // PermissionManager - depends on LogFactory / ThreadFactory
         this.permissionManager = new SpongePermissionManager(this);
 

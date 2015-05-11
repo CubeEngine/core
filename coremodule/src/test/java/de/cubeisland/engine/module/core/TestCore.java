@@ -53,11 +53,10 @@ import org.joda.time.Duration;
 
 public class TestCore implements Core
 {
-    private final Version version = Version.ONE;
+    private final String version = Version.ONE.toString();
     private final Log logger;
     private CoreConfiguration config = null;
     private FileManager fileManager = null;
-    private ModuleManager moduleManager = null;
     private final Reflector configFactory = new Reflector();
     private LogFactory logFactory;
 
@@ -157,16 +156,6 @@ public class TestCore implements Core
             }
         }
         return this.fileManager;
-    }
-
-    @Override
-    public ModuleManager getModuleManager()
-    {
-        if (this.moduleManager == null)
-        {
-            this.moduleManager = new TestModuleManager(this);
-        }
-        return this.moduleManager;
     }
 
     @Override

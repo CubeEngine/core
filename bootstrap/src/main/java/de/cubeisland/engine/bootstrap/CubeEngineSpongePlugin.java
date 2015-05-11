@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.asm.AsmModularity;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.graph.Node;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -82,18 +81,8 @@ public class CubeEngineSpongePlugin
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
         pluginLogger.info("Starting Modules...");
-        start(modularity.getGraph().getRoot());
+        modularity.startAll();
         pluginLogger.info("done.");
-    }
-
-    private void start(Node node)
-    {
-        if (node.getInformation() != null)
-        {
-            pluginLogger.debug("Starting " + node.getInformation().getIdentifier());
-            modularity.getStarted(node.getInformation().getClassName());
-        }
-        node.getChildren().forEach(this::start);
     }
 
     @Subscribe

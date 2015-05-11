@@ -33,7 +33,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 {
     public ContainerCommand(Module module)
     {
-        super(new CubeContainerCommandDescriptor(), module.getModulatiry().getStarted(CommandManager.class).getCommandBuilder());
+        super(new CubeContainerCommandDescriptor(), module.getModulatiry().start(CommandManager.class).getCommandBuilder());
 
         String permName = getDescriptor().getName();
         boolean checkPerm = true;
@@ -79,7 +79,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             Module module = descriptor.getModule();
             Permission childPerm = descriptor.getPermission();
             childPerm.setParent(this.getDescriptor().getPermission());
-            module.getModulatiry().getStarted(PermissionManager.class).registerPermission(module, childPerm);
+            module.getModulatiry().start(PermissionManager.class).registerPermission(module, childPerm);
         }
         return super.addCommand(command);
     }

@@ -10,6 +10,7 @@ import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Optional;
 import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
@@ -54,7 +55,8 @@ public class CoreCommands extends ContainerCommand
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        core.getModulatiry().reloadModules(file);
+        Modularity modulatiry = core.getModulatiry();
+        modulatiry.getGraph().getRoot();
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }

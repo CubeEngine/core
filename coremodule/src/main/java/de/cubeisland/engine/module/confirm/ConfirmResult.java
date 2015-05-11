@@ -43,7 +43,7 @@ public class ConfirmResult implements CommandResult
     @Override
     public void process(CommandInvocation context)
     {
-        module.getModulatiry().getStarted(ConfirmManager.class).registerConfirmation(this, this.module, sender);
+        module.getModulatiry().start(ConfirmManager.class).registerConfirmation(this, this.module, sender);
     }
 
     public void run()

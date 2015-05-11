@@ -41,11 +41,11 @@ public abstract class ConversationCommand extends ContainerCommand
     protected ConversationCommand(Module module)
     {
         super(module);
-        module.getModulatiry().getStarted(EventManager.class).registerListener(module, this);
-        getDescriptor().setDispatcher(module.getModulatiry().getStarted(CommandManager.class)); // needed for exceptionhandler
+        module.getModulatiry().start(EventManager.class).registerListener(module, this);
+        getDescriptor().setDispatcher(module.getModulatiry().start(CommandManager.class)); // needed for exceptionhandler
         Permission childPerm = getDescriptor().getPermission();
         childPerm.setParent(module.getProvided(Permission.class).childWildcard("command"));
-        module.getModulatiry().getStarted(PermissionManager.class).registerPermission(module, childPerm);
+        module.getModulatiry().start(PermissionManager.class).registerPermission(module, childPerm);
         this.registerSubCommands();
     }
 
@@ -62,7 +62,7 @@ public abstract class ConversationCommand extends ContainerCommand
     @Subscribe
     public void onChatHandler(PlayerChatEvent event)
     {
-        User user = getModule().getModulatiry().getStarted(UserManager.class).getExactUser(event.getPlayer().getUniqueId());
+        User user = getModule().getModulatiry().start(UserManager.class).getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(
@@ -79,7 +79,7 @@ public abstract class ConversationCommand extends ContainerCommand
 
     private CommandInvocation newInvocation(User user, String message)
     {
-        CommandManager cm = getModule().getModulatiry().getStarted(CommandManager.class);
+        CommandManager cm = getModule().getModulatiry().start(CommandManager.class);
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 

@@ -64,7 +64,7 @@ public class InventoryGuard
     public void submitInventory(Module module, boolean openInventory)
     {
         this.module = module;
-        this.module.getModulatiry().getStarted(EventManager.class).registerListener(this.module, this);
+        this.module.getModulatiry().start(EventManager.class).registerListener(this.module, this);
         if (openInventory)
         {
             for (User user : users)
@@ -121,13 +121,13 @@ public class InventoryGuard
     {
         if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
         {
-            User user = this.module.getModulatiry().getStarted(UserManager.class).getExactUser(event.getViewer().getUniqueId());
+            User user = this.module.getModulatiry().start(UserManager.class).getExactUser(event.getViewer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
                 if (this.users.isEmpty())
                 {
-                    this.module.getModulatiry().getStarted(EventManager.class).removeListener(this.module, this); // no user left to check
+                    this.module.getModulatiry().start(EventManager.class).removeListener(this.module, this); // no user left to check
                 }
                 this.onClose.forEach(Runnable::run);
             }
@@ -364,7 +364,7 @@ public class InventoryGuard
     {
         for (Runnable runner : this.onChange)
         {
-            this.module.getModulatiry().getStarted(TaskManager.class).runTask(this.module, runner);
+            this.module.getModulatiry().start(TaskManager.class).runTask(this.module, runner);
         }
     }
 

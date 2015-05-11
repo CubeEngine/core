@@ -83,7 +83,8 @@ public class SpongePermissionManager implements PermissionManager
     @Override
     public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
     {
-        module.getModulatiry().getStarted(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
+        module.getModulatiry().start(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(
+            module, permissions));
     }
 
     @Override
