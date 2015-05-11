@@ -109,7 +109,7 @@ public class FileUtil
         }
         catch (IOException ex)
         {
-            getLog().debug(ex, "Failed to read lines from a buffer");
+            // TODO getLog().debug(ex, "Failed to read lines from a buffer");
         }
         finally
         {

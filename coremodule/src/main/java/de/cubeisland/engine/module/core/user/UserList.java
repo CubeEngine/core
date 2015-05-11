@@ -79,7 +79,8 @@ public class UserList
 
         private static boolean canSee(CommandSender sender, User user)
         {
-            return !(sender instanceof User) || ((User)sender).canSee(user);
+            // TODO return !(sender instanceof User) || ((User)sender).canSee(user);
+            return true;
         }
 
         @Override

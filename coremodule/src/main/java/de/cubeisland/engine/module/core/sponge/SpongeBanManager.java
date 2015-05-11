@@ -96,6 +96,7 @@ public class SpongeBanManager implements BanManager
 
     private User getUserByUUID(UUID uuid)
     {
+        return null; // TODO
     }
 
     @Override

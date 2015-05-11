@@ -45,7 +45,7 @@ public class PlayerConverter extends SimpleConverter<User>
         // TODO #waitforsponge https://github.com/SpongePowered/SpongeAPI/issues/528
         if (node instanceof StringNode)
         {
-            return this.server.getOfflinePlayer(((StringNode)node).getValue());
+            // TODO  return this.server.getOfflinePlayer(((StringNode)node).getValue());
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

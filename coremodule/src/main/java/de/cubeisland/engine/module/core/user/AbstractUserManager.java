@@ -172,7 +172,7 @@ public abstract class AbstractUserManager implements UserManager
             user = this.loadUserFromDatabase(uuid);
             if (user == null)
             {
-                user = new User(core, Bukkit.getOfflinePlayer(uuid));
+                // TODO user = new User(core, Bukkit.getOfflinePlayer(uuid));
                 user.getEntity().insertAsync();
             }
             this.cacheUser(user);

@@ -97,7 +97,7 @@ public class ApiServer
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
                                                   core.getProvided(ThreadFactory.class)));
-        this.log.addTarget(new LogProxyTarget(logFactory.getParent()));
+        // TODO this.log.addTarget(new LogProxyTarget(logFactory.getParent()));
         try
         {
             this.bindAddress.set(InetAddress.getLocalHost());

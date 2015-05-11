@@ -166,7 +166,8 @@ public class EntityMatcher
      */
     public boolean canBeSpawnedBySpawnEgg(EntityType entityType)
     {
-        return EntityTypes.eggInfo.containsKey(entityType.getTypeId());
+        // TODO return EntityTypes.eggInfo.containsKey(entityType.getTypeId());
+        return true;
     }
 
     /**

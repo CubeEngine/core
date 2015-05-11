@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.core.util.formatter;
 import java.util.Locale;
 
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
@@ -35,7 +36,8 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
         reflector.getDefaultConverterManager().registerConverter(new MessageTypeConverter(), MessageType.class);
         reflector.getDefaultConverterManager().registerConverter(new ChatFormatConverter(), ChatFormat.class);
 
-        this.colorConfiguration = reflector.load(ColorConfiguration.class, core.getFileManager().getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
+        this.colorConfiguration = reflector.load(ColorConfiguration.class, core.getModularity().start(
+            FileManager.class).getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
             .registerMacro(new BooleanFormatter())

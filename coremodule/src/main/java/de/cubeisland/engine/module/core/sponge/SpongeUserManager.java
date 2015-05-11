@@ -146,7 +146,7 @@ public class SpongeUserManager extends AbstractUserManager
                                              .where(TableUser.TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
         if (userEntity != null)
         {
-            org.spongepowered.api.entity.player.User offlinePlayer = Bukkit.getOfflinePlayer(name);
+            org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
                 User user = new User(core, userEntity);
@@ -159,13 +159,18 @@ public class SpongeUserManager extends AbstractUserManager
         }
         if (create)
         {
-            org.spongepowered.api.entity.player.User offlinePlayer = Bukkit.getOfflinePlayer(name);
+            org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
             User user = new User(core, offlinePlayer);
             user.getEntity().insertAsync();
             this.cacheUser(user);
             return user;
         }
         return null;
+    }
+
+    private org.spongepowered.api.entity.player.User getOfflinePlayer(String name)
+    {
+        return null; // TODO
     }
 
     private User getExactUser(org.spongepowered.api.entity.player.User player, boolean login)
@@ -314,7 +319,7 @@ public class SpongeUserManager extends AbstractUserManager
         {
             for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
             {
-                attachment.onChat(event.getFormat(), event.getMessage());
+                // TODO attachment.onChat(event.getFormat(), event.getMessage());
             }
         }
 

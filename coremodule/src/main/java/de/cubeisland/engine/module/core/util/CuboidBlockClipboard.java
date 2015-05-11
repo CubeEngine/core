@@ -96,6 +96,7 @@ public class CuboidBlockClipboard
             {
                 for (int x = 0; x < this.size.x; ++x)
                 {
+                    /* TODO
                     BlockData blockData = this.data[x][y][z];
                     BlockState state = world.getBlock(relative.x + x, relative.y + y, relative.z + z);
                     state.setType(blockData.material);
@@ -106,6 +107,7 @@ public class CuboidBlockClipboard
                         NBTUtils.setTileEntityNBTAt(state.getLocation(),
                                 blockData.getRelativeNbtData(relative));
                     }
+                    */
                 }
             }
         }
@@ -169,11 +171,13 @@ public class CuboidBlockClipboard
                             object.mappedMaterials.put(block,curData.material);
                         }
                         blocks[i] = block;
+                        /* TODO
                         bData[i] = curData.data;
                         if (curData.nbt != null)
                         {
                             tileEntities.addNode(convertNBTToNode(curData.nbt));
                         }
+                        */
                         i++;
                     }
                 }
@@ -198,7 +202,7 @@ public class CuboidBlockClipboard
                     Map<Byte,BlockType> mappedMaterials = manager.convertFromNode(mappedNodes.get("materials"),CuboidBlockClipboard.class.getDeclaredField("mappedMaterials").getGenericType());
                     Byte[] blocks = manager.convertFromNode(mappedNodes.get("blocks"),Byte[].class);
                     Byte[] data = manager.convertFromNode(mappedNodes.get("data"),Byte[].class);
-                    Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<>();
+                    // TODO Map<BlockVector3,NBTTagCompound> tileEntities = new HashMap<>();
                     Node tileE = mappedNodes.get("tileentities");
                     if (tileE != null && tileE instanceof ListNode)
                     {
@@ -211,8 +215,8 @@ public class CuboidBlockClipboard
                                 BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
                                                                        ((IntNode)teData.get("y")).getValue(),
                                                                        ((IntNode)teData.get("z")).getValue());
-                                NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT(listedNode);
-                                tileEntities.put(vector,tileTag);
+                               // TODO NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT(listedNode);
+                                // TODO tileEntities.put(vector,tileTag);
 
                             }
                             else if (listedNode instanceof NullNode)
@@ -243,14 +247,14 @@ public class CuboidBlockClipboard
                             for (int x = 0; x < width; ++x)
                             {
                                 BlockType mat = mappedMaterials.get(blocks[i]);
-                                result.data[x][y][z] = result.new BlockData(mat,data[i]);
+                                // TODO result.data[x][y][z] = result.new BlockData(mat,data[i]);
                                 i++;
                             }
                         }
                     }
-                    for (Entry<BlockVector3, NBTTagCompound> entry : tileEntities.entrySet())
+                    // TODO  for (Entry<BlockVector3, NBTTagCompound> entry : tileEntities.entrySet())
                     {
-                        result.data[entry.getKey().x][entry.getKey().y][entry.getKey().z].nbt = entry.getValue();
+                        // TODO       result.data[entry.getKey().x][entry.getKey().y][entry.getKey().z].nbt = entry.getValue();
                     }
                     return result;
                 }

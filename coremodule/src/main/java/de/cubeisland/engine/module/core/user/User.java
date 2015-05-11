@@ -37,6 +37,7 @@ import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
 import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
@@ -75,7 +76,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     public User(CoreModule core, org.spongepowered.api.entity.player.User player)
     {
         super(core, player.getUniqueId());
-        this.entity = core.getDB().getDSL().newRecord(TableUser.TABLE_USER).newUser(player);
+        this.entity = core.getModularity().start(Database.class).getDSL().newRecord(TableUser.TABLE_USER).newUser(player);
         this.attachments = new HashMap<>();
         this.core = core;
     }
@@ -459,11 +460,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public Iterator<Location> getLineOfSight(int maxDistance)
     {
-
+        return null;
+        /* TODO
         if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
             maxDistance = Bukkit.getServer().getViewDistance() * 16;
         }
         return new BlockIterator(this, maxDistance);
+        */
     }
 
     public Location getTargetBlock(int maxDistance)

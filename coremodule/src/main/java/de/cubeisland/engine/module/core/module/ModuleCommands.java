@@ -31,7 +31,9 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.core.command.CommandSender;
@@ -57,7 +59,7 @@ public class ModuleCommands extends ContainerCommand
         this.core = core;
         this.modularity = modularity;
         this.pm = pm;
-        core.getCommandManager().getProviderManager().register(core, new ModuleReader(modularity));
+        core.getModularity().start(CommandManager.class).getProviderManager().register(core, new ModuleReader(modularity));
     }
 
     public static class ModuleReader implements ArgumentReader<de.cubeisland.engine.modularity.core.Module>
@@ -80,7 +82,8 @@ public class ModuleCommands extends ContainerCommand
                     return module;
                 }
             }
-            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "The given module could not be found!"));        }
+            throw new ReaderException(mm.start(I18n.class).translate(invocation.getLocale(), NEGATIVE,
+                                                                                 "The given module could not be found!"));        }
     }
 
     @Alias(value = "modules")
@@ -97,48 +100,43 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
         for (de.cubeisland.engine.modularity.core.Module module : modules)
         {
-            if (module.isEnabled())
-            {
-                context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getInformation().getName());
-            }
-            else
-            {
-                context.sendMessage(" - " + ChatFormat.RED + module.getInformation().getName());
-            }
+            context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getInformation().getName());
+            // TODO not enabled modules?
         }
     }
 
     @Command(desc = "Enables a module")
     public void enable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        if (this.modularity.enableModule(module))
+        /* TODO if (this.modularity.enableModule(module))
         {
             context.sendTranslated(POSITIVE, "The given module was successfully enabled!");
             return;
         }
         context.sendTranslated(CRITICAL, "An error occurred while enabling the module!");
+        */
     }
 
     @Command(desc = "Disables a module")
     public void disable(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        this.modularity.disableModule(module);
+// TODO        this.modularity.disableModule(module);
         context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getInformation().getName());
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
     public void unload(CommandContext context, @Reader(ModuleReader.class) Module module)
     {
-        this.modularity.unloadModule(module);
+        // TODO  this.modularity.unloadModule(module);
         context.sendTranslated(POSITIVE, "The module {name#module} was successfully unloaded!", module.getInformation().getName());
     }
 
     @Command(desc = "Reloads a module")
     public void reload(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean file)
     {
-        try
+        // TODO try
         {
-            this.modularity.reloadModule(module, file);
+            // TODO this.modularity.reloadModule(module, file);
             if (file)
             {
                 context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getInformation().getName());
@@ -148,11 +146,11 @@ public class ModuleCommands extends ContainerCommand
                 context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded!", module.getInformation().getName());
             }
         }
-        catch (ModuleException ex)
+        // TODO  catch (ModuleException ex)
         {
             context.sendTranslated(NEGATIVE, "Failed to reload the module!");
             context.sendTranslated(NEUTRAL, "Check the server log for info.");
-            core.getLog().error(ex, "Failed to reload the module {}!", module.getInformation().getName());
+            // TODO core.getLog().error(ex, "Failed to reload the module {}!", module.getInformation().getName());
         }
     }
 
@@ -176,22 +174,23 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
             return;
         }
-        try
+        // TODO  try
         {
-            Module module = modularity.loadModule(modulePath);
+            /* TODO       Module module = modularity.loadModule(modulePath);
             if (modularity.enableModule(module))
             {
                 context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getInformation().getName());
             }
+            */
         }
-        catch (ModuleAlreadyLoadedException e)
+        // TODO catch (ModuleAlreadyLoadedException e)
         {
             context.sendTranslated(NEUTRAL, "This module is already loaded, try reloading it.");
         }
-        catch (ModuleException ex)
+        // TODO   catch (ModuleException ex)
         {
             context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
-            core.getLog().error(ex, "Failed to load a module from file {}!", modulePath);
+            // TODO  core.getLog().error(ex, "Failed to load a module from file {}!", modulePath);
         }
     }
 
@@ -207,6 +206,7 @@ public class ModuleCommands extends ContainerCommand
             VanillaCommands.showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
         }
 
+        /* TODO
         Map<String, Version> dependencies = moduleInfo.getDependencies();
         Map<String, Version> softDependencies = moduleInfo.getSoftDependencies();
         Set<String> pluginDependencies = moduleInfo.getPluginDependencies();
@@ -256,6 +256,7 @@ public class ModuleCommands extends ContainerCommand
                 }
             }
         }
+
         if (!pluginDependencies.isEmpty())
         {
             context.sendTranslated(POSITIVE, "Plugin dependencies:");
@@ -287,5 +288,6 @@ public class ModuleCommands extends ContainerCommand
                 context.sendMessage(green + service); // TODO colors to show if service is found OR NOT
             }
         }
+          */
     }
 }

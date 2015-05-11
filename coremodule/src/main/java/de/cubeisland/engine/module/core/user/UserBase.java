@@ -1,3 +1,20 @@
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.engine.module.core.user;
 
 import java.net.InetSocketAddress;
@@ -40,6 +57,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.weather.Weather;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
+import static de.cubeisland.engine.module.core.sponge.CoreModule.isMainThread;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -67,7 +85,7 @@ public class UserBase
             this.cachedOfflinePlayer = game.getServer().getPlayer(uuid).orNull();
             if (cachedOfflinePlayer == null)
             {
-                this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
+                this.cachedOfflinePlayer = getOfflinePlayer(uuid);
                 core.getProvided(Log.class).debug("Caching Offline Player");
             }
             else
@@ -76,6 +94,11 @@ public class UserBase
             }
         }
         return cachedOfflinePlayer;
+    }
+
+    public static org.spongepowered.api.entity.player.User getOfflinePlayer(UUID uuid)
+    {
+        return null; // TODO
     }
 
     public String getDisplayName()
@@ -121,14 +144,15 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().chat(string);
+            // TODO player.get().chat(string);
         }
     }
 
     public boolean performCommand(String string)
     {
         final Optional<Player> player = this.getPlayer();
-        return player.isPresent() && player.get().run(string);
+        return false;
+        // TODO return player.isPresent() && player.get().run(string);
     }
 
     public boolean isSneaking()
@@ -142,7 +166,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().setPlayerTime(l, bln);
+            // TODO player.get().setPlayerTime(l, bln);
         }
     }
 
@@ -151,7 +175,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().resetPlayerTime();
+            // TODO player.get().resetPlayerTime();
         }
     }
 
@@ -206,7 +230,8 @@ public class UserBase
     public boolean getAllowFlight()
     {
         final Optional<Player> player = this.getPlayer();
-        return player.isPresent() && player.get().getAllowFlight();
+        return false;
+        // TODO return player.isPresent() && player.get().getAllowFlight();
     }
 
     public void setAllowFlight(boolean bln)
@@ -214,7 +239,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().setAllowFlight(bln);
+            // TODO player.get().setAllowFlight(bln);
         }
     }
 
@@ -229,7 +254,7 @@ public class UserBase
             }
             if (playerToHide != null)
             {
-                player.get().hidePlayer(playerToHide);
+                // TODO player.get().hidePlayer(playerToHide);
             }
         }
     }
@@ -245,7 +270,7 @@ public class UserBase
             }
             if (playerToShow != null)
             {
-                player.get().showPlayer(playerToShow);
+                // TODO player.get().showPlayer(playerToShow);
             }
         }
     }
@@ -253,7 +278,8 @@ public class UserBase
     public boolean canSee(Player playerToCheck)
     {
         final Optional<Player> player = this.getPlayer();
-        return player.isPresent() && player.get().canSee(playerToCheck);
+        // TODO return player.isPresent() && player.get().canSee(playerToCheck);
+        return true;
     }
 
     public boolean isOnGround()
@@ -347,7 +373,7 @@ public class UserBase
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            return player.get().getEyeLocation();
+            // TODO return player.get().getEyeLocation();
         }
         return null;
     }
@@ -453,7 +479,7 @@ public class UserBase
 
     public boolean teleport(Location lctn)
     {
-        expect(CubeEngine.isMainThread(), "Must be called from the main thread!");
+        expect(isMainThread(), "Must be called from the main thread!");
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
@@ -545,12 +571,13 @@ public class UserBase
 
     public boolean isOp()
     {
-        return this.getOfflinePlayer().isOp();
+        return false;
+        // TODO return this.getOfflinePlayer().isOp();
     }
 
     public void setOp(boolean bln)
     {
-        this.getOfflinePlayer().setOp(bln);
+        // TODO this.getOfflinePlayer().setOp(bln);
     }
 
     public void sendMessage(String string)
@@ -591,7 +618,7 @@ public class UserBase
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            player.get().setFlySpeed(value);
+            // TODO player.get().setFlySpeed(value);
         }
     }
 
@@ -600,7 +627,7 @@ public class UserBase
         final Optional<Player> player = this.getOfflinePlayer().getPlayer();
         if (player.isPresent())
         {
-            player.get().setWalkSpeed(value);
+            // TODO player.get().setWalkSpeed(value);
         }
     }
 
@@ -628,7 +655,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            return player.get().getEnderChest();
+            // TODO return player.get().getEnderChest();
         }
         // TODO
         return null;
@@ -640,7 +667,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().setPlayerWeather(wt);
+            // TODO player.get().setPlayerWeather(wt);
         }
     }
 
@@ -649,7 +676,7 @@ public class UserBase
         final Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            player.get().resetPlayerWeather();
+            // TODO player.get().resetPlayerWeather();
         }
     }
 

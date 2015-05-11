@@ -95,7 +95,7 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
                 list.add(lastname);
             }
             getLog().info("Query MojangAPI to get UUIDs");
-            Map<String, UUID> uuids = McUUID.getUUIDForNames(list);
+            Map<String, UUID> uuids = null; // TODO McUUID.getUUIDForNames(list);
 
             getLog().info("Adding UUID columns");
             connection.prepareStatement("ALTER TABLE " + this.getName() +

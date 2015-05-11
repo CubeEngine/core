@@ -137,7 +137,7 @@ public class SpongeWorldManager extends AbstractWorldManager
         {
             return false;
         }
-        FileUtil.deleteRecursive(world.getWorldFolder().toPath()); // TODO delay this until world is no longer loaded
+        // TODO FileUtil.deleteRecursive(world.getWorldFolder().toPath()); // TODO delay this until world is no longer loaded
         return true;
     }
 

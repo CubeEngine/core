@@ -40,6 +40,7 @@ public class OfflinePlayerReader implements ArgumentReader<User>
         {
             throw new ReaderException("Players do not start with -");
         }
-        return this.core.getGame().getOfflinePlayer(invocation.consume(1));
+        return null;
+        // TODO return this.core.getGame().getOfflinePlayer(invocation.consume(1));
     }
 }
