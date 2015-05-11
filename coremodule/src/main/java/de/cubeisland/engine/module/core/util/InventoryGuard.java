@@ -21,8 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.sponge.EventManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserManager;
@@ -50,7 +51,7 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(Core core, Inventory inventory, User[] users)
+    public InventoryGuard(SpongeCore core, Inventory inventory, User[] users)
     {
         this.inventory = inventory;
         this.users = new HashSet<>(Arrays.asList(users));
@@ -64,7 +65,7 @@ public class InventoryGuard
     public void submitInventory(Module module, boolean openInventory)
     {
         this.module = module;
-        this.module.getModulatiry().start(EventManager.class).registerListener(this.module, this);
+        this.module.getModularity().start(EventManager.class).registerListener(this.module, this);
         if (openInventory)
         {
             for (User user : users)
@@ -121,13 +122,13 @@ public class InventoryGuard
     {
         if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
         {
-            User user = this.module.getModulatiry().start(UserManager.class).getExactUser(event.getViewer().getUniqueId());
+            User user = this.module.getModularity().start(UserManager.class).getExactUser(event.getViewer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
                 if (this.users.isEmpty())
                 {
-                    this.module.getModulatiry().start(EventManager.class).removeListener(this.module, this); // no user left to check
+                    this.module.getModularity().start(EventManager.class).removeListener(this.module, this); // no user left to check
                 }
                 this.onClose.forEach(Runnable::run);
             }
@@ -364,7 +365,7 @@ public class InventoryGuard
     {
         for (Runnable runner : this.onChange)
         {
-            this.module.getModulatiry().start(TaskManager.class).runTask(this.module, runner);
+            this.module.getModularity().start(TaskManager.class).runTask(this.module, runner);
         }
     }
 

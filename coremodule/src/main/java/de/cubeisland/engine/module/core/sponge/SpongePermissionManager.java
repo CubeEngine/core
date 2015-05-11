@@ -21,8 +21,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
+import javax.inject.Inject;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.permission.NotifyPermissionRegistrationCompletedEvent;
 import de.cubeisland.engine.module.core.permission.Permission;
@@ -33,6 +38,8 @@ import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
+@ServiceImpl(value = PermissionManager.class)
+@Version(1)
 public class SpongePermissionManager implements PermissionManager
 {
     private final Map<String, Permission> permissions = new HashMap<>();
@@ -40,13 +47,14 @@ public class SpongePermissionManager implements PermissionManager
     private final Log logger;
 
     @SuppressWarnings("unchecked")
-    public SpongePermissionManager(SpongeCore core)
+    @Inject
+    public SpongePermissionManager(SpongeCore core, LogFactory factory, ThreadFactory threadFactory)
     {
-        this.logger = core.getLogFactory().getLog(Core.class, "Permissions");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Permissions"),
+        this.logger = factory.getLog(SpongeCore.class, "Permissions");
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),
-                                                  core.getThreadFactory()));
+                                                  threadFactory));
         this.registerPermission(core, Permission.BASE);
     }
 
@@ -83,7 +91,7 @@ public class SpongePermissionManager implements PermissionManager
     @Override
     public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
     {
-        module.getModulatiry().start(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(
+        module.getModularity().start(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(
             module, permissions));
     }
 
@@ -121,7 +129,7 @@ public class SpongePermissionManager implements PermissionManager
     }
 
     @Override
-    public void clean()
+    public void clean() // TODO shutdown service
     {
         this.permissions.clear();
         this.modulePermissionMap.clear();

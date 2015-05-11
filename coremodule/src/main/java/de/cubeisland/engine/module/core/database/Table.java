@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.database.mysql.Keys;
 import de.cubeisland.engine.module.core.util.Version;
@@ -45,13 +46,15 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     public static final DataType<Boolean> BOOLEAN = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
     public static final DataType<String> LONGTEXT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.CLOB, "longtext", "longtext");
 
-    public Table(String name, Version version)
+    public Table(String name, Version version, Database db)
     {
         super(name);
         this.version = version;
+        this.db = db;
     }
 
     private final Version version;
+    private Database db;
     private UniqueKey<R> primaryKey;
     private final List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private final List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
@@ -170,7 +173,8 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         sb.append(")\n");
         sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO configurable?
         sb.append("COMMENT='").append(this.version.toString()).append("'");
-        CubeEngine.getCore().getLogFactory().getDatabaseLog().info(sb.toString());
+
+        db.getLog().info(sb.toString());
         connection.prepareStatement(sb.toString()).execute();
     }
     private static final char QUOTE = '`';
@@ -208,5 +212,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     public void addIndex(TableField<R,?>... fields)
     {
         this.indices.add(fields);
+    }
+
+    protected Log getLog()
+    {
+        return db.getLog();
     }
 }

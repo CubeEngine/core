@@ -19,20 +19,21 @@ package de.cubeisland.engine.module.core.command.sender;
 
 import java.util.Locale;
 import java.util.UUID;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
-import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
 public class WrappedCommandSender<W extends CommandSource> implements CommandSender
 {
-    private final Core core;
+    private final SpongeCore core;
     private final W wrapped;
 
-    public WrappedCommandSender(Core core, W sender)
+    public WrappedCommandSender(SpongeCore core, W sender)
     {
         this.core = core;
         this.wrapped = sender;
@@ -49,7 +50,7 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     }
 
     @Override
-    public Core getCore()
+    public SpongeCore getCore()
     {
         return this.core;
     }
@@ -75,7 +76,7 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     @Override
     public String getTranslation(MessageType type, String message, Object... params)
     {
-        return this.getCore().getI18n().translate(this.getLocale(), type, message, params);
+        return getCore().getModularity().start(I18n.class).translate(this.getLocale(), type, message, params);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     @Override
     public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
+        return getCore().getModularity().start(I18n.class).translateN(this.getLocale(), type, n, singular, plural, params);
     }
 
 

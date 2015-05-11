@@ -26,9 +26,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRA
 
 public class ConfirmCommand
 {
-    private final ConfirmManager confirmManager;
+    private final SpongeConfirmManager confirmManager;
 
-    public ConfirmCommand(ConfirmManager confirmManager)
+    public ConfirmCommand(SpongeConfirmManager confirmManager)
     {
         this.confirmManager = confirmManager;
     }

@@ -32,6 +32,7 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.core.command.CommandSender;
@@ -80,7 +81,7 @@ public class ModuleCommands extends ContainerCommand
                     return module;
                 }
             }
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "The given module could not be found!"));        }
+            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "The given module could not be found!"));        }
     }
 
     @Alias(value = "modules")
@@ -164,7 +165,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The given file name is invalid!");
             return;
         }
-        Path modulesPath = core.getFileManager().getModulesPath();
+        Path modulesPath = core.getModularity().start(FileManager.class).getModulesPath();
         Path modulePath = modulesPath.resolve(filename + ".jar");
         if (!Files.exists(modulePath))
         {

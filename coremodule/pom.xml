@@ -111,6 +111,11 @@
             <artifactId>modularity-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>de.cubeisland.engine</groupId>
+            <artifactId>modularity-asm</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!-- Other Libraries -->
         <dependency>
             <groupId>mysql</groupId>
@@ -156,6 +161,13 @@
             <artifactId>HikariCP-java6</artifactId>
             <version>2.3.5</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->

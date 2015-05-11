@@ -25,9 +25,9 @@ import org.jooq.TableField;
 
 public abstract class AutoIncrementTable<R extends Record, K extends Number> extends Table<R>
 {
-    protected AutoIncrementTable(String name, Version version)
+    protected AutoIncrementTable(String name, Version version, Database database)
     {
-        super(name, version);
+        super(name, version, database);
     }
 
     private Identity<R, K> identity;

@@ -26,15 +26,22 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
+import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.AbstractUserManager;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserAttachment;
 import de.cubeisland.engine.module.core.user.UserEntity;
 import de.cubeisland.engine.module.core.user.UserLoadedEvent;
+import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.user.TableUser;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
@@ -48,19 +55,22 @@ import org.spongepowered.api.event.message.CommandEvent;
 import static java.util.stream.Collectors.toList;
 
 
+@ServiceImpl(UserManager.class)
+@Version(1)
 public class SpongeUserManager extends AbstractUserManager
 {
     private final SpongeCore core;
     protected ScheduledExecutorService nativeScheduler;
     protected Map<UUID, UUID> scheduledForRemoval;
 
+    @Inject
     public SpongeUserManager(final SpongeCore core)
     {
         super(core);
         this.core = core;
 
         final long delay = (long)core.getConfiguration().usermanager.cleanup;
-        this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getThreadFactory());
+        this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new HashMap<>();
 
@@ -101,7 +111,7 @@ public class SpongeUserManager extends AbstractUserManager
 
         for (UUID id : this.scheduledForRemoval.values())
         {
-            core.getTaskManager().cancelTask(core, id);
+            core.getModularity().start(TaskManager.class).cancelTask(core, id);
         }
 
         this.scheduledForRemoval.clear();
@@ -140,7 +150,7 @@ public class SpongeUserManager extends AbstractUserManager
             org.spongepowered.api.entity.player.User offlinePlayer = Bukkit.getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
-                User user = new User(userEntity);
+                User user = new User(core, userEntity);
                 this.cacheUser(user);
                 return user;
             }
@@ -175,15 +185,16 @@ public class SpongeUserManager extends AbstractUserManager
         }
         if (login)
         {
+            final EventManager em = core.getModularity().start(EventManager.class);
+            final TaskManager tm = core.getModularity().start(TaskManager.class);
             UserLoadedEvent event = new UserLoadedEvent(core, user);
             if (future != null)
             {
-                future.thenAccept(cnt -> core.getTaskManager().runTask(core,
-                                                                       () -> core.getEventManager().fireEvent(event)));
+                future.thenAccept(cnt -> tm.runTask(core, () -> em.fireEvent(event)));
             }
             else
             {
-                core.getEventManager().fireEvent(event);
+                em.fireEvent(event);
             }
         }
         return user;
@@ -206,7 +217,7 @@ public class SpongeUserManager extends AbstractUserManager
         public void onQuit(final PlayerQuitEvent event)
         {
             final User user = getExactUser(event.getPlayer().getUniqueId());
-            core.getTaskManager().runTask(core, () -> {
+            core.getModularity().start(TaskManager.class).runTask(core, () -> {
                 synchronized (SpongeUserManager.this)
                 {
                     if (!user.isOnline())
@@ -216,17 +227,18 @@ public class SpongeUserManager extends AbstractUserManager
                 }
             });
 
-             Optional<UUID> uid = core.getTaskManager().runTaskDelayed(core, () -> {
-                scheduledForRemoval.remove(user.getUniqueId());
-                user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
-                Profiler.startProfiling("removalTask");
-                user.getEntity().updateAsync();
-                core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling("removalTask", TimeUnit.MILLISECONDS));
-                if (user.isOnline())
-                {
-                    removeCachedUser(user);
-                }
-            }, core.getConfiguration().usermanager.keepInMemory);
+             Optional<UUID> uid = core.getModularity().start(TaskManager.class).runTaskDelayed(core, () -> {
+                 scheduledForRemoval.remove(user.getUniqueId());
+                 user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+                 Profiler.startProfiling("removalTask");
+                 user.getEntity().updateAsync();
+                 core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling(
+                     "removalTask", TimeUnit.MILLISECONDS));
+                 if (user.isOnline())
+                 {
+                     removeCachedUser(user);
+                 }
+             }, core.getConfiguration().usermanager.keepInMemory);
 
             if (!uid.isPresent())
             {
@@ -251,7 +263,7 @@ public class SpongeUserManager extends AbstractUserManager
                 final UUID removalTask = scheduledForRemoval.get(user.getUniqueId());
                 if (removalTask != null)
                 {
-                    core.getTaskManager().cancelTask(core, removalTask);
+                    core.getModularity().start(TaskManager.class).cancelTask(core, removalTask);
                 }
             }
         }

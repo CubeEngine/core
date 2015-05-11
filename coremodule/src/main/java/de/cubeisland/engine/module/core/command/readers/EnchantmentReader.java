@@ -24,9 +24,11 @@ import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.Match;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
@@ -40,16 +42,19 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITI
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
     private GameRegistry registry;
-    public EnchantmentReader(Game game)
+    private SpongeCore core;
+
+    public EnchantmentReader(SpongeCore core)
     {
-        registry = game.getRegistry();
+        this.core = core;
+        registry = core.getGame().getRegistry();
     }
 
-    public static String getPossibleEnchantments(GameRegistry registry, ItemStack item)
+    public String getPossibleEnchantments(GameRegistry registry, ItemStack item)
     {
         String collect = registry.getAllOf(Enchantment.class).stream()
                                  .filter(e -> item == null || e.canBeAppliedToStack(item))
-                                 .map(Match.enchant()::nameFor)
+                                 .map(Enchantment::getName)
                                  .collect(Collectors.joining(ChatFormat.WHITE + ", " + ChatFormat.YELLOW));
         if (collect.isEmpty())
         {
@@ -62,7 +67,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     public Enchantment read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
-        Enchantment enchantment = Match.enchant().enchantment(token);
+        Enchantment enchantment = core.getModularity().start(EnchantMatcher.class).enchantment(token);
         if (enchantment == null)
         {
             User sender = (User)invocation.getCommandSource();

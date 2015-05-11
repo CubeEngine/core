@@ -55,9 +55,9 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
     public final TableField<UserEntity, Long> LEAST = createField("UUIDleast", BIGINT.nullable(false), this);
     public final TableField<UserEntity, Long> MOST = createField("UUIDmost", BIGINT.nullable(false), this);
 
-    public TableUser(String prefix)
+    public TableUser(String prefix, Database database)
     {
-        super(prefix + "user", new Version(2));
+        super(prefix + "user", new Version(2), database);
         this.setAIKey(this.KEY);
         this.addUniqueKey(LEAST, MOST);
         this.addFields(KEY, LASTNAME, NOGC, LASTSEEN, PASSWD, FIRSTSEEN, LANGUAGE, LEAST, MOST);
@@ -69,7 +69,7 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
         if (TABLE_USER == null)
         {
             MySQLDatabaseConfiguration config = (MySQLDatabaseConfiguration)database.getDatabaseConfig();
-            TABLE_USER = new TableUser(config.tablePrefix);
+            TABLE_USER = new TableUser(config.tablePrefix, database);
         }
         return TABLE_USER;
     }
@@ -85,9 +85,9 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
     {
         if (dbVersion.getMajor() == 1)
         {
-            CubeEngine.getLog().info("Updating {} to Version 2", this.getName());
+            getLog().info("Updating {} to Version 2", this.getName());
 
-            CubeEngine.getLog().info("Get all names with missing UUID values");
+            getLog().info("Get all names with missing UUID values");
             ResultSet resultSet = connection.prepareStatement("SELECT `player` FROM " + this.getName()).executeQuery();
             List<String> list = new ArrayList<>();
             while (resultSet.next())
@@ -95,10 +95,10 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
                 String lastname = resultSet.getString("player");
                 list.add(lastname);
             }
-            CubeEngine.getLog().info("Query MojangAPI to get UUIDs");
+            getLog().info("Query MojangAPI to get UUIDs");
             Map<String, UUID> uuids = McUUID.getUUIDForNames(list);
 
-            CubeEngine.getLog().info("Adding UUID columns");
+            getLog().info("Adding UUID columns");
             connection.prepareStatement("ALTER TABLE " + this.getName() +
                                             "\nADD COLUMN `UUIDleast` BIGINT NOT NULL," +
                                             "\nADD COLUMN `UUIDmost` BIGINT NOT NULL").execute();
@@ -106,7 +106,7 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
             PreparedStatement stmt = connection.prepareStatement("UPDATE " + this.getName() +
                                                                      " SET `UUIDleast`=? , `UUIDmost`=?" +
                                                                      " WHERE `player` = ?");
-            CubeEngine.getLog().info("Update UUIDs in database");
+            getLog().info("Update UUIDs in database");
             for (Entry<String, UUID> entry : uuids.entrySet())
             {
                 if (entry.getValue() == null)
@@ -124,11 +124,11 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
             }
             stmt.executeBatch();
 
-            CubeEngine.getLog().info("Create unique index on uuids and rename to lastname");
+            getLog().info("Create unique index on uuids and rename to lastname");
             connection.prepareStatement("CREATE UNIQUE INDEX `uuid` ON " + this.getName() +
                                             " (`UUIDleast`,`UUIDmost`)").execute();
 
-            CubeEngine.getLog().info("Drop unique index on player and rename to lastname");
+            getLog().info("Drop unique index on player and rename to lastname");
             connection.prepareStatement("DROP INDEX `player` ON " + this.getName()).execute();
             connection.prepareStatement("ALTER TABLE " + this.getName() +
                                             " CHANGE `player` `lastname` VARCHAR(16) " +

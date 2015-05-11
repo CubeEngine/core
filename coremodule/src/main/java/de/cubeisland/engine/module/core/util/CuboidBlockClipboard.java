@@ -44,11 +44,6 @@ import org.spongepowered.api.world.World;
  */
 public class CuboidBlockClipboard
 {
-    static
-    {
-        new CuboidBlockClipboardConverter(CubeEngine.getCore().getReflector());
-    }
-
     private final BlockData[][][] data;
     private final BlockVector3 size;
     private BlockVector3 relative;
@@ -131,7 +126,7 @@ public class CuboidBlockClipboard
 
     public static class CuboidBlockClipboardConverter extends SingleClassConverter<CuboidBlockClipboard>
     {
-        public CuboidBlockClipboardConverter(Reflector factory)
+        public CuboidBlockClipboardConverter(Reflector factory) // TODO instance
         {
             ConverterManager cManager = factory.getDefaultConverterManager();
             cManager.registerConverter(this, CuboidBlockClipboard.class);

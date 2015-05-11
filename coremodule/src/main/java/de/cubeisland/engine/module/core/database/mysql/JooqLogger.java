@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core.database.mysql;
 
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.database.Database;
 import org.jooq.ExecuteContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
@@ -25,10 +25,17 @@ import org.jooq.impl.DefaultExecuteListener;
 
 public class JooqLogger extends DefaultExecuteListener implements ExecuteListenerProvider
 {
+    private Database database;
+
+    public JooqLogger(Database database)
+    {
+        this.database = database;
+    }
+
     @Override
     public void renderEnd(ExecuteContext ctx)
     {
-        CubeEngine.getCore().getLogFactory().getDatabaseLog().info(ctx.query().getSQL());
+        database.getLog().info(ctx.query().getSQL());
     }
 
     @Override

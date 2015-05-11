@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.EntityTypes;
@@ -36,9 +37,11 @@ public class EntityMatcher
 {
     private final Map<String, EntityType> nameMap = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
+    private SpongeCore core;
 
-    EntityMatcher(Game game)
+    EntityMatcher(SpongeCore core, Game game)
     {
+        this.core = core;
         for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
         {
             nameMap.put(type.getName(), type);
@@ -69,7 +72,7 @@ public class EntityMatcher
             }
             catch (NumberFormatException ignored)
             {}
-            String t_key = Match.string().matchString(name, entities.keySet());
+            String t_key = core.getModularity().start(StringMatcher.class).matchString(name, entities.keySet());
             if (t_key != null)
             {
                 return entities.get(t_key);

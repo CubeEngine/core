@@ -25,7 +25,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
@@ -34,6 +37,8 @@ import org.spongepowered.api.service.scheduler.Task;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
+@ServiceImpl(TaskManager.class)
+@Version(1)
 public class SpongeTaskManager implements TaskManager
 {
     private final SpongeCore corePlugin;
@@ -41,6 +46,7 @@ public class SpongeTaskManager implements TaskManager
     private SynchronousScheduler syncScheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
 
+    @Inject
     public SpongeTaskManager(SpongeCore core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
     {
         this.corePlugin = core;

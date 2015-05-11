@@ -25,7 +25,8 @@ import de.cubeisland.engine.converter.converter.SingleClassConverter;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.world.WorldManager;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.world.Location;
@@ -35,9 +36,9 @@ public class LocationConverter extends SingleClassConverter<Location>
 {
     private final WorldManager wm;
 
-    public LocationConverter(Core core)
+    public LocationConverter(WorldManager wm)
     {
-        wm = core.getWorldManager();
+        this.wm = wm;
     }
 
     @Override

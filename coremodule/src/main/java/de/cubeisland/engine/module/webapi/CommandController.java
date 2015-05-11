@@ -20,7 +20,10 @@ package de.cubeisland.engine.module.webapi;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.command.CommandManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.webapi.sender.ApiCommandSender;
 import de.cubeisland.engine.module.webapi.sender.ApiServerSender;
@@ -29,9 +32,9 @@ import de.cubeisland.engine.module.webapi.sender.ApiUser;
 public class CommandController
 {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final Core core;
+    private final SpongeCore core;
 
-    public CommandController(Core core)
+    public CommandController(SpongeCore core)
     {
         this.core = core;
     }
@@ -42,8 +45,9 @@ public class CommandController
         User authUser = request.getAuthUser();
         final ApiCommandSender sender = authUser == null ? new ApiServerSender(core, mapper) : new ApiUser(core, authUser, mapper);
 
-        Future<ApiResponse> future = core.getTaskManager().callSync(() -> {
-            core.getCommandManager().runCommand(sender, command);
+
+        Future<ApiResponse> future =  core.getModularity().start(TaskManager.class).callSync(() -> {
+            core.getModularity().start(CommandManager.class).runCommand(sender, command);
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setContent(sender.flush());
             return apiResponse;

@@ -18,27 +18,29 @@ import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
 import de.cubeisland.engine.module.core.CubeEngine;
-import de.cubeisland.engine.module.core.command.completer.ModuleCompleter;
-import de.cubeisland.engine.module.paginate.PaginationCommands;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.logging.LogFactory;
-import de.cubeisland.engine.module.core.module.ModuleCommands;
-import de.cubeisland.engine.module.core.permission.Permission;
-import de.cubeisland.engine.module.core.sponge.command.PreCommandListener;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.mysql.MySQLDatabase;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
+import de.cubeisland.engine.module.core.module.ModuleCommands;
+import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.user.TableUser;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.util.FreezeDetection;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
+import de.cubeisland.engine.module.core.util.McUUID;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.core.util.WorldLocation;
@@ -47,7 +49,6 @@ import de.cubeisland.engine.module.core.util.converter.DurationConverter;
 import de.cubeisland.engine.module.core.util.converter.EnchantmentConverter;
 import de.cubeisland.engine.module.core.util.converter.ItemStackConverter;
 import de.cubeisland.engine.module.core.util.converter.LevelConverter;
-import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.module.core.util.converter.MaterialConverter;
 import de.cubeisland.engine.module.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.module.core.util.converter.UserConverter;
@@ -56,6 +57,7 @@ import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.Match;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
+import de.cubeisland.engine.module.core.world.TableWorld;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
 import de.cubeisland.engine.module.webapi.ApiConfig;
@@ -64,9 +66,6 @@ import de.cubeisland.engine.module.webapi.CommandController;
 import de.cubeisland.engine.module.webapi.ConsoleLogEvent;
 import de.cubeisland.engine.module.webapi.InetAddressConverter;
 import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
-import de.cubeisland.engine.module.core.world.ConfigWorld;
-import de.cubeisland.engine.module.core.world.ConfigWorldConverter;
-import de.cubeisland.engine.module.core.world.TableWorld;
 import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -75,7 +74,8 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.world.Location;
+import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
+import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
@@ -84,26 +84,13 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
  * This represents the Bukkit-JavaPlugin that gets loaded and implements the Core
  */
 
-public final class SpongeCore extends Module implements Core
+public final class SpongeCore extends Module
 {
     //region Core fields
-    private Database database;
-    private SpongePermissionManager permissionManager;
-    private SpongeUserManager userManager;
-    private FileManager fileManager;
-    private I18n i18n;
     private BukkitCoreConfiguration config;
-    private EventManager eventManager;
-    private SpongeCommandManager commandManager;
-    private SpongeTaskManager taskManager;
-    private ApiServer apiServer;
-    private BukkitWorldManager worldManager;
     private Match matcherManager;
     private InventoryGuardFactory inventoryGuard;
     private CorePerms corePerms;
-    private SpongeBanManager banManager;
-    private LogFactory logFactory;
-    private Reflector reflector;
     //endregion
 
     private List<Runnable> initHooks = Collections.synchronizedList(new LinkedList<>());
@@ -113,8 +100,6 @@ public final class SpongeCore extends Module implements Core
     @Inject private Path dataFolder;
     @Inject private org.slf4j.Logger pluginLogger;
     private Log logger;
-
-    private ThreadFactory threadFactory;
 
       /* TODO configprovider
         T config = this.core.getReflector().create(clazz);
@@ -128,48 +113,53 @@ public final class SpongeCore extends Module implements Core
     @Override
     public void onEnable()
     {
-        CubeEngine.initialize(this);
+        ServiceManager serviceManager = getModularity().getServiceManager();
+
+        serviceManager.registerService(McUUID.class, new McUUID(this));
 
         ThreadFactoryProvider threadFactoryProvider = new ThreadFactoryProvider();
-        threadFactory = threadFactoryProvider.get(getInformation(), getModulatiry());
+        ThreadFactory threadFactory = threadFactoryProvider.get(getInformation(), getModularity());
 
         // FileManager
-        try
-        {
-            this.fileManager = new FileManager(pluginLogger, dataFolder);
-        }
-        catch (IOException e)
-        {
-            logger.error("Failed to initialize the FileManager", e);
-            return;
-        }
-        this.fileManager.dropResources(CoreResource.values());
-        this.fileManager.clearTempDir();
+        FileManager fileManager = new FileManager(pluginLogger, dataFolder);
+
+        serviceManager.registerService(FileManager.class, fileManager);
+
+        fileManager.dropResources(CoreResource.values());
+        fileManager.clearTempDir();
 
         // Reflector
-        this.reflector = new Reflector();
-        registerConverters();
+        Reflector reflector = new Reflector();
+
+        serviceManager.registerService(Reflector.class, new Reflector());
+        registerConverters(reflector);
 
         // Core Configuration - depends on Reflector
         this.config = reflector.load(BukkitCoreConfiguration.class, dataFolder.resolve("core.yml").toFile());
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
-        this.logFactory = new LogFactory(this, (Logger)LogManager.getLogger(SpongeCore.class.getName()), threadFactory);
-        logger = logFactory.getCoreLog();
-        getModulatiry().registerProvider(Log.class, new LogProvider(logFactory));
-        getModulatiry().registerProvider(ThreadFactory.class, threadFactoryProvider);
-        getModulatiry().registerProvider(Permission.class, new BasePermissionProvider(Permission.BASE));
-        // TODO register PermissionManager as Service
-        // TODO register CommandManager as Service
+        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(SpongeCore.class.getName()), threadFactory);
+        serviceManager.registerService(LogFactory.class, logFactory);
+
+        logger = logFactory.getLog(SpongeCore.class, "Core");
+        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fileManager, "Core"),
+                                                     LoggingUtil.getFileFormat(true, true),
+                                                     true, LoggingUtil.getCycler(),
+                                                     threadFactory);
+        target.setLevel(getConfiguration().logging.fileLevel);
+        logger.addTarget(target);
+        logger.addDelegate(logFactory.getParent());
+
+        getModularity().registerProvider(Log.class, new LogProvider(logFactory));
+        getModularity().registerProvider(ThreadFactory.class, threadFactoryProvider);
+        getModularity().registerProvider(Permission.class, new BasePermissionProvider(Permission.BASE));
+        serviceManager.registerService(AsynchronousScheduler.class, game.getAsyncScheduler());
+        serviceManager.registerService(SynchronousScheduler.class, game.getSyncScheduler());
 
         // I18n - depends on FileManager / CoreConfig
-        this.i18n = new I18n(this);
+        I18n i18n = new I18n(this, fileManager.getTranslationPath());
+        serviceManager.registerService(I18n.class, i18n);
 
-        // TaskManager
-        this.taskManager = new SpongeTaskManager(this, game.getAsyncScheduler(), game.getSyncScheduler());
-
-        // EventManager
-        this.eventManager = new EventManager(this);
 
         // SIG INT Handler - depends on TaskManager / CoreConfig / Logger
         if (this.config.catchSystemSignals)
@@ -177,21 +167,19 @@ public final class SpongeCore extends Module implements Core
             BukkitUtils.setSignalHandlers(this);
         }
 
-        // PermissionManager - depends on LogFactory / ThreadFactory
-        this.permissionManager = new SpongePermissionManager(this);
-
         // CorePermissions - depends on PermissionManager
         this.corePerms = new CorePerms(this);
 
         // ApiServer - depends on Reflector
-        this.apiServer = new ApiServer(this);
-        this.apiServer.configure(reflector.load(ApiConfig.class, dataFolder.resolve("webapi.yml").toFile()));
+        ApiServer apiServer = new ApiServer(this);
+        apiServer.configure(reflector.load(ApiConfig.class, dataFolder.resolve("webapi.yml").toFile()));
 
         if (this.config.useWebapi)
         {
             try
             {
-                this.apiServer.start();
+                apiServer.start();
+                serviceManager.registerService(ApiServer.class, apiServer);
                 ConsoleLogEvent e = new ConsoleLogEvent(apiServer);
                 e.start();
                 ((Logger)LogManager.getLogger()).addAppender(e);
@@ -209,45 +197,29 @@ public final class SpongeCore extends Module implements Core
 
         // DataBase - depends on CoreConfig / ThreadFactory
         getLog().info("Connecting to the database...");
-        this.database = MySQLDatabase.loadFromConfig(this, dataFolder.resolve("database.yml"));
-        if (this.database == null)
+        Database database = MySQLDatabase.loadFromConfig(this, dataFolder.resolve("database.yml"));
+        if (database == null)
         {
             getLog().error("Failed to connect to the database, aborting...");
             return;
         }
-        this.database.registerTable(TableUser.class);
-        this.database.registerTable(TableWorld.class);
+        database.registerTable(TableUser.class);
+        database.registerTable(TableWorld.class);
 
-        // UserManager - depends on Database / CoreConfig / EventManager
-        this.userManager = new SpongeUserManager(this); // TODO register as service
-
-        // CommandManager - depends on LogFactory
-        this.commandManager = new SpongeCommandManager(this);
-        commandManager.registerReaders(this); // depends on a lot
-        commandManager.getProviderManager().register(this, new ModuleCompleter(getModulatiry()), Module.class);
-        this.addInitHook(() -> game.getEventManager().register(SpongeCore.this, new PreCommandListener(
-            SpongeCore.this)));
+        serviceManager.registerService(Database.class, database);
 
 
-        this.matcherManager = new Match(game);
+        this.matcherManager = new Match(this, game);
         this.inventoryGuard = new InventoryGuardFactory(this);
 
-
         // WorldManager - depends on Database
-        this.worldManager = new BukkitWorldManager(SpongeCore.this);
-        reflector.getDefaultConverterManager().registerConverter(new ConfigWorldConverter(worldManager), ConfigWorld.class);
-
-        // BanManager
-        this.banManager = new SpongeBanManager(this);
-
-        registerCommands();
 
         if (this.config.preventSpamKick)
         {
             game.getEventManager().register(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
         }
 
-        this.apiServer.registerApiHandlers(this, new CommandController(this));
+        apiServer.registerApiHandlers(this, new CommandController(this));
 
         Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
@@ -268,41 +240,36 @@ public final class SpongeCore extends Module implements Core
         this.freezeDetection.start();
     }
 
-    private void registerCommands()
+    private void registerCommands(CommandManager manager) // TODO module dependent on CommandManager
     {
         // depends on: server, module manager, ban manager
-        this.commandManager.addCommand(new ModuleCommands(this, getModulatiry(), game.getPluginManager()));
-        this.commandManager.addCommand(new CoreCommands(this));
+        manager.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager()));
+        manager.addCommand(new CoreCommands(this));
         if (this.config.improveVanilla)
         {
-            this.commandManager.addCommands(commandManager, this,
-                                            new VanillaCommands(this));
-            this.commandManager.addCommand(new WhitelistCommand(this));
+            manager.addCommands(manager, this, new VanillaCommands(this));
+            manager.addCommand(new WhitelistCommand(this));
         }
-        commandManager.addCommands(commandManager, this, new PaginationCommands(commandManager.getPaginationManager()));
-        eventManager.registerListener(this, commandManager.getPaginationManager());
     }
 
-    private void registerConverters()
+    private void registerConverters(Reflector reflector)
     {
-        ConverterManager manager = this.reflector.getDefaultConverterManager();
+        ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(), Enchantment.class);
-        manager.registerConverter(new UserConverter(), User.class);
+        manager.registerConverter(new ItemStackConverter(this), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(this), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(this), Enchantment.class);
+        manager.registerConverter(new UserConverter(this), User.class);
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
-        manager.registerConverter(new PlayerConverter(game.getServer()), org.spongepowered.api.entity.player.User.class);
-        manager.registerConverter(new LocationConverter(this), Location.class);
+        manager.registerConverter(new PlayerConverter(game.getServer()),
+                                  org.spongepowered.api.entity.player.User.class);
         manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
 
         manager.registerConverter(new InetAddressConverter(), InetAddress.class);
     }
-
-
 
     public void onDisable()
     {
@@ -315,69 +282,7 @@ public final class SpongeCore extends Module implements Core
             this.freezeDetection = null;
         }
 
-        if (this.commandManager != null)
-        {
-            this.logger.debug("command manager cleanup");
-            this.commandManager.clean();
-            this.commandManager = null;
-        }
-
-        if (this.apiServer != null)
-        {
-            this.logger.debug("api server shutdown and cleanup");
-            this.apiServer.stop();
-            this.apiServer.unregisterApiHandlers();
-            this.apiServer = null;
-        }
-
-        if (this.userManager != null)
-        {
-            this.logger.debug("user manager cleanup");
-            this.userManager.shutdown();
-            this.userManager = null;
-        }
-
-        if (this.permissionManager != null)
-        {
-            this.logger.debug("permission manager cleanup");
-            this.permissionManager.clean();
-            this.permissionManager = null;
-        }
-
-        if (this.i18n != null)
-        {
-            // TODO i18n cleanup? this.i18n.clean();
-            this.i18n = null;
-        }
-
-        if (this.database != null)
-        {
-            this.logger.debug("database shutdown");
-            this.database.shutdown();
-            this.database = null;
-        }
-
-        if (this.taskManager != null)
-        {
-            this.logger.debug("task manager cleanup");
-            this.taskManager = null;
-        }
-
-        CubeEngine.clean();
         Profiler.clean();
-
-        if (this.fileManager != null)
-        {
-            this.logger.debug("file manager cleanup");
-            this.fileManager.clean();
-        }
-
-        if (this.logFactory != null)
-        {
-            this.logFactory.shutdown();
-        }
-
-        this.fileManager = null;
     }
 
     public void addInitHook(Runnable runnable)
@@ -440,124 +345,25 @@ public final class SpongeCore extends Module implements Core
     }
 
     //region Core getters
-    @Override
     public String getVersion()
     {
         return this.getInformation().getVersion();
     }
 
-    @Override
     public String getSourceVersion()
     {
         return this.getInformation().getSourceVersion();
     }
 
-    @Override
-    public Database getDB()
-    {
-        return this.database;
-    }
-
-    @Override
-    public SpongePermissionManager getPermissionManager()
-    {
-        return this.permissionManager;
-    }
-
-    @Override
-    public SpongeUserManager getUserManager()
-    {
-        return this.userManager;
-    }
-
-    @Override
-    public FileManager getFileManager()
-    {
-        return this.fileManager;
-    }
-
-    @Override
-    public I18n getI18n()
-    {
-        return this.i18n;
-    }
-
-    @Override
     public Log getLog()
     {
         return this.logger;
     }
 
-    @Override
-    public EventManager getEventManager()
-    {
-        return this.eventManager;
-    }
 
-    @Override
     public BukkitCoreConfiguration getConfiguration()
     {
         return this.config;
-    }
-
-    @Override
-    public SpongeCommandManager getCommandManager()
-    {
-        return this.commandManager;
-    }
-
-    @Override
-    public SpongeTaskManager getTaskManager()
-    {
-        return this.taskManager;
-    }
-
-    @Override
-    public ApiServer getApiServer()
-    {
-        return this.apiServer;
-    }
-
-    @Override
-    public BukkitWorldManager getWorldManager()
-    {
-        return this.worldManager;
-    }
-
-    @Override
-    public Match getMatcherManager()
-    {
-        return this.matcherManager;
-    }
-
-    @Override
-    public InventoryGuardFactory getInventoryGuard()
-    {
-        return this.inventoryGuard;
-    }
-
-    @Override
-    public SpongeBanManager getBanManager()
-    {
-        return this.banManager;
-    }
-
-    @Override
-    public LogFactory getLogFactory()
-    {
-        return logFactory;
-    }
-
-    @Override
-    public Reflector getReflector()
-    {
-        return reflector;
-    }
-
-    @Override
-    public ThreadFactory getThreadFactory()
-    {
-        return threadFactory;
     }
 
     public CorePerms perms()

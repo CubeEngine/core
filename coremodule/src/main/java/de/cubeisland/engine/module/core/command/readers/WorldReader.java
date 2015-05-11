@@ -23,18 +23,20 @@ import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.CubeEngine;
+
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 
 public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public WorldReader(Core core)
+    public WorldReader(SpongeCore core)
     {
         this.core = core;
     }
@@ -43,10 +45,11 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     public World read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
-        Optional<World> world = this.core.getWorldManager().getWorld(name);
+        Optional<World> world = this.core.getModularity().start(WorldManager.class).getWorld(name);
         if (!world.isPresent())
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
+            throw new ReaderException(core.getModularity().start(I18n.class).translate(invocation.getLocale(), NEGATIVE,
+                                                                                 "World {input} not found!", name));
         }
         return world.get();
     }

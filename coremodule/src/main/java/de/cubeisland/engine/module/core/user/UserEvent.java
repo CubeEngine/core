@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.user;
 
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
 
 /**

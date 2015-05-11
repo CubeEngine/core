@@ -23,7 +23,9 @@ import java.nio.charset.Charset;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.command.CommandManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.channel.ChannelFuture;
@@ -50,7 +52,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final Log log;
-    private final Core core;
+    private final SpongeCore core;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
@@ -58,7 +60,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
 
     private ChannelHandlerContext last;
 
-    public WebSocketRequestHandler(Core core, ApiServer server, ObjectMapper mapper, User authUser)
+    public WebSocketRequestHandler(SpongeCore core, ApiServer server, ObjectMapper mapper, User authUser)
     {
         this.core = core;
         this.server = server;
@@ -161,7 +163,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                         break;
                     }
                     Parameters params = new Parameters(qsDecoder.parameters(),
-                                                       core.getCommandManager().getProviderManager());
+                                                       core.getModularity().start(CommandManager.class).getProviderManager());
                     ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
                     ApiResponse response = handler.execute(request);
                     if (msgid != null)

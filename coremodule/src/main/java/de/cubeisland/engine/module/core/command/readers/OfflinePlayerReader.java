@@ -20,15 +20,15 @@ package de.cubeisland.engine.module.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.spongepowered.api.entity.player.User;
 
 public class OfflinePlayerReader implements ArgumentReader<User>
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public OfflinePlayerReader(Core core)
+    public OfflinePlayerReader(SpongeCore core)
     {
         this.core = core;
     }

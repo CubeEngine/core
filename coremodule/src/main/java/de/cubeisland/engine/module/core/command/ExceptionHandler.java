@@ -27,15 +27,16 @@ import de.cubeisland.engine.butler.filter.RestrictedSourceException;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.TooManyArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.command.exception.PermissionDeniedException;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler
 {
-    private Core core;
+    private SpongeCore core;
 
-    public ExceptionHandler(Core core)
+    public ExceptionHandler(SpongeCore core)
     {
         this.core = core;
     }

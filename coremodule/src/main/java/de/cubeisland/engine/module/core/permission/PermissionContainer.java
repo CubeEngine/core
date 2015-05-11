@@ -58,7 +58,7 @@ public abstract class PermissionContainer<T extends Module>
     {
         for (Permission perm : getPermissions())
         {
-            module.getModulatiry().start(PermissionManager.class).registerPermission(module, perm);
+            module.getModularity().start(PermissionManager.class).registerPermission(module, perm);
         }
     }
 

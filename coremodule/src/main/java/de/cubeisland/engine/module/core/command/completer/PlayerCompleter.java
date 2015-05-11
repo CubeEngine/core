@@ -23,7 +23,9 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 
 import static de.cubeisland.engine.module.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -32,6 +34,14 @@ import static de.cubeisland.engine.module.core.util.StringUtils.startsWithIgnore
  */
 public class PlayerCompleter implements Completer
 {
+    private SpongeCore core;
+
+    public PlayerCompleter(SpongeCore core)
+    {
+
+        this.core = core;
+    }
+
     private static boolean canSee(CommandSender sender, User user)
     {
         return !(sender instanceof User) || ((User)sender).canSee(user.getPlayer().orNull());
@@ -42,7 +52,7 @@ public class PlayerCompleter implements Completer
     {
         List<String> playerNames = new ArrayList<>();
         final CommandSender sender = (CommandSender)invocation.getCommandSource(); // TODO prevent class cast exceptions
-        for (User player : CubeEngine.getUserManager().getOnlineUsers())
+        for (User player : core.getModularity().start(UserManager.class).getOnlineUsers())
         {
             String name = player.getName();
             if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))

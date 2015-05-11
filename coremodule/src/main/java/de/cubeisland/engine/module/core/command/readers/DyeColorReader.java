@@ -21,13 +21,22 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
 import org.spongepowered.api.data.types.DyeColor;
 
 public class DyeColorReader implements ArgumentReader<DyeColor>
 {
+    private MaterialDataMatcher matcher;
+
+    public DyeColorReader(MaterialDataMatcher matcher)
+    {
+
+        this.matcher = matcher;
+    }
+
     @Override
     public DyeColor read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return Match.materialData().colorData(invocation.consume(1));
+        return matcher.colorData(invocation.consume(1));
     }
 }

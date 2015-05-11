@@ -20,26 +20,20 @@ package de.cubeisland.engine.module.core.util;
 import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class InventoryGuardFactory
 {
-    public InventoryGuardFactory(Core core)
+    public InventoryGuardFactory(SpongeCore core)
     {
         this.core = core;
     }
 
-    private final Core core;
+    private final SpongeCore core;
     private ThreadLocal<InventoryGuard> currentGuardConfig;
-
-    public static InventoryGuardFactory prepareInventory(Inventory inventory, User... users)
-    {
-        return CubeEngine.getCore().getInventoryGuard().prepareInv(inventory, users);
-    }
 
     private InventoryGuardFactory prepareInv(Inventory inventory, User... users)
     {

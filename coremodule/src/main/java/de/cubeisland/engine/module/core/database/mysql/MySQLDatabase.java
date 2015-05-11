@@ -1,17 +1,17 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p/>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,13 +26,21 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.module.core.database.AbstractDatabase;
+import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.DatabaseConfiguration;
 import de.cubeisland.engine.module.core.database.Table;
 import de.cubeisland.engine.module.core.database.TableCreator;
 import de.cubeisland.engine.module.core.database.TableUpdateCreator;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.Version;
+import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.conf.MappedSchema;
@@ -50,11 +58,20 @@ public class MySQLDatabase extends AbstractDatabase
 
     private final Settings settings;
     private final MappedSchema mappedSchema;
+    private Log logger;
 
-    public MySQLDatabase(Core core, MySQLDatabaseConfiguration config) throws SQLException
+    public MySQLDatabase(SpongeCore core, MySQLDatabaseConfiguration config) throws SQLException
     {
         super(core);
         this.config = config;
+
+        this.logger = core.getModularity().start(LogFactory.class).getLog(Database.class, "Database");
+        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Database"),
+                                                     LoggingUtil.getFileFormat(true, false),
+                                                     true, LoggingUtil.getCycler(), threadFactory);
+        target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
+        logger.addTarget(target);
+
 
         HikariConfig dsConf = new HikariDataSource();
         dsConf.setPoolName("CubeEngine");
@@ -101,9 +118,10 @@ public class MySQLDatabase extends AbstractDatabase
         this.settings.setExecuteLogging(false);
     }
 
-    public static MySQLDatabase loadFromConfig(Core core, Path file)
+    public static MySQLDatabase loadFromConfig(SpongeCore core, Path file)
     {
-        MySQLDatabaseConfiguration config = core.getReflector().load(MySQLDatabaseConfiguration.class, file.toFile());
+        MySQLDatabaseConfiguration config = core.getModularity().start(Reflector.class).load(
+            MySQLDatabaseConfiguration.class, file.toFile());
         try
         {
             return new MySQLDatabase(core, config);
@@ -117,8 +135,8 @@ public class MySQLDatabase extends AbstractDatabase
 
     private boolean updateTableStructure(TableUpdateCreator updater)
     {
-        final String query = "SELECT table_name, table_comment FROM INFORMATION_SCHEMA.TABLES " +
-                             "WHERE table_schema = ? AND table_name = ?";
+        final String query = "SELECT table_name, table_comment FROM INFORMATION_SCHEMA.TABLES "
+            + "WHERE table_schema = ? AND table_name = ?";
         try
         {
             ResultSet resultSet = query(query, this.config.database, updater.getName()).get();
@@ -133,7 +151,8 @@ public class MySQLDatabase extends AbstractDatabase
                 }
                 else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
-                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}", updater.getName(), dbVersion.toString(), version.toString());
+                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}", updater.getName(),
+                                            dbVersion.toString(), version.toString());
                     try (Connection connection = this.getConnection())
                     {
                         updater.update(connection, dbVersion);
@@ -216,7 +235,8 @@ public class MySQLDatabase extends AbstractDatabase
         return this.dataSource.getConnection();
     }
 
-    private final JooqLogger jooqLogger = new JooqLogger();
+    private final JooqLogger jooqLogger = new JooqLogger(this);
+
     @Override
     public DSLContext getDSL()
     {
@@ -247,5 +267,11 @@ public class MySQLDatabase extends AbstractDatabase
     public String getTablePrefix()
     {
         return this.config.tablePrefix;
+    }
+
+    @Override
+    public Log getLog()
+    {
+        return logger;
     }
 }

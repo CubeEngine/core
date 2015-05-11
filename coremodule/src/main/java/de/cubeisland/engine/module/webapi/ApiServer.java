@@ -29,15 +29,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.permission.PermDefault;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
@@ -58,7 +62,7 @@ import static java.util.Locale.ENGLISH;
  */
 public class ApiServer
 {
-    private final Core core;
+    private final SpongeCore core;
     private final Log log;
     private final AtomicInteger maxContentLength = new AtomicInteger(1048576);
     private final AtomicBoolean compress = new AtomicBoolean(false);
@@ -84,15 +88,16 @@ public class ApiServer
     private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
 
 
-    public ApiServer(Core core)
+    public ApiServer(SpongeCore core)
     {
         this.core = core;
-        this.log = core.getLogFactory().getLog(Core.class, "WebAPI");
-        this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "WebAPI"),
+        LogFactory logFactory = core.getModularity().start(LogFactory.class);
+        this.log = logFactory.getLog(ApiServer.class, "WebAPI");
+        this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "WebAPI"),
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
-                                                  core.getThreadFactory()));
-        this.log.addTarget(new LogProxyTarget(core.getLogFactory().getParent()));
+                                                  core.getProvided(ThreadFactory.class)));
+        this.log.addTarget(new LogProxyTarget(logFactory.getParent()));
         try
         {
             this.bindAddress.set(InetAddress.getLocalHost());
@@ -153,7 +158,7 @@ public class ApiServer
 
             try
             {
-                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getThreadFactory()));
+                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getProvided(ThreadFactory.class)));
                 serverBootstrap.group(this.eventLoopGroup.get())
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ApiServerInitializer(this.core, this))
@@ -178,7 +183,7 @@ public class ApiServer
      *
      * @return fluent interface
      */
-    public ApiServer stop()
+    public ApiServer stop() // TODO shutdown service + unregisterApiHandlers
     {
         if (this.isRunning())
         {

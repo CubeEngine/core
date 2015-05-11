@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.world;
 
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.sponge.CubeEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;

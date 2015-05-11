@@ -37,8 +37,8 @@ public class AuthCommands
     public AuthCommands(SpongeCore core)
     {
         this.core = core;
-        this.banManager = core.getBanManager();
-        this.um = core.getUserManager();
+        this.banManager = core.getModularity().start(BanManager.class);
+        this.um = core.getModularity().start(UserManager.class);
     }
 
     @Unloggable

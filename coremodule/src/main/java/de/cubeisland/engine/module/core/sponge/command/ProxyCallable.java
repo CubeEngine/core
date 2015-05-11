@@ -22,13 +22,16 @@ import java.util.List;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.CubeCommandDescriptor;
 import de.cubeisland.engine.module.core.command.sender.BlockCommandSender;
 import de.cubeisland.engine.module.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.SpongeCommandManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.user.UserManager;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -41,11 +44,11 @@ import org.spongepowered.api.util.command.source.ConsoleSource;
 
 public class ProxyCallable implements CommandCallable
 {
-    private final Core core;
+    private final SpongeCore core;
     private final SpongeCommandManager manager;
     private final String alias;
 
-    public ProxyCallable(Core core, SpongeCommandManager manager, String alias)
+    public ProxyCallable(SpongeCore core, SpongeCommandManager manager, String alias)
     {
         this.core = core;
         this.manager = manager;
@@ -142,11 +145,11 @@ public class ProxyCallable implements CommandCallable
         }
         else if (spongeSender instanceof Player)
         {
-            return core.getUserManager().getExactUser(spongeSender.getName());
+            return core.getModularity().start(UserManager.class).getExactUser(spongeSender.getName());
         }
         else if (spongeSender instanceof ConsoleSource)
         {
-            return core.getCommandManager().getConsoleSender();
+            return core.getModularity().start(CommandManager.class).getConsoleSender();
         }
         else if (spongeSender instanceof CommandBlockSource)
         {

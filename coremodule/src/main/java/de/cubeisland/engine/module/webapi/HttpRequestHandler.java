@@ -24,10 +24,13 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.module.service.Permission;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 import de.cubeisland.engine.module.webapi.exception.ApiRequestException;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.buffer.ByteBuf;
@@ -54,11 +57,11 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Log log;
-    private final Core core;
+    private final SpongeCore core;
     private final ApiServer server;
     private ObjectMapper objectMapper;
 
-    HttpRequestHandler(Core core, ApiServer server, ObjectMapper mapper)
+    HttpRequestHandler(SpongeCore core, ApiServer server, ObjectMapper mapper)
     {
         this.core = core;
         this.server = server;
@@ -93,11 +96,11 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         boolean authorized = this.server.isAuthorized(inetSocketAddress.getAddress());
         QueryStringDecoder qsDecoder = new QueryStringDecoder(message.getUri(), this.UTF8, true, 100);
-        final Parameters params = new Parameters(qsDecoder.parameters(), core.getCommandManager().getProviderManager());
+        final Parameters params = new Parameters(qsDecoder.parameters(), core.getModularity().start(CommandManager.class).getProviderManager());
         User authUser = null;
         if (!authorized)
         {
-            if (!core.getModuleManager().getServiceManager().isImplemented(Permission.class))
+            if (!core.getModularity().getServiceManager().isImplemented(Permission.class))
             {
                 this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
                 return;
@@ -109,8 +112,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
-            User exactUser = core.getUserManager().findExactUser(user);
-            if (exactUser == null || !exactUser.isPasswordSet() || !CubeEngine.getUserManager().checkPassword(exactUser, pass))
+            User exactUser = core.getModularity().start(UserManager.class).findExactUser(user);
+            if (exactUser == null || !exactUser.isPasswordSet() || !core.getModularity().start(UserManager.class).checkPassword(exactUser, pass))
             {
                 this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;

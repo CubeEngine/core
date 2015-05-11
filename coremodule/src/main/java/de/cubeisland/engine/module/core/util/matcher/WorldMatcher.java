@@ -19,20 +19,33 @@ package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.StringUtils;
+import de.cubeisland.engine.module.core.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 public class WorldMatcher
 {
+    private SpongeCore core;
+
+    public WorldMatcher(SpongeCore core)
+    {
+
+        this.core = core;
+    }
+
     public World matchWorld(String name)
     {
-        String match = Match.string().matchString(name, CubeEngine.getCore().getWorldManager().getWorldNames());
+        Modularity modularity = core.getModularity();
+        WorldManager wm = modularity.start(WorldManager.class);
+        String match = modularity.start(StringMatcher.class).matchString(name, wm.getWorldNames());
         if (match == null)
         {
             return null;
         }
-        return CubeEngine.getCore().getWorldManager().getWorld(match).get();
+        return wm.getWorld(match).get();
     }
 
     /**

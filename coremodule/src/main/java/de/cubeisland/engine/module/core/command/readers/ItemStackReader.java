@@ -20,22 +20,32 @@ package de.cubeisland.engine.module.core.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 
 public class ItemStackReader implements ArgumentReader<ItemStack>
 {
+    private Modularity modularity;
+
+    public ItemStackReader(Modularity modularity)
+    {
+        this.modularity = modularity;
+    }
+
     @Override
     public ItemStack read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        ItemStack item = Match.material().itemStack(arg);
+        ItemStack item = modularity.start(MaterialMatcher.class).itemStack(arg);
         if (item == null)
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new ReaderException(modularity.start(I18n.class).translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

@@ -21,10 +21,19 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public class ShortReader implements ArgumentReader<Short>
 {
+    private I18n i18n;
+
+    public ShortReader(I18n i18n)
+    {
+
+        this.i18n = i18n;
+    }
+
     @Override
     public Short read(Class type, CommandInvocation invocation) throws ReaderException
     {
@@ -35,7 +44,8 @@ public class ShortReader implements ArgumentReader<Short>
         }
         catch (NumberFormatException e)
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), MessageType.NEGATIVE, "Could not parse {input} to short!", arg));
+            throw new ReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
+                                                     "Could not parse {input} to short!", arg));
         }
     }
 }

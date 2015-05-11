@@ -23,9 +23,11 @@ import java.util.regex.Pattern;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.CubeEngine;
+
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 
@@ -34,9 +36,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
  */
 public class FuzzyUserReader implements ArgumentReader<List<User>>
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public FuzzyUserReader(Core core)
+    public FuzzyUserReader(SpongeCore core)
     {
         this.core = core;
     }
@@ -49,7 +51,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         if ("*".equals(invocation.currentToken()))
         {
             invocation.consume(1);
-            users.addAll(core.getUserManager().getOnlineUsers());
+            users.addAll(core.getModularity().start(UserManager.class).getOnlineUsers());
             return users;
         }
         if (invocation.currentToken().contains(","))
@@ -62,7 +64,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         if (token.contains("*"))
         {
             Pattern pattern = Pattern.compile(token.replace("*", ".*"));
-            for (User user : core.getUserManager().getOnlineUsers())
+            for (User user : core.getModularity().start(UserManager.class).getOnlineUsers())
             {
                 if (pattern.matcher(user.getName()).matches())
                 {
@@ -71,7 +73,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
             }
             if (users.isEmpty())
             {
-                throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
+                throw new ReaderException(core.getModularity().start(I18n.class).translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }

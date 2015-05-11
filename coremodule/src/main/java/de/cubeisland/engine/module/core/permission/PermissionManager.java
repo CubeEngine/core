@@ -17,12 +17,16 @@
  */
 package de.cubeisland.engine.module.core.permission;
 
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.util.Cleanable;
 
 /**
  * Registers permissions to the server.
  */
+@Service
+@Version(1)
 public interface PermissionManager extends Cleanable
 {
     /**

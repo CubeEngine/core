@@ -23,15 +23,17 @@ import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+
 
 public class BooleanReader implements ArgumentReader<Boolean>
 {
-    private final Core core;
+    private final SpongeCore core;
     private final Set<String> yesStrings;
     private final Set<String> noStrings;
 
-    public BooleanReader(Core core)
+    public BooleanReader(SpongeCore core)
     {
         this.core = core;
         this.yesStrings = new HashSet<>();
@@ -63,12 +65,13 @@ public class BooleanReader implements ArgumentReader<Boolean>
         }
         else
         {
-            String word = this.core.getI18n().translate(locale, "yes");
+            I18n i18n = this.core.getModularity().start(I18n.class);
+            String word = i18n.translate(locale, "yes");
             if (arg.equalsIgnoreCase(word))
             {
                 return true;
             }
-            word = this.core.getI18n().translate(locale, "no");
+            word = i18n.translate(locale, "no");
             if (arg.equalsIgnoreCase(word))
             {
                 return false;

@@ -39,7 +39,9 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.Match;
@@ -53,10 +55,12 @@ import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
+import de.cubeisland.engine.reflect.Reflector;
 
 public class I18n
 {
-    final Core core;
+    final SpongeCore core;
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
@@ -67,13 +71,12 @@ public class I18n
         return compositor;
     }
 
-    public I18n(Core core)
+    public I18n(SpongeCore core, Path translationPath)
     {
-        core.getReflector().getDefaultConverterManager().registerConverter(new PluralExprConverter(),
-                                                                               PluralExpr.class);
+        core.getModularity().start(Reflector.class).getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
 
         this.core = core;
-        this.addPoFilesFromDirectory(this.core.getFileManager().getTranslationPath());
+        this.addPoFilesFromDirectory(translationPath);
         this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
@@ -247,7 +250,9 @@ public class I18n
             return lang;
         }
 
-        Set<String> matches = Match.string().getBestMatches(name.toLowerCase(), this.languageLookupMap.keySet(), maxDistance);
+        Set<String> matches = core.getModularity().start(StringMatcher.class).getBestMatches(name.toLowerCase(),
+                                                                                             this.languageLookupMap.keySet(),
+                                                                                             maxDistance);
         Set<Language> languages = new HashSet<>(matches.size());
 
         for (String match : matches)

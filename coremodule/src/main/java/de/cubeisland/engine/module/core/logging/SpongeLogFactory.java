@@ -20,18 +20,20 @@ package de.cubeisland.engine.module.core.logging;
 import java.util.concurrent.ThreadFactory;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
-public class LogFactory extends DefaultLogFactory
+public class SpongeLogFactory extends DefaultLogFactory
 {
-    protected final Core core;
+    protected final SpongeCore core;
     private final ThreadFactory threadFactory;
 
     private final Log exLog;
@@ -40,7 +42,7 @@ public class LogFactory extends DefaultLogFactory
     private final Log parent;
     private Log databaseLog;
 
-    public LogFactory(Core core, Logger baseLogger, ThreadFactory threadFactory)
+    public SpongeLogFactory(SpongeCore core, Logger baseLogger, ThreadFactory threadFactory)
     {
         this.core = core;
         this.threadFactory = threadFactory;
@@ -48,8 +50,8 @@ public class LogFactory extends DefaultLogFactory
         Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget(baseLogger);
         this.parent.addTarget(log4jProxyTarget);
 
-        exLog = this.getLog(Core.class, "Exceptions");
-        exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Exceptions"),
+        exLog = this.getLog(SpongeCore.class, "Exceptions");
+        exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Exceptions"),
                                             LoggingUtil.getFileFormat(true, false),
                                             true, LoggingUtil.getCycler(),
                                             threadFactory));
@@ -61,61 +63,18 @@ public class LogFactory extends DefaultLogFactory
         log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
         log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
-
-        if (core.getConfiguration().logging.logCommands)
-        {
-            Log commands = this.getLog(Core.class, "Commands");
-            commands.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core, "Commands"),
-                                                   LoggingUtil.getFileFormat(true, false),
-                                                   true, LoggingUtil.getCycler(),
-                                                   threadFactory));
-        }
     }
 
-    /**
-     * Get or create the logging for the core
-     *
-     * @return The logging for the core
-     */
-    public synchronized Log getCoreLog()
-    {
-        if (this.coreLog == null)
-        {
-            this.coreLog = this.getLog(Core.class, "Core");
-            AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Core"),
-                                                         LoggingUtil.getFileFormat(true, true),
-                                                         true, LoggingUtil.getCycler(),
-                                                         threadFactory);
-            target.setLevel(this.core.getConfiguration().logging.fileLevel);
-            coreLog.addTarget(target);
-            this.coreLog.addDelegate(this.getParent());
-        }
-        return this.coreLog;
-    }
 
     public Log getParent()
     {
         return this.parent;
     }
 
-    public Log getDatabaseLog()
-    {
-        if (this.databaseLog == null)
-        {
-            this.databaseLog = this.getLog(Core.class, "Database");
-            AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core, "Database"),
-                                                         LoggingUtil.getFileFormat(true, false),
-                                                         true, LoggingUtil.getCycler(), threadFactory);
-            target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
-            databaseLog.addTarget(target);
-        }
-        return this.databaseLog;
-    }
-
     public void shutdown(Module module)
     {
         // TODO
-        Log log;
+        Log log = null;
         this.remove(log);
         log.shutdown();
 

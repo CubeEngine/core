@@ -24,6 +24,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandSender;
 
@@ -37,9 +38,11 @@ public class UserList
 {
     private final List<User> list;
     private final boolean all;
+    private Modularity modularity;
 
-    public UserList(List<User> list)
+    public UserList(List<User> list, Modularity modularity)
     {
+        this.modularity = modularity;
         if (list == null)
         {
             all = true;
@@ -56,7 +59,7 @@ public class UserList
     {
         if (all)
         {
-            return new ArrayList<>(CubeEngine.getCore().getUserManager().getOnlineUsers());
+            return new ArrayList<>(modularity.start(UserManager.class).getOnlineUsers());
         }
         return list;
     }
@@ -68,6 +71,13 @@ public class UserList
 
     public static class UserListReader implements ArgumentReader<UserList>, Completer
     {
+        private Modularity modularity;
+
+        public UserListReader(Modularity modularity)
+        {
+            this.modularity = modularity;
+        }
+
         private static boolean canSee(CommandSender sender, User user)
         {
             return !(sender instanceof User) || ((User)sender).canSee(user);
@@ -80,9 +90,9 @@ public class UserList
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
-                return new UserList(null);
+                return new UserList(null, modularity);
             }
-            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation));
+            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation), modularity);
         }
 
         @Override
@@ -95,7 +105,7 @@ public class UserList
             }
 
             final CommandSender sender = (CommandSender)invocation.getCommandSource();
-            for (User player : CubeEngine.getUserManager().getOnlineUsers())
+            for (User player : modularity.start(UserManager.class).getOnlineUsers())
             {
                 String name = player.getName();
                 if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))

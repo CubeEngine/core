@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.UUID;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.DataManipulator;
 import org.spongepowered.api.data.DataTransactionResult;
@@ -49,10 +51,13 @@ public class UserBase
     protected final Game game;
     private final UUID uuid;
     org.spongepowered.api.entity.player.User cachedOfflinePlayer = null;
+    private SpongeCore core;
 
-    public UserBase(Game game, UUID uuid)
+    public UserBase(SpongeCore core, UUID uuid)
     {
-        this.game = game;
+        this.core = core;
+        this.game = core.getGame();
+
         this.uuid = uuid;
     }
 
@@ -64,11 +69,11 @@ public class UserBase
             if (cachedOfflinePlayer == null)
             {
                 this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
-                CubeEngine.getLog().debug("Caching Offline Player");
+                core.getProvided(Log.class).debug("Caching Offline Player");
             }
             else
             {
-                CubeEngine.getLog().debug("Caching Online Player");
+                core.getProvided(Log.class).debug("Caching Online Player");
             }
         }
         return cachedOfflinePlayer;

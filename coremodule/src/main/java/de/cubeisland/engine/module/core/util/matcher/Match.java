@@ -17,66 +17,27 @@
  */
 package de.cubeisland.engine.module.core.util.matcher;
 
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.spongepowered.api.Game;
 
 public class Match
 {
-    private final MaterialDataMatcher materialDataMatcher;
-    private final MaterialMatcher materialMatcher;
-    private final EnchantMatcher enchantMatcher;
-    private final ProfessionMatcher professionMatcher;
-    private final EntityMatcher entityMatcher;
-    private final StringMatcher stringMatcher = new StringMatcher();
-    private final TimeMatcher timeMatcher = new TimeMatcher();
-    private final WorldMatcher worldMatcher = new WorldMatcher();
-
-    public Match(Game game)
+    public Match(SpongeCore core, Game game)
     {
-        materialDataMatcher = new MaterialDataMatcher(game);
-        materialMatcher = new MaterialMatcher(game);
-        enchantMatcher = new EnchantMatcher(game);
-        professionMatcher = new ProfessionMatcher(game);
-        entityMatcher = new EntityMatcher(game);
-    }
-
-    public static MaterialMatcher material()
-    {
-        return CubeEngine.getCore().getMatcherManager().materialMatcher;
-    }
-
-    public static MaterialDataMatcher materialData()
-    {
-        return CubeEngine.getCore().getMatcherManager().materialDataMatcher;
-    }
-
-    public static EnchantMatcher enchant()
-    {
-        return CubeEngine.getCore().getMatcherManager().enchantMatcher;
-    }
-
-    public static ProfessionMatcher profession()
-    {
-        return CubeEngine.getCore().getMatcherManager().professionMatcher;
-    }
-
-    public static EntityMatcher entity()
-    {
-        return CubeEngine.getCore().getMatcherManager().entityMatcher;
-    }
-
-    public static StringMatcher string()
-    {
-        return CubeEngine.getCore().getMatcherManager().stringMatcher;
-    }
-
-    public static TimeMatcher time()
-    {
-        return CubeEngine.getCore().getMatcherManager().timeMatcher;
-    }
-
-    public static WorldMatcher worlds()
-    {
-        return CubeEngine.getCore().getMatcherManager().worldMatcher;
+        Log logger = core.getProvided(Log.class);
+        Modularity modulatiry = core.getModularity();
+        ServiceManager sm = modulatiry.getServiceManager();
+        sm.registerService(MaterialDataMatcher.class, new MaterialDataMatcher(game));
+        sm.registerService(MaterialMatcher.class, new MaterialMatcher(core, game));
+        sm.registerService(EnchantMatcher.class, new EnchantMatcher(core, game));
+        sm.registerService(ProfessionMatcher.class, new ProfessionMatcher(core, game));
+        sm.registerService(EntityMatcher.class, new EntityMatcher(core, game));
+        sm.registerService(StringMatcher.class, new StringMatcher(logger));
+        sm.registerService(TimeMatcher.class, new TimeMatcher());
+        sm.registerService(WorldMatcher.class, new WorldMatcher(core));
     }
 }

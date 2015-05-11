@@ -22,11 +22,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.core.util.Cleanable;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+@Service
+@Version(1)
 public interface WorldManager extends Cleanable
 {
     World createWorld(WorldProperties creator);

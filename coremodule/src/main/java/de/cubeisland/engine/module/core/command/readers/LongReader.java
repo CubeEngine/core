@@ -21,10 +21,19 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 
 public class LongReader implements ArgumentReader<Long>
 {
+    private I18n i18n;
+
+    public LongReader(I18n i18n)
+    {
+
+        this.i18n = i18n;
+    }
+
     @Override
     public Long read(Class type, CommandInvocation invocation) throws ReaderException
     {
@@ -35,7 +44,8 @@ public class LongReader implements ArgumentReader<Long>
         }
         catch (NumberFormatException e)
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), MessageType.NEGATIVE, "Could not parse {input} to long!", arg));
+            throw new ReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
+                                                     "Could not parse {input} to long!", arg));
         }
     }
 }

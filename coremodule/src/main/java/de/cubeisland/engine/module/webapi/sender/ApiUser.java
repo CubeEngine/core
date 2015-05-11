@@ -20,14 +20,14 @@ package de.cubeisland.engine.module.webapi.sender;
 import java.util.Locale;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.Core;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 
 public class ApiUser extends ApiCommandSender
 {
     private final User user;
 
-    public ApiUser(Core core, User user, ObjectMapper mapper)
+    public ApiUser(SpongeCore core, User user, ObjectMapper mapper)
     {
         super(core, mapper);
         this.user = user;

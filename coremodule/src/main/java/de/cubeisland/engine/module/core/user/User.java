@@ -29,16 +29,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
+import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
 import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.module.core.world.WorldManager;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
@@ -61,7 +65,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
-    private final Core core;
+    private final SpongeCore core;
 
     /**
      * Do not instantiate outside of {@link UserManager} implementations
@@ -71,7 +75,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      */
     public User(SpongeCore core, org.spongepowered.api.entity.player.User player)
     {
-        super(core.getGame(), player.getUniqueId());
+        super(core, player.getUniqueId());
         this.entity = core.getDB().getDSL().newRecord(TableUser.TABLE_USER).newUser(player);
         this.attachments = new HashMap<>();
         this.core = core;
@@ -84,14 +88,14 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
      */
     public User(SpongeCore core, UserEntity entity)
     {
-        super(core.getGame(), entity.getUniqueId());
-        this.core = CubeEngine.getCore();
+        super(core, entity.getUniqueId());
+        this.core = core;
         this.entity = entity;
         this.attachments = new HashMap<>();
     }
 
     @Override
-    public Core getCore()
+    public SpongeCore getCore()
     {
         return this.core;
     }
@@ -200,7 +204,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
         {
-            CubeEngine.getLog().debug("A module sent an untranslated message!");
+            core.getProvided(Log.class).debug("A module sent an untranslated message!");
         }
         super.sendMessage(ChatFormat.parseFormats(string));
     }
@@ -208,13 +212,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public String getTranslation(MessageType type, String message, Object... params)
     {
-        return this.getCore().getI18n().translate(this.getLocale(), type, message, params);
+        return getCore().getModularity().start(I18n.class).translate(this.getLocale(), type, message, params);
     }
 
     @Override
     public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
     {
-        return this.getCore().getI18n().translateN(this.getLocale(), type, n, singular, plural, params);
+        return getCore().getModularity().start(I18n.class).translateN(this.getLocale(), type, n, singular, plural, params);
     }
 
     /**
@@ -238,7 +242,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void sendMessage(MessageType type, String message, Object... params)
     {
-        this.sendMessage(this.getCore().getI18n().composeMessage(this.getLocale(), type, message, params));
+        this.sendMessage(getCore().getModularity().start(I18n.class).composeMessage(this.getLocale(), type, message, params));
     }
 
     /**
@@ -261,7 +265,8 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         if (locale == null)
         {
-            locale = this.getCore().getI18n().getDefaultLanguage().getLocale();
+
+            locale = getCore().getModularity().start(I18n.class).getDefaultLanguage().getLocale();
         }
         return locale;
     }
@@ -362,7 +367,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     {
         try
         {
-            return this.getCore().getWorldManager().getWorldId(this.getWorld());
+            return getCore().getModularity().start(WorldManager.class).getWorldId(this.getWorld());
         }
         catch (IllegalArgumentException ex)
         {
@@ -430,7 +435,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void banIp(CommandSource source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new IpBan(this.getAddress().getAddress(), source, Texts.of(reason), created, expire));
+        getCore().getModularity().start(BanManager.class).addBan(new IpBan(this.getAddress().getAddress(), source, Texts.of(reason), created, expire));
     }
 
     public void ban(CommandSource source, String reason)
@@ -445,7 +450,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void ban(CommandSource source, String reason, Date created, Date expire)
     {
-        this.getCore().getBanManager().addBan(new UserBan(this.getOfflinePlayer(), source, Texts.of(reason), created, expire));
+        getCore().getModularity().start(BanManager.class).addBan(new UserBan(this.getOfflinePlayer(), source, Texts.of(reason), created, expire));
     }
 
     public UserEntity getEntity()

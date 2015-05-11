@@ -17,31 +17,34 @@
  */
 package de.cubeisland.engine.module.core.sponge;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.inject.Inject;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.core.ban.Ban;
 import de.cubeisland.engine.module.core.ban.BanManager;
 import de.cubeisland.engine.module.core.ban.IpBan;
 import de.cubeisland.engine.module.core.ban.UserBan;
-import org.spongepowered.api.GameProfile;
 import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.util.ban.Ban.Ip;
 import org.spongepowered.api.util.ban.BanBuilder;
 
-import static de.cubeisland.engine.module.core.CubeEngine.isMainThread;
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 import static java.util.stream.Collectors.toSet;
 
+@ServiceImpl(BanManager.class)
+@Version(1)
 public class SpongeBanManager implements BanManager
 {
     private final BanService manager;
     private final BanBuilder banBuilder;
 
+    @Inject
     public SpongeBanManager(SpongeCore core)
     {
         manager = core.getGame().getServiceManager().provide(BanService.class).get();

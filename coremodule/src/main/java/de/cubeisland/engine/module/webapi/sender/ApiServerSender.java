@@ -20,11 +20,13 @@ package de.cubeisland.engine.module.webapi.sender;
 import java.util.Locale;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 
 public class ApiServerSender extends ApiCommandSender
 {
-    public ApiServerSender(Core core, ObjectMapper mapper)
+    public ApiServerSender(SpongeCore core, ObjectMapper mapper)
     {
         super(core, mapper);
     }
@@ -44,7 +46,7 @@ public class ApiServerSender extends ApiCommandSender
     @Override
     public Locale getLocale()
     {
-        return getCore().getI18n().getDefaultLanguage().getLocale();
+        return getCore().getModularity().start(I18n.class).getDefaultLanguage().getLocale();
     }
 
     @Override

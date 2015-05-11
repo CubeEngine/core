@@ -18,7 +18,7 @@
 package de.cubeisland.engine.module.core.user;
 
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 
 /**
  * Gets fired once the User is loaded (AND saved to database)

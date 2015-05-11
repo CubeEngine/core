@@ -21,9 +21,11 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
-import de.cubeisland.engine.module.core.CubeEngine;
+
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 
@@ -32,9 +34,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
  */
 public class UserReader implements ArgumentReader<User>, DefaultValue<User>
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public UserReader(Core core)
+    public UserReader(SpongeCore core)
     {
         this.core = core;
     }
@@ -43,10 +45,12 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
     public User read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        User user = this.core.getUserManager().findUser(arg);
+        User user = this.core.getModularity().start(UserManager
+                                                   .class).findUser(arg);
         if (user == null)
         {
-            throw new ReaderException(CubeEngine.getI18n().translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", arg));
+            throw new ReaderException(core.getModularity().start(I18n.class).translate(invocation.getLocale(), NEGATIVE,
+                                                                                 "Player {user} not found!", arg));
         }
         return user;
     }

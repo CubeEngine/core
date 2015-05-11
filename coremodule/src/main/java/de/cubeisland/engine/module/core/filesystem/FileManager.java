@@ -57,46 +57,53 @@ public class FileManager implements Cleanable
     private final FileAttribute<?>[] folderCreateAttributes;
 
 
-    public FileManager(Logger logger, Path dataPath) throws IOException
+    public FileManager(Logger logger, Path dataPath)
     {
-        Contract.expectNotNull(dataPath, "The CubeEngine plugin folder must not be null!");
-        dataPath = dataPath.toAbsolutePath();
-
-        this.logger = logger;
-
-        this.dataPath = Files.createDirectories(dataPath).toRealPath();
-
-        if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
-        {
-            folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
-
-            Files.setPosixFilePermissions(this.dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
-        }
-        else
-        {
-            folderCreateAttributes = new FileAttribute[0];
-        }
-
-        final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
-
-        this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
-
-        this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
-
-        this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), folderCreateAttributes);
-
-        this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
-
-        this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
-
-        this.fileSources = new ConcurrentHashMap<>();
-
         try
         {
-            Files.createSymbolicLink(linkSource, this.dataPath);
+            Contract.expectNotNull(dataPath, "The CubeEngine plugin folder must not be null!");
+            dataPath = dataPath.toAbsolutePath();
+
+            this.logger = logger;
+
+            this.dataPath = Files.createDirectories(dataPath).toRealPath();
+
+            if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
+            {
+                folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
+
+                Files.setPosixFilePermissions(this.dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
+            }
+            else
+            {
+                folderCreateAttributes = new FileAttribute[0];
+            }
+
+            final Path linkSource = Paths.get(System.getProperty("user.dir", "."), CubeEngine.class.getSimpleName());
+
+            this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
+
+            this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
+
+            this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), folderCreateAttributes);
+
+            this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
+
+            this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
+
+            this.fileSources = new ConcurrentHashMap<>();
+
+            try
+            {
+                Files.createSymbolicLink(linkSource, this.dataPath);
+            }
+            catch (IOException ignored)
+            {}
         }
-        catch (IOException ignored)
-        {}
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e); // TODO Exception
+        }
 
         if (!FileUtil.hideFile(this.tempPath))
         {
@@ -326,5 +333,5 @@ public class FileManager implements Cleanable
     public void clean()
     {
         this.clearTempDir();
-    }
+    } // TODO cleanup
 }

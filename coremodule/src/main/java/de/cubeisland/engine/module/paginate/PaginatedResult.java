@@ -20,9 +20,11 @@ package de.cubeisland.engine.module.paginate;
 import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.command.CommandContext;
+import de.cubeisland.engine.module.core.command.CommandManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
@@ -39,22 +41,22 @@ public class PaginatedResult implements CommandResult
         this.context = context;
         this.iterator = new StringListIterator(lines);
 
-        CubeEngine.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
+        context.getModule().getModularity().start(PaginationManager.class).registerResult(context.getSource(), this);
     }
     public PaginatedResult(CommandContext context, PaginationIterator iterator)
     {
         this.context = context;
         this.iterator = iterator;
 
-        CubeEngine.getCore().getCommandManager().getPaginationManager().registerResult(context.getSource(), this);
+        context.getModule().getModularity().start(PaginationManager.class).registerResult(context.getSource(), this);
     }
 
     @Override
     public void process(CommandInvocation invocation)
     {
-        int pageCount = iterator.pageCount(PaginationManager.LINES_PER_PAGE);
-        context.sendTranslated(NONE, PaginationManager.HEADER, pageNumber + 1, pageCount);
-        for(String line : iterator.getPage(pageNumber, PaginationManager.LINES_PER_PAGE))
+        int pageCount = iterator.pageCount(SpongePaginationManager.LINES_PER_PAGE);
+        context.sendTranslated(NONE, SpongePaginationManager.HEADER, pageNumber + 1, pageCount);
+        for(String line : iterator.getPage(pageNumber, SpongePaginationManager.LINES_PER_PAGE))
         {
             context.sendMessage(line);
         }
@@ -62,20 +64,20 @@ public class PaginatedResult implements CommandResult
         {
             if (pageCount == 1)
             {
-                context.sendTranslated(NONE, PaginationManager.ONE_PAGE_FOOTER, pageNumber + 1, pageCount);
+                context.sendTranslated(NONE, SpongePaginationManager.ONE_PAGE_FOOTER, pageNumber + 1, pageCount);
             }
             else
             {
-                context.sendTranslated(NONE, PaginationManager.FIRST_FOOTER, pageNumber + 1, pageCount);
+                context.sendTranslated(NONE, SpongePaginationManager.FIRST_FOOTER, pageNumber + 1, pageCount);
             }
         }
         else if (pageNumber >= pageCount)
         {
-            context.sendTranslated(NONE, PaginationManager.LAST_FOOTER, pageNumber + 1, pageCount);
+            context.sendTranslated(NONE, SpongePaginationManager.LAST_FOOTER, pageNumber + 1, pageCount);
         }
         else
         {
-            context.sendTranslated(NONE, PaginationManager.FOOTER, pageNumber + 1, pageCount);
+            context.sendTranslated(NONE, SpongePaginationManager.FOOTER, pageNumber + 1, pageCount);
         }
     }
 
@@ -91,7 +93,7 @@ public class PaginatedResult implements CommandResult
 
     public void showPage(int pageNumber)
     {
-        if (pageNumber >= 0 && pageNumber < iterator.pageCount(PaginationManager.LINES_PER_PAGE))
+        if (pageNumber >= 0 && pageNumber < iterator.pageCount(SpongePaginationManager.LINES_PER_PAGE))
         {
             this.pageNumber = pageNumber;
             this.process(this.context.getInvocation());

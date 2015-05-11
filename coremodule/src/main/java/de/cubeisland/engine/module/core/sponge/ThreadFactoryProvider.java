@@ -12,7 +12,6 @@ public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
 {
     private CoreThreadFactory coreThreadFactory;
 
-
     @Override
     public ThreadFactory get(DependencyInformation info, Modularity modularity)
     {

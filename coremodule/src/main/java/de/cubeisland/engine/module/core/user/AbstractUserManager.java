@@ -38,10 +38,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.filesystem.FileUtil;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.util.ChatFormat;
@@ -49,6 +53,7 @@ import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.util.Triplet;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.text.Texts;
@@ -73,7 +78,7 @@ public abstract class AbstractUserManager implements UserManager
 
     public AbstractUserManager(final SpongeCore core)
     {
-        this.database = core.getDB();
+        this.database = core.getModularity().start(Database.class);
 
         this.core = core;
 
@@ -100,7 +105,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             user.loggedInState = this.checkPassword(user, password);
         }
-        core.getEventManager().fireEvent(new UserAuthorizedEvent(this.core, user));
+        core.getModularity().start(EventManager.class).fireEvent(new UserAuthorizedEvent(this.core, user));
         return user.isLoggedIn();
     }
 
@@ -286,7 +291,7 @@ public abstract class AbstractUserManager implements UserManager
                 user.sendTranslated(messageType, message, params);
             }
         }
-        this.core.getCommandManager().getConsoleSender().sendTranslated(messageType, message, params);
+        core.getModularity().start(CommandManager.class).getConsoleSender().sendTranslated(messageType, message, params);
     }
 
     @Override
@@ -303,8 +308,9 @@ public abstract class AbstractUserManager implements UserManager
                 user.sendMessage(NONE, message, params);
             }
         }
-        ConsoleCommandSender cSender = this.core.getCommandManager().getConsoleSender();
-        cSender.sendMessage(this.core.getI18n().composeMessage(cSender.getLocale(), type, message, params));
+        ConsoleCommandSender cSender = core.getModularity().start(CommandManager.class).getConsoleSender();
+        cSender.sendMessage(core.getModularity().start(I18n.class).composeMessage(cSender.getLocale(), type, message,
+                                                                                  params));
     }
 
     @Override
@@ -346,7 +352,7 @@ public abstract class AbstractUserManager implements UserManager
 
     private void loadSalt()
     {
-        Path file = this.core.getFileManager().getDataPath().resolve(".salt");
+        Path file = core.getModularity().start(FileManager.class).getDataPath().resolve(".salt");
         try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
         {
             this.salt = reader.readLine();
@@ -537,7 +543,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             onlinePlayerMap.put(onlineUser.getName(), onlineUser);
         }
-        String foundUser = Match.string().matchString(name, onlinePlayerMap.keySet());
+        String foundUser = core.getModularity().start(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
             return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());
@@ -565,7 +571,7 @@ public abstract class AbstractUserManager implements UserManager
     }
 
     @Override
-    public void shutdown()
+    public void shutdown() // TODO shutdown Service
     {
         this.clean();
 

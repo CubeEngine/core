@@ -24,15 +24,17 @@ import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
 
 public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>, Completer
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public CommandSenderReader(Core core)
+    public CommandSenderReader(SpongeCore core)
     {
         this.core = core;
     }
@@ -43,7 +45,7 @@ public class CommandSenderReader implements ArgumentReader<CommandSender>, Defau
         if ("console".equalsIgnoreCase(invocation.currentToken()))
         {
             invocation.consume(1);
-            return core.getCommandManager().getConsoleSender();
+            return core.getModularity().start(CommandManager.class).getConsoleSender();
         }
         return (User)invocation.getManager().getReader(User.class).read(type, invocation);
     }

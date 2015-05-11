@@ -43,7 +43,7 @@ public final class ReflectedApiHandler extends ApiHandler
         this.method = method;
         this.method.setAccessible(true);
         this.holder = holder;
-        this.providerManager = module.getModulatiry().start(CommandManager.class).getProviderManager();
+        this.providerManager = module.getModularity().start(CommandManager.class).getProviderManager();
     }
 
     @Override

@@ -21,12 +21,16 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * This class provides methods to register and cancel tasks and the global
  * ScheduledExecutorService is provided by this class.
  */
+@Service
+@Version(1)
 public interface TaskManager
 {
 

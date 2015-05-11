@@ -22,8 +22,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import de.cubeisland.engine.module.core.Core;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.task.TaskManager;
 
@@ -46,7 +46,7 @@ public class FreezeDetection
     public FreezeDetection(SpongeCore core, long freezeThreshold, TimeUnit unit)
     {
         this.core = core;
-        this.taskManager = this.core.getTaskManager();
+        this.taskManager = this.core.getModularity().start(TaskManager.class);
         this.executor = null;
         this.lastHeartbeat = -1;
         this.freezeThreshold = unit.toMillis(freezeThreshold);
@@ -69,7 +69,7 @@ public class FreezeDetection
         {
             throw new RuntimeException("Failed to schedule the heartbeat logging for freeze detection");
         }
-        this.executor = Executors.newSingleThreadScheduledExecutor(core.getThreadFactory());
+        this.executor = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
         this.executor.scheduleAtFixedRate(new FreezeDetector(), this.freezeThreshold, this.freezeThreshold, TimeUnit.MILLISECONDS);
 
         this.lastHeartbeat = System.currentTimeMillis();

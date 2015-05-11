@@ -109,7 +109,7 @@ public class FileUtil
         }
         catch (IOException ex)
         {
-            CubeEngine.getLog().debug(ex, "Failed to read lines from a buffer");
+            getLog().debug(ex, "Failed to read lines from a buffer");
         }
         finally
         {

@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.core.sponge;
 
+import de.cubeisland.engine.module.core.task.TaskManager;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.properties.BurningFuelProperty;
@@ -104,7 +105,7 @@ public class BukkitUtils
                     if (time - this.lastReceived <= 5000)
                     {
                         core.getLog().info("Shutting down the server now!");
-                        core.getTaskManager().runTask(core, () -> {
+                        core.getModularity().start(TaskManager.class).runTask(core, () -> {
                             core.getGame().getServer().shutdown(Texts.of()); // tODO default message?
                             lastReceived = -1;
                         });

@@ -29,7 +29,7 @@ import de.cubeisland.engine.butler.parametric.Greed;
 import de.cubeisland.engine.butler.parametric.Named;
 import de.cubeisland.engine.butler.parametric.Optional;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.command.CommandContext;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
@@ -57,7 +57,7 @@ public class VanillaCommands
     public VanillaCommands(SpongeCore core)
     {
         this.core = core;
-        this.um = core.getUserManager();
+        this.um = core.getModularity().start(UserManager.class);
     }
 
     public static void showSourceVersion(CommandSender context, String sourceVersion)
@@ -241,7 +241,7 @@ public class VanillaCommands
     public void plugins(CommandSender context)
     {
         Collection<PluginContainer> plugins = this.core.getGame().getPluginManager().getPlugins();
-        Set<Module> modules = this.core.getModulatiry().getModules();
+        Set<Module> modules = this.core.getModularity().getModules();
 
         context.sendTranslated(NEUTRAL, "There are {amount} plugins and {amount} CubeEngine modules loaded:",
                                plugins.size(), modules.size());
@@ -327,7 +327,7 @@ public class VanillaCommands
         context.sendMessage(" ");
         context.sendTranslated(NEUTRAL.and(ChatFormat.UNDERLINE), "Plugin information:");
         context.sendMessage(" ");
-        if (instance instanceof Core && source)
+        if (instance.get().getInstance() instanceof SpongeCore && source)
         {
             showSourceVersion(context.getSource(), core.getSourceVersion());
         }

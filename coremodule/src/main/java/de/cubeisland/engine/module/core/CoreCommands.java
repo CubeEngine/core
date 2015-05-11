@@ -12,6 +12,7 @@ import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.command.CommandContext;
+import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.command.ContainerCommand;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
@@ -34,8 +35,7 @@ public class CoreCommands extends ContainerCommand
         super(core);
         this.core = core;
 
-        core.getCommandManager().getProviderManager().register(core,
-                                                               new FindUserReader());
+        core.getModularity().start(CommandManager.class).getProviderManager().register(core, new FindUserReader(core));
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
@@ -55,7 +55,7 @@ public class CoreCommands extends ContainerCommand
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
-        Modularity modulatiry = core.getModulatiry();
+        Modularity modulatiry = core.getModularity();
         modulatiry.getGraph().getRoot();
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
         context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
@@ -112,11 +112,18 @@ public class CoreCommands extends ContainerCommand
 
     public static class FindUserReader implements ArgumentReader<User>
     {
+
+        private final UserManager um;
+
+        public FindUserReader(SpongeCore core)
+        {
+            um = core.getModularity().start(UserManager.class);
+        }
+
         @Override
         public User read(Class type, CommandInvocation invocation) throws ReaderException
         {
             String name = invocation.consume(1);
-            UserManager um = CubeEngine.getCore().getUserManager();
             User found = um.findExactUser(name);
             if (found == null)
             {

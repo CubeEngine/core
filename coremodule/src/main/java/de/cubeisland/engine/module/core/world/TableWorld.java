@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 import de.cubeisland.engine.module.core.database.AutoIncrementTable;
+import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.TableUpdateCreator;
 import de.cubeisland.engine.module.core.util.Version;
 import org.jooq.TableField;
@@ -39,9 +40,9 @@ public class TableWorld extends AutoIncrementTable<WorldEntity, UInteger> implem
     public final TableField<WorldEntity, Long> LEAST = createField("UUIDleast", BIGINT.nullable(false),this);
     public final TableField<WorldEntity, Long> MOST = createField("UUIDmost", BIGINT.nullable(false), this);
 
-    public TableWorld(String prefix)
+    public TableWorld(String prefix, Database database)
     {
-        super(prefix + "worlds", new Version(2));
+        super(prefix + "worlds", new Version(2), database);
         this.setAIKey(KEY);
         this.addUniqueKey(LEAST, MOST);
         this.addFields(KEY, WORLDNAME, LEAST, MOST);

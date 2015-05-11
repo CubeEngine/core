@@ -19,18 +19,20 @@ package de.cubeisland.engine.module.core.logging;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logscribe.target.file.format.FileFormat;
 import de.cubeisland.engine.logscribe.target.file.format.LogFileFormat;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 
 public class LoggingUtil
 {
     public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static File getLogFile(Core core, String name)
+    public static File getLogFile(FileManager fm, String name)
     {
-        return core.getFileManager().getLogPath().resolve(name + ".log").toFile();
+        return fm.getLogPath().resolve(name + ".log").toFile();
     }
 
     public static FileFormat getFileFormat(boolean withDate, boolean withLevel)

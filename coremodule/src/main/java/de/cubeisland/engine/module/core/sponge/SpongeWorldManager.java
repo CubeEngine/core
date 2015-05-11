@@ -22,14 +22,24 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.core.CubeEngine;
 import de.cubeisland.engine.module.core.filesystem.FileUtil;
+import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.module.core.world.AbstractWorldManager;
+import de.cubeisland.engine.module.core.world.ConfigWorld;
+import de.cubeisland.engine.module.core.world.ConfigWorldConverter;
 import de.cubeisland.engine.module.core.world.WorldEntity;
+import de.cubeisland.engine.module.core.world.WorldManager;
+import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -37,12 +47,15 @@ import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.module.core.world.TableWorld.TABLE_WORLD;
 
-public class BukkitWorldManager extends AbstractWorldManager
+@ServiceImpl(WorldManager.class)
+@Version(1)
+public class SpongeWorldManager extends AbstractWorldManager
 {
     private final SpongeCore core;
     private final Server server;
 
-    public BukkitWorldManager(final SpongeCore core)
+    @Inject
+    public SpongeWorldManager(final SpongeCore core, Reflector reflector)
     {
         super(core);
         this.core = core;
@@ -75,6 +88,10 @@ public class BukkitWorldManager extends AbstractWorldManager
                 }
             }
         });
+
+        ConverterManager convManager = reflector.getDefaultConverterManager();
+        convManager.registerConverter(new ConfigWorldConverter(this), ConfigWorld.class);
+        convManager.registerConverter(new LocationConverter(this), Location.class);
     }
 
     @Override

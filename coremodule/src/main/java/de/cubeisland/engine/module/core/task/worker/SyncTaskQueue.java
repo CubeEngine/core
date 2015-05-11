@@ -20,10 +20,9 @@ package de.cubeisland.engine.module.core.task.worker;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
-import de.cubeisland.engine.module.core.sponge.SpongeTaskManager;
-import org.spongepowered.api.service.scheduler.SynchronousScheduler;
+import de.cubeisland.engine.module.core.task.TaskManager;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
@@ -34,20 +33,20 @@ public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
     private final SpongeCore corePlugin;
-    private final SpongeTaskManager scheduler;
+    private final TaskManager scheduler;
     private final Queue<Runnable> taskQueue;
     private UUID taskID;
     private boolean isShutdown;
 
-    public SyncTaskQueue(Core core)
+    public SyncTaskQueue(SpongeCore core)
     {
         this(core, new LinkedList<Runnable>());
     }
 
-    public SyncTaskQueue(Core core, Queue<Runnable> taskQueue)
+    public SyncTaskQueue(SpongeCore core, Queue<Runnable> taskQueue)
     {
-        this.corePlugin = (SpongeCore)core;
-        this.scheduler = this.corePlugin.getTaskManager();
+        this.corePlugin = core;
+        this.scheduler = this.corePlugin.getModularity().start(TaskManager.class);
         this.taskQueue = taskQueue;
         this.taskID = null;
         this.isShutdown = false;

@@ -22,15 +22,17 @@ import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.ProviderManager;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.confirm.ConfirmManager;
-import de.cubeisland.engine.module.paginate.PaginationManager;
 import de.cubeisland.engine.module.core.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.module.core.util.Cleanable;
 
 /**
  * This class manages the registration of commands.
  */
+@Service
+@Version(1)
 public interface CommandManager extends Cleanable, Dispatcher
 {
     ProviderManager getProviderManager();
@@ -62,10 +64,6 @@ public interface CommandManager extends Cleanable, Dispatcher
     void logExecution(CommandSource sender, boolean ran, String alias, String args);
 
     void logTabCompletion(CommandSource sender, String alias, String args);
-
-    ConfirmManager getConfirmManager();
-
-    PaginationManager getPaginationManager();
 
     CommandBuilder<BasicParametricCommand, CommandOrigin> getCommandBuilder();
 

@@ -20,7 +20,11 @@ package de.cubeisland.engine.module.core.ban;
 import java.net.InetAddress;
 import java.util.Set;
 import java.util.UUID;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 
+@Service
+@Version(1)
 public interface BanManager
 {
     void addBan(Ban ban);

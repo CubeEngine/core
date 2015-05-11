@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
+import de.cubeisland.engine.logscribe.Log;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -108,4 +109,6 @@ public interface Database
     DSLContext getDSL();
 
     String getTablePrefix();
+
+    Log getLog();
 }

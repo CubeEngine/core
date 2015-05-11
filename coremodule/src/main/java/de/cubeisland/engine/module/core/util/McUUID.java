@@ -1,17 +1,17 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p/>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -37,7 +37,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.cubeisland.engine.module.core.CubeEngine;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 
 public class McUUID
 {
@@ -47,13 +48,22 @@ public class McUUID
     private static final String MOJANG_API_URL_UUID_NAMEHISTORY = MOJANG_API_BASE_URL + "user/profiles/%s/names";
     private static final String AGENT = "minecraft";
 
-    static {
+    static
+    {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
+    private SpongeCore core;
 
-    public static Map<String, UUID> getUUIDForNames(Collection<String> playerNames)
+    public McUUID(SpongeCore core)
+    {
+        this.core = core;
+    }
+
+    public static final Pattern UUID_PATTERN = Pattern.compile(
+        "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$");
+
+    public Map<String, UUID> getUUIDForNames(Collection<String> playerNames)
     {
         Map<String, UUID> map = new HashMap<>();
         for (Profile profile : getUUIDForNames0(playerNames))
@@ -64,25 +74,26 @@ public class McUUID
             }
             catch (Exception e)
             {
-                CubeEngine.getLog().error("Could not convert UUID of: {} ({})", profile.name, profile.id);
+                core.getProvided(Log.class).error("Could not convert UUID of: {} ({})", profile.name, profile.id);
             }
         }
         playerNames = new HashSet<>(playerNames);
         playerNames.removeAll(map.keySet());
         for (String playerName : playerNames)
         {
-            CubeEngine.getLog().error("Missing UUID for {}", playerName);
+            core.getProvided(Log.class).error("Missing UUID for {}", playerName);
             map.put(playerName, null);
         }
         return map;
     }
 
-    public static UUID getUUIDFromString(String id)
+    public UUID getUUIDFromString(String id)
     {
-        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
+        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-"
+                                   + id.substring(16, 20) + "-" + id.substring(20, 32));
     }
 
-    private static List<Profile> getUUIDForNames0(Collection<String> playernames)
+    private List<Profile> getUUIDForNames0(Collection<String> playernames)
     {
         LinkedList<String> players = new LinkedList<>();
         List<Profile> profiles = new ArrayList<>();
@@ -92,18 +103,18 @@ public class McUUID
             if (players.size() >= 20)
             {
                 getProfiles(profiles, players);
-                CubeEngine.getLog().info(profiles.size() + "/" + playernames.size());
+                core.getProvided(Log.class).info(profiles.size() + "/" + playernames.size());
             }
         }
         getProfiles(profiles, players);
-        CubeEngine.getLog().info("Getting UUIDs done!", playernames.size());
+        core.getProvided(Log.class).info("Getting UUIDs done!", playernames.size());
         return profiles;
     }
 
-    private static void getProfiles(List<Profile> profiles, LinkedList<String> players)
+    private void getProfiles(List<Profile> profiles, LinkedList<String> players)
     {
         int amount = players.size();
-        CubeEngine.getLog().debug("Query UUID for: " + StringUtils.implode(",", players));
+        core.getProvided(Log.class).debug("Query UUID for: " + StringUtils.implode(",", players));
         ArrayNode node = mapper.createArrayNode();
         while (!players.isEmpty())
         {
@@ -115,13 +126,13 @@ public class McUUID
         int page = 1;
         try
         {
-            CubeEngine.getLog().info("Query Mojang for {} UUIDs", amount);
+            core.getProvided(Log.class).info("Query Mojang for {} UUIDs", amount);
             while (amount > 0)
             {
                 int read = readProfilesFromInputStream(postQuery(node, page++).getInputStream(), profiles);
                 if (read == 0)
                 {
-                    CubeEngine.getLog().info("No Answer for {} players", amount);
+                    core.getProvided(Log.class).info("No Answer for {} players", amount);
                 }
                 else if (read != amount)
                 {
@@ -133,11 +144,11 @@ public class McUUID
         }
         catch (IOException e)
         {
-            CubeEngine.getLog().error(e, "Could not retrieve UUID for given names!");
+            core.getProvided(Log.class).error(e, "Could not retrieve UUID for given names!");
         }
     }
 
-    private static HttpURLConnection postQuery(ArrayNode node, int page) throws IOException
+    private HttpURLConnection postQuery(ArrayNode node, int page) throws IOException
     {
         HttpURLConnection con = (HttpURLConnection)new URL(MOJANG_API_URL_NAME_UUID + page).openConnection();
         con.setRequestMethod("POST");
@@ -158,7 +169,7 @@ public class McUUID
         return results.size;
     }
 
-    public static UUID getUUIDForName(String player)
+    public UUID getUUIDForName(String player)
     {
         Map<String, UUID> uuidForNames = getUUIDForNames(Arrays.asList(player));
         return uuidForNames.get(player);
@@ -184,11 +195,13 @@ public class McUUID
 
     private static final NameEntry[] emptyHistory = {};
 
-    public static NameEntry[] getNameHistory(UUID playerUUID)
+    public NameEntry[] getNameHistory(UUID playerUUID)
     {
         try
         {
-            HttpURLConnection connection = (HttpURLConnection)new URL(String.format(MOJANG_API_URL_UUID_NAMEHISTORY, playerUUID.toString().replace("-", ""))).openConnection();
+            HttpURLConnection connection = (HttpURLConnection)new URL(String.format(MOJANG_API_URL_UUID_NAMEHISTORY,
+                                                                                    playerUUID.toString().replace("-",
+                                                                                                                  ""))).openConnection();
             return mapper.readValue(connection.getInputStream(), NameEntry[].class);
         }
         catch (MalformedURLException e)
@@ -197,7 +210,7 @@ public class McUUID
         }
         catch (IOException e)
         {
-            CubeEngine.getLog().error(e, "Could not retrieve NameHistory for given UUID!");
+            core.getProvided(Log.class).error(e, "Could not retrieve NameHistory for given UUID!");
             return emptyHistory;
         }
     }

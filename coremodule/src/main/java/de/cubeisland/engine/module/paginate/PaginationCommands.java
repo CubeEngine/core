@@ -25,9 +25,9 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
 
 public class PaginationCommands
 {
-    private PaginationManager paginationManager;
+    private SpongePaginationManager paginationManager;
 
-    public PaginationCommands(PaginationManager paginationManager)
+    public PaginationCommands(SpongePaginationManager paginationManager)
     {
         this.paginationManager = paginationManager;
     }

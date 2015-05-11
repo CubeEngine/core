@@ -22,8 +22,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.message.CommandEvent;
@@ -61,27 +63,29 @@ public class PreCommandListener
         Set<String> aliases = core.getGame().getCommandDispatcher().getAliases();
         if (!aliases.contains(label))
         {
+            I18n i18n = core.getModularity().start(I18n.class);
+
             final Locale language = sender instanceof Player ? ((Player)sender).getLocale() : Locale.getDefault();
-            List<String> matches = new LinkedList<>(Match.string().getBestMatches(label, aliases, 1));
+            List<String> matches = new LinkedList<>(core.getModularity().start(StringMatcher.class).getBestMatches(label, aliases, 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(Texts.of(this.core.getI18n().translate(language, NEGATIVE,
-                                                                              "Couldn't find {input#command}. Did you mean {input#command}?",
-                                                                              label, matches.iterator().next())));
+                    sender.sendMessage(Texts.of(i18n.translate(language, NEGATIVE,
+                                                               "Couldn't find {input#command}. Did you mean {input#command}?",
+                                                               label, matches.iterator().next())));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(Texts.of(this.core.getI18n().translate(language, NEUTRAL,
-                                                                              "Did you mean one of these: {input#command}?",
-                                                                              implode(", /", matches))));
+                    sender.sendMessage(Texts.of(i18n.translate(language, NEUTRAL,
+                                                               "Did you mean one of these: {input#command}?", implode(
+                        ", /", matches))));
                 }
             }
             else
             {
-                sender.sendMessage(Texts.of(this.core.getI18n().translate(language, NEGATIVE,
+                sender.sendMessage(Texts.of(i18n.translate(language, NEGATIVE,
                                                                           "I couldn't find any command for {input#command} ...",
                                                                           label)));
             }

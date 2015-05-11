@@ -1,17 +1,17 @@
 /**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
- *
+ * <p/>
  * CubeEngine is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * CubeEngine is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -48,25 +49,39 @@ public class MaterialMatcher
 
     private final ItemStackBuilder builder;
 
-    private final Set<ItemType> repairableMaterials = Collections.synchronizedSet(
-        new HashSet<>(Arrays.asList(
-            IRON_SHOVEL, IRON_PICKAXE, IRON_AXE, IRON_SWORD, IRON_HOE,
-            WOODEN_SHOVEL, WOODEN_PICKAXE, WOODEN_AXE, WOODEN_SWORD, WOODEN_HOE,
-            STONE_SHOVEL, STONE_PICKAXE, STONE_AXE, STONE_SWORD, STONE_HOE,
-            DIAMOND_SHOVEL, DIAMOND_PICKAXE, DIAMOND_AXE, DIAMOND_SWORD, DIAMOND_HOE,
-            GOLDEN_SHOVEL, GOLDEN_PICKAXE, GOLDEN_AXE, GOLDEN_SWORD, GOLDEN_HOE,
-            LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS,
-            CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_LEGGINGS, CHAINMAIL_BOOTS,
-            IRON_HELMET, IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS,
-            DIAMOND_HELMET, DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS,
-            GOLDEN_HELMET, GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS,
-            FLINT_AND_STEEL,
-            BOW,
-            FISHING_ROD,
-            SHEARS)));
+    private final Set<ItemType> repairableMaterials = Collections.synchronizedSet(new HashSet<>(Arrays.asList(
+                                                                                      IRON_SHOVEL, IRON_PICKAXE,
+                                                                                      IRON_AXE, IRON_SWORD, IRON_HOE,
+                                                                                      WOODEN_SHOVEL, WOODEN_PICKAXE,
+                                                                                      WOODEN_AXE, WOODEN_SWORD,
+                                                                                      WOODEN_HOE, STONE_SHOVEL,
+                                                                                      STONE_PICKAXE, STONE_AXE,
+                                                                                      STONE_SWORD, STONE_HOE,
+                                                                                      DIAMOND_SHOVEL, DIAMOND_PICKAXE,
+                                                                                      DIAMOND_AXE, DIAMOND_SWORD,
+                                                                                      DIAMOND_HOE, GOLDEN_SHOVEL,
+                                                                                      GOLDEN_PICKAXE, GOLDEN_AXE,
+                                                                                      GOLDEN_SWORD, GOLDEN_HOE,
+                                                                                      LEATHER_HELMET,
+                                                                                      LEATHER_CHESTPLATE,
+                                                                                      LEATHER_LEGGINGS, LEATHER_BOOTS,
+                                                                                      CHAINMAIL_HELMET,
+                                                                                      CHAINMAIL_CHESTPLATE,
+                                                                                      CHAINMAIL_LEGGINGS,
+                                                                                      CHAINMAIL_BOOTS, IRON_HELMET,
+                                                                                      IRON_CHESTPLATE, IRON_LEGGINGS,
+                                                                                      IRON_BOOTS, DIAMOND_HELMET,
+                                                                                      DIAMOND_CHESTPLATE,
+                                                                                      DIAMOND_LEGGINGS, DIAMOND_BOOTS,
+                                                                                      GOLDEN_HELMET, GOLDEN_CHESTPLATE,
+                                                                                      GOLDEN_LEGGINGS, GOLDEN_BOOTS,
+                                                                                      FLINT_AND_STEEL, BOW, FISHING_ROD,
+                                                                                      SHEARS)));
+    private SpongeCore core;
 
-    MaterialMatcher(Game game)
+    MaterialMatcher(SpongeCore core, Game game)
     {
+        this.core = core;
         this.builder = game.getRegistry().getItemBuilder();
 
         // Read names from GameDirectory
@@ -86,7 +101,8 @@ public class MaterialMatcher
 
     private ItemType matchWithLevenshteinDistance(String s, Map<String, ItemType> map)
     {
-        String t_key = Match.string().matchString(s, map.keySet());
+
+        String t_key = stringMatcher().matchString(s, map.keySet());
         if (t_key != null)
         {
             return map.get(t_key);
@@ -94,10 +110,16 @@ public class MaterialMatcher
         return null;
     }
 
-    private HashMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ItemType> map, int maxDistance, int minPercentage)
+    private StringMatcher stringMatcher()
+    {
+        return core.getModularity().start(StringMatcher.class);
+    }
+
+    private HashMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ItemType> map,
+                                                                         int maxDistance, int minPercentage)
     {
         HashMap<ItemStack, Double> itemMap = new HashMap<>();
-        TreeMap<String, Integer> itemNameList = Match.string().getMatches(s, map.keySet(), maxDistance, true);
+        TreeMap<String, Integer> itemNameList = stringMatcher().getMatches(s, map.keySet(), maxDistance, true);
 
         for (Entry<String, Integer> entry : itemNameList.entrySet())
         {
@@ -125,7 +147,6 @@ public class MaterialMatcher
         }
         String[] parts = name.toLowerCase(Locale.ENGLISH).split(":");
         ItemType type = material(parts[0]);
-
 
         ItemStackBuilder builder = this.builder.itemType(type).quantity(1);
         if (parts.length > 1)
@@ -180,7 +201,7 @@ public class MaterialMatcher
             }
             catch (NumberFormatException e)
             {
-                String match = Match.string().matchString(name, names.keySet());
+                String match = stringMatcher().matchString(name, names.keySet());
                 type = names.get(match);
             }
         }

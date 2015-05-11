@@ -21,14 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
-import de.cubeisland.engine.module.core.Core;
+
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
 import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.core.user.UserManager;
 
 public class PlayerListCompleter implements Completer
 {
-    private final Core core;
+    private final SpongeCore core;
 
-    public PlayerListCompleter(Core core)
+    public PlayerListCompleter(SpongeCore core)
     {
         this.core = core;
     }
@@ -50,7 +52,7 @@ public class PlayerListCompleter implements Completer
             firstTokens += "!";
         }
 
-        for (User user : core.getUserManager().getLoadedUsers())
+        for (User user : core.getModularity().start(UserManager.class).getLoadedUsers())
         {
             if (user.getName().startsWith(lastToken))
             {

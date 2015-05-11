@@ -27,24 +27,27 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import de.cubeisland.engine.module.core.Core;
+
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.language.LanguageLoader;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.reflect.Reflector;
 
 public class I18nLanguageLoader extends LanguageLoader
 {
     private final Map<Locale, LocaleConfiguration> configurations = new HashMap<>();
 
-    public I18nLanguageLoader(Core core)
+    public I18nLanguageLoader(SpongeCore core)
     {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getFileManager().getLanguagePath(), FileExtensionFilter.YAML))
         {
             // Search override Languages under CubeEngine/languages
             for (Path path : directoryStream)
             {
-                LocaleConfiguration config = core.getReflector().load(LocaleConfiguration.class, path.toFile(), false);
+
+                LocaleConfiguration config = core.getModularity().start(Reflector.class).load(LocaleConfiguration.class, path.toFile(), false);
                 this.configurations.put(config.getLocale(), config);
                 Locale[] clones = config.getClones();
                 if (clones != null)
@@ -60,7 +63,7 @@ public class I18nLanguageLoader extends LanguageLoader
             {
                 try (Reader reader = new InputStreamReader(url.openStream()))
                 {
-                    LocaleConfiguration config = core.getReflector().load(LocaleConfiguration.class, reader);
+                    LocaleConfiguration config = core.getModularity().start(Reflector.class).load(LocaleConfiguration.class, reader);
                     if (!this.configurations.containsKey(config.getLocale()))
                     {
                         this.configurations.put(config.getLocale(), config);

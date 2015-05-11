@@ -21,15 +21,26 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
+import de.cubeisland.engine.module.core.sponge.SpongeCore;
+import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.Match;
+import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.item.Enchantment;
 
 public class EnchantmentConverter extends SimpleConverter<Enchantment>
 {
+    private SpongeCore core;
+
+    public EnchantmentConverter(SpongeCore core)
+    {
+
+        this.core = core;
+    }
+
     @Override
     public Node toNode(Enchantment object) throws ConversionException
     {
-        return StringNode.of(Match.enchant().nameFor(object));
+        return StringNode.of( object.getName());
     }
 
     @Override
@@ -37,7 +48,7 @@ public class EnchantmentConverter extends SimpleConverter<Enchantment>
     {
         if (node instanceof StringNode)
         {
-            return Match.enchant().enchantment(((StringNode)node).getValue());
+            return  core.getModularity().start(EnchantMatcher.class).enchantment(((StringNode)node).getValue());
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
