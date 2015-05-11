@@ -37,7 +37,7 @@ public class BasePermissionProvider implements ValueProvider<Permission>
     {
         if (info instanceof ModuleMetadata)
         {
-            base.childWildcard(((ModuleMetadata)info).getName());
+            return base.childWildcard(((ModuleMetadata)info).getName());
         }
         throw new IllegalArgumentException(info.getIdentifier() + " is not a Module");
     }

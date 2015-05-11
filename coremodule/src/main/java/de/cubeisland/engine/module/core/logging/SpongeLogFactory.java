@@ -29,38 +29,46 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
+import static de.cubeisland.engine.module.core.logging.LoggingUtil.getCycler;
+import static de.cubeisland.engine.module.core.logging.LoggingUtil.getFileFormat;
+import static de.cubeisland.engine.module.core.logging.LoggingUtil.getLogFile;
+
 public class SpongeLogFactory extends DefaultLogFactory
 {
     protected final CoreModule core;
-    private final ThreadFactory threadFactory;
-
-    private final Log exLog;
-
-    protected Log coreLog;
+    private final Log4jProxyTarget log4jProxyTarget;
+    private Logger baseLogger;
+    private Log exLog;
     private final Log parent;
-    private Log databaseLog;
 
-    public SpongeLogFactory(CoreModule core, Logger baseLogger, ThreadFactory threadFactory)
+    public SpongeLogFactory(CoreModule core, Logger baseLogger)
     {
         this.core = core;
-        this.threadFactory = threadFactory;
+        this.baseLogger = baseLogger;
         this.parent = this.getLog(core.getClass());
-        Log4jProxyTarget log4jProxyTarget = new Log4jProxyTarget(baseLogger);
+
+
+        log4jProxyTarget = new Log4jProxyTarget(baseLogger);
         this.parent.addTarget(log4jProxyTarget);
 
+        log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+
+        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
+    }
+
+    public void startExceptionLogger()
+    {
+        ThreadFactory threadFactory = core.getProvided(ThreadFactory.class);
+        FileManager fileManager = core.getModularity().start(FileManager.class);
         exLog = this.getLog(CoreModule.class, "Exceptions");
-        exLog.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Exceptions"),
-                                            LoggingUtil.getFileFormat(true, false),
-                                            true, LoggingUtil.getCycler(),
-                                            threadFactory));
+        exLog.addTarget(new AsyncFileTarget(getLogFile(fileManager, "Exceptions"),
+                                            getFileFormat(true, false),
+                                            true, getCycler(), threadFactory));
 
         ExceptionAppender exceptionAppender = new ExceptionAppender(this.exLog);
         exceptionAppender.start();
         ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender);
         log4jProxyTarget.getHandle().addAppender(exceptionAppender);
-        log4jProxyTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
-
-        log4jProxyTarget.setProxyLevel(core.getConfiguration().logging.consoleLevel);
     }
 
 

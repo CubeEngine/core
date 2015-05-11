@@ -39,6 +39,7 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CoreCommands;
@@ -104,6 +105,7 @@ import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
+@ModuleInfo(name = "CoreModule", description = "The core module of CubeEngine")
 public final class CoreModule extends Module
 {
     public static final Charset CHARSET = Charset.forName("UTF-8");
@@ -147,16 +149,15 @@ public final class CoreModule extends Module
     @Override
     public void onEnable()
     {
+        System.out.println("CoreModule onEnable...");
         ServiceManager sm = getModularity().getServiceManager();
 
         sm.registerService(McUUID.class, new McUUID(this));
 
-        ThreadFactoryProvider threadFactoryProvider = new ThreadFactoryProvider();
-        ThreadFactory threadFactory = threadFactoryProvider.get(getInformation(), getModularity());
+
 
         // FileManager
         FileManager fileManager = new FileManager(pluginLogger, dataFolder);
-
         sm.registerService(FileManager.class, fileManager);
 
         fileManager.dropResources(CoreResource.values());
@@ -172,10 +173,18 @@ public final class CoreModule extends Module
         this.config = reflector.load(BukkitCoreConfiguration.class, dataFolder.resolve("core.yml").toFile());
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
-        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()), threadFactory);
+        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()));
         sm.registerService(LogFactory.class, logFactory);
 
         logger = logFactory.getLog(CoreModule.class, "Core");
+        getModularity().registerProvider(Log.class, new LogProvider(logFactory));
+
+        ThreadFactoryProvider threadFactoryProvider = new ThreadFactoryProvider(logger);
+        ThreadFactory threadFactory = threadFactoryProvider.get(getInformation(), getModularity());
+        getModularity().registerProvider(ThreadFactory.class, threadFactoryProvider);
+
+        logFactory.startExceptionLogger();
+
         AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fileManager, "Core"),
                                                      LoggingUtil.getFileFormat(true, true),
                                                      true, LoggingUtil.getCycler(),
@@ -184,8 +193,6 @@ public final class CoreModule extends Module
         logger.addTarget(target);
         logger.addDelegate(logFactory.getParent());
 
-        getModularity().registerProvider(Log.class, new LogProvider(logFactory));
-        getModularity().registerProvider(ThreadFactory.class, threadFactoryProvider);
         getModularity().registerProvider(Permission.class, new BasePermissionProvider(Permission.BASE));
         sm.registerService(AsynchronousScheduler.class, game.getAsyncScheduler());
         sm.registerService(SynchronousScheduler.class, game.getSyncScheduler());
@@ -280,6 +287,8 @@ public final class CoreModule extends Module
         this.freezeDetection = new FreezeDetection(this, 20);
         this.freezeDetection.addListener(this::dumpThreads);
         this.freezeDetection.start();
+
+        System.out.println("CoreModule enabled...");
     }
 
     private void registerCommands(CommandManager manager) // TODO module dependent on CommandManager

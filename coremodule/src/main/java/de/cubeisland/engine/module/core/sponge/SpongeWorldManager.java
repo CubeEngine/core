@@ -27,7 +27,6 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.module.core.filesystem.FileUtil;
 import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.module.core.world.AbstractWorldManager;
 import de.cubeisland.engine.module.core.world.ConfigWorld;
@@ -49,7 +48,7 @@ import static de.cubeisland.engine.module.core.world.TableWorld.TABLE_WORLD;
 
 @ServiceImpl(WorldManager.class)
 @Version(1)
-public class SpongeWorldManager extends AbstractWorldManager
+public class SpongeWorldManager extends AbstractWorldManager implements WorldManager
 {
     private final CoreModule core;
     private final Server server;

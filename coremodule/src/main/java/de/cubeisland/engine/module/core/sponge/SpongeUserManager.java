@@ -56,7 +56,7 @@ import static java.util.stream.Collectors.toList;
 
 @ServiceImpl(UserManager.class)
 @Version(1)
-public class SpongeUserManager extends AbstractUserManager
+public class SpongeUserManager extends AbstractUserManager implements UserManager
 {
     private final CoreModule core;
     protected ScheduledExecutorService nativeScheduler;

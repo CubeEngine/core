@@ -29,16 +29,17 @@ public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
 {
     private CoreThreadFactory coreThreadFactory;
 
+    public ThreadFactoryProvider(Log log)
+    {
+        this.coreThreadFactory = new CoreThreadFactory(log);
+    }
+
     @Override
     public ThreadFactory get(DependencyInformation info, Modularity modularity)
     {
         Log log = modularity.getProvider(Log.class).get(info, modularity);
         if (info.getClassName().equals(CoreModule.class.getName()))
         {
-            if (coreThreadFactory == null)
-            {
-                coreThreadFactory = new CoreThreadFactory(log);
-            }
             return coreThreadFactory;
         }
         return new ModuleThreadFactory(coreThreadFactory.getThreadGroup(), log);

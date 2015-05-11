@@ -27,8 +27,8 @@ import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
 
 public class LogProvider implements ValueProvider<Log>
 {
@@ -48,20 +48,23 @@ public class LogProvider implements ValueProvider<Log>
 
             Log log = logFactory.getLog(CoreModule.class, name);
 
-            /* TODO log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(modularity.start(FileManager.class), name),
-                                              LoggingUtil.getFileFormat(true, true),
-                                              true, LoggingUtil.getCycler(),
-                                              core.getProvided(ThreadFactory.class)));
-                                              */
+            /* TODO add target when getting first time
+            log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(modularity.start(FileManager.class), name),
+                                              LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(),
+                                              modularity.getProvider(ThreadFactory.class).get(info, modularity)));
+
             LogTarget parentTarget = log.addDelegate(logFactory.getParent());
 
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
+            */
 
             return log;
         }
         else
         {
-            return null; // TODO service Logger
+            Log log = logFactory.getLog(CoreModule.class, info.getIdentifier());
+            // TODO target / parent
+            return log;
         }
     }
 }
