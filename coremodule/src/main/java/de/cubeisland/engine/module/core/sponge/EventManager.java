@@ -41,6 +41,7 @@ public class EventManager
         this.corePlugin = core;
         this.eventManager = core.getGame().getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
+        // TODO register(..) has to be called with a @Plugin
     }
 
     /**

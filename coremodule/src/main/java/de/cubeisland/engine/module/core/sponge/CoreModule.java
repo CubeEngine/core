@@ -40,6 +40,8 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.Disable;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
@@ -138,7 +140,6 @@ public final class CoreModule extends Module
         return mainThread;
     }
 
-
     /* TODO configprovider
       T config = this.core.getReflector().create(clazz);
       config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
@@ -148,7 +149,7 @@ public final class CoreModule extends Module
       }
       return config;
       */
-    @Override
+    @Enable
     public void onEnable()
     {
         System.out.println("CoreModule onEnable...");
@@ -235,6 +236,16 @@ public final class CoreModule extends Module
             BukkitUtils.disableCommandLogging();
         }
 
+        sm.registerService(MaterialDataMatcher.class, new MaterialDataMatcher(this, game));
+        sm.registerService(MaterialMatcher.class, new MaterialMatcher(this, game));
+        sm.registerService(EnchantMatcher.class, new EnchantMatcher(this, game));
+        sm.registerService(ProfessionMatcher.class, new ProfessionMatcher(this, game));
+        sm.registerService(EntityMatcher.class, new EntityMatcher(this, game));
+        sm.registerService(StringMatcher.class, new StringMatcher(logger));
+        sm.registerService(TimeMatcher.class, new TimeMatcher(this));
+        sm.registerService(WorldMatcher.class, new WorldMatcher(this));
+        sm.registerService(EventManager.class, new EventManager(this));
+
         // DataBase - depends on CoreConfig / ThreadFactory
         getLog().info("Connecting to the database...");
         Database database = MySQLDatabase.loadFromConfig(this, moduleFolder.resolve("database.yml"));
@@ -249,15 +260,7 @@ public final class CoreModule extends Module
         sm.registerService(Database.class, database);
 
 
-            sm.registerService(MaterialDataMatcher.class, new MaterialDataMatcher(this, game));
-            sm.registerService(MaterialMatcher.class, new MaterialMatcher(this, game));
-            sm.registerService(EnchantMatcher.class, new EnchantMatcher(this, game));
-            sm.registerService(ProfessionMatcher.class, new ProfessionMatcher(this, game));
-            sm.registerService(EntityMatcher.class, new EntityMatcher(this, game));
-            sm.registerService(StringMatcher.class, new StringMatcher(logger));
-            sm.registerService(TimeMatcher.class, new TimeMatcher(this));
-            sm.registerService(WorldMatcher.class, new WorldMatcher(this));
-            sm.registerService(EventManager.class, new EventManager(this));
+
 
         this.inventoryGuard = new InventoryGuardFactory(this);
 
@@ -322,6 +325,7 @@ public final class CoreModule extends Module
         manager.registerConverter(new InetAddressConverter(), InetAddress.class);
     }
 
+    @Disable
     public void onDisable()
     {
         this.logger.debug("utils cleanup");

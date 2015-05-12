@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.paginate;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.core.command.CommandManager;
@@ -42,14 +43,21 @@ public class SpongePaginationManager implements PaginationManager
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
+    private CommandManager cm;
     private CoreModule core;
 
     @Inject
     public SpongePaginationManager(EventManager em, CommandManager cm, CoreModule core)
     {
+        this.cm = cm;
         this.core = core;
-        cm.addCommands(cm, core, new PaginationCommands(this));
         em.registerListener(core, this);
+    }
+
+    @Enable
+    public void onEnable()
+    {
+        cm.addCommands(cm, core, new PaginationCommands(this));
     }
 
     @Subscribe

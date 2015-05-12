@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import javax.inject.Inject;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -34,6 +35,7 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.task.TaskManager;
 import de.cubeisland.engine.module.core.util.Pair;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.module.paginate.PaginationCommands;
 
 @ServiceImpl(ConfirmManager.class)
 @Version(1)
@@ -42,16 +44,24 @@ public class SpongeConfirmManager implements ConfirmManager
     private static final int CONFIRM_TIMEOUT = 600; // 30 seconds
     private final Map<CommandSender, Queue<ConfirmResult>> pendingConfirmations;
     private final Map<CommandSender, Queue<Pair<Module, UUID>>> confirmationTimeoutTasks;
+    private CommandManager cm;
     private final CoreModule core;
 
     @Inject
     public SpongeConfirmManager(CommandManager cm, CoreModule core)
     {
+        this.cm = cm;
         this.core = core;
         this.pendingConfirmations = new HashMap<>();
         confirmationTimeoutTasks = new HashMap<>();
+    }
+
+    @Enable
+    public void onEnable()
+    {
         cm.addCommands(cm, core, new ConfirmCommand(this));
     }
+
 
     /**
      * Register a Confirmation request. This will start a timer that will abort the request after 30 seconds and notify

@@ -48,6 +48,7 @@ public class TimeMatcher
     public TimeMatcher(CoreModule core)
     {
         this.core = core;
+
         timeToName = this.loadFromFile();
         nameToTime = new HashMap<>();
         for (Entry<Long, List<String>> entry : timeToName.entrySet())
@@ -68,11 +69,11 @@ public class TimeMatcher
     {
         try
         {
-            Path file = core.getProvided(FileManager.class).getDataPath().resolve(CoreResource.TIMES.getTarget());
+            Path file = core.getModularity().start(FileManager.class).getDataPath().resolve(CoreResource.TIMES.getTarget());
             List<String> input = FileUtil.readStringList(file);
             Map<Long,List<String>> readTime = new TreeMap<>();
             this.loadFromFile(readTime, input);
-            try (InputStream is = core.getProvided(FileManager.class).getSourceOf(file))
+            try (InputStream is = core.getModularity().start(FileManager.class).getSourceOf(file))
             {
                 List<String> jarinput = FileUtil.readStringList(is);
                 if (jarinput != null && this.loadFromFile(readTime, jarinput))
