@@ -32,7 +32,6 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import de.cubeisland.engine.module.core.filesystem.FileUtil.RecursiveDirectoryDeleter;
 import de.cubeisland.engine.module.core.util.Cleanable;
 import de.cubeisland.engine.module.core.contract.Contract;
 import org.slf4j.Logger;
@@ -55,18 +54,18 @@ public class FileManager implements Cleanable
     private final FileAttribute<?>[] folderCreateAttributes;
 
 
-    public FileManager(Logger logger, Path dataPath)
+    public FileManager(Logger logger, Path pluginPath, Path coreModulePath)
     {
         try
         {
-            Contract.expectNotNull(dataPath, "The CubeEngine plugin folder must not be null!");
-            dataPath = dataPath.toAbsolutePath();
+            Contract.expectNotNull(coreModulePath, "The CubeEngine plugin folder must not be null!");
+            coreModulePath = coreModulePath.toAbsolutePath();
 
             this.logger = logger;
 
-            this.dataPath = Files.createDirectories(dataPath).toRealPath();
+            this.dataPath = Files.createDirectories(coreModulePath).toRealPath();
 
-            if (Files.getFileAttributeView(dataPath, PosixFileAttributeView.class) != null)
+            if (Files.getFileAttributeView(coreModulePath, PosixFileAttributeView.class) != null)
             {
                 folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
 
@@ -79,21 +78,21 @@ public class FileManager implements Cleanable
 
             final Path linkSource = Paths.get(System.getProperty("user.dir", "."), "CubeEngine");
 
-            this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
+            this.languagePath = Files.createDirectories(pluginPath.resolve("language"), folderCreateAttributes);
 
-            this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
+            this.logPath = Files.createDirectories(pluginPath.resolve("log"), folderCreateAttributes);
 
-            this.modulesPath = Files.createDirectories(dataPath.resolve("modules"), folderCreateAttributes);
+            this.modulesPath = Files.createDirectories(pluginPath.resolve("modules"), folderCreateAttributes);
 
-            this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
+            this.tempPath = Files.createDirectories(pluginPath.resolve("temp"), folderCreateAttributes);
 
-            this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
+            this.translationPath = Files.createDirectories(pluginPath.resolve("translations"), folderCreateAttributes);
 
             this.fileSources = new ConcurrentHashMap<>();
 
             try
             {
-                Files.createSymbolicLink(linkSource, this.dataPath);
+                Files.createSymbolicLink(linkSource, pluginPath);
             }
             catch (IOException ignored)
             {}
@@ -168,32 +167,6 @@ public class FileManager implements Cleanable
     public Path getTranslationPath()
     {
         return translationPath;
-    }
-
-    public void clearTempDir()
-    {
-        logger.info("Clearing the temporary folder ''{0}''...", this.tempPath.toAbsolutePath());
-        if (!Files.exists(this.tempPath))
-        {
-            return;
-        }
-        if (!Files.isDirectory(this.tempPath))
-        {
-            logger.warn("The path ''{0}'' is not a directory!", this.tempPath.toAbsolutePath());
-            return;
-        }
-
-        try
-        {
-            Files.walkFileTree(this.tempPath, new RecursiveDirectoryDeleter());
-        }
-        catch (IOException e)
-        {
-            this.logger.warn("Failed to clear the temp directory!", e);
-            return;
-        }
-
-        logger.info("Temporary folder cleared!");
     }
 
     private static String getSaneSource(Resource resource)
@@ -330,6 +303,5 @@ public class FileManager implements Cleanable
     @Override
     public void clean()
     {
-        this.clearTempDir();
-    } // TODO cleanup
+    } // TODO cleanup ?
 }

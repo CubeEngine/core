@@ -18,6 +18,7 @@
 package de.cubeisland.engine.module.core.sponge;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.InetAddress;
@@ -120,7 +121,8 @@ public final class CoreModule extends Module
     private FreezeDetection freezeDetection;
 
     @Inject private Game game;
-    @Inject private Path dataFolder;
+    @Inject private Path moduleFolder;
+    @Inject private File pluginFolder;
     @Inject private org.slf4j.Logger pluginLogger;
     private Log logger;
 
@@ -154,14 +156,11 @@ public final class CoreModule extends Module
 
         sm.registerService(McUUID.class, new McUUID(this));
 
-
-
         // FileManager
-        FileManager fileManager = new FileManager(pluginLogger, dataFolder);
+        FileManager fileManager = new FileManager(pluginLogger, pluginFolder.toPath(), moduleFolder);
         sm.registerService(FileManager.class, fileManager);
 
         fileManager.dropResources(CoreResource.values());
-        fileManager.clearTempDir();
 
         // Reflector
         Reflector reflector = new Reflector();
@@ -170,7 +169,7 @@ public final class CoreModule extends Module
         registerConverters(reflector);
 
         // Core Configuration - depends on Reflector
-        this.config = reflector.load(BukkitCoreConfiguration.class, dataFolder.resolve("core.yml").toFile());
+        this.config = reflector.load(BukkitCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
         SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()));
@@ -213,7 +212,7 @@ public final class CoreModule extends Module
 
         // ApiServer - depends on Reflector
         ApiServer apiServer = new ApiServer(this);
-        apiServer.configure(reflector.load(ApiConfig.class, dataFolder.resolve("webapi.yml").toFile()));
+        apiServer.configure(reflector.load(ApiConfig.class, moduleFolder.resolve("webapi.yml").toFile()));
 
         if (this.config.useWebapi)
         {
@@ -238,7 +237,7 @@ public final class CoreModule extends Module
 
         // DataBase - depends on CoreConfig / ThreadFactory
         getLog().info("Connecting to the database...");
-        Database database = MySQLDatabase.loadFromConfig(this, dataFolder.resolve("database.yml"));
+        Database database = MySQLDatabase.loadFromConfig(this, moduleFolder.resolve("database.yml"));
         if (database == null)
         {
             getLog().error("Failed to connect to the database, aborting...");
@@ -258,6 +257,7 @@ public final class CoreModule extends Module
             sm.registerService(StringMatcher.class, new StringMatcher(logger));
             sm.registerService(TimeMatcher.class, new TimeMatcher(this));
             sm.registerService(WorldMatcher.class, new WorldMatcher(this));
+            sm.registerService(EventManager.class, new EventManager(this));
 
         this.inventoryGuard = new InventoryGuardFactory(this);
 
@@ -345,7 +345,7 @@ public final class CoreModule extends Module
 
     public void dumpThreads()
     {
-        Path threadDumpFolder = dataFolder.resolve("thread-dumps");
+        Path threadDumpFolder = moduleFolder.resolve("thread-dumps");
         try
         {
             Files.createDirectories(threadDumpFolder);

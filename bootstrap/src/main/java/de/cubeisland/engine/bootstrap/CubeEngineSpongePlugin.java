@@ -19,11 +19,14 @@ package de.cubeisland.engine.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.asm.AsmModularity;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.graph.Node;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -36,6 +39,12 @@ import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.util.command.CommandException;
+import org.spongepowered.api.util.command.CommandResult;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandContext;
+import org.spongepowered.api.util.command.spec.CommandExecutor;
+import org.spongepowered.api.util.command.spec.CommandSpec;
 
 @Plugin(id = "CubeEngine", name = "CubeEngine", version = "1.0.0")
 public class CubeEngineSpongePlugin
@@ -54,21 +63,40 @@ public class CubeEngineSpongePlugin
         // Access to a default logger instance and access to information regarding preferred configuration file locations is available.
 
         pluginLogger.info("Start CubeEngine...");
-        Path moduleFolder = dataFolder.toPath().resolve("modules"); // Can contain jars or classes of modules
+
+        Path loadPath = dataFolder.toPath().resolve("temp");
+        Path modules = dataFolder.toPath().resolve("modules");
         try
         {
-            Files.createDirectories(moduleFolder);
+            pluginLogger.info("Copy Modules");
+            // copy modules to tmp folder
+            if ((Files.isDirectory(modules) || !Files.exists(modules))
+                && (Files.isDirectory(loadPath) || !Files.exists(loadPath)))
+            {
+                if (Files.isDirectory(loadPath))
+                {
+                    Files.walkFileTree(loadPath, new RecursiveDirectoryDeleter());
+                }
+                Files.deleteIfExists(loadPath);
+                Files.createDirectories(modules);
+                Files.createDirectories(loadPath);
+                for (Path file : Files.newDirectoryStream(modules, entry -> Files.isRegularFile(entry)
+                    && (entry.getFileName().toString().endsWith(".jar") || entry.getFileName().toString().endsWith(".class"))))
+                {
+                    Files.copy(file, loadPath.resolve(file.getFileName()));
+                }
+            }
         }
         catch (IOException e)
-        {
-            // TODO handle
-        }
-        pluginLogger.info("Load available Modules");
-        modularity.load(moduleFolder.toFile());
+        {}
+
+        pluginLogger.info("Load Modules");
+        modularity.load(loadPath.toFile());
         pluginLogger.info("done.");
         modularity.getServiceManager().registerService(Game.class, game);
         modularity.getServiceManager().registerService(Modularity.class, modularity);
         modularity.getServiceManager().registerService(Logger.class, pluginLogger);
+        modularity.getServiceManager().registerService(File.class, dataFolder);
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
     }
 
@@ -80,9 +108,18 @@ public class CubeEngineSpongePlugin
 
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
-        pluginLogger.info("Starting Modules...");
+        pluginLogger.info("Start Modules");
         modularity.startAll();
-        pluginLogger.info("done.");
+        pluginLogger.info("Finished starting Modules");
+
+        game.getCommandDispatcher().register(this, CommandSpec.builder().setDescription(Texts.of(
+                                                 "Reloads the CubeEngine")).setExecutor(
+            (commandSource, commandContext) -> {
+                // TODO add reloadAll() to Modularity
+                modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
+                modularity.startAll();
+                return CommandResult.success();
+            }).build(), "reload");
     }
 
     @Subscribe

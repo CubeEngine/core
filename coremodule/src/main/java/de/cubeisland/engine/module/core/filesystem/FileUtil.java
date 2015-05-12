@@ -26,11 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
@@ -52,7 +49,6 @@ public class FileUtil
 {
     public static final Set<PosixFilePermission> DEFAULT_FOLDER_PERMS = fromString("rwxrwxr-x");
     private static final Set<PosixFilePermission> READ_ONLY_PERM = PosixFilePermissions.fromString("r--r-----");
-    private static final RecursiveDirectoryDeleter TREE_WALKER = new RecursiveDirectoryDeleter();
 
     /**
      * Reads the file line by line and returns a list of Strings containing all lines
@@ -185,22 +181,6 @@ public class FileUtil
         return true;
     }
 
-    public static void deleteRecursive(Path file) throws IOException
-    {
-        if (file == null)
-        {
-            return;
-        }
-        if (Files.isRegularFile(file))
-        {
-            Files.delete(file);
-        }
-        else
-        {
-            Files.walkFileTree(file, TREE_WALKER);
-        }
-    }
-
     public static void copy(ReadableByteChannel in, WritableByteChannel out) throws IOException
     {
         final ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 4);
@@ -208,34 +188,6 @@ public class FileUtil
         {
             out.write(buffer);
             buffer.flip();
-        }
-    }
-
-    public static class RecursiveDirectoryDeleter extends SimpleFileVisitor<Path>
-    {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-        {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException
-        {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
-        {
-            if (exc != null)
-            {
-                throw exc;
-            }
-            Files.delete(dir);
-            return FileVisitResult.CONTINUE;
         }
     }
 }
