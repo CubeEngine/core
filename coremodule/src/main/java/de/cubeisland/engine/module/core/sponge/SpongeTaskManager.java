@@ -58,7 +58,7 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 @Version(1)
 public class SpongeTaskManager implements TaskManager
 {
-    private final CoreModule corePlugin;
+    private final Object plugin;
     private AsynchronousScheduler asyncScheduler;
     private SynchronousScheduler syncScheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
@@ -66,7 +66,7 @@ public class SpongeTaskManager implements TaskManager
     @Inject
     public SpongeTaskManager(CoreModule core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
     {
-        this.corePlugin = core;
+        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
         this.asyncScheduler = asyncScheduler;
         this.syncScheduler = syncScheduler;
         this.moduleTasks = new ConcurrentHashMap<>();
@@ -100,7 +100,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, syncScheduler.runTaskAfter(corePlugin, runnable, delay));
+        return addTaskId(module, syncScheduler.runTaskAfter(plugin, runnable, delay));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, syncScheduler.runRepeatingTaskAfter(corePlugin, runnable, delay, interval));
+        return addTaskId(module, syncScheduler.runRepeatingTaskAfter(plugin, runnable, delay, interval));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class SpongeTaskManager implements TaskManager
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
-        return addTaskId(module, asyncScheduler.runTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS, delay * 50));
+        return addTaskId(module, asyncScheduler.runTaskAfter(plugin, runnable, TimeUnit.MILLISECONDS, delay * 50));
     }
 
     private Optional<UUID> addTaskId(Module module, Optional<Task> task)
@@ -143,7 +143,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(corePlugin, runnable, TimeUnit.MILLISECONDS,
+        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(plugin, runnable, TimeUnit.MILLISECONDS,
                                                                       delay * 50, interval * 50));
     }
 

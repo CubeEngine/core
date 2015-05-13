@@ -19,14 +19,10 @@ package de.cubeisland.engine.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import com.google.inject.Inject;
-import de.cubeisland.engine.modularity.asm.AsmModularity;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.graph.Node;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -39,12 +35,10 @@ import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandContext;
-import org.spongepowered.api.util.command.spec.CommandExecutor;
 import org.spongepowered.api.util.command.spec.CommandSpec;
+
+import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
 
 @Plugin(id = "CubeEngine", name = "CubeEngine", version = "1.0.0")
 public class CubeEngineSpongePlugin
@@ -54,7 +48,7 @@ public class CubeEngineSpongePlugin
     @Inject private org.slf4j.Logger pluginLogger;
     @ConfigDir(sharedRoot = false) @Inject File dataFolder;
 
-    private final Modularity modularity = new AsmModularity();
+    private final Modularity modularity = newModularity();
 
     @Subscribe
     public void preInit(PreInitializationEvent event)

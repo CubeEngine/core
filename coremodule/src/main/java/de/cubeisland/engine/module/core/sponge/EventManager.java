@@ -32,16 +32,15 @@ import org.spongepowered.api.event.Event;
  */
 public class EventManager
 {
-    private final CoreModule corePlugin;
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.service.event.EventManager eventManager;
+    private final Object plugin;
 
     public EventManager(CoreModule core)
     {
-        this.corePlugin = core;
         this.eventManager = core.getGame().getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        // TODO register(..) has to be called with a @Plugin
+        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
     }
 
     /**
@@ -60,7 +59,7 @@ public class EventManager
         }
         listeners.add(listener);
 
-        eventManager.register(this.corePlugin, listener);
+        eventManager.register(plugin, listener);
         return this;
     }
 

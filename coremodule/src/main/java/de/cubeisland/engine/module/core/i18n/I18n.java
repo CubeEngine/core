@@ -75,7 +75,7 @@ public class I18n
 
         this.core = core;
         this.addPoFilesFromDirectory(translationPath);
-        this.poFiles.addAll(getFilesFromJar("translations/", ".po", this.getClass()));
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", core));
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
         this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
@@ -104,16 +104,16 @@ public class I18n
     {
         Path translations = module.getProvided(Path.class).resolve("translations");
         this.addPoFilesFromDirectory(translations);
-        this.poFiles.addAll(getFilesFromJar("translations/", ".po", module.getClass()));
+        this.poFiles.addAll(getFilesFromJar("translations/", ".po", module));
     }
 
-    public static List<URL> getFilesFromJar(String path, String fileEnding, Class clazz)
+    public static List<URL> getFilesFromJar(String path, String fileEnding, Module module)
     {
         try
         {
-            URL url = clazz.getProtectionDomain().getCodeSource().getLocation();
+            URL sourceURL = module.getProvided(URL.class);
             List<URL> urls = new ArrayList<>();
-            Path directory = Paths.get(url.toURI()).resolve(path);
+            Path directory = Paths.get(sourceURL.toURI()).resolve(path);
             if (Files.isDirectory(directory))
             {
                 for (Path file : Files.newDirectoryStream(directory, FileExtensionFilter.PO))
@@ -123,7 +123,7 @@ public class I18n
                 return urls;
             }
             Set<String> files = new LinkedHashSet<>();
-            JarFile jarFile = new JarFile(new File(url.toURI()));
+            JarFile jarFile = new JarFile(new File(sourceURL.toURI()));
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements())
             {
@@ -136,7 +136,7 @@ public class I18n
 
             for (String file : files)
             {
-                urls.add(clazz.getResource("/" + file));
+                urls.add(module.getClass().getResource("/" + file));
             }
             return urls;
         }

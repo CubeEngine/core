@@ -61,7 +61,7 @@ public class I18nLanguageLoader extends LanguageLoader
                 }
             }
             // Search provided Languages in CubeEngine.jar
-            for (URL url : I18n.getFilesFromJar("languages/", ".yml", this.getClass()))
+            for (URL url : I18n.getFilesFromJar("languages/", ".yml", core))
             {
                 try (Reader reader = new InputStreamReader(url.openStream()))
                 {

@@ -38,7 +38,7 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 import static de.cubeisland.engine.module.core.sponge.CoreModule.isMainThread;
 import static java.util.stream.Collectors.toSet;
 
-@ServiceImpl(BanManager.class)
+// TODO wait for BanService Impl in Sponge @ServiceImpl(BanManager.class)
 @Version(1)
 public class SpongeBanManager implements BanManager
 {

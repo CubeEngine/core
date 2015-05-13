@@ -67,6 +67,7 @@ import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
+import org.spongepowered.api.service.sql.SqlService;
 
 public class MySQLDatabase extends AbstractDatabase
 {
@@ -236,8 +237,8 @@ public class MySQLDatabase extends AbstractDatabase
     {
         try
         {
-            Constructor<? extends Table<?>> constructor = clazz.getDeclaredConstructor(String.class);
-            Table<?> table = constructor.newInstance(this.config.tablePrefix);
+            Constructor<? extends Table<?>> constructor = clazz.getDeclaredConstructor(String.class, Database.class);
+            Table<?> table = constructor.newInstance(this.config.tablePrefix, this);
             this.registerTable(table);
         }
         catch (ReflectiveOperationException e)
