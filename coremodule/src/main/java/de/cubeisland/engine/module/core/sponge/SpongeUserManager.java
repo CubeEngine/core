@@ -217,7 +217,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.POST)
         public void onQuit(final PlayerQuitEvent event)
         {
-            final User user = getExactUser(event.getPlayer().getUniqueId());
+            final User user = getExactUser(event.getUser().getUniqueId());
             core.getModularity().start(TaskManager.class).runTask(core, () -> {
                 synchronized (SpongeUserManager.this)
                 {
@@ -254,7 +254,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.EARLY)
         public void onJoin(final PlayerJoinEvent event)
         {
-            final User user = getExactUser(event.getPlayer());
+            final User user = getExactUser(event.getUser());
             if (user != null)
             {
                 onlineUsers.add(user);
@@ -287,7 +287,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.POST)
         public void onJoin(PlayerJoinEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
                 attachment.onJoin(event.getJoinMessage());
             }
@@ -296,7 +296,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.POST)
         public void onQuit(PlayerQuitEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
                 attachment.onQuit(event.getQuitMessage());
             }
@@ -305,7 +305,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.POST)
         public void onKick(PlayerKickEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
                 attachment.onKick(event.getReason());
             }
@@ -314,7 +314,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Subscribe(order = Order.POST)
         public void onChat(PlayerChatEvent event)
         {
-            for (UserAttachment attachment : getExactUser(event.getPlayer()).getAll())
+            for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
                 // TODO attachment.onChat(event.getFormat(), event.getMessage());
             }

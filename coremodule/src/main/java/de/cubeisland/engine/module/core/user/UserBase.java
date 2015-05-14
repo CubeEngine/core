@@ -602,7 +602,7 @@ public class UserBase
 
     public boolean hasPlayedBefore()
     {
-        return this.getOfflinePlayer().getData(JoinData.class).get().hasJoinedBefore();
+        return this.getOfflinePlayer().getData(JoinData.class).isPresent();
     }
 
     public void setFlySpeed(float value) throws IllegalArgumentException

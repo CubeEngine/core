@@ -33,7 +33,7 @@ public class PreventSpamKickListener
     @Subscribe(order = Order.EARLY, ignoreCancelled = true)
     public void onKick(PlayerKickEvent event)
     {
-        if ("disconnect.spam".equals(event.getReason().get().getContent()) && core.perms().SPAM.isAuthorized(event.getPlayer()))
+        if ("disconnect.spam".equals(event.getReason().get().getContent()) && core.perms().SPAM.isAuthorized(event.getUser()))
         {
             event.setCancelled(true);
         }

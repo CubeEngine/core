@@ -63,7 +63,7 @@ public class SpongePaginationManager implements PaginationManager
     @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        userCommandMap.remove(core.getModularity().start(UserManager.class).getExactUser(event.getPlayer().getUniqueId()));
+        userCommandMap.remove(core.getModularity().start(UserManager.class).getExactUser(event.getUser().getUniqueId()));
     }
 
     @Override

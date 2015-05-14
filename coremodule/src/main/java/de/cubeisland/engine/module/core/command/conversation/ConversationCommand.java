@@ -62,7 +62,7 @@ public abstract class ConversationCommand extends ContainerCommand
     @Subscribe
     public void onChatHandler(PlayerChatEvent event)
     {
-        User user = getModule().getModularity().start(UserManager.class).getExactUser(event.getPlayer().getUniqueId());
+        User user = getModule().getModularity().start(UserManager.class).getExactUser(event.getUser().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(
