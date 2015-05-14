@@ -43,10 +43,13 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
+import com.zaxxer.hikari.pool.PoolUtilities;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.Disable;
 import de.cubeisland.engine.module.core.database.AbstractDatabase;
 import de.cubeisland.engine.module.core.database.Database;
 import de.cubeisland.engine.module.core.database.DatabaseConfiguration;
@@ -58,6 +61,9 @@ import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.reflect.Reflector;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.conf.MappedSchema;
@@ -110,6 +116,10 @@ public class MySQLDatabase extends AbstractDatabase
         dsConf.setMaximumPoolSize(20);
         dsConf.setThreadFactory(threadFactory);
         dataSource = new HikariDataSource(dsConf);
+
+        // Disable HikariPool ConsoleSpam
+        ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
+        ((Logger)LogManager.getLogger(PoolUtilities.class)).setLevel(Level.INFO);
 
         try (Connection connection = dataSource.getConnection())
         {
@@ -263,6 +273,7 @@ public class MySQLDatabase extends AbstractDatabase
     }
 
     @Override
+    @Disable
     public void shutdown()
     {
         super.shutdown();
