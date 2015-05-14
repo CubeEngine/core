@@ -63,7 +63,7 @@ public class ProxyCallable implements CommandCallable
             long delta = System.currentTimeMillis();
 
             CommandSender wrapSender = wrapSender(source);
-            boolean ran = manager.execute(newInvocation(wrapSender, alias + " " + arguments));
+            boolean ran = manager.execute(newInvocation(wrapSender, arguments.isEmpty() ? alias : alias + " " + arguments));
 
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick

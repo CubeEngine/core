@@ -580,14 +580,6 @@ public class UserBase
         // TODO this.getOfflinePlayer().setOp(bln);
     }
 
-    public void sendMessage(String string)
-    {
-        if (getPlayer().isPresent())
-        {
-            getPlayer().get().sendMessage(Texts.of(string));
-        }
-    }
-
     public boolean isOnline()
     {
         return this.getOfflinePlayer().isOnline();

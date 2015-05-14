@@ -37,6 +37,7 @@ import org.spongepowered.api.text.Texts;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+import static org.spongepowered.api.text.format.TextColors.*;
 
 public class HelpCommand implements CommandBase
 {
@@ -63,6 +64,7 @@ public class HelpCommand implements CommandBase
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
         MessageType grey = MessageType.of(ChatFormat.GREY);
+
         sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
@@ -94,8 +96,8 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(ChatFormat.YELLOW + command.getDescriptor().getName() + ChatFormat.WHITE + ": " +
-                                         ChatFormat.GREY + sender.getTranslation(NONE, command.getDescriptor().getDescription()));
+                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(),
+                                 WHITE, ": ", sender.getTranslation(grey, command.getDescriptor().getDescription()).get(sender.getLocale())));
             }
                 sender.sendMessage(" ");
             }

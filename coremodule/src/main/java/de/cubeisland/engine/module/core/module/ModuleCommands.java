@@ -62,7 +62,7 @@ public class ModuleCommands extends ContainerCommand
         core.getModularity().start(CommandManager.class).getProviderManager().register(core, new ModuleReader(modularity));
     }
 
-    public static class ModuleReader implements ArgumentReader<de.cubeisland.engine.modularity.core.Module>
+    public static class ModuleReader implements ArgumentReader<Module>
     {
         private Modularity mm;
 
@@ -72,10 +72,10 @@ public class ModuleCommands extends ContainerCommand
         }
 
         @Override
-        public de.cubeisland.engine.modularity.core.Module read(Class type, CommandInvocation invocation) throws ReaderException
+        public Module read(Class type, CommandInvocation invocation) throws ReaderException
         {
             String name = invocation.consume(1);
-            for (de.cubeisland.engine.modularity.core.Module module : this.mm.getModules())
+            for (Module module : this.mm.getModules())
             {
                 if (module.getInformation().getName().equals(name))
                 {
@@ -90,7 +90,7 @@ public class ModuleCommands extends ContainerCommand
     @Command(alias = "show", desc = "Lists all the loaded modules")
     public void list(CommandContext context)
     {
-        Set<de.cubeisland.engine.modularity.core.Module> modules = this.modularity.getModules();
+        Set<Module> modules = this.modularity.getModules();
         if (modules.isEmpty())
         {
             context.sendTranslated(NEUTRAL, "There are no modules loaded!");
@@ -98,7 +98,7 @@ public class ModuleCommands extends ContainerCommand
         }
         context.sendTranslated(NEUTRAL, "These are the loaded modules.");
         context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
-        for (de.cubeisland.engine.modularity.core.Module module : modules)
+        for (Module module : modules)
         {
             context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getInformation().getName());
             // TODO not enabled modules?

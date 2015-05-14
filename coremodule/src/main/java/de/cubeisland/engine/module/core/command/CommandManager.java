@@ -78,4 +78,5 @@ public interface CommandManager extends Cleanable, Dispatcher
      */
     @SuppressWarnings("unchecked")
     void addCommands(Dispatcher dispatcher, Module module, Object commandHolder);
+    void addCommands(Module module, Object commandHolder);
 }

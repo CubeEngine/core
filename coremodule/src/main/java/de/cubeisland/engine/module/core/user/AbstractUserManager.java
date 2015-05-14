@@ -339,7 +339,7 @@ public abstract class AbstractUserManager implements UserManager
         for (User user : this.onlineUsers)
         {
             user.sendMessage(MessageType.of(starColor), "* {user} {input#message:color=WHITE}", sender.getDisplayName(),
-                             user.getTranslation(NONE, message, params));
+                             user.getTranslation(NONE, message));
         }
     }
 
@@ -422,7 +422,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(Texts.of(user.getTranslation(NONE, message, params)));
+            user.kick(Texts.of(user.getTranslation(NONE, message).get(user.getLocale())));
         }
     }
 

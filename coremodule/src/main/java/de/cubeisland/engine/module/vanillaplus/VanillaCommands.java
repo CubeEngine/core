@@ -40,13 +40,17 @@ import de.cubeisland.engine.module.core.util.Profiler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
 import static de.cubeisland.engine.butler.parameter.Parameter.INFINITE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.spongepowered.api.text.format.TextColors.GREEN;
+import static org.spongepowered.api.text.format.TextColors.WHITE;
 
 public class VanillaCommands
 {
@@ -87,7 +91,9 @@ public class VanillaCommands
         }
         message = ChatFormat.parseFormats(message);
 
-        this.core.getGame().getServer().shutdown(Texts.of(message));
+        @SuppressWarnings("deprecation")
+        Literal literal = Texts.fromLegacy(message, '&');
+        this.core.getGame().getServer().shutdown(literal);
     }
 
     /*

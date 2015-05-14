@@ -38,27 +38,23 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.command.CommandSender;
+import de.cubeisland.engine.module.core.command.sender.BaseCommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.translation.Translation;
 
-public abstract class ApiCommandSender implements CommandSender
+public abstract class ApiCommandSender extends BaseCommandSender
 {
-    private final CoreModule core;
     private ObjectMapper mapper;
     private final List<String> messages = new ArrayList<>();
 
     public ApiCommandSender(CoreModule core, ObjectMapper mapper)
     {
-        this.core = core;
+        super(core);
         this.mapper = mapper;
-    }
-
-    @Override
-    public CoreModule getCore()
-    {
-        return this.core;
     }
 
     @Override
@@ -68,27 +64,9 @@ public abstract class ApiCommandSender implements CommandSender
     }
 
     @Override
-    public String getTranslation(MessageType type, String message, Object... params)
+    public void sendMessage(Text msg)
     {
-        return core.getModularity().start(I18n.class).translate(getLocale(), type, message, params);
-    }
-
-    @Override
-    public void sendTranslated(MessageType type, String message, Object... params)
-    {
-        this.sendMessage(this.getTranslation(type, message, params));
-    }
-
-    @Override
-    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
-    {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
-    }
-
-    @Override
-    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
-    {
-        return core.getModularity().start(I18n.class).translateN(getLocale(), type, n, singular, plural, params);
+        sendMessage(Texts.toPlain(msg));
     }
 
     /**

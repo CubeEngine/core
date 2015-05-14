@@ -59,7 +59,7 @@ public class SpongeConfirmManager implements ConfirmManager
     @Enable
     public void onEnable()
     {
-        cm.addCommands(cm, core, new ConfirmCommand(this));
+        cm.addCommands(core, new ConfirmCommand(this));
     }
 
 

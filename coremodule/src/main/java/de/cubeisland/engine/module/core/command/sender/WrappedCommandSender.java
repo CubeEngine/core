@@ -20,22 +20,20 @@ package de.cubeisland.engine.module.core.command.sender;
 import java.util.Locale;
 import java.util.UUID;
 
-import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
-public class WrappedCommandSender<W extends CommandSource> implements CommandSender
+public class WrappedCommandSender<W extends CommandSource> extends BaseCommandSender
 {
-    private final CoreModule core;
     private final W wrapped;
 
     public WrappedCommandSender(CoreModule core, W sender)
     {
-        this.core = core;
+        super(core);
         this.wrapped = sender;
     }
 
@@ -47,12 +45,6 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
             return ((Player)wrapped).getUniqueId();
         }
         return NON_PLAYER_UUID;
-    }
-
-    @Override
-    public CoreModule getCore()
-    {
-        return this.core;
     }
 
     @Override
@@ -71,31 +63,6 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     public Locale getLocale()
     {
         return Locale.getDefault();
-    }
-
-    @Override
-    public String getTranslation(MessageType type, String message, Object... params)
-    {
-        return getCore().getModularity().start(I18n.class).translate(this.getLocale(), type, message, params);
-    }
-
-    @Override
-    public void sendTranslated(MessageType type, String message, Object... params)
-    {
-        this.sendMessage(this.getTranslation(type, message, params));
-    }
-
-    @Override
-    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
-    {
-        return getCore().getModularity().start(I18n.class).translateN(this.getLocale(), type, n, singular, plural, params);
-    }
-
-
-    @Override
-    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
-    {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
     }
 
     @Override
@@ -137,6 +104,12 @@ public class WrappedCommandSender<W extends CommandSource> implements CommandSen
     @Override
     public void sendMessage(String msg)
     {
-        getWrappedSender().sendMessage(Texts.of(msg));
+        this.sendMessage(Texts.of(msg));
+    }
+
+    @Override
+    public void sendMessage(Text msg)
+    {
+        getWrappedSender().sendMessage(msg);
     }
 }

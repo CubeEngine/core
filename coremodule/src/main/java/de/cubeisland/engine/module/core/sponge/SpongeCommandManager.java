@@ -161,7 +161,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         this.addCommand(new CoreCommands(core));
         if (this.core.getConfiguration().improveVanilla)
         {
-            this.addCommands(this, core, new VanillaCommands(core));
+            this.addCommands(core, new VanillaCommands(core));
             this.addCommand(new WhitelistCommand(core));
         }
     }
@@ -389,5 +389,9 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         }
     }
 
-
+    @Override
+    public void addCommands(Module module, Object commandHolder)
+    {
+        this.addCommands(this, module, commandHolder);
+    }
 }

@@ -47,7 +47,10 @@ import org.jooq.types.UInteger;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
 import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
@@ -206,43 +209,58 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             core.getProvided(Log.class).debug("A module sent an untranslated message!");
         }
-        super.sendMessage(ChatFormat.parseFormats(string));
+        @SuppressWarnings("deprecation")
+        Literal msg = Texts.fromLegacy(ChatFormat.parseFormats(string), '&');
+        this.sendMessage(msg);
     }
 
     @Override
-    public String getTranslation(MessageType type, String message, Object... params)
+    public void sendMessage(Text msg)
     {
-        return getCore().getModularity().start(I18n.class).translate(this.getLocale(), type, message, params);
+        if (getPlayer().isPresent())
+        {
+            getPlayer().get().sendMessage(msg);
+        }
     }
 
     @Override
-    public String getTranslationN(MessageType type, int n, String singular, String plural, Object... params)
+    public Translation getTranslation(MessageType type, String message, Object... args)
     {
-        return getCore().getModularity().start(I18n.class).translateN(this.getLocale(), type, n, singular, plural, params);
+        return getI18n().getTranslation(type, getLocale(), message, args);
+    }
+
+    private I18n getI18n()
+    {
+        return getCore().getModularity().start(I18n.class);
+    }
+
+    @Override
+    public Translation getTranslationN(MessageType type, int n, String singular, String plural, Object... args)
+    {
+        return getI18n().getTranslationN(type, getLocale(), n, singular, plural, args);
     }
 
     /**
      * Sends a translated Message to this User
-     *
-     * @param type
+     *  @param type
      * @param message the message to translate
-     * @param params optional parameter
+     * @param args optional parameter
      */
     @Override
-    public void sendTranslated(MessageType type, String message, Object... params)
+    public void sendTranslated(MessageType type, String message, Object... args)
     {
-        this.sendMessage(this.getTranslation(type, message, params));
+        this.sendMessage(this.getTranslation(type, message, args).get(getLocale()));
     }
 
     @Override
-    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... params)
+    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, params));
+        this.sendMessage(this.getTranslationN(type, n, singular, plural, args).get(getLocale()));
     }
 
     public void sendMessage(MessageType type, String message, Object... params)
     {
-        this.sendMessage(getCore().getModularity().start(I18n.class).composeMessage(this.getLocale(), type, message, params));
+        this.sendMessage(getI18n().composeMessage(this.getLocale(), type, message, params));
     }
 
     /**
@@ -266,7 +284,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         if (locale == null)
         {
 
-            locale = getCore().getModularity().start(I18n.class).getDefaultLanguage().getLocale();
+            locale = getI18n().getDefaultLanguage().getLocale();
         }
         return locale;
     }

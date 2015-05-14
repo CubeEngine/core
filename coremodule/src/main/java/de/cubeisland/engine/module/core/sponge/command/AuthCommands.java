@@ -39,6 +39,7 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.user.User;
 import de.cubeisland.engine.module.core.user.UserList;
 import de.cubeisland.engine.module.core.user.UserManager;
+import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
@@ -128,20 +129,19 @@ public class AuthCommands
             {
                 if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
                 {
-                    String msg = context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
-                        + context.getTranslation(NEGATIVE, "For your security you were banned 10 seconds.");
-                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getPlayer().get(), Texts.of(
-                        msg), new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
+                    Literal msg = Texts.of(context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
+                                    + context.getTranslation(NEUTRAL, "For your security you were banned 10 seconds."));
+                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getPlayer().get(), msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
                         this.core.getConfiguration().security.banDuration))));
 
                     if (!core.getGame().getServer().getOnlineMode())
                     {
                         this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context.getPlayer().get(),
-                                                         Texts.of(msg), new Date(
+                                                         msg, new Date(
                             System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
                                 this.core.getConfiguration().security.banDuration))));
                     }
-                    context.kick(Texts.of(msg));
+                    context.kick(msg);
                 }
             }
             fails.put(context.getUniqueId(), System.currentTimeMillis());

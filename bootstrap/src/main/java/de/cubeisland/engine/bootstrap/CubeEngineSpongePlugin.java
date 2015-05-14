@@ -26,6 +26,7 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.event.message.CommandEvent;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.event.state.PostInitializationEvent;
 import org.spongepowered.api.event.state.PreInitializationEvent;
@@ -107,13 +108,12 @@ public class CubeEngineSpongePlugin
         pluginLogger.info("Finished starting Modules");
 
         game.getCommandDispatcher().register(this, CommandSpec.builder().setDescription(Texts.of(
-                                                 "Reloads the CubeEngine")).setExecutor(
-            (commandSource, commandContext) -> {
-                // TODO add reloadAll() to Modularity
-                modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
-                modularity.startAll();
-                return CommandResult.success();
-            }).build(), "reload");
+            "Reloads the CubeEngine")).setExecutor((commandSource, commandContext) -> {
+            // TODO add reloadAll() to Modularity
+            modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
+            modularity.startAll();
+            return CommandResult.success();
+        }).build(), "reload");
     }
 
     @Subscribe
@@ -123,5 +123,11 @@ public class CubeEngineSpongePlugin
         // Plugins providing an API should be ready to accept basic requests.
 
         // TODO register our services in Sponge
+    }
+
+    @Subscribe
+    public void onCmd(CommandEvent e)
+    {
+        String command = e.getCommand();
     }
 }

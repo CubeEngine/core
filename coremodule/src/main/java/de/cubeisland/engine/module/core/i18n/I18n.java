@@ -55,6 +55,7 @@ import de.cubeisland.engine.messagecompositor.MessageCompositor;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
+import org.spongepowered.api.text.translation.Translation;
 
 public class I18n
 {
@@ -259,5 +260,14 @@ public class I18n
         }
 
         return languages;
+    }
+
+    public Translation getTranslation(MessageType type, Locale locale, String msg, Object... args)
+    {
+        return new CubeEngineTranslation(this, type, locale, msg, args);
+    }
+    public Translation getTranslationN(MessageType type, Locale locale, int n, String singular, String plural, Object... args)
+    {
+        return new CubeEngineTranslation(this, type, locale, n, singular, plural, args);
     }
 }

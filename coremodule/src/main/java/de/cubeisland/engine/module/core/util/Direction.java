@@ -19,6 +19,9 @@ package de.cubeisland.engine.module.core.util;
 
 import de.cubeisland.engine.module.core.command.CommandSender;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import org.spongepowered.api.text.translation.Translation;
+
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
 
 public enum Direction
 {
@@ -50,26 +53,26 @@ public enum Direction
         return Direction.NORTH;
     }
 
-    public String translated(CommandSender sender)
+    public Translation translated(CommandSender sender)
     {
         switch (this)
         {
             case NORTH:
-                return sender.getTranslation(MessageType.NONE, "north");
+                return sender.getTranslation(NONE, "north");
             case NORTH_EAST:
-                return sender.getTranslation(MessageType.NONE, "north-east");
+                return sender.getTranslation(NONE, "north-east");
             case EAST:
-                return sender.getTranslation(MessageType.NONE, "east");
+                return sender.getTranslation(NONE, "east");
             case SOUTH_EAST:
-                return sender.getTranslation(MessageType.NONE, "south-east");
+                return sender.getTranslation(NONE, "south-east");
             case SOUTH:
-                return sender.getTranslation(MessageType.NONE, "south");
+                return sender.getTranslation(NONE, "south");
             case SOUTH_WEST:
-                return sender.getTranslation(MessageType.NONE, "south-west");
+                return sender.getTranslation(NONE, "south-west");
             case WEST:
-                return sender.getTranslation(MessageType.NONE, "west");
+                return sender.getTranslation(NONE, "west");
             case NORTH_WEST:
-                return sender.getTranslation(MessageType.NONE, "north-west");
+                return sender.getTranslation(NONE, "north-west");
             default:
                 throw new IllegalStateException();
         }

@@ -165,7 +165,9 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
 
     private org.spongepowered.api.entity.player.User getOfflinePlayer(String name)
     {
-        return null; // TODO
+        Optional<Player> player = core.getGame().getServer().getPlayer(name);
+        return player.orNull();
+        // TODO actually get User when offline
     }
 
     private User getExactUser(org.spongepowered.api.entity.player.User player, boolean login)
@@ -204,7 +206,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         return this.getExactUser(player, false);
     }
 
-    private class UserListener
+    public class UserListener
     {
         /**
          * Removes the user from loaded UserList when quitting the server and
