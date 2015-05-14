@@ -294,18 +294,6 @@ public final class CoreModule extends Module
         System.out.println("CoreModule enabled...");
     }
 
-    private void registerCommands(CommandManager manager) // TODO module dependent on CommandManager
-    {
-        // depends on: server, module manager, ban manager
-        manager.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager()));
-        manager.addCommand(new CoreCommands(this));
-        if (this.config.improveVanilla)
-        {
-            manager.addCommands(manager, this, new VanillaCommands(this));
-            manager.addCommand(new WhitelistCommand(this));
-        }
-    }
-
     private void registerConverters(Reflector reflector)
     {
         ConverterManager manager = reflector.getDefaultConverterManager();

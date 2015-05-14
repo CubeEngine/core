@@ -38,10 +38,13 @@ import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
 import de.cubeisland.engine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.Disable;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
+import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.command.CommandManager;
 import de.cubeisland.engine.module.core.command.CommandManagerDescriptor;
 import de.cubeisland.engine.module.core.command.CommandOrigin;
@@ -78,6 +81,7 @@ import de.cubeisland.engine.module.core.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.core.module.ModuleCommands;
 import de.cubeisland.engine.module.core.permission.Permission;
 import de.cubeisland.engine.module.core.permission.PermissionManager;
 import de.cubeisland.engine.module.core.sponge.command.PreCommandListener;
@@ -88,6 +92,8 @@ import de.cubeisland.engine.module.core.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
+import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
+import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
 import org.spongepowered.api.data.types.DyeColor;
 import org.spongepowered.api.data.types.Profession;
 import org.spongepowered.api.entity.EntityType;
@@ -113,20 +119,16 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     private final CommandService baseDispatcher;
 
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
-
+    private final Object plugin;
     private CoreModule core;
 
-    @Override
-    public CommandManagerDescriptor getDescriptor()
-    {
-        return (CommandManagerDescriptor)super.getDescriptor();
-    }
 
     @Inject
     public SpongeCommandManager(CoreModule core)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
+        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
         this.baseDispatcher = core.getGame().getCommandDispatcher();
 
         this.consoleSender = new ConsoleCommandSender(core);
@@ -150,6 +152,26 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         registerReaders(core, core.getModularity().start(EventManager.class));
 
     }
+
+    @Enable
+    public void onEnable()
+    {
+        // depends on: server, module manager, ban manager
+        this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager()));
+        this.addCommand(new CoreCommands(core));
+        if (this.core.getConfiguration().improveVanilla)
+        {
+            this.addCommands(this, core, new VanillaCommands(core));
+            this.addCommand(new WhitelistCommand(core));
+        }
+    }
+
+    @Override
+    public CommandManagerDescriptor getDescriptor()
+    {
+        return (CommandManagerDescriptor)super.getDescriptor();
+    }
+
 
     public void registerReaders(CoreModule core, EventManager em)
     {
@@ -245,6 +267,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
+    @Disable
     public void clean() // TODO shutdown service
     {
         removeCommands();
@@ -282,7 +305,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private Optional<CommandMapping> registerSpongeCommand(String name)
     {
-        return baseDispatcher.register(core, new ProxyCallable(core, this, name), name);
+        return baseDispatcher.register(plugin, new ProxyCallable(core, this, name), name);
     }
 
     @Override
