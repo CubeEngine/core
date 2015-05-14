@@ -19,7 +19,6 @@ package de.cubeisland.engine.module.core.module;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.alias.Alias;
@@ -31,15 +30,14 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.module.core.command.CommandManager;
+import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
-import de.cubeisland.engine.module.core.command.CommandSender;
-import de.cubeisland.engine.module.core.command.ContainerCommand;
-import de.cubeisland.engine.module.core.command.CommandContext;
-import de.cubeisland.engine.module.core.util.Version;
+import de.cubeisland.engine.module.service.command.CommandSender;
+import de.cubeisland.engine.module.service.command.ContainerCommand;
+import de.cubeisland.engine.module.service.command.CommandContext;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
 

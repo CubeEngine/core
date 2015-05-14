@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.user.User;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 

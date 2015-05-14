@@ -17,8 +17,7 @@
  */
 package de.cubeisland.engine.module.core.util;
 
-import de.cubeisland.engine.module.core.user.User;
-import org.spongepowered.api.block.BlockTypes;
+import de.cubeisland.engine.module.service.user.User;
 import org.spongepowered.api.world.Location;
 
 public class LocationUtil

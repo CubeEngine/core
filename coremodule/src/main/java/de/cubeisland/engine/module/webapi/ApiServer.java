@@ -40,14 +40,13 @@ import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.permission.PermDefault;
+import de.cubeisland.engine.module.service.permission.PermDefault;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
-import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.service.permission.Permission;
 import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.logscribe.target.proxy.LogProxyTarget;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;

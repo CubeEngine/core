@@ -22,7 +22,7 @@ import java.util.List;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
-import de.cubeisland.engine.module.core.world.WorldManager;
+import de.cubeisland.engine.module.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 public class WorldMatcher

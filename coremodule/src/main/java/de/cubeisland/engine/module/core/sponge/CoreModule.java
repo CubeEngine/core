@@ -45,20 +45,19 @@ import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
-import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.core.command.CommandManager;
-import de.cubeisland.engine.module.core.database.Database;
-import de.cubeisland.engine.module.core.database.mysql.MySQLDatabase;
+import de.cubeisland.engine.module.service.database.Database;
+import de.cubeisland.engine.module.service.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
-import de.cubeisland.engine.module.core.module.ModuleCommands;
-import de.cubeisland.engine.module.core.permission.Permission;
-import de.cubeisland.engine.module.core.user.TableUser;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.permission.Permission;
+import de.cubeisland.engine.module.core.provider.BasePermissionProvider;
+import de.cubeisland.engine.module.core.provider.LogProvider;
+import de.cubeisland.engine.module.core.provider.ThreadFactoryProvider;
+import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.core.util.FreezeDetection;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.module.core.util.McUUID;
@@ -85,9 +84,6 @@ import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.module.core.util.matcher.TimeMatcher;
 import de.cubeisland.engine.module.core.util.matcher.WorldMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
-import de.cubeisland.engine.module.core.world.TableWorld;
-import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
-import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
 import de.cubeisland.engine.module.webapi.ApiConfig;
 import de.cubeisland.engine.module.webapi.ApiServer;
 import de.cubeisland.engine.module.webapi.CommandController;
@@ -114,7 +110,7 @@ public final class CoreModule extends Module
     public static final Charset CHARSET = Charset.forName("UTF-8");
 
     //region Core fields
-    private BukkitCoreConfiguration config;
+    private SpongeCoreConfiguration config;
     private InventoryGuardFactory inventoryGuard;
     private CorePerms corePerms;
     //endregion
@@ -170,7 +166,7 @@ public final class CoreModule extends Module
         registerConverters(reflector);
 
         // Core Configuration - depends on Reflector
-        this.config = reflector.load(BukkitCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
+        this.config = reflector.load(SpongeCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
 
         // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
         SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()));
@@ -254,8 +250,7 @@ public final class CoreModule extends Module
             getLog().error("Failed to connect to the database, aborting...");
             return;
         }
-        database.registerTable(TableUser.class);
-        database.registerTable(TableWorld.class);
+
 
         sm.registerService(Database.class, database);
 
@@ -404,7 +399,7 @@ public final class CoreModule extends Module
     }
 
 
-    public BukkitCoreConfiguration getConfiguration()
+    public SpongeCoreConfiguration getConfiguration()
     {
         return this.config;
     }

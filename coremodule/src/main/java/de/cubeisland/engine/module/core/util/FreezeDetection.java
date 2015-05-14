@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.task.TaskManager;
+import de.cubeisland.engine.module.service.task.TaskManager;
 
 public class FreezeDetection
 {

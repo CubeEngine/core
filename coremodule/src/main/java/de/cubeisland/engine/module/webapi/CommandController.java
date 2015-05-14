@@ -21,10 +21,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.cubeisland.engine.module.core.command.CommandManager;
+import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.task.TaskManager;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.webapi.sender.ApiCommandSender;
 import de.cubeisland.engine.module.webapi.sender.ApiServerSender;
 import de.cubeisland.engine.module.webapi.sender.ApiUser;

@@ -38,13 +38,10 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.cubeisland.engine.module.core.command.sender.BaseCommandSender;
-import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.service.command.sender.BaseCommandSender;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.translation.Translation;
 
 public abstract class ApiCommandSender extends BaseCommandSender
 {

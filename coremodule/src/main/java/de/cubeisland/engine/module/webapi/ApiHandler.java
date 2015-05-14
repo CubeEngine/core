@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.webapi;
 
 import java.util.LinkedHashMap;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.service.permission.Permission;
 
 public abstract class ApiHandler
 {

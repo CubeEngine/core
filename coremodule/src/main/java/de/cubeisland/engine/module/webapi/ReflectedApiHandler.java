@@ -26,8 +26,8 @@ import java.util.Map.Entry;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.command.CommandManager;
-import de.cubeisland.engine.module.core.permission.Permission;
+import de.cubeisland.engine.module.service.command.CommandManager;
+import de.cubeisland.engine.module.service.permission.Permission;
 
 public final class ReflectedApiHandler extends ApiHandler
 {

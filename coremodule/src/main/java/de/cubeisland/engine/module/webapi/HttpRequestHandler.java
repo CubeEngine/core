@@ -25,11 +25,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.cubeisland.engine.module.core.command.CommandManager;
-import de.cubeisland.engine.module.core.module.service.Permission;
+import de.cubeisland.engine.module.service.command.CommandManager;
+import de.cubeisland.engine.module.service.Permission;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.user.User;
-import de.cubeisland.engine.module.core.user.UserManager;
+import de.cubeisland.engine.module.service.user.User;
+import de.cubeisland.engine.module.service.user.UserManager;
 import de.cubeisland.engine.module.webapi.exception.ApiRequestException;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.buffer.ByteBuf;

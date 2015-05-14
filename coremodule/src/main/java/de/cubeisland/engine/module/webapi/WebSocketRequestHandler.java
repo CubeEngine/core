@@ -24,9 +24,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.cubeisland.engine.module.core.command.CommandManager;
+import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

@@ -24,9 +24,9 @@ import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.task.TaskManager;
-import de.cubeisland.engine.module.core.user.User;
-import de.cubeisland.engine.module.core.user.UserManager;
+import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.module.service.user.User;
+import de.cubeisland.engine.module.service.user.UserManager;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.inventory.InventoryCloseEvent;

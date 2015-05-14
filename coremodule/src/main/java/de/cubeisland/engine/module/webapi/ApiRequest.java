@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.user.User;
 import io.netty.handler.codec.http.HttpHeaders;
 
 /**

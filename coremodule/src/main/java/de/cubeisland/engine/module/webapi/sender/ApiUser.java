@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.user.User;
+import de.cubeisland.engine.module.service.user.User;
 
 public class ApiUser extends ApiCommandSender
 {
