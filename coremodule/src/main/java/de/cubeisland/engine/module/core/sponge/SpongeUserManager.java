@@ -63,7 +63,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
     protected Map<UUID, UUID> scheduledForRemoval;
 
     @Inject
-    public SpongeUserManager(final CoreModule core)
+    public SpongeUserManager(final CoreModule core, EventManager em)
     {
         super(core);
         this.core = core;
@@ -73,13 +73,8 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
         this.scheduledForRemoval = new HashMap<>();
 
-        this.core.addInitHook(() -> {
-            core.getGame().getEventManager().register(core, new UserListener());
-            core.getGame().getEventManager().register(core, new AttachmentHookListener());
-
-            onlineUsers.addAll(core.getGame().getServer().getOnlinePlayers().stream()
-                                   .map(p -> getExactUser(p.getUniqueId())).collect(toList()));
-        });
+        em.registerListener(core, new UserListener());
+        em.registerListener(core, new AttachmentHookListener());
     }
 
     @Override
@@ -285,7 +280,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         }
     }
 
-    private class AttachmentHookListener
+    public class AttachmentHookListener
     {
         @Subscribe(order = Order.POST)
         public void onJoin(PlayerJoinEvent event)
