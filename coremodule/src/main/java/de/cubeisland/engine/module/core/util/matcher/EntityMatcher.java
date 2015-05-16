@@ -20,10 +20,11 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.Villager;
 import org.spongepowered.api.entity.living.animal.Animal;
@@ -33,15 +34,17 @@ import org.spongepowered.api.entity.projectile.Projectile;
 /**
  * This Matcher provides methods to match Entities.
  */
-public class EntityMatcher
+@ServiceProvider(EntityMatcher.class)
+public class EntityMatcher implements Provider<EntityMatcher>
 {
     private final Map<String, EntityType> nameMap = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
-    private CoreModule core;
+    private StringMatcher stringMatcher;
 
-    public EntityMatcher(CoreModule core, Game game)
+    @Inject
+    public EntityMatcher(Game game, StringMatcher stringMatcher)
     {
-        this.core = core;
+        this.stringMatcher = stringMatcher;
         for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
         {
             nameMap.put(type.getName(), type);
@@ -49,10 +52,17 @@ public class EntityMatcher
         // TODO read entity names
     }
 
+    @Override
+    public EntityMatcher get()
+    {
+        return this;
+    }
+
     /**
      * Tries to match an EntityType for given string
      *
      * @param name the name to match
+     *
      * @return the found EntityType
      */
     public EntityType any(String name)
@@ -71,8 +81,9 @@ public class EntityMatcher
                 return legacyIds.get(Short.parseShort(s));
             }
             catch (NumberFormatException ignored)
-            {}
-            String t_key = core.getModularity().start(StringMatcher.class).matchString(name, entities.keySet());
+            {
+            }
+            String t_key = stringMatcher.matchString(name, entities.keySet());
             if (t_key != null)
             {
                 return entities.get(t_key);
@@ -85,6 +96,7 @@ public class EntityMatcher
      * Tries to match an EntityType that is a Mob for given string
      *
      * @param s the string to match
+     *
      * @return the found Mob
      */
     public EntityType mob(String s)
@@ -101,6 +113,7 @@ public class EntityMatcher
      * Tries to match an EntityType that is a Mob that can be spawned by spawneggs for given string
      *
      * @param s the string to match
+     *
      * @return the found Mob
      */
     public EntityType spawnEggMob(String s)
@@ -117,6 +130,7 @@ public class EntityMatcher
      * Tries to match an EntityType that is a Monster for given string
      *
      * @param s the string to match
+     *
      * @return the found Monster
      */
     public EntityType monster(String s)
@@ -133,6 +147,7 @@ public class EntityMatcher
      * Tries to match an EntityType that is a friendly Mob for given string
      *
      * @param s the string to match
+     *
      * @return the found friendly Mob
      */
     public EntityType friendlyMob(String s)
@@ -149,6 +164,7 @@ public class EntityMatcher
      * Tries to match an EntityType that is a Projectile for given string
      *
      * @param s the string to match
+     *
      * @return the found Projectile
      */
     public EntityType projectile(String s)

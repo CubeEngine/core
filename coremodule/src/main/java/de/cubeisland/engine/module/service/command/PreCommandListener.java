@@ -39,10 +39,16 @@ import static org.spongepowered.api.event.Order.POST;
 public class PreCommandListener
 {
     private final CoreModule core;
+    private final StringMatcher stringMatcher;
+
+    private I18n i18n;
+
 
     public PreCommandListener(CoreModule core)
     {
         this.core = core;
+        i18n = core.getModularity().start(I18n.class);
+        stringMatcher = core.getModularity().start(StringMatcher.class);
     }
 
     @Subscribe(order = POST)
@@ -62,10 +68,8 @@ public class PreCommandListener
         Set<String> aliases = core.getGame().getCommandDispatcher().getAliases();
         if (!aliases.contains(label))
         {
-            I18n i18n = core.getModularity().start(I18n.class);
-
             final Locale language = sender instanceof Player ? ((Player)sender).getLocale() : Locale.getDefault();
-            List<String> matches = new LinkedList<>(core.getModularity().start(StringMatcher.class).getBestMatches(label, aliases, 1));
+            List<String> matches = new LinkedList<>(stringMatcher.getBestMatches(label, aliases, 1));
             if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
             {
                 if (matches.size() == 1)
@@ -79,14 +83,14 @@ public class PreCommandListener
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
                     sender.sendMessage(Texts.of(i18n.translate(language, NEUTRAL,
                                                                "Did you mean one of these: {input#command}?", implode(
-                        ", /", matches))));
+                            ", /", matches))));
                 }
             }
             else
             {
                 sender.sendMessage(Texts.of(i18n.translate(language, NEGATIVE,
-                                                                          "I couldn't find any command for {input#command} ...",
-                                                                          label)));
+                                                           "I couldn't find any command for {input#command} ...",
+                                                           label)));
             }
             return true;
         }

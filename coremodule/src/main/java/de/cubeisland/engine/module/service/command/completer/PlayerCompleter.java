@@ -33,12 +33,11 @@ import static de.cubeisland.engine.module.core.util.StringUtils.startsWithIgnore
  */
 public class PlayerCompleter implements Completer
 {
-    private CoreModule core;
+    private UserManager um;
 
-    public PlayerCompleter(CoreModule core)
+    public PlayerCompleter(UserManager um)
     {
-
-        this.core = core;
+        this.um = um;
     }
 
     private static boolean canSee(CommandSender sender, User user)
@@ -51,7 +50,7 @@ public class PlayerCompleter implements Completer
     {
         List<String> playerNames = new ArrayList<>();
         final CommandSender sender = (CommandSender)invocation.getCommandSource(); // TODO prevent class cast exceptions
-        for (User player : core.getModularity().start(UserManager.class).getOnlineUsers())
+        for (User player : um.getOnlineUsers())
         {
             String name = player.getName();
             if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))

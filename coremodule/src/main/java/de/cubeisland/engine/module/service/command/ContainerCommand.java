@@ -31,10 +31,12 @@ import de.cubeisland.engine.module.service.permission.PermissionManager;
 
 public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 {
+    private final PermissionManager pm;
+
     public ContainerCommand(Module module)
     {
         super(new CubeContainerCommandDescriptor(), module.getModularity().start(CommandManager.class).getCommandBuilder());
-
+        pm = module.getModularity().start(PermissionManager.class);
         String permName = getDescriptor().getName();
         boolean checkPerm = true;
         PermDefault def = PermDefault.DEFAULT;
@@ -79,7 +81,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             Module module = descriptor.getModule();
             Permission childPerm = descriptor.getPermission();
             childPerm.setParent(this.getDescriptor().getPermission());
-            module.getModularity().start(PermissionManager.class).registerPermission(module, childPerm);
+            pm.registerPermission(module, childPerm);
         }
         return super.addCommand(command);
     }

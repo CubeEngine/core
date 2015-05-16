@@ -27,18 +27,17 @@ import org.spongepowered.api.item.Enchantment;
 
 public class EnchantmentConverter extends SimpleConverter<Enchantment>
 {
-    private CoreModule core;
+    private EnchantMatcher enchantMatcher;
 
-    public EnchantmentConverter(CoreModule core)
+    public EnchantmentConverter(EnchantMatcher enchantMatcher)
     {
-
-        this.core = core;
+        this.enchantMatcher = enchantMatcher;
     }
 
     @Override
     public Node toNode(Enchantment object) throws ConversionException
     {
-        return StringNode.of( object.getName());
+        return StringNode.of(object.getName());
     }
 
     @Override
@@ -46,7 +45,7 @@ public class EnchantmentConverter extends SimpleConverter<Enchantment>
     {
         if (node instanceof StringNode)
         {
-            return  core.getModularity().start(EnchantMatcher.class).enchantment(((StringNode)node).getValue());
+            return enchantMatcher.enchantment(((StringNode)node).getValue());
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

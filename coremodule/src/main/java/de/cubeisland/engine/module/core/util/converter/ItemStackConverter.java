@@ -30,12 +30,11 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter extends SimpleConverter<ItemStack>
 {
-    private CoreModule core;
+    private MaterialMatcher materialMatcher;
 
-    public ItemStackConverter(CoreModule core)
+    public ItemStackConverter(MaterialMatcher materialMatcher)
     {
-
-        this.core = core;
+        this.materialMatcher = materialMatcher;
     }
 
     @Override
@@ -58,7 +57,7 @@ public class ItemStackConverter extends SimpleConverter<ItemStack>
     {
         if (node instanceof StringNode)
         {
-            return core.getModularity().start(MaterialMatcher.class).itemStack(((StringNode)node).getValue());
+            return materialMatcher.itemStack(((StringNode)node).getValue());
         }
         if (node instanceof NullNode)
         {

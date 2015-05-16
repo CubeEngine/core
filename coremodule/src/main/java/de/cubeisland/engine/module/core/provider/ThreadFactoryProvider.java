@@ -18,7 +18,10 @@
 package de.cubeisland.engine.module.core.provider;
 
 import java.util.concurrent.ThreadFactory;
+import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.modularity.asm.marker.Provider;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
@@ -26,23 +29,26 @@ import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.task.thread.CoreThreadFactory;
 
+@Provider(ThreadFactory.class)
 public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
 {
     private CoreThreadFactory coreThreadFactory;
 
-    public ThreadFactoryProvider(Log log)
+    @Inject
+    public ThreadFactoryProvider(LogFactory logFactory)
     {
-        this.coreThreadFactory = new CoreThreadFactory(log);
+        this.coreThreadFactory = new CoreThreadFactory(logFactory.getLog(CoreModule.class, "CoreModule"));
     }
 
     @Override
     public ThreadFactory get(DependencyInformation info, Modularity modularity)
     {
-        Log log = modularity.getProvider(Log.class).get(info, modularity);
-        if (info.getClassName().equals(CoreModule.class.getName()))
+        if (info.getClassName().equals(CoreModule.class.getName())
+         || info.getClassName().equals(LogProvider.class.getName()))
         {
             return coreThreadFactory;
         }
+        Log log = modularity.getProvider(Log.class).get(info, modularity);
         return new ModuleThreadFactory(coreThreadFactory.getThreadGroup(), log);
     }
 }

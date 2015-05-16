@@ -38,15 +38,15 @@ public class FreezeDetection
     private final ConcurrentLinkedQueue<Runnable> listeners = new ConcurrentLinkedQueue<>();
     private volatile boolean freezeNotified = false;
 
-    public FreezeDetection(CoreModule core, long freezeThreshold)
+    public FreezeDetection(CoreModule core, TaskManager tm, long freezeThreshold)
     {
-        this(core, freezeThreshold, TimeUnit.SECONDS);
+        this(core, tm, freezeThreshold, TimeUnit.SECONDS);
     }
 
-    public FreezeDetection(CoreModule core, long freezeThreshold, TimeUnit unit)
+    public FreezeDetection(CoreModule core, TaskManager tm, long freezeThreshold, TimeUnit unit)
     {
         this.core = core;
-        this.taskManager = this.core.getModularity().start(TaskManager.class);
+        this.taskManager = tm;
         this.executor = null;
         this.lastHeartbeat = -1;
         this.freezeThreshold = unit.toMillis(freezeThreshold);

@@ -17,20 +17,17 @@
  */
 package de.cubeisland.engine.module.core.provider;
 
+import de.cubeisland.engine.modularity.asm.marker.Provider;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.service.permission.Permission;
 
+@Provider(Permission.class)
 public class BasePermissionProvider implements ValueProvider<Permission>
 {
-    private Permission base;
-
-    public BasePermissionProvider(Permission base)
-    {
-        this.base = base;
-    }
+    private Permission base = Permission.BASE;
 
     @Override
     public Permission get(DependencyInformation info, Modularity modularity)

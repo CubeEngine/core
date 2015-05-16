@@ -23,24 +23,36 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.contract.Contract;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Event;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
  */
-public class EventManager
+@ServiceProvider(EventManager.class)
+public class EventManager implements Provider<EventManager>
 {
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.service.event.EventManager eventManager;
     private final Object plugin;
 
-    public EventManager(CoreModule core)
+    @Inject
+    public EventManager(Game game)
     {
-        this.eventManager = core.getGame().getEventManager();
+        this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
+        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
+    }
+
+    @Override
+    public EventManager get()
+    {
+        return this;
     }
 
     /**

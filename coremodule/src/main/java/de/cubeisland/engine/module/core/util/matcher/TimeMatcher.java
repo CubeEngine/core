@@ -17,170 +17,32 @@
  */
 package de.cubeisland.engine.module.core.util.matcher;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.filesystem.FileUtil;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 
 /**
  * A Matcher for ingame time
  */
-public class TimeMatcher
+@ServiceProvider(TimeMatcher.class)
+public class TimeMatcher implements Provider<TimeMatcher>
 {
-
-    private final Map<Long, List<String>> timeToName;
-    private final Map<String, Long> nameToTime;
     private CoreModule core;
 
+    @Inject
     public TimeMatcher(CoreModule core)
     {
         this.core = core;
-
-        timeToName = this.loadFromFile();
-        nameToTime = new HashMap<>();
-        for (Entry<Long, List<String>> entry : timeToName.entrySet())
-        {
-            for (String name : entry.getValue())
-            {
-                Long old = nameToTime.put(name, entry.getKey());
-                if (old != null)
-                {
-                    core.getProvided(Log.class).warn("Duplicate Time-Name \"{}\" for values: ({}|{})", name, old,
-                                                     entry.getKey());
-                }
-            }
-        }
     }
 
-    private Map<Long, List<String>> loadFromFile()
+    @Override
+    public TimeMatcher get()
     {
-        try
-        {
-            Path file = core.getModularity().start(FileManager.class).getDataPath().resolve(CoreResource.TIMES.getTarget());
-            List<String> input = FileUtil.readStringList(file);
-            Map<Long,List<String>> readTime = new TreeMap<>();
-            this.loadFromFile(readTime, input);
-            try (InputStream is = core.getModularity().start(FileManager.class).getSourceOf(file))
-            {
-                List<String> jarinput = FileUtil.readStringList(is);
-                if (jarinput != null && this.loadFromFile(readTime, jarinput))
-                {
-                    core.getProvided(Log.class).info("Updated times.txt");
-                    StringBuilder sb = new StringBuilder();
-                    for (Entry<Long, List<String>> entry : readTime.entrySet())
-                    {
-                        sb.append(entry.getKey()).append(":").append("\n");
-                        for (String name : entry.getValue())
-                        {
-                            sb.append("  ").append(name).append("\n");
-                        }
-                    }
-                    FileUtil.saveFile(sb.toString(), file);
-                }
-            }
-            return readTime;
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new IllegalStateException("items.txt is corrupted!", ex);
-        }
-        catch (IOException ex)
-        {
-            throw new IllegalStateException("Error while reading items.txt", ex);
-        }
-    }
-
-    private boolean loadFromFile(Map<Long, List<String>> readTime, List<String> input)
-    {
-        boolean update = !readTime.isEmpty();
-        boolean updated = false;
-        List<String> names = new ArrayList<>();
-        for (String line : input)
-        {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#"))
-            {
-                continue;
-            }
-            if (line.contains(":"))
-            {
-                Long data = Long.parseLong(line.substring(0, line.indexOf(":")));
-                names = readTime.get(data);
-                if (names == null)
-                {
-                    names = new ArrayList<>();
-                    readTime.put(data, names);
-                    updated = true;
-                }
-            }
-            else
-            {
-                if (!names.contains(line))
-                {
-                    names.add(line);
-                    updated = true;
-                }
-            }
-        }
-        return updated && update;
-    }
-
-    public Long getNearTime(Long timeValue)
-    {
-        timeValue = timeValue % 24000;
-        long minDiff = 24000;
-        Long near = null;
-        long diff;
-        for (Long time : this.timeToName.keySet())
-        {
-            diff = Math.abs(timeValue - time);
-            if (diff < minDiff)
-            {
-                minDiff = diff;
-                near = time;
-            }
-        }
-        return near;
-    }
-
-    public String getNearTimeName(Long timeValue)
-    {
-        List<String> strings = this.timeToName.get(this.getNearTime(timeValue));
-        if (strings == null || strings.isEmpty())
-        {
-            return null;
-        }
-        return strings.get(0);
-    }
-
-
-    /**
-     * Match names first then try with to parse time
-     *
-     * @param timeName
-     * @return
-     */
-    public Long matchTimeValue(String timeName)
-    {
-        String match = core.getProvided(StringMatcher.class).matchString(timeName, this.nameToTime.keySet());
-        if (match == null)
-        {
-            return this.parseTime(timeName);
-        }
-        return this.nameToTime.get(match);
+        return this;
     }
 
     /**

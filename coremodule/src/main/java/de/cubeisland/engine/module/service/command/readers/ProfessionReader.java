@@ -26,17 +26,16 @@ import org.spongepowered.api.data.types.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>
 {
-    private CoreModule core;
+    private ProfessionMatcher professionMatcher;
 
-    public ProfessionReader(CoreModule core)
+    public ProfessionReader(ProfessionMatcher professionMatcher)
     {
-
-        this.core = core;
+        this.professionMatcher = professionMatcher;
     }
 
     @Override
     public Profession read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return core.getModularity().start(ProfessionMatcher.class).profession(invocation.consume(1));
+        return professionMatcher.profession(invocation.consume(1));
     }
 }

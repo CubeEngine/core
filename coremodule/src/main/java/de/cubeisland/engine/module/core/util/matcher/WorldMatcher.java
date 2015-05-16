@@ -19,27 +19,30 @@ package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
-public class WorldMatcher
+@ServiceProvider(WorldMatcher.class)
+public class WorldMatcher implements Provider<WorldMatcher>
 {
-    private CoreModule core;
+    @Inject private WorldManager wm;
+    @Inject private StringMatcher stringMatcher;
 
-    public WorldMatcher(CoreModule core)
+    @Override
+    public WorldMatcher get()
     {
-
-        this.core = core;
+        return this;
     }
 
     public World matchWorld(String name)
     {
-        Modularity modularity = core.getModularity();
-        WorldManager wm = modularity.start(WorldManager.class);
-        String match = modularity.start(StringMatcher.class).matchString(name, wm.getWorldNames());
+        String match = stringMatcher.matchString(name, wm.getWorldNames());
         if (match == null)
         {
             return null;

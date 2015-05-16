@@ -27,8 +27,11 @@ import de.cubeisland.engine.butler.parametric.Flag;
 import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
+import de.cubeisland.engine.modularity.core.graph.Node;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
@@ -50,23 +53,29 @@ public class ModuleCommands extends ContainerCommand
     private final CoreModule core;
     private final Modularity modularity;
     private final PluginManager pm;
+    private FileManager fm;
+    private final Path modulesFolder;
 
-    public ModuleCommands(CoreModule core, Modularity modularity, PluginManager pm)
+    public ModuleCommands(CoreModule core, Modularity modularity, PluginManager pm, CommandManager cm, FileManager fm, I18n i18n)
     {
         super(core);
         this.core = core;
         this.modularity = modularity;
         this.pm = pm;
-        core.getModularity().start(CommandManager.class).getProviderManager().register(core, new ModuleReader(modularity));
+        this.fm = fm;
+        this.modulesFolder = core.getProvided(Path.class).getParent();
+        cm.getProviderManager().register(core, new ModuleReader(modularity, i18n));
     }
 
     public static class ModuleReader implements ArgumentReader<Module>
     {
         private Modularity mm;
+        private I18n i18n;
 
-        public ModuleReader(Modularity mm)
+        public ModuleReader(Modularity mm, I18n i18n)
         {
             this.mm = mm;
+            this.i18n = i18n;
         }
 
         @Override
@@ -80,7 +89,7 @@ public class ModuleCommands extends ContainerCommand
                     return module;
                 }
             }
-            throw new ReaderException(mm.start(I18n.class).translate(invocation.getLocale(), NEGATIVE,
+            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
                                                                                  "The given module could not be found!"));        }
     }
 
@@ -160,8 +169,7 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The given file name is invalid!");
             return;
         }
-        Path modulesPath = core.getModularity().start(FileManager.class).getModulesPath();
-        Path modulePath = modulesPath.resolve(filename + ".jar");
+        Path modulePath = modulesFolder.resolve(filename + ".jar");
         if (!Files.exists(modulePath))
         {
             context.sendTranslated(NEGATIVE, "The given module file was not found! The name might be case sensitive.");
@@ -172,24 +180,27 @@ public class ModuleCommands extends ContainerCommand
             context.sendTranslated(NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
             return;
         }
-        // TODO  try
-        {
-            /* TODO       Module module = modularity.loadModule(modulePath);
-            if (modularity.enableModule(module))
-            {
-                context.sendTranslated(POSITIVE, "The module {name#module} has been successfully loaded and enabled!", module.getInformation().getName());
-            }
-            */
-        }
-        // TODO catch (ModuleAlreadyLoadedException e)
-        {
-            context.sendTranslated(NEUTRAL, "This module is already loaded, try reloading it.");
-        }
-        // TODO   catch (ModuleException ex)
-        {
-            context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
-            // TODO  core.getLog().error(ex, "Failed to load a module from file {}!", modulePath);
-        }
+        // TODO check if already loaded
+//        context.sendTranslated(NEUTRAL, "This module is already loaded, try reloading it.");
+        fm.copyModule(modulePath);
+        modularity.load(modulePath.toFile()).stream()
+                  .filter(node -> node.getInformation() instanceof ModuleMetadata)
+                  .forEach(node -> {
+                      try
+                      {
+                          modularity.start(node);
+                          context.sendTranslated(POSITIVE,
+                                                 "The module {name#module} has been successfully loaded and enabled!",
+                                                 ((ModuleMetadata)node.getInformation()).getName());
+                      }
+                      catch (Exception e)
+                      {
+                          modularity.getProvider(Log.class).get(node.getInformation(), modularity).error(e,
+                                                                                                         "Failed to load a module from file {}!",
+                                                                                                         modulePath.getFileName().toString());
+                          context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
+                      }
+                  });
     }
 
     @Command(desc = "Get info about a module")

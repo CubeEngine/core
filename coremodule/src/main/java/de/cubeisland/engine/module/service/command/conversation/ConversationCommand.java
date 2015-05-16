@@ -40,16 +40,21 @@ import static org.spongepowered.api.text.format.TextColors.WHITE;
 public abstract class ConversationCommand extends ContainerCommand
 {
     private final Set<UUID> usersInMode = new HashSet<>();
+    private final CommandManager cm;
+    private final UserManager um;
 
     protected ConversationCommand(Module module)
     {
         super(module);
         module.getModularity().start(EventManager.class).registerListener(module, this);
-        getDescriptor().setDispatcher(module.getModularity().start(CommandManager.class)); // needed for exceptionhandler
+        cm = getModule().getModularity().start(CommandManager.class);
+        um = getModule().getModularity().start(UserManager.class);
+        getDescriptor().setDispatcher(cm); // needed for exceptionhandler
         Permission childPerm = getDescriptor().getPermission();
         childPerm.setParent(module.getProvided(Permission.class).childWildcard("command"));
         module.getModularity().start(PermissionManager.class).registerPermission(module, childPerm);
         this.registerSubCommands();
+
     }
 
     public Module getModule()
@@ -65,7 +70,7 @@ public abstract class ConversationCommand extends ContainerCommand
     @Subscribe
     public void onChatHandler(PlayerChatEvent event)
     {
-        User user = getModule().getModularity().start(UserManager.class).getExactUser(event.getUser().getUniqueId());
+        User user = um.getExactUser(event.getUser().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ", WHITE, event.getMessage()));
@@ -80,7 +85,6 @@ public abstract class ConversationCommand extends ContainerCommand
 
     private CommandInvocation newInvocation(User user, String message)
     {
-        CommandManager cm = getModule().getModularity().start(CommandManager.class);
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 

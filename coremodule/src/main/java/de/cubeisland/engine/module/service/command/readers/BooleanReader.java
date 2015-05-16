@@ -29,13 +29,13 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 public class BooleanReader implements ArgumentReader<Boolean>
 {
-    private final CoreModule core;
     private final Set<String> yesStrings;
     private final Set<String> noStrings;
+    private final I18n i18n;
 
-    public BooleanReader(CoreModule core)
+    public BooleanReader(I18n i18n)
     {
-        this.core = core;
+        this.i18n = i18n;
         this.yesStrings = new HashSet<>();
         this.yesStrings.add("yes");
         this.yesStrings.add("+");
@@ -65,7 +65,6 @@ public class BooleanReader implements ArgumentReader<Boolean>
         }
         else
         {
-            I18n i18n = this.core.getModularity().start(I18n.class);
             String word = i18n.translate(locale, "yes");
             if (arg.equalsIgnoreCase(word))
             {

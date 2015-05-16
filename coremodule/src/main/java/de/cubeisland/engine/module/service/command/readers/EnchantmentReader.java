@@ -28,6 +28,7 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -39,12 +40,12 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITI
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
     private GameRegistry registry;
-    private CoreModule core;
+    private EnchantMatcher enchantMatcher;
 
-    public EnchantmentReader(CoreModule core)
+    public EnchantmentReader(EnchantMatcher enchantMatcher, Game game)
     {
-        this.core = core;
-        registry = core.getGame().getRegistry();
+        this.enchantMatcher = enchantMatcher;
+        registry = game.getRegistry();
     }
 
     public String getPossibleEnchantments(GameRegistry registry, ItemStack item)
@@ -64,7 +65,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     public Enchantment read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
-        Enchantment enchantment = core.getModularity().start(EnchantMatcher.class).enchantment(token);
+        Enchantment enchantment = enchantMatcher.enchantment(token);
         if (enchantment == null)
         {
             User sender = (User)invocation.getCommandSource();

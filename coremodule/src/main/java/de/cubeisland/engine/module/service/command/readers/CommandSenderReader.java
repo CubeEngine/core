@@ -32,11 +32,11 @@ import de.cubeisland.engine.module.service.user.User;
 
 public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>, Completer
 {
-    private final CoreModule core;
+    private final CommandManager cm;
 
-    public CommandSenderReader(CoreModule core)
+    public CommandSenderReader(CommandManager cm)
     {
-        this.core = core;
+        this.cm = cm;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CommandSenderReader implements ArgumentReader<CommandSender>, Defau
         if ("console".equalsIgnoreCase(invocation.currentToken()))
         {
             invocation.consume(1);
-            return core.getModularity().start(CommandManager.class).getConsoleSender();
+            return cm.getConsoleSender();
         }
         return (User)invocation.getManager().getReader(User.class).read(type, invocation);
     }

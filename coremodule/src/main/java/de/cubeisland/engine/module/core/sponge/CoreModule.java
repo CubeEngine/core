@@ -47,20 +47,12 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.service.database.mysql.MySQLDatabase;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.i18n.I18nLanguageLoader;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
-import de.cubeisland.engine.module.service.permission.Permission;
-import de.cubeisland.engine.module.core.provider.BasePermissionProvider;
-import de.cubeisland.engine.module.core.provider.LogProvider;
-import de.cubeisland.engine.module.core.provider.ThreadFactoryProvider;
-import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.core.util.FreezeDetection;
 import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
-import de.cubeisland.engine.module.core.util.McUUID;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.core.util.WorldLocation;
@@ -71,19 +63,13 @@ import de.cubeisland.engine.module.core.util.converter.ItemStackConverter;
 import de.cubeisland.engine.module.core.util.converter.LevelConverter;
 import de.cubeisland.engine.module.core.util.converter.MaterialConverter;
 import de.cubeisland.engine.module.core.util.converter.PlayerConverter;
-import de.cubeisland.engine.module.core.util.converter.UserConverter;
 import de.cubeisland.engine.module.core.util.converter.VersionConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
-import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
-import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
-import de.cubeisland.engine.module.core.util.matcher.ProfessionMatcher;
-import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
-import de.cubeisland.engine.module.core.util.matcher.TimeMatcher;
-import de.cubeisland.engine.module.core.util.matcher.WorldMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
+import de.cubeisland.engine.module.service.task.TaskManager;
 import de.cubeisland.engine.module.webapi.ApiConfig;
 import de.cubeisland.engine.module.webapi.ApiServer;
 import de.cubeisland.engine.module.webapi.CommandController;
@@ -98,11 +84,10 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
-import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
+import static de.cubeisland.engine.module.core.logging.LoggingUtil.*;
 
 @ModuleInfo(name = "CoreModule", description = "The core module of CubeEngine")
 public final class CoreModule extends Module
@@ -122,7 +107,13 @@ public final class CoreModule extends Module
     @Inject private Path moduleFolder;
     @Inject private File pluginFolder;
     @Inject private org.slf4j.Logger pluginLogger;
-    private Log logger;
+    @Inject private TaskManager tm;
+    @Inject private FileManager fm;
+    @Inject private Reflector reflector;
+    @Inject private Log logger;
+    @Inject private ThreadFactory tf;
+    @Inject private LogFactory logFactory;
+    @Inject private I18n i18n;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -136,67 +127,30 @@ public final class CoreModule extends Module
         return mainThread;
     }
 
-    /* TODO configprovider
-      T config = this.core.getReflector().create(clazz);
-      config.setFile(this.getFolder().resolve("config." + config.getCodec().getExtension()).toFile());
-      if (config.reload(true))
-      {
-          this.getLog().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
-      }
-      return config;
-      */
     @Enable
     public void onEnable()
     {
+        ((I18nLanguageLoader)i18n.getService().getLanguageLoader()).provideLanguages(this);
+        i18n.registerModule(this);
+
         System.out.println("CoreModule onEnable...");
         ServiceManager sm = getModularity().getServiceManager();
 
-        sm.registerService(McUUID.class, new McUUID(this));
-
-        // FileManager
-        FileManager fileManager = new FileManager(pluginLogger, pluginFolder.toPath(), moduleFolder);
-        sm.registerService(FileManager.class, fileManager);
-
-        fileManager.dropResources(CoreResource.values());
-
-        // Reflector
-        Reflector reflector = new Reflector();
-
-        sm.registerService(Reflector.class, new Reflector());
         registerConverters(reflector);
+        fm.dropResources(CoreResource.values());
 
-        // Core Configuration - depends on Reflector
         this.config = reflector.load(SpongeCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
 
-        // LogFactory - depends on FileManager / CoreConfig TODO make it does not need core config anymore
-        SpongeLogFactory logFactory = new SpongeLogFactory(this, (Logger)LogManager.getLogger(CoreModule.class.getName()));
-        sm.registerService(LogFactory.class, logFactory);
-
-        logger = logFactory.getLog(CoreModule.class, "Core");
-        getModularity().registerProvider(Log.class, new LogProvider(logFactory));
-
-        ThreadFactoryProvider threadFactoryProvider = new ThreadFactoryProvider(logger);
-        ThreadFactory threadFactory = threadFactoryProvider.get(getInformation(), getModularity());
-        getModularity().registerProvider(ThreadFactory.class, threadFactoryProvider);
-
-        logFactory.startExceptionLogger();
-
-        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fileManager, "Core"),
+        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Core"),
                                                      LoggingUtil.getFileFormat(true, true),
                                                      true, LoggingUtil.getCycler(),
-                                                     threadFactory);
+                                                     tf);
         target.setLevel(getConfiguration().logging.fileLevel);
         logger.addTarget(target);
-        logger.addDelegate(logFactory.getParent());
+        logFactory.getLog(CoreModule.class).getTargets().forEach(t -> t.setLevel(getConfiguration().logging.consoleLevel));
 
-        getModularity().registerProvider(Permission.class, new BasePermissionProvider(Permission.BASE));
-        sm.registerService(AsynchronousScheduler.class, game.getAsyncScheduler());
-        sm.registerService(SynchronousScheduler.class, game.getSyncScheduler());
-
-        // I18n - depends on FileManager / CoreConfig
-        I18n i18n = new I18n(this, fileManager.getTranslationPath());
-        sm.registerService(I18n.class, i18n);
-
+        Log exceptionLogger = logFactory.getLog(CoreModule.class, "Exceptions");
+        exceptionLogger.addTarget(new AsyncFileTarget(getLogFile(fm, "Exceptions"), getFileFormat(true, false), true, getCycler(), tf));
 
         // SIG INT Handler - depends on TaskManager / CoreConfig / Logger
         if (this.config.catchSystemSignals)
@@ -232,34 +186,7 @@ public final class CoreModule extends Module
             BukkitUtils.disableCommandLogging();
         }
 
-        sm.registerService(MaterialDataMatcher.class, new MaterialDataMatcher(this, game));
-        sm.registerService(MaterialMatcher.class, new MaterialMatcher(this, game));
-        sm.registerService(EnchantMatcher.class, new EnchantMatcher(this, game));
-        sm.registerService(ProfessionMatcher.class, new ProfessionMatcher(this, game));
-        sm.registerService(EntityMatcher.class, new EntityMatcher(this, game));
-        sm.registerService(StringMatcher.class, new StringMatcher(logger));
-        sm.registerService(TimeMatcher.class, new TimeMatcher(this));
-        sm.registerService(WorldMatcher.class, new WorldMatcher(this));
-        sm.registerService(EventManager.class, new EventManager(this));
-
-        // DataBase - depends on CoreConfig / ThreadFactory
-        getLog().info("Connecting to the database...");
-        Database database = MySQLDatabase.loadFromConfig(this, moduleFolder.resolve("database.yml"));
-        if (database == null)
-        {
-            getLog().error("Failed to connect to the database, aborting...");
-            return;
-        }
-
-
-        sm.registerService(Database.class, database);
-
-
-
-
-        this.inventoryGuard = new InventoryGuardFactory(this);
-
-        // WorldManager - depends on Database
+        // TODO this.inventoryGuard = new InventoryGuardFactory(this, um, tm, em);
 
         if (this.config.preventSpamKick)
         {
@@ -282,7 +209,7 @@ public final class CoreModule extends Module
             it.remove();
         }
 
-        this.freezeDetection = new FreezeDetection(this, 20);
+        this.freezeDetection = new FreezeDetection(this, tm, 20);
         this.freezeDetection.addListener(this::dumpThreads);
         this.freezeDetection.start();
 
@@ -293,10 +220,9 @@ public final class CoreModule extends Module
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(this), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(this), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(this), Enchantment.class);
-        manager.registerConverter(new UserConverter(this), User.class);
+        manager.registerConverter(new ItemStackConverter(getModularity().start(MaterialMatcher.class)), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(getModularity().start(MaterialMatcher.class)), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(getModularity().start(EnchantMatcher.class)), Enchantment.class);
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);

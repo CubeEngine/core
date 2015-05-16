@@ -83,7 +83,7 @@ public class ProxyCallable implements CommandCallable
     public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException
     {
         CommandSender wrapSender = wrapSender(source);
-        List<String> suggestions = manager.getSuggestions(newInvocation(wrapSender, alias + " " + arguments));
+        List<String> suggestions = manager.getSuggestions(newInvocation(wrapSender, arguments.isEmpty() ? alias : alias + " " + arguments));
         manager.logTabCompletion(wrapSender, alias, arguments);
 
         if (suggestions == null)
@@ -132,8 +132,7 @@ public class ProxyCallable implements CommandCallable
         return Texts.of(getDescriptor().getUsage(newInvocation(wrapSender(source), "")));
     }
 
-    private CommandSender wrapSender(
-        org.spongepowered.api.util.command.CommandSource spongeSender)
+    private CommandSender wrapSender(org.spongepowered.api.util.command.CommandSource spongeSender)
     {
         if (spongeSender instanceof CommandSender)
         {

@@ -20,7 +20,11 @@ package de.cubeisland.engine.module.service;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 
+@Service
+@Version(1)
 public interface Economy
 {
     boolean isEnabled();

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import com.google.common.base.Optional;
-
 import de.cubeisland.engine.module.service.database.Database;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;
@@ -46,6 +45,10 @@ public abstract class AbstractWorldManager implements WorldManager
     public AbstractWorldManager(Database database)
     {
         this.database = database;
+    }
+
+    public void onEnable()
+    {
         database.registerTable(TableWorld.class);
     }
 
@@ -68,7 +71,8 @@ public abstract class AbstractWorldManager implements WorldManager
         {
             UUID uid = world.getUniqueId();
             worldEntity = dsl.selectFrom(TABLE_WORLD).where(TABLE_WORLD.LEAST.eq(uid.getLeastSignificantBits()),
-                                                            TABLE_WORLD.MOST.eq(uid.getMostSignificantBits())).fetchOne();
+                                                            TABLE_WORLD.MOST.eq(
+                                                                uid.getMostSignificantBits())).fetchOne();
             if (worldEntity == null)
             {
                 worldEntity = dsl.newRecord(TABLE_WORLD).newWorld(world);
@@ -88,7 +92,10 @@ public abstract class AbstractWorldManager implements WorldManager
         if (entity == null)
         {
             Optional<World> world = this.getWorld(name);
-            if (!world.isPresent()) return null;
+            if (!world.isPresent())
+            {
+                return null;
+            }
             return this.getWorldId(world.get());
         }
         return entity.getValue(TABLE_WORLD.KEY);

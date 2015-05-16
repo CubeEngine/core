@@ -74,13 +74,19 @@ public abstract class AbstractUserManager implements UserManager
     protected final MessageDigest messageDigest;
 
     protected final Database database;
+    private CommandManager cm;
+    private FileManager fm;
+    private EventManager em;
+    private I18n i18n;
 
-    public AbstractUserManager(final CoreModule core, Database database)
+    public AbstractUserManager(final CoreModule core, Database database, CommandManager cm, I18n i18n, FileManager fm, EventManager em)
     {
         this.database = database;
-        database.registerTable(TableUser.class);
-
         this.core = core;
+        this.cm = cm;
+        this.fm = fm;
+        this.em = em;
+        this.i18n = i18n;
 
         this.onlineUsers = new CopyOnWriteArrayList<>();
 
@@ -98,6 +104,11 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
+    public void onEnable()
+    {
+        database.registerTable(TableUser.class);
+    }
+
     @Override
     public boolean login(User user, String password)
     {
@@ -105,7 +116,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             user.loggedInState = this.checkPassword(user, password);
         }
-        core.getModularity().start(EventManager.class).fireEvent(new UserAuthorizedEvent(this.core, user));
+        em.fireEvent(new UserAuthorizedEvent(this.core, user));
         return user.isLoggedIn();
     }
 
@@ -291,7 +302,7 @@ public abstract class AbstractUserManager implements UserManager
                 user.sendTranslated(messageType, message, params);
             }
         }
-        core.getModularity().start(CommandManager.class).getConsoleSender().sendTranslated(messageType, message, params);
+        cm.getConsoleSender().sendTranslated(messageType, message, params);
     }
 
     @Override
@@ -308,9 +319,8 @@ public abstract class AbstractUserManager implements UserManager
                 user.sendMessage(NONE, message, params);
             }
         }
-        ConsoleCommandSender cSender = core.getModularity().start(CommandManager.class).getConsoleSender();
-        cSender.sendMessage(core.getModularity().start(I18n.class).composeMessage(cSender.getLocale(), type, message,
-                                                                                  params));
+        ConsoleCommandSender cSender = cm.getConsoleSender();
+        cSender.sendMessage(i18n.composeMessage(cSender.getLocale(), type, message, params));
     }
 
     @Override
@@ -352,7 +362,7 @@ public abstract class AbstractUserManager implements UserManager
 
     private void loadSalt()
     {
-        Path file = core.getModularity().start(FileManager.class).getDataPath().resolve(".salt");
+        Path file = fm.getDataPath().resolve(".salt");
         try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
         {
             this.salt = reader.readLine();

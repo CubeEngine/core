@@ -38,11 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import de.cubeisland.engine.modularity.core.Module;
-
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
@@ -51,37 +48,58 @@ import de.cubeisland.engine.i18n.language.SourceLanguage;
 import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.messagecompositor.MessageCompositor;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
+import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
 import org.spongepowered.api.text.translation.Translation;
 
-public class I18n
+import static java.util.stream.Collectors.toList;
+
+@ServiceProvider(I18n.class)
+public class I18n implements Provider<I18n>
 {
-    final CoreModule core;
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
     private ColoredMessageCompositor compositor;
+
+    @Inject
+    private Log log;
+    private StringMatcher stringMatcher;
+
+    @Inject
+    public I18n(FileManager fm, Reflector reflector, StringMatcher stringMatcher)
+    {
+        this.stringMatcher = stringMatcher;
+        reflector.getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
+
+        this.addPoFilesFromDirectory(fm.getTranslationPath());
+
+        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(reflector, fm,
+                                                                                                       log),
+                                       getDefaultLocale());
+        this.compositor = new ColoredMessageCompositor(reflector, fm);
+    }
+
+    @Override
+    public I18n get()
+    {
+        return this;
+    }
 
     public MessageCompositor getCompositor()
     {
         return compositor;
     }
 
-    public I18n(CoreModule core, Path translationPath)
-    {
-        core.getModularity().start(Reflector.class).getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
-
-        this.core = core;
-        this.addPoFilesFromDirectory(translationPath);
-        this.poFiles.addAll(getFilesFromJar("translations/", ".po", core));
-
-        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
-        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(core), core.getConfiguration().defaultLocale);
-        this.compositor = new ColoredMessageCompositor(core);
-    }
 
     private void addPoFilesFromDirectory(Path translations)
     {
@@ -96,7 +114,7 @@ public class I18n
             }
             catch (IOException e)
             {
-                this.core.getLog().error(e, "Error while getting translation override files!");
+                log.error(e, "Error while getting translation override files!");
             }
         }
     }
@@ -135,10 +153,7 @@ public class I18n
                 }
             }
 
-            for (String file : files)
-            {
-                urls.add(module.getClass().getResource("/" + file));
-            }
+            urls.addAll(files.stream().map(file -> module.getClass().getResource("/" + file)).collect(toList()));
             return urls;
         }
         catch (IOException | URISyntaxException e)
@@ -149,7 +164,7 @@ public class I18n
 
     public String translate(MessageType type, String message, Object... args)
     {
-        return this.translate(this.core.getConfiguration().defaultLocale, type, message, args);
+        return this.translate(getDefaultLocale(), type, message, args);
     }
 
     public String translate(Locale locale, MessageType type, String message, Object... args)
@@ -172,7 +187,12 @@ public class I18n
 
     public String translateN(MessageType type, int n, String singular, String plural, Object... args)
     {
-        return this.translateN(this.core.getConfiguration().defaultLocale, type, n, singular, plural, args);
+        return this.translateN(getDefaultLocale(), type, n, singular, plural, args);
+    }
+
+    private Locale getDefaultLocale()
+    {
+        return Locale.getDefault();
     }
 
     public String translateN(Locale locale, MessageType type, int n, String singular, String plural, Object... args)
@@ -190,7 +210,7 @@ public class I18n
 
     public String translate(String message)
     {
-        return this.translate(this.core.getConfiguration().defaultLocale, message);
+        return this.translate(getDefaultLocale(), message);
     }
 
     public String translate(Locale locale, String message)
@@ -200,7 +220,7 @@ public class I18n
 
     public String translateN(int n, String singular, String plural)
     {
-        return this.translateN(this.core.getConfiguration().defaultLocale, n, singular, plural);
+        return this.translateN(getDefaultLocale(), n, singular, plural);
     }
 
     public String translateN(Locale locale, int n, String singular, String plural)
@@ -222,7 +242,7 @@ public class I18n
         }
         catch (TranslationLoadingException | DefinitionLoadingException e)
         {
-            this.core.getLog().error(e, "Error while getting Language!");
+            log.error(e, "Error while getting Language!");
             return null;
         }
     }
@@ -249,9 +269,8 @@ public class I18n
             return lang;
         }
 
-        Set<String> matches = core.getModularity().start(StringMatcher.class).getBestMatches(name.toLowerCase(),
-                                                                                             this.languageLookupMap.keySet(),
-                                                                                             maxDistance);
+        Set<String> matches = stringMatcher.getBestMatches(name.toLowerCase(), this.languageLookupMap.keySet(),
+                                                           maxDistance);
         Set<Language> languages = new HashSet<>(matches.size());
 
         for (String match : matches)
@@ -266,8 +285,15 @@ public class I18n
     {
         return new CubeEngineTranslation(this, type, locale, msg, args);
     }
-    public Translation getTranslationN(MessageType type, Locale locale, int n, String singular, String plural, Object... args)
+
+    public Translation getTranslationN(MessageType type, Locale locale, int n, String singular, String plural,
+                                       Object... args)
     {
         return new CubeEngineTranslation(this, type, locale, n, singular, plural, args);
+    }
+
+    public I18nService getService()
+    {
+        return service;
     }
 }

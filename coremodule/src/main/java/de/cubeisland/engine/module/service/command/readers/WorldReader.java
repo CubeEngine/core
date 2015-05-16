@@ -34,22 +34,23 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
 
 public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
-    private final CoreModule core;
+    private final WorldManager wm;
+    private final I18n i18n;
 
-    public WorldReader(CoreModule core)
+    public WorldReader(WorldManager wm, I18n i18n)
     {
-        this.core = core;
+        this.wm = wm;
+        this.i18n = i18n;
     }
 
     @Override
     public World read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
-        Optional<World> world = this.core.getModularity().start(WorldManager.class).getWorld(name);
+        Optional<World> world = wm.getWorld(name);
         if (!world.isPresent())
         {
-            throw new ReaderException(core.getModularity().start(I18n.class).translate(invocation.getLocale(), NEGATIVE,
-                                                                                 "World {input} not found!", name));
+            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
         }
         return world.get();
     }

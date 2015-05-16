@@ -17,49 +17,58 @@
  */
 package de.cubeisland.engine.module.core.provider;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadFactory;
+import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.LogTarget;
+import de.cubeisland.engine.logscribe.filter.PrefixFilter;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.Provider;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 
+@Provider(Log.class)
 public class LogProvider implements ValueProvider<Log>
 {
-    private SpongeLogFactory logFactory;
-
-    public LogProvider(SpongeLogFactory logFactory)
-    {
-        this.logFactory = logFactory;
-    }
+    @Inject private LogFactory logFactory;
+    @Inject private FileManager fm;
+    @Inject private ThreadFactory tf;
+    private Map<DependencyInformation, Log> loggers = new HashMap<>();
 
     @Override
     public Log get(DependencyInformation info, Modularity modularity)
     {
+        Log logger = loggers.get(info);
+        if (logger != null)
+        {
+            return logger;
+        }
         if (info instanceof ModuleMetadata)
         {
             String name = ((ModuleMetadata)info).getName();
 
-            Log log = logFactory.getLog(CoreModule.class, name);
+            logger = logFactory.getLog(CoreModule.class, name);
 
-            /* TODO add target when getting first time
-            log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(modularity.start(FileManager.class), name),
-                                              LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(),
-                                              modularity.getProvider(ThreadFactory.class).get(info, modularity)));
+            logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, name),
+                                              LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), tf));
 
-            LogTarget parentTarget = log.addDelegate(logFactory.getParent());
-
+            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(CoreModule.class));
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
-            */
-
-            return log;
         }
         else
         {
-            Log log = logFactory.getLog(CoreModule.class, info.getIdentifier());
-            // TODO target / parent
-            return log;
+            logger = logFactory.getLog(CoreModule.class, info.getIdentifier());
+            // TODO manually add Target for non-modules
         }
+        return logger;
     }
 }

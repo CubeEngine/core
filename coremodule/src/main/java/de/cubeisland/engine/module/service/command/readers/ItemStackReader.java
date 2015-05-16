@@ -29,21 +29,23 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATI
 
 public class ItemStackReader implements ArgumentReader<ItemStack>
 {
-    private Modularity modularity;
+    private MaterialMatcher materialMatcher;
+    private I18n i18n;
 
-    public ItemStackReader(Modularity modularity)
+    public ItemStackReader(MaterialMatcher materialMatcher, I18n i18n)
     {
-        this.modularity = modularity;
+        this.materialMatcher = materialMatcher;
+        this.i18n = i18n;
     }
 
     @Override
     public ItemStack read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        ItemStack item = modularity.start(MaterialMatcher.class).itemStack(arg);
+        ItemStack item = materialMatcher.itemStack(arg);
         if (item == null)
         {
-            throw new ReaderException(modularity.start(I18n.class).translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

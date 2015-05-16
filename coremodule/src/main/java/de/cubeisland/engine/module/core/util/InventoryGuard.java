@@ -35,6 +35,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 public class InventoryGuard
 {
+    private EventManager em;
+    private UserManager um;
+    private TaskManager tm;
     private final Inventory inventory;
     private final HashSet<User> users;
     private Module module;
@@ -51,8 +54,11 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(CoreModule core, Inventory inventory, User[] users)
+    public InventoryGuard(EventManager em, UserManager um, TaskManager tm, Inventory inventory, User[] users)
     {
+        this.em = em;
+        this.um = um;
+        this.tm = tm;
         this.inventory = inventory;
         this.users = new HashSet<>(Arrays.asList(users));
     }
@@ -65,7 +71,7 @@ public class InventoryGuard
     public void submitInventory(Module module, boolean openInventory)
     {
         this.module = module;
-        this.module.getModularity().start(EventManager.class).registerListener(this.module, this);
+        em.registerListener(this.module, this);
         if (openInventory)
         {
             for (User user : users)
@@ -122,13 +128,13 @@ public class InventoryGuard
     {
         if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
         {
-            User user = this.module.getModularity().start(UserManager.class).getExactUser(event.getViewer().getUniqueId());
+            User user = um.getExactUser(event.getViewer().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);
                 if (this.users.isEmpty())
                 {
-                    this.module.getModularity().start(EventManager.class).removeListener(this.module, this); // no user left to check
+                    em.removeListener(this.module, this); // no user left to check
                 }
                 this.onClose.forEach(Runnable::run);
             }
@@ -365,7 +371,7 @@ public class InventoryGuard
     {
         for (Runnable runner : this.onChange)
         {
-            this.module.getModularity().start(TaskManager.class).runTask(this.module, runner);
+            tm.runTask(this.module, runner);
         }
     }
 

@@ -44,12 +44,11 @@ import org.spongepowered.api.item.ItemType;
 
 public class MaterialConverter extends SimpleConverter<ItemType>
 {
-    private CoreModule core;
+    private MaterialMatcher materialMatcher;
 
-    public MaterialConverter(CoreModule core)
+    public MaterialConverter(MaterialMatcher materialMatcher)
     {
-
-        this.core = core;
+        this.materialMatcher = materialMatcher;
     }
 
     @Override
@@ -63,7 +62,7 @@ public class MaterialConverter extends SimpleConverter<ItemType>
     {
         if (node instanceof StringNode)
         {
-            return core.getModularity().start(MaterialMatcher.class).material(node.asText());
+            return materialMatcher.material(node.asText());
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

@@ -30,13 +30,19 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.module.service.database.Database;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.service.task.TaskManager;
 import de.cubeisland.engine.module.core.util.Profiler;
+import de.cubeisland.engine.module.core.util.converter.UserConverter;
+import de.cubeisland.engine.module.service.command.CommandManager;
+import de.cubeisland.engine.module.service.database.Database;
+import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.reflect.Reflector;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Subscribe;
@@ -52,22 +58,34 @@ import org.spongepowered.api.event.message.CommandEvent;
 public class SpongeUserManager extends AbstractUserManager implements UserManager
 {
     private final CoreModule core;
+    private EventManager em;
+    private TaskManager tm;
+    private Reflector reflector;
     protected ScheduledExecutorService nativeScheduler;
-    protected Map<UUID, UUID> scheduledForRemoval;
+    protected Map<UUID, UUID> scheduledForRemoval = new HashMap<>();
 
     @Inject
-    public SpongeUserManager(final CoreModule core, Database database, EventManager em)
+    public SpongeUserManager(final CoreModule core, Database database, EventManager em, TaskManager tm, Reflector reflector, CommandManager cm, I18n i18n, FileManager fm)
     {
-        super(core, database);
+        super(core, database, cm, i18n, fm, em);
         this.core = core;
+        this.em = em;
+        this.tm = tm;
+        this.reflector = reflector;
+    }
 
+    @Enable
+    public void onEnable()
+    {
+        super.onEnable();
         final long delay = (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new HashMap<>();
 
         em.registerListener(core, new UserListener());
         em.registerListener(core, new AttachmentHookListener());
+
+        reflector.getDefaultConverterManager().registerConverter(new UserConverter(this), User.class);
     }
 
     @Override
@@ -82,7 +100,8 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
             user = it.next();
             if (!user.isOnline())
             {
-                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUniqueId());
+                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(),
+                                   user.getUniqueId());
                 this.onlineUsers.remove(user);
                 it.remove();
             }
@@ -98,7 +117,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
 
         for (UUID id : this.scheduledForRemoval.values())
         {
-            core.getModularity().start(TaskManager.class).cancelTask(core, id);
+            tm.cancelTask(core, id);
         }
 
         this.scheduledForRemoval.clear();
@@ -130,8 +149,8 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 return user;
             }
         }
-        UserEntity userEntity = this.database.getDSL().selectFrom(TableUser.TABLE_USER)
-                                             .where(TableUser.TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
+        UserEntity userEntity = this.database.getDSL().selectFrom(TableUser.TABLE_USER).where(
+            TableUser.TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
         if (userEntity != null)
         {
             org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
@@ -141,8 +160,8 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 this.cacheUser(user);
                 return user;
             }
-            userEntity.setValue(TableUser.TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getValue(
-                TableUser.TABLE_USER.LASTNAME)));
+            userEntity.setValue(TableUser.TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace(
+                "{name}", userEntity.getValue(TableUser.TABLE_USER.LASTNAME)));
             userEntity.updateAsync();
         }
         if (create)
@@ -179,8 +198,6 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         }
         if (login)
         {
-            final EventManager em = core.getModularity().start(EventManager.class);
-            final TaskManager tm = core.getModularity().start(TaskManager.class);
             UserLoadedEvent event = new UserLoadedEvent(core, user);
             if (future != null)
             {
@@ -211,7 +228,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         public void onQuit(final PlayerQuitEvent event)
         {
             final User user = getExactUser(event.getUser().getUniqueId());
-            core.getModularity().start(TaskManager.class).runTask(core, () -> {
+            tm.runTask(core, () -> {
                 synchronized (SpongeUserManager.this)
                 {
                     if (!user.isOnline())
@@ -221,18 +238,18 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 }
             });
 
-             Optional<UUID> uid = core.getModularity().start(TaskManager.class).runTaskDelayed(core, () -> {
-                 scheduledForRemoval.remove(user.getUniqueId());
-                 user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
-                 Profiler.startProfiling("removalTask");
-                 user.getEntity().updateAsync();
-                 core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling(
-                     "removalTask", TimeUnit.MILLISECONDS));
-                 if (user.isOnline())
-                 {
-                     removeCachedUser(user);
-                 }
-             }, core.getConfiguration().usermanager.keepInMemory);
+            Optional<UUID> uid = tm.runTaskDelayed(core, () -> {
+                scheduledForRemoval.remove(user.getUniqueId());
+                user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+                Profiler.startProfiling("removalTask");
+                user.getEntity().updateAsync();
+                core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling(
+                    "removalTask", TimeUnit.MILLISECONDS));
+                if (user.isOnline())
+                {
+                    removeCachedUser(user);
+                }
+            }, core.getConfiguration().usermanager.keepInMemory);
 
             if (!uid.isPresent())
             {
@@ -257,7 +274,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 final UUID removalTask = scheduledForRemoval.get(user.getUniqueId());
                 if (removalTask != null)
                 {
-                    core.getModularity().start(TaskManager.class).cancelTask(core, removalTask);
+                    tm.cancelTask(core, removalTask);
                 }
             }
         }
@@ -268,10 +285,9 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Override
         public void run()
         {
-            cachedUserByUUID.values().stream()
-                        .filter(user -> !user.isOnline())
-                        .filter(user -> scheduledForRemoval.containsKey(user.getUniqueId()))
-                            .forEach(SpongeUserManager.this::removeCachedUser);
+            cachedUserByUUID.values().stream().filter(user -> !user.isOnline()).filter(
+                user -> scheduledForRemoval.containsKey(user.getUniqueId())).forEach(
+                SpongeUserManager.this::removeCachedUser);
         }
     }
 

@@ -57,7 +57,7 @@ public abstract class BaseCommandSender implements CommandSender
     @Override
     public void sendTranslated(MessageType type, String message, Object... args)
     {
-        this.sendMessage(Texts.of(type, this.getTranslation(type, message, args).get(getLocale())));
+        this.sendMessage(Texts.of(this.getTranslation(type, message, args).get(getLocale())));
     }
 
     @Override

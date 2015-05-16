@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
@@ -36,20 +37,26 @@ import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.reflect.Reflector;
 
+import static de.cubeisland.engine.module.core.filesystem.FileExtensionFilter.YAML;
+
 public class I18nLanguageLoader extends LanguageLoader
 {
     private final Map<Locale, LocaleConfiguration> configurations = new HashMap<>();
+    private final Reflector reflector;
+    private final FileManager fm;
+    private Log log;
 
-    public I18nLanguageLoader(CoreModule core)
+    public I18nLanguageLoader(Reflector reflector, FileManager fm, Log log)
     {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(core.getModularity().start(
-            FileManager.class).getLanguagePath(), FileExtensionFilter.YAML))
+        this.reflector = reflector;
+        this.fm = fm;
+        this.log = log;
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(fm.getLanguagePath(), YAML))
         {
             // Search override Languages under CubeEngine/languages
             for (Path path : directoryStream)
             {
-
-                LocaleConfiguration config = core.getModularity().start(Reflector.class).load(LocaleConfiguration.class, path.toFile(), false);
+                LocaleConfiguration config = reflector.load(LocaleConfiguration.class, path.toFile(), false);
                 this.configurations.put(config.getLocale(), config);
                 Locale[] clones = config.getClones();
                 if (clones != null)
@@ -60,12 +67,23 @@ public class I18nLanguageLoader extends LanguageLoader
                     }
                 }
             }
-            // Search provided Languages in CubeEngine.jar
+        }
+        catch (IOException ex)
+        {
+            log.error(ex, "Failed to load language configurations!");
+        }
+    }
+
+    public void provideLanguages(CoreModule core)
+    {
+        try
+        {
+            // Search provided Languages in CoreModule.jar
             for (URL url : I18n.getFilesFromJar("languages/", ".yml", core))
             {
                 try (Reader reader = new InputStreamReader(url.openStream()))
                 {
-                    LocaleConfiguration config = core.getModularity().start(Reflector.class).load(LocaleConfiguration.class, reader);
+                    LocaleConfiguration config = reflector.load(LocaleConfiguration.class, reader);
                     if (!this.configurations.containsKey(config.getLocale()))
                     {
                         this.configurations.put(config.getLocale(), config);
@@ -86,7 +104,7 @@ public class I18nLanguageLoader extends LanguageLoader
         }
         catch (IOException ex)
         {
-            core.getLog().error(ex, "Failed to load language configurations!");
+            log.error(ex, "Failed to load language configurations!");
         }
     }
 

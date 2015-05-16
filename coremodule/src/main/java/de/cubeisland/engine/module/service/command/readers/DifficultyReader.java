@@ -25,6 +25,7 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
@@ -43,12 +44,12 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
             put(3, Difficulties.HARD);
         }
     };
-    private CoreModule core;
+    private final I18n i18n;
 
-    public DifficultyReader(CoreModule core)
+    public DifficultyReader(I18n i18n, Game game)
     {
-        this.core = core;
-        registry = core.getGame().getRegistry();
+        this.i18n = i18n;
+        registry = game.getRegistry();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
             Difficulty difficulty = difficultyMap.get(Integer.valueOf(token));
             if (difficulty == null)
             {
-                throw new ReaderException(core.getModularity().start(I18n.class).translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
+                throw new ReaderException(i18n.translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
             }
             return difficulty;
         }
@@ -74,7 +75,7 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
                     return difficulty;
                 }
             }
-            throw new ReaderException(core.getModularity().start(I18n.class).translate(locale, NEGATIVE, "{input} is not a known difficulty!", token));
+            throw new ReaderException(i18n.translate(locale, NEGATIVE, "{input} is not a known difficulty!", token));
         }
     }
 }

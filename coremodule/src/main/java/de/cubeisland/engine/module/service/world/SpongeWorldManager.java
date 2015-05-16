@@ -34,6 +34,7 @@ import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
 import org.jooq.Result;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -48,16 +49,14 @@ import static de.cubeisland.engine.module.service.world.TableWorld.TABLE_WORLD;
 @Version(1)
 public class SpongeWorldManager extends AbstractWorldManager implements WorldManager
 {
-    private final CoreModule core;
     private final Server server;
 
     @Inject
-    public SpongeWorldManager(final CoreModule core, Database database, Reflector reflector)
+    public SpongeWorldManager(final Game game, Database database, Reflector reflector)
     {
         super(database);
 
-        this.core = core;
-        this.server = core.getGame().getServer();
+        this.server = game.getServer();
 
         ConverterManager convManager = reflector.getDefaultConverterManager();
         convManager.registerConverter(new ConfigWorldConverter(this), ConfigWorld.class);
@@ -67,19 +66,25 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
     @Enable
     public void onEnable()
     {
+        super.onEnable();
         DSLContext dsl = database.getDSL();
         Result<WorldEntity> worldEntities = dsl.selectFrom(TABLE_WORLD).fetch();
         Collection<World> loadedWorlds = server.getWorlds();
         for (WorldEntity entity : worldEntities)
         {
-            World world = server.getWorld(entity.getWorldUUID()).get();
-            if (loadedWorlds.contains(world))
+            Optional<World> world = server.getWorld(entity.getWorldUUID());
+            if (world.isPresent())
             {
-                loadedWorlds.remove(world);
-                worlds.put(world.getName(), entity);
-                worldIds.put(entity.getValue(TABLE_WORLD.KEY), world);
-                worldUUIDs.add(world.getUniqueId());
+                if (loadedWorlds.contains(world.get()))
+                {
+                    loadedWorlds.remove(world.get());
+                    worlds.put(world.get().getName(), entity);
+                    worldIds.put(entity.getValue(TABLE_WORLD.KEY), world.get());
+                    worldUUIDs.add(world.get().getUniqueId());
+                }
             }
+            // TODO else mark world as not found in db
+
         }
         if (!loadedWorlds.isEmpty()) // new worlds?
         {

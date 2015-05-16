@@ -20,28 +20,37 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.types.Profession;
 
-public class ProfessionMatcher
+@ServiceProvider(ProfessionMatcher.class)
+public class ProfessionMatcher implements Provider<ProfessionMatcher>
 {
     private final Map<String, Profession> professions = new HashMap<>();
-    private CoreModule core;
+    @Inject private StringMatcher stringMatcher;
 
-    public ProfessionMatcher(CoreModule core, Game game)
+    @Inject
+    public ProfessionMatcher(Game game)
     {
-        this.core = core;
         for (Profession profession : game.getRegistry().getAllOf(Profession.class))
         {
             this.professions.put(profession.getName().toLowerCase(), profession);
         }
     }
 
+    @Override
+    public ProfessionMatcher get()
+    {
+        return this;
+    }
+
     public Profession profession(String name)
     {
-        return professions.get(core.getModularity().start(StringMatcher.class).matchString(name.toLowerCase(Locale.ENGLISH),
-                                                                                     this.professions.keySet()));
+        return professions.get(stringMatcher.matchString(name.toLowerCase(Locale.ENGLISH), this.professions.keySet()));
     }
 
     public String[] professions()

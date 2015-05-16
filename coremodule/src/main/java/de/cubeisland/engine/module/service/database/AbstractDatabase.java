@@ -44,12 +44,10 @@ public abstract class AbstractDatabase implements Database
 {
     private final ExecutorService executor;
 
-    protected final CoreModule core;
     protected final ThreadFactory threadFactory;
 
-    protected AbstractDatabase(CoreModule core)
+    protected AbstractDatabase()
     {
-        this.core = core;
         this.threadFactory = new DatabaseThreadFactory();
         this.executor = Executors.newSingleThreadExecutor(this.threadFactory);
     }

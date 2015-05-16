@@ -43,13 +43,13 @@ public class SpongePaginationManager implements PaginationManager
     public static final int LINES_PER_PAGE = 5;
 
     private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
-    private CommandManager cm;
+    @Inject private UserManager um;
+    @Inject private CommandManager cm;
     private CoreModule core;
 
     @Inject
-    public SpongePaginationManager(EventManager em, CommandManager cm, CoreModule core)
+    public SpongePaginationManager(EventManager em, CoreModule core)
     {
-        this.cm = cm;
         this.core = core;
         em.registerListener(core, this);
     }
@@ -63,7 +63,7 @@ public class SpongePaginationManager implements PaginationManager
     @Subscribe
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        userCommandMap.remove(core.getModularity().start(UserManager.class).getExactUser(event.getUser().getUniqueId()));
+        userCommandMap.remove(um.getExactUser(event.getUser().getUniqueId()));
     }
 
     @Override

@@ -357,7 +357,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public void setPermission(String permission, boolean b)
     {
-        getPlayer().get().getData().setPermission(GLOBAL_CONTEXT, permission, Tristate.fromBoolean(b)); // TODO context
+        getPlayer().get().getSubjectData().setPermission(GLOBAL_CONTEXT, permission, Tristate.fromBoolean(b)); // TODO context
     }
 
     public void setPermission(Map<String, Boolean> permissions)

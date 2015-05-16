@@ -44,13 +44,14 @@ public class SpongePermissionManager implements PermissionManager
     private final Map<String, Permission> permissions = new HashMap<>();
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Log logger;
+    private EventManager em;
 
-    @SuppressWarnings("unchecked")
     @Inject
-    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory)
+    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm, EventManager em)
     {
+        this.em = em;
         this.logger = factory.getLog(CoreModule.class, "Permissions");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Permissions"),
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
                                                   false, LoggingUtil.getCycler(),
                                                   threadFactory));
@@ -90,8 +91,7 @@ public class SpongePermissionManager implements PermissionManager
     @Override
     public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
     {
-        module.getModularity().start(EventManager.class).fireEvent(new NotifyPermissionRegistrationCompletedEvent(
-            module, permissions));
+        em.fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
     }
 
     @Override

@@ -52,11 +52,11 @@ public class AuthCommands
 
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
-    public AuthCommands(CoreModule core)
+    public AuthCommands(CoreModule core, BanManager bm, UserManager um)
     {
         this.core = core;
-        this.banManager = core.getModularity().start(BanManager.class);
-        this.um = core.getModularity().start(UserManager.class);
+        this.banManager = bm;
+        this.um = um;
     }
 
     @Unloggable

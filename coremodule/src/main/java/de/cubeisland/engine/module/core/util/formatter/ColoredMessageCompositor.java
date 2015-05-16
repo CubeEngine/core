@@ -30,14 +30,12 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 {
     private ColorConfiguration colorConfiguration;
 
-    public ColoredMessageCompositor(CoreModule core)
+    public ColoredMessageCompositor(Reflector reflector, FileManager fm)
     {
-        Reflector reflector = core.getModularity().start(Reflector.class);
         reflector.getDefaultConverterManager().registerConverter(new MessageTypeConverter(), MessageType.class);
         reflector.getDefaultConverterManager().registerConverter(new ChatFormatConverter(), ChatFormat.class);
 
-        this.colorConfiguration = reflector.load(ColorConfiguration.class, core.getModularity().start(
-            FileManager.class).getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
+        this.colorConfiguration = reflector.load(ColorConfiguration.class, fm.getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
             .registerMacro(new BooleanFormatter())

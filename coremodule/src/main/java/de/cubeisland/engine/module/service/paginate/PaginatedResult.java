@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.module.service.paginate;
 
-import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
@@ -35,10 +34,7 @@ public class PaginatedResult implements CommandResult
 
     public PaginatedResult(CommandContext context, List<String> lines)
     {
-        this.context = context;
-        this.iterator = new StringListIterator(lines);
-
-        context.getModule().getModularity().start(PaginationManager.class).registerResult(context.getSource(), this);
+        this(context, new StringListIterator(lines));
     }
 
     public PaginatedResult(CommandContext context, PaginationIterator iterator)
@@ -92,33 +88,5 @@ public class PaginatedResult implements CommandResult
             return;
         }
         context.sendTranslated(NEGATIVE, "The page you want to see is out of bounds.");
-    }
-
-    private class StringListIterator implements PaginationIterator
-    {
-        private List<String> lines;
-
-        public StringListIterator(List<String> lines)
-        {
-            this.lines = lines;
-        }
-
-        @Override
-        public List<String> getPage(int page, int numberOfLines)
-        {
-            int offset = page * numberOfLines;
-            if (offset < lines.size())
-            {
-                int lastItem = Math.min(offset + numberOfLines, lines.size());
-                return lines.subList(offset, lastItem);
-            }
-            return new ArrayList<>();
-        }
-
-        @Override
-        public int pageCount(int numberOfLinesPerPage)
-        {
-            return (int)Math.ceil((float)lines.size() / (float)numberOfLinesPerPage);
-        }
     }
 }

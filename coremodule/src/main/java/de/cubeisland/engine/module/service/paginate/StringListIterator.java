@@ -15,28 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.service.command.readers;
+package de.cubeisland.engine.module.service.paginate;
 
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
-import org.spongepowered.api.entity.EntityType;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EntityTypeReader implements ArgumentReader<EntityType>
+class StringListIterator implements PaginationIterator
 {
+    private List<String> lines;
 
-    private EntityMatcher entityMatcher;
-
-    public EntityTypeReader(EntityMatcher entityMatcher)
+    public StringListIterator(List<String> lines)
     {
-        this.entityMatcher = entityMatcher;
+        this.lines = lines;
     }
 
     @Override
-    public EntityType read(Class type, CommandInvocation invocation) throws ReaderException
+    public List<String> getPage(int page, int numberOfLines)
     {
-        return entityMatcher.any(invocation.consume(1));
+        int offset = page * numberOfLines;
+        if (offset < lines.size())
+        {
+            int lastItem = Math.min(offset + numberOfLines, lines.size());
+            return lines.subList(offset, lastItem);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public int pageCount(int numberOfLinesPerPage)
+    {
+        return (int)Math.ceil((float)lines.size() / (float)numberOfLinesPerPage);
     }
 }

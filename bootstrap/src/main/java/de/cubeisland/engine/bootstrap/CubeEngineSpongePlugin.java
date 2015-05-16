@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -33,6 +34,8 @@ import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
+import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -85,14 +88,16 @@ public class CubeEngineSpongePlugin
         catch (IOException e)
         {}
 
+        ServiceManager sm = modularity.getServiceManager();
+        sm.registerService(Game.class, game);
+        sm.registerService(Modularity.class, modularity);
+        sm.registerService(Logger.class, pluginLogger);
+        sm.registerService(File.class, dataFolder);
+        modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
+
         pluginLogger.info("Load Modules");
         modularity.load(loadPath.toFile());
         pluginLogger.info("done.");
-        modularity.getServiceManager().registerService(Game.class, game);
-        modularity.getServiceManager().registerService(Modularity.class, modularity);
-        modularity.getServiceManager().registerService(Logger.class, pluginLogger);
-        modularity.getServiceManager().registerService(File.class, dataFolder);
-        modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
     }
 
     @Subscribe
@@ -104,8 +109,15 @@ public class CubeEngineSpongePlugin
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
         pluginLogger.info("Start Modules");
-        modularity.startAll();
-        pluginLogger.info("Finished starting Modules");
+        try
+        {
+            modularity.startAll();
+            pluginLogger.info("Finished starting Modules");
+        }
+        catch (Exception e)
+        {
+            pluginLogger.error("An Error occured while starting the modules!", e);
+        }
 
         game.getCommandDispatcher().register(this, CommandSpec.builder().setDescription(Texts.of(
             "Reloads the CubeEngine")).setExecutor((commandSource, commandContext) -> {

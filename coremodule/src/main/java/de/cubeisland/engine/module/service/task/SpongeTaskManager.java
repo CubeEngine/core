@@ -48,6 +48,7 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
 import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.service.scheduler.Task;
@@ -64,11 +65,11 @@ public class SpongeTaskManager implements TaskManager
     private final Map<Module, Set<UUID>> moduleTasks;
 
     @Inject
-    public SpongeTaskManager(CoreModule core, AsynchronousScheduler asyncScheduler, SynchronousScheduler syncScheduler)
+    public SpongeTaskManager(Game game)
     {
-        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
-        this.asyncScheduler = asyncScheduler;
-        this.syncScheduler = syncScheduler;
+        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
+        this.asyncScheduler = game.getAsyncScheduler();
+        this.syncScheduler = game.getSyncScheduler();
         this.moduleTasks = new ConcurrentHashMap<>();
     }
 

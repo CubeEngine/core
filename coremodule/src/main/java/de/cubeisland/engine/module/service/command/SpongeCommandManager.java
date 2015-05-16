@@ -45,6 +45,10 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.CoreCommands;
+import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
+import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
+import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
+import de.cubeisland.engine.module.core.util.matcher.ProfessionMatcher;
 import de.cubeisland.engine.module.service.command.completer.ModuleCompleter;
 import de.cubeisland.engine.module.service.command.completer.PlayerCompleter;
 import de.cubeisland.engine.module.service.command.completer.PlayerListCompleter;
@@ -84,8 +88,11 @@ import de.cubeisland.engine.module.service.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
+import de.cubeisland.engine.module.service.user.UserManager;
+import de.cubeisland.engine.module.service.world.WorldManager;
 import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.data.types.DyeColor;
 import org.spongepowered.api.data.types.Profession;
 import org.spongepowered.api.entity.EntityType;
@@ -113,41 +120,48 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
     private final Object plugin;
     private CoreModule core;
+    private I18n i18n;
+
+    private FileManager fm;
+    @Inject private CommandManager cm;
+    @Inject private UserManager um;
+    @Inject private PermissionManager pm;
 
     @Inject
-    public SpongeCommandManager(CoreModule core)
+    public SpongeCommandManager(CoreModule core, Game game, ThreadFactory tf, LogFactory logFactory, I18n i18n, FileManager fm, EventManager em)
     {
         super(new CommandManagerDescriptor());
+        this.fm = fm;
         this.core = core;
-        this.plugin = core.getGame().getPluginManager().getPlugin("CubeEngine").get().getInstance();
+        this.i18n = i18n;
+        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
         this.baseDispatcher = core.getGame().getCommandDispatcher();
 
         this.consoleSender = new ConsoleCommandSender(core);
 
         this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 
-        this.commandLogger = core.getModularity().start(LogFactory.class).getLog(CoreModule.class, "Commands");
+        this.commandLogger = logFactory.getLog(CoreModule.class, "Commands");
         if (core.getConfiguration().logging.logCommands)
         {
-            commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Commands"),
+            commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
                                                    LoggingUtil.getFileFormat(true, false),
                                                    true, LoggingUtil.getCycler(),
-                                                   core.getProvided(ThreadFactory.class)));
+                                                   tf));
         }
 
         this.providerManager = new ProviderManager();
         providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
 
-        registerReaders(core, core.getModularity().start(EventManager.class));
-
+        registerReaders(core, em);
     }
 
     @Enable
     public void onEnable()
     {
         // depends on: server, module manager, ban manager
-        this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager()));
-        this.addCommand(new CoreCommands(core));
+        this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager(), cm, fm, i18n));
+        this.addCommand(new CoreCommands(core, cm, um));
         if (this.core.getConfiguration().improveVanilla)
         {
             this.addCommands(core, new VanillaCommands(core));
@@ -166,9 +180,16 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     {
         I18n i18n = core.getModularity().start(I18n.class);
 
-        providerManager.register(core, new PlayerCompleter(core), User.class, org.spongepowered.api.entity.player.User.class);
+        MaterialDataMatcher materialDataMatcher = core.getModularity().start(MaterialDataMatcher.class);
+        EnchantMatcher enchantMatcher = core.getModularity().start(EnchantMatcher.class);
+        MaterialMatcher materialMatcher = core.getModularity().start(MaterialMatcher.class);
+        ProfessionMatcher professionMatcher = core.getModularity().start(ProfessionMatcher.class);
+        EntityMatcher entityMatcher = core.getModularity().start(EntityMatcher.class);
+        WorldManager wm = core.getModularity().start(WorldManager.class);
+
+        providerManager.register(core, new PlayerCompleter(um), User.class, org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);
-        providerManager.register(core, new PlayerListCompleter(core), PlayerListCompleter.class);
+        providerManager.register(core, new PlayerListCompleter(um), PlayerListCompleter.class);
 
         providerManager.register(core, new ByteReader(i18n), Byte.class, byte.class);
         providerManager.register(core, new ShortReader(i18n), Short.class, short.class);
@@ -177,21 +198,22 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new FloatReader(i18n), Float.class, float.class);
         providerManager.register(core, new DoubleReader(i18n), Double.class, double.class);
 
-        providerManager.register(core, new BooleanReader(core), Boolean.class, boolean.class);
-        providerManager.register(core, new EnchantmentReader(core), Enchantment.class);
-        providerManager.register(core, new ItemStackReader(core.getModularity()), ItemStack.class);
-        providerManager.register(core, new UserReader(core), User.class);
-        providerManager.register(core, new CommandSenderReader(core), CommandSender.class);
-        providerManager.register(core, new WorldReader(core), World.class);
-        providerManager.register(core, new EntityTypeReader(core), EntityType.class);
-        providerManager.register(core, new DyeColorReader(core.getModularity().start(MaterialDataMatcher.class)), DyeColor.class);
-        providerManager.register(core, new ProfessionReader(core), Profession.class);
+        providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
+        providerManager.register(core, new EnchantmentReader(enchantMatcher, core.getGame()), Enchantment.class);
+        providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
+        providerManager.register(core, new UserReader(um, i18n), User.class);
+        providerManager.register(core, new CommandSenderReader(cm), CommandSender.class);
+        providerManager.register(core, new WorldReader(wm, i18n), World.class);
+        providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
+
+        providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);
+        providerManager.register(core, new ProfessionReader(professionMatcher), Profession.class);
         providerManager.register(core, new OfflinePlayerReader(core), org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new DimensionTypeReader(core.getGame()), DimensionType.class);
-        providerManager.register(core, new DifficultyReader(core), Difficulty.class);
+        providerManager.register(core, new DifficultyReader(i18n, core.getGame()), Difficulty.class);
         providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);
 
-        UserListReader userListReader = new UserListReader(core.getModularity());
+        UserListReader userListReader = new UserListReader(um);
         providerManager.register(core, userListReader, UserList.class);
 
         providerManager.register(core, userListReader, UserList.class);
@@ -272,7 +294,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             Permission perm = module.getProvided(Permission.class).childWildcard("command");
             Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
             childPerm.setParent(perm);
-            this.core.getModularity().start(PermissionManager.class).registerPermission(module, childPerm);
+            pm.registerPermission(module, childPerm);
         }
         boolean b = super.addCommand(command);
 

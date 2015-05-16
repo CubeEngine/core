@@ -47,6 +47,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.ItemType;
@@ -58,7 +61,8 @@ import static org.spongepowered.api.item.ItemTypes.*;
 /**
  * This Matcher provides methods to match Material or Items.
  */
-public class MaterialMatcher
+@ServiceProvider(MaterialMatcher.class)
+public class MaterialMatcher implements Provider<MaterialMatcher>
 {
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
@@ -94,11 +98,11 @@ public class MaterialMatcher
                                                                                       GOLDEN_LEGGINGS, GOLDEN_BOOTS,
                                                                                       FLINT_AND_STEEL, BOW, FISHING_ROD,
                                                                                       SHEARS)));
-    private CoreModule core;
+    @Inject private StringMatcher stringMatcher;
 
-    public MaterialMatcher(CoreModule core, Game game)
+    @Inject
+    public MaterialMatcher( Game game)
     {
-        this.core = core;
         this.builder = game.getRegistry().getItemBuilder();
 
         // Read names from GameDirectory
@@ -115,11 +119,16 @@ public class MaterialMatcher
         // TODO legacy ID -> ItemType Map
     }
 
+    @Override
+    public MaterialMatcher get()
+    {
+        return this;
+    }
 
     private ItemType matchWithLevenshteinDistance(String s, Map<String, ItemType> map)
     {
 
-        String t_key = stringMatcher().matchString(s, map.keySet());
+        String t_key = stringMatcher.matchString(s, map.keySet());
         if (t_key != null)
         {
             return map.get(t_key);
@@ -127,16 +136,11 @@ public class MaterialMatcher
         return null;
     }
 
-    private StringMatcher stringMatcher()
-    {
-        return core.getModularity().start(StringMatcher.class);
-    }
-
     private HashMap<ItemStack, Double> allMatchesWithLevenshteinDistance(String s, Map<String, ItemType> map,
                                                                          int maxDistance, int minPercentage)
     {
         HashMap<ItemStack, Double> itemMap = new HashMap<>();
-        TreeMap<String, Integer> itemNameList = stringMatcher().getMatches(s, map.keySet(), maxDistance, true);
+        TreeMap<String, Integer> itemNameList = stringMatcher.getMatches(s, map.keySet(), maxDistance, true);
 
         for (Entry<String, Integer> entry : itemNameList.entrySet())
         {
@@ -218,7 +222,7 @@ public class MaterialMatcher
             }
             catch (NumberFormatException e)
             {
-                String match = stringMatcher().matchString(name, names.keySet());
+                String match = stringMatcher.matchString(name, names.keySet());
                 type = names.get(match);
             }
         }

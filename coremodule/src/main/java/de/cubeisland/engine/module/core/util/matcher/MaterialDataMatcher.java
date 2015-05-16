@@ -18,22 +18,31 @@
 package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.HashMap;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.types.DyeColor;
 
-public class MaterialDataMatcher
+@ServiceProvider(MaterialDataMatcher.class)
+public class MaterialDataMatcher implements Provider<MaterialDataMatcher>
 {
-    private CoreModule core;
-    private final Game game;
+    @Inject private Game game;
+    @Inject private StringMatcher stringMatcher;
     private HashMap<String, DyeColor> dyeColors;
 
-    public MaterialDataMatcher(CoreModule core, Game game)
+    @Enable
+    public void onEnable()
     {
-        this.core = core;
-        this.game = game;
-
         initDataValues(game);
+    }
+
+    @Override
+    public MaterialDataMatcher get()
+    {
+        return this;
     }
 
     private void initDataValues(Game game)
@@ -54,7 +63,7 @@ public class MaterialDataMatcher
      */
     public DyeColor colorData(String data)
     {
-        String match = core.getModularity().start(StringMatcher.class).matchString(data, dyeColors.keySet());
+        String match = stringMatcher.matchString(data, dyeColors.keySet());
         if (match == null)
         {
             return null;

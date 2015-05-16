@@ -26,10 +26,12 @@ import de.cubeisland.engine.modularity.core.Module;
 public abstract class PermissionContainer<T extends Module>
 {
     public final T module;
+    private final PermissionManager pm;
 
     public PermissionContainer(T module)
     {
         this.module = module;
+        pm = module.getModularity().start(PermissionManager.class);
     }
 
     private Set<Permission> getPermissions()
@@ -58,7 +60,7 @@ public abstract class PermissionContainer<T extends Module>
     {
         for (Permission perm : getPermissions())
         {
-            module.getModularity().start(PermissionManager.class).registerPermission(module, perm);
+            pm.registerPermission(module, perm);
         }
     }
 

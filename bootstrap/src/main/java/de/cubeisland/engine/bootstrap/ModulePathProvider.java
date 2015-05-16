@@ -18,6 +18,8 @@
 package de.cubeisland.engine.bootstrap;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
@@ -38,7 +40,14 @@ public class ModulePathProvider implements ValueProvider<Path>
     {
         if (info instanceof ModuleMetadata)
         {
-            return path.resolve(((ModuleMetadata)info).getName());
+            try
+            {
+                return Files.createDirectories(path.resolve(((ModuleMetadata)info).getName()));
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException("Could not create module folder" + e);
+            }
         }
         throw new IllegalArgumentException(info.getIdentifier() + " is not a Module");
     }

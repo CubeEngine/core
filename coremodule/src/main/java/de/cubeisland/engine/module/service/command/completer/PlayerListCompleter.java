@@ -28,11 +28,12 @@ import de.cubeisland.engine.module.service.user.UserManager;
 
 public class PlayerListCompleter implements Completer
 {
-    private final CoreModule core;
 
-    public PlayerListCompleter(CoreModule core)
+    private final UserManager um;
+
+    public PlayerListCompleter(UserManager um)
     {
-        this.core = core;
+        this.um = um;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class PlayerListCompleter implements Completer
             firstTokens += "!";
         }
 
-        for (User user : core.getModularity().start(UserManager.class).getLoadedUsers())
+        for (User user : um.getLoadedUsers())
         {
             if (user.getName().startsWith(lastToken))
             {

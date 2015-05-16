@@ -24,18 +24,23 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 
-public class StringMatcher
+@ServiceProvider(StringMatcher.class)
+public class StringMatcher implements Provider<StringMatcher>
 {
     private final DamerauLevenshteinAlgorithm editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
-    private Log logger;
+    @Inject private Log logger;
 
-    public StringMatcher(Log logger)
+    @Override
+    public StringMatcher get()
     {
-        this.logger = logger;
+        return this;
     }
 
     /**

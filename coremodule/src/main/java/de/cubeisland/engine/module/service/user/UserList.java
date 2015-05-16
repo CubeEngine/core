@@ -37,11 +37,11 @@ public class UserList
 {
     private final List<User> list;
     private final boolean all;
-    private Modularity modularity;
+    private final UserManager um;
 
-    public UserList(List<User> list, Modularity modularity)
+    public UserList(List<User> list, UserManager um)
     {
-        this.modularity = modularity;
+        this.um = um;
         if (list == null)
         {
             all = true;
@@ -58,7 +58,7 @@ public class UserList
     {
         if (all)
         {
-            return new ArrayList<>(modularity.start(UserManager.class).getOnlineUsers());
+            return new ArrayList<>(um.getOnlineUsers());
         }
         return list;
     }
@@ -70,11 +70,11 @@ public class UserList
 
     public static class UserListReader implements ArgumentReader<UserList>, Completer
     {
-        private Modularity modularity;
+        private UserManager um;
 
-        public UserListReader(Modularity modularity)
+        public UserListReader(UserManager um)
         {
-            this.modularity = modularity;
+            this.um = um;
         }
 
         private static boolean canSee(CommandSender sender, User user)
@@ -90,9 +90,9 @@ public class UserList
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
-                return new UserList(null, modularity);
+                return new UserList(null, um);
             }
-            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation), modularity);
+            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation), um);
         }
 
         @Override
@@ -105,7 +105,7 @@ public class UserList
             }
 
             final CommandSender sender = (CommandSender)invocation.getCommandSource();
-            for (User player : modularity.start(UserManager.class).getOnlineUsers())
+            for (User player : um.getOnlineUsers())
             {
                 String name = player.getName();
                 if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))

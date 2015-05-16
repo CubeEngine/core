@@ -18,6 +18,9 @@
 package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.HashMap;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.manipulators.items.EnchantmentData;
@@ -27,19 +30,27 @@ import org.spongepowered.api.item.inventory.ItemStack;
 /**
  * This Matcher provides methods to match Enchantments.
  */
-public class EnchantMatcher
+@ServiceProvider(EnchantMatcher.class)
+public class EnchantMatcher implements Provider<EnchantMatcher>
 {
     private final HashMap<String, Enchantment> spongeNames;
-    private CoreModule core;
+    private StringMatcher stringMatcher;
 
-    public EnchantMatcher(CoreModule core, Game game)
+    @Inject
+    public EnchantMatcher(Game game, StringMatcher stringMatcher)
     {
-        this.core = core;
+        this.stringMatcher = stringMatcher;
         this.spongeNames = new HashMap<>();
         for (Enchantment enchantment : game.getRegistry().getAllOf(Enchantment.class))
         {
             this.spongeNames.put(enchantment.getName(), enchantment);
         }
+    }
+
+    @Override
+    public EnchantMatcher get()
+    {
+        return this;
     }
 
     /**
@@ -50,7 +61,7 @@ public class EnchantMatcher
      */
     public Enchantment enchantment(String s)
     {
-        String match = core.getModularity().start(StringMatcher.class).matchString(s, spongeNames.keySet());
+        String match = stringMatcher.matchString(s, spongeNames.keySet());
         return spongeNames.get(match);
     }
 

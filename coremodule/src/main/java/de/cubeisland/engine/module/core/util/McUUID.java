@@ -50,14 +50,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 
-public class McUUID
+@ServiceProvider(McUUID.class)
+public class McUUID implements Provider<McUUID>
 {
     private final static ObjectMapper mapper = new ObjectMapper();
     private static final String MOJANG_API_BASE_URL = "https://api.mojang.com/";
@@ -65,16 +68,17 @@ public class McUUID
     private static final String MOJANG_API_URL_UUID_NAMEHISTORY = MOJANG_API_BASE_URL + "user/profiles/%s/names";
     private static final String AGENT = "minecraft";
 
+    @Inject Log log;
+
+    @Override
+    public McUUID get()
+    {
+        return this;
+    }
+
     static
     {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    private CoreModule core;
-
-    public McUUID(CoreModule core)
-    {
-        this.core = core;
     }
 
     public static final Pattern UUID_PATTERN = Pattern.compile(
@@ -91,14 +95,14 @@ public class McUUID
             }
             catch (Exception e)
             {
-                core.getProvided(Log.class).error("Could not convert UUID of: {} ({})", profile.name, profile.id);
+                log.error("Could not convert UUID of: {} ({})", profile.name, profile.id);
             }
         }
         playerNames = new HashSet<>(playerNames);
         playerNames.removeAll(map.keySet());
         for (String playerName : playerNames)
         {
-            core.getProvided(Log.class).error("Missing UUID for {}", playerName);
+            log.error("Missing UUID for {}", playerName);
             map.put(playerName, null);
         }
         return map;
@@ -120,18 +124,18 @@ public class McUUID
             if (players.size() >= 20)
             {
                 getProfiles(profiles, players);
-                core.getProvided(Log.class).info(profiles.size() + "/" + playernames.size());
+                log.info(profiles.size() + "/" + playernames.size());
             }
         }
         getProfiles(profiles, players);
-        core.getProvided(Log.class).info("Getting UUIDs done!", playernames.size());
+        log.info("Getting UUIDs done!", playernames.size());
         return profiles;
     }
 
     private void getProfiles(List<Profile> profiles, LinkedList<String> players)
     {
         int amount = players.size();
-        core.getProvided(Log.class).debug("Query UUID for: " + StringUtils.implode(",", players));
+        log.debug("Query UUID for: " + StringUtils.implode(",", players));
         ArrayNode node = mapper.createArrayNode();
         while (!players.isEmpty())
         {
@@ -143,13 +147,13 @@ public class McUUID
         int page = 1;
         try
         {
-            core.getProvided(Log.class).info("Query Mojang for {} UUIDs", amount);
+            log.info("Query Mojang for {} UUIDs", amount);
             while (amount > 0)
             {
                 int read = readProfilesFromInputStream(postQuery(node, page++).getInputStream(), profiles);
                 if (read == 0)
                 {
-                    core.getProvided(Log.class).info("No Answer for {} players", amount);
+                    log.info("No Answer for {} players", amount);
                 }
                 else if (read != amount)
                 {
@@ -161,7 +165,7 @@ public class McUUID
         }
         catch (IOException e)
         {
-            core.getProvided(Log.class).error(e, "Could not retrieve UUID for given names!");
+            log.error(e, "Could not retrieve UUID for given names!");
         }
     }
 
@@ -227,7 +231,7 @@ public class McUUID
         }
         catch (IOException e)
         {
-            core.getProvided(Log.class).error(e, "Could not retrieve NameHistory for given UUID!");
+            log.error(e, "Could not retrieve NameHistory for given UUID!");
             return emptyHistory;
         }
     }

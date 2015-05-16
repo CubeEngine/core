@@ -34,13 +34,14 @@
  */
 package de.cubeisland.engine.module.service.database.mysql;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
+import javax.inject.Inject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
@@ -48,18 +49,21 @@ import com.zaxxer.hikari.pool.PoolUtilities;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.LogTarget;
+import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.Disable;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.service.database.AbstractDatabase;
 import de.cubeisland.engine.module.service.database.Database;
 import de.cubeisland.engine.module.service.database.DatabaseConfiguration;
 import de.cubeisland.engine.module.service.database.Table;
 import de.cubeisland.engine.module.service.database.TableCreator;
 import de.cubeisland.engine.module.service.database.TableUpdateCreator;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -74,7 +78,9 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 
-public class MySQLDatabase extends AbstractDatabase
+@ServiceImpl(Database.class)
+@de.cubeisland.engine.modularity.asm.marker.Version(1)
+public class MySQLDatabase extends AbstractDatabase implements Database
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
@@ -82,18 +88,29 @@ public class MySQLDatabase extends AbstractDatabase
     private final Settings settings;
     private final MappedSchema mappedSchema;
     private Log logger;
+    private final JooqLogger jooqLogger = new JooqLogger(this); // TODO DB-Queries LogLevel target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
 
-    public MySQLDatabase(CoreModule core, MySQLDatabaseConfiguration config) throws SQLException
+    @Inject
+    public MySQLDatabase(Reflector reflector, File pluginFolder, Log logger, FileManager fm, LogFactory logFactory)
     {
-        super(core);
-        this.config = config;
+        // Disable HikariPool Debug ConsoleSpam
+        ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
+        ((Logger)LogManager.getLogger(PoolUtilities.class)).setLevel(Level.INFO);
 
-        this.logger = core.getModularity().start(LogFactory.class).getLog(Database.class, "Database");
-        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "Database"),
+        // Setting up Logger...
+        this.logger = logger;
+        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Database"),
                                                      LoggingUtil.getFileFormat(true, false),
                                                      true, LoggingUtil.getCycler(), threadFactory);
-        target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
+        target.setLevel(LogLevel.INFO);
         logger.addTarget(target);
+
+        LogTarget parentTarget = logger.addDelegate(logFactory.getLog(CoreModule.class));
+        parentTarget.appendFilter(new PrefixFilter("[DB]"));
+
+        // Now go connect to the database:
+        this.logger.info("Connecting to the database...");
+        this.config = reflector.load(MySQLDatabaseConfiguration.class, new File(pluginFolder, "database.yml"));
 
 
         HikariConfig dsConf = new HikariDataSource();
@@ -116,10 +133,6 @@ public class MySQLDatabase extends AbstractDatabase
         dsConf.setThreadFactory(threadFactory);
         dataSource = new HikariDataSource(dsConf);
 
-        // Disable HikariPool ConsoleSpam
-        ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
-        ((Logger)LogManager.getLogger(PoolUtilities.class)).setLevel(Level.INFO);
-
         try (Connection connection = dataSource.getConnection())
         {
             try (PreparedStatement s = connection.prepareStatement("SHOW variables WHERE Variable_name='wait_timeout'"))
@@ -138,26 +151,17 @@ public class MySQLDatabase extends AbstractDatabase
                 }
             }
         }
+        catch (SQLException e)
+        {
+            throw new IllegalStateException("Could not establish connection with the database!", e);
+        }
 
         this.mappedSchema = new MappedSchema().withInput(config.database);
         this.settings = new Settings();
         this.settings.withRenderMapping(new RenderMapping().withSchemata(this.mappedSchema));
         this.settings.setExecuteLogging(false);
-    }
 
-    public static MySQLDatabase loadFromConfig(CoreModule core, Path file)
-    {
-        MySQLDatabaseConfiguration config = core.getModularity().start(Reflector.class).load(
-            MySQLDatabaseConfiguration.class, file.toFile());
-        try
-        {
-            return new MySQLDatabase(core, config);
-        }
-        catch (RuntimeException | SQLException ex)
-        {
-            core.getLog().error(ex, "Could not establish connection with the database!");
-        }
-        return null;
+        this.logger.info("connected!");
     }
 
     private boolean updateTableStructure(TableUpdateCreator updater)
@@ -173,18 +177,18 @@ public class MySQLDatabase extends AbstractDatabase
                 Version version = updater.getTableVersion();
                 if (dbVersion.isNewerThan(version))
                 {
-                    this.core.getLog().info("table-version is newer than expected! {}: {} expected version: {}",
-                                            updater.getName(), dbVersion.toString(), version.toString());
+                    logger.info("table-version is newer than expected! {}: {} expected version: {}", updater.getName(),
+                                dbVersion.toString(), version.toString());
                 }
                 else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
-                    this.core.getLog().info("table-version is too old! Updating {} from {} to {}", updater.getName(),
-                                            dbVersion.toString(), version.toString());
+                    logger.info("table-version is too old! Updating {} from {} to {}", updater.getName(),
+                                dbVersion.toString(), version.toString());
                     try (Connection connection = this.getConnection())
                     {
                         updater.update(connection, dbVersion);
                     }
-                    this.core.getLog().info("{} got updated to {}", updater.getName(), version.toString());
+                    logger.info("{} got updated to {}", updater.getName(), version.toString());
                     execute("ALTER TABLE " + updater.getName() + " COMMENT = ?", version.toString());
                 }
                 return true;
@@ -192,7 +196,7 @@ public class MySQLDatabase extends AbstractDatabase
         }
         catch (InterruptedException | ExecutionException | SQLException e)
         {
-            this.core.getLog().warn(e, "Could not execute structure update for the table {}", updater.getName());
+            logger.warn(e, "Could not execute structure update for the table {}", updater.getName());
         }
         return false;
     }
@@ -208,7 +212,7 @@ public class MySQLDatabase extends AbstractDatabase
         initializeTable(table);
         final String name = table.getName();
         registerTableMapping(name);
-        this.core.getLog().debug("Database-Table {0} registered!", name);
+        logger.debug("Database-Table {0} registered!", name);
     }
 
     private void registerTableMapping(String name)
@@ -261,8 +265,6 @@ public class MySQLDatabase extends AbstractDatabase
     {
         return this.dataSource.getConnection();
     }
-
-    private final JooqLogger jooqLogger = new JooqLogger(this);
 
     @Override
     public DSLContext getDSL()

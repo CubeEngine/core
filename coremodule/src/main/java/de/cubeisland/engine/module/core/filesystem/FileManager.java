@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.core.filesystem;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,74 +33,77 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import de.cubeisland.engine.module.core.util.Cleanable;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.contract.Contract;
+import de.cubeisland.engine.reflect.ReflectedFile;
+import de.cubeisland.engine.reflect.Reflector;
 import org.slf4j.Logger;
+
+import static java.nio.file.Files.createSymbolicLink;
 
 
 /**
  * Manages all the configurations of the CubeEngine.
  */
-public class FileManager implements Cleanable
+@ServiceProvider(FileManager.class)
+public class FileManager implements Provider<FileManager>
 {
-    private final Logger logger;
-    private final Path dataPath;
-    private final Path languagePath;
-    private final Path logPath;
-    private final Path modulesPath;
-    private final Path tempPath;
-    private final Path translationPath;
+    @Inject private Logger logger;
+    @Inject private Reflector reflector;
+    @Inject private File dataFolder;
+
+    private Path languagePath;
+    private Path logPath;
+    private Path tempPath;
+    private Path translationPath;
 
     private ConcurrentMap<Path, Resource> fileSources;
-    private final FileAttribute<?>[] folderCreateAttributes;
+    private FileAttribute<?>[] folderCreateAttributes;
 
+    @Override
+    public FileManager get()
+    {
+        return this;
+    }
 
-    public FileManager(Logger logger, Path pluginPath, Path coreModulePath)
+    @Enable
+    public void onEnable()
     {
         try
         {
-            Contract.expectNotNull(coreModulePath, "The CubeEngine plugin folder must not be null!");
-            coreModulePath = coreModulePath.toAbsolutePath();
+            createSymbolicLink(Paths.get(System.getProperty("user.dir", "."), "CubeEngine"), dataFolder.toPath());
+        }
+        catch (IOException ignored)
+        {}
 
-            this.logger = logger;
-
-            this.dataPath = Files.createDirectories(coreModulePath).toRealPath();
-
-            if (Files.getFileAttributeView(coreModulePath, PosixFileAttributeView.class) != null)
+        try
+        {
+            Path dataPath = dataFolder.toPath();
+            if (Files.getFileAttributeView(dataPath.resolve("modules"), PosixFileAttributeView.class) != null)
             {
                 folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
 
-                Files.setPosixFilePermissions(this.dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
+                Files.setPosixFilePermissions(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
             }
             else
             {
                 folderCreateAttributes = new FileAttribute[0];
             }
 
-            final Path linkSource = Paths.get(System.getProperty("user.dir", "."), "CubeEngine");
-
-            this.languagePath = Files.createDirectories(pluginPath.resolve("language"), folderCreateAttributes);
-
-            this.logPath = Files.createDirectories(pluginPath.resolve("log"), folderCreateAttributes);
-
-            this.modulesPath = Files.createDirectories(pluginPath.resolve("modules"), folderCreateAttributes);
-
-            this.tempPath = Files.createDirectories(pluginPath.resolve("temp"), folderCreateAttributes);
-
-            this.translationPath = Files.createDirectories(pluginPath.resolve("translations"), folderCreateAttributes);
-
+            this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
+            this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
+            this.tempPath = Files.createDirectories(dataPath.resolve("temp"), folderCreateAttributes);
+            this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
             this.fileSources = new ConcurrentHashMap<>();
-
-            try
-            {
-                Files.createSymbolicLink(linkSource, pluginPath);
-            }
-            catch (IOException ignored)
-            {}
         }
         catch (IOException e)
         {
-            throw new IllegalStateException(e); // TODO Exception
+            throw new IllegalStateException(e);
         }
 
         if (!FileUtil.hideFile(this.tempPath))
@@ -115,7 +119,7 @@ public class FileManager implements Cleanable
      */
     public Path getDataPath()
     {
-        return this.dataPath;
+        return this.dataFolder.toPath();
     }
 
     /**
@@ -137,27 +141,6 @@ public class FileManager implements Cleanable
     {
         return this.logPath;
     }
-
-    /**
-     * Returns the modules directory
-     *
-     * @return the directory
-     */
-    public Path getModulesPath()
-    {
-        return this.modulesPath;
-    }
-
-    /**
-     * Returns the temp directory
-     *
-     * @return the directory
-     */
-    public Path getTempPath()
-    {
-        return this.tempPath;
-    }
-
 
     /**
      * Returns the translation override directory
@@ -209,7 +192,7 @@ public class FileManager implements Cleanable
 
         try
         {
-            Path file = this.dropResource(resource.getClass(), getSaneSource(resource), this.dataPath.resolve(resource.getTarget()), false);
+            Path file = this.dropResource(resource.getClass(), getSaneSource(resource), getDataPath().resolve(resource.getTarget()), false);
             this.fileSources.put(file.toRealPath(), resource);
             return file;
         }
@@ -299,9 +282,27 @@ public class FileManager implements Cleanable
         return this.getResourceStream(this.fileSources.get(file));
     }
 
-
-    @Override
-    public void clean()
+    public  <T extends ReflectedFile<?, ?, ?>> T  loadConfig(Module module, Class<T> clazz)
     {
-    } // TODO cleanup ?
+        T config = reflector.create(clazz);
+        config.setFile(module.getProvided(Path.class).resolve("config." + config.getCodec().getExtension()).toFile());
+        if (config.reload(true))
+        {
+            module.getProvided(Log.class).info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+        }
+        return config;
+    }
+
+    public boolean copyModule(Path path)
+    {
+        try
+        {
+            Files.copy(path, tempPath.resolve(path.getFileName()));
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+        return true;
+    }
 }

@@ -47,12 +47,11 @@ public class CoreCommands extends ContainerCommand
 {
     private final CoreModule core;
 
-    public CoreCommands(CoreModule core)
+    public CoreCommands(CoreModule core, CommandManager cm, UserManager um)
     {
         super(core);
         this.core = core;
-
-        core.getModularity().start(CommandManager.class).getProviderManager().register(core, new FindUserReader(core));
+        cm.getProviderManager().register(core, new FindUserReader(um));
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
@@ -129,12 +128,11 @@ public class CoreCommands extends ContainerCommand
 
     public static class FindUserReader implements ArgumentReader<User>
     {
-
         private final UserManager um;
 
-        public FindUserReader(CoreModule core)
+        public FindUserReader(UserManager um)
         {
-            um = core.getModularity().start(UserManager.class);
+            this.um = um;
         }
 
         @Override

@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.service.command.readers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
@@ -30,17 +31,21 @@ import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.service.user.UserManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Matches exact offline players and online players using * for wildcard
  */
 public class FuzzyUserReader implements ArgumentReader<List<User>>
 {
-    private final CoreModule core;
 
-    public FuzzyUserReader(CoreModule core)
+    private final UserManager um;
+    private final I18n i18n;
+
+    public FuzzyUserReader(UserManager um, I18n i18n)
     {
-        this.core = core;
+        this.um = um;
+        this.i18n = i18n;
     }
 
     @Override
@@ -51,7 +56,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         if ("*".equals(invocation.currentToken()))
         {
             invocation.consume(1);
-            users.addAll(core.getModularity().start(UserManager.class).getOnlineUsers());
+            users.addAll(um.getOnlineUsers());
             return users;
         }
         if (invocation.currentToken().contains(","))
@@ -64,16 +69,12 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         if (token.contains("*"))
         {
             Pattern pattern = Pattern.compile(token.replace("*", ".*"));
-            for (User user : core.getModularity().start(UserManager.class).getOnlineUsers())
-            {
-                if (pattern.matcher(user.getName()).matches())
-                {
-                    users.add(user);
-                }
-            }
+            users.addAll(um.getOnlineUsers().stream()
+                           .filter(user -> pattern.matcher(user.getName()).matches())
+                           .collect(toList()));
             if (users.isEmpty())
             {
-                throw new ReaderException(core.getModularity().start(I18n.class).translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
+                throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }

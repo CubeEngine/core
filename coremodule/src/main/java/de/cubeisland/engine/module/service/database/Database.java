@@ -24,6 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -33,6 +35,8 @@ import org.jooq.ResultQuery;
 /**
  * The Database interface.
  */
+@Service
+@Version(1)
 public interface Database
 {
     /**
