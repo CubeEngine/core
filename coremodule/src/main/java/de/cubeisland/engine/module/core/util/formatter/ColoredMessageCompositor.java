@@ -21,10 +21,12 @@ import java.util.Locale;
 
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;
+import org.spongepowered.api.text.format.BaseFormatting;
+
+import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
 
 public class ColoredMessageCompositor extends DefaultMessageCompositor
 {
@@ -32,10 +34,9 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
 
     public ColoredMessageCompositor(Reflector reflector, FileManager fm)
     {
-        reflector.getDefaultConverterManager().registerConverter(new MessageTypeConverter(), MessageType.class);
         reflector.getDefaultConverterManager().registerConverter(new ChatFormatConverter(), ChatFormat.class);
 
-        this.colorConfiguration = reflector.load(ColorConfiguration.class, fm.getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
+        // TODO this.colorConfiguration = reflector.load(ColorConfiguration.class, fm.getDataPath().resolve("formatColor" + FileExtensionFilter.YAML.getExtention()).toFile());
         this.registerMacro(new WorldFormatter())
             .registerMacro(new StringFormatter())
             .registerMacro(new BooleanFormatter())
@@ -50,29 +51,8 @@ public class ColoredMessageCompositor extends DefaultMessageCompositor
         this.addDefaultPostProcessor(new ColorPostProcessor());
     }
 
-    public String composeMessage(MessageType type, Locale locale, String sourceMessage, Object... messageArgs)
+    public String composeMessage(BaseFormatting format, Locale locale, String sourceMessage, Object... messageArgs)
     {
-        return this.composeMessage(locale, this.getColorString(type) + sourceMessage, messageArgs);
+        return this.composeMessage(locale, String.valueOf(BASE_CHAR) + format.getCode() + sourceMessage, messageArgs);
     }
-
-    public String getColorString(MessageType type)
-    {
-        if (type == null)
-        {
-            return "";
-        }
-        ChatFormat chatFormat = this.colorConfiguration.colorMap.get(type);
-        if (chatFormat == null)
-        {
-            try
-            {
-                chatFormat = ChatFormat.valueOf(type.getName());
-            }
-            catch (IllegalArgumentException ignored)
-            {}
-        }
-        return (chatFormat == null ? "" : chatFormat.toString()) + this.getColorString(type.getAdditional());
-    }
-
-
 }

@@ -326,7 +326,7 @@ public class VanillaCommands
         context.sendTranslated(NEUTRAL, "{name#plugin} is currently running in version {input#version:color=INDIGO}.",
                                instance.get().getName(), instance.get().getVersion());
         context.sendMessage(" ");
-        context.sendTranslated(NEUTRAL.and(ChatFormat.UNDERLINE), "Plugin information:");
+        context.sendTranslated(NEUTRAL, "Plugin information:");
         context.sendMessage(" ");
         if (instance.get().getInstance() instanceof CoreModule && source)
         {

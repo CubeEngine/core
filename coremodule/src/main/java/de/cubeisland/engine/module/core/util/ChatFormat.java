@@ -20,34 +20,37 @@ package de.cubeisland.engine.module.core.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 
 /**
  * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.
  */
 public enum ChatFormat
 {
-    BLACK('0'),
-    DARK_BLUE('1'),
-    DARK_GREEN('2'),
-    DARK_AQUA('3'),
-    DARK_RED('4'),
-    PURPLE('5'),
-    GOLD('6'),
-    GREY('7'),
-    DARK_GREY('8'),
-    INDIGO('9'),
-    BRIGHT_GREEN('a'),
-    AQUA('b'),
-    RED('c'),
-    PINK('d'),
-    YELLOW('e'),
-    WHITE('f'),
-    MAGIC('k'),
-    BOLD('l'),
-    STRIKE('m'),
-    UNDERLINE('n'),
-    ITALIC('o'),
-    RESET('r');
+    BLACK('0', TextColors.BLACK),
+    DARK_BLUE('1', TextColors.DARK_BLUE),
+    DARK_GREEN('2', TextColors.DARK_GREEN),
+    DARK_AQUA('3', TextColors.DARK_AQUA),
+    DARK_RED('4', TextColors.DARK_RED),
+    PURPLE('5', TextColors.DARK_PURPLE),
+    GOLD('6', TextColors.GOLD),
+    GREY('7', TextColors.GRAY),
+    DARK_GREY('8', TextColors.DARK_GRAY),
+    INDIGO('9', TextColors.BLUE),
+    BRIGHT_GREEN('a', TextColors.GREEN),
+    AQUA('b', TextColors.AQUA),
+    RED('c', TextColors.RED),
+    PINK('d', TextColors.LIGHT_PURPLE),
+    YELLOW('e', TextColors.YELLOW),
+    WHITE('f', TextColors.WHITE),
+    MAGIC('k', TextStyles.OBFUSCATED),
+    BOLD('l', TextStyles.BOLD),
+    STRIKE('m', TextStyles.STRIKETHROUGH),
+    UNDERLINE('n', TextStyles.UNDERLINE),
+    ITALIC('o', TextStyles.ITALIC),
+    RESET('r', TextColors.RESET);
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     public static final char BASE_CHAR = '\u00A7';
@@ -57,12 +60,14 @@ public enum ChatFormat
     private static final Pattern STRIP_REDUNDANT_FORMATS = Pattern.compile("(?:[&§][0-9a-fk-r])+([&§][0-9a-fk-r])");
 
     private final char formatChar;
+    private BaseFormatting base;
     private final String string;
 
-    private ChatFormat(char formatChar)
+    ChatFormat(char formatChar, BaseFormatting base)
     {
         this.formatChar = formatChar;
-        this.string = String.valueOf(new char[] {
+        this.base = base;
+        this.string = String.valueOf(new char[]{
             BASE_CHAR, formatChar
         });
     }
@@ -71,6 +76,7 @@ public enum ChatFormat
      * Gets a chat format by it's char
      *
      * @param theChar the char to look for
+     *
      * @return the ChatFormat or null if not found
      */
     public static ChatFormat getByChar(char theChar)
@@ -87,6 +93,7 @@ public enum ChatFormat
      * Removes all the format codes from a string
      *
      * @param string the string
+     *
      * @return the stripped string
      */
     public static String stripFormats(String string)
@@ -114,6 +121,7 @@ public enum ChatFormat
      * Parses the chat format strings
      *
      * @param string the string to parse
+     *
      * @return the parsed string
      */
     public static String parseFormats(String string)
@@ -130,6 +138,7 @@ public enum ChatFormat
      *
      * @param baseChar the char used to indicate a format code
      * @param string   the string to parse
+     *
      * @return the parsed string
      */
     public static String parseFormats(char baseChar, String string)
@@ -166,5 +175,10 @@ public enum ChatFormat
         {
             FORMAT_CHARS_MAP.put(format.getChar(), format);
         }
+    }
+
+    public String getName()
+    {
+        return base.getName();
     }
 }

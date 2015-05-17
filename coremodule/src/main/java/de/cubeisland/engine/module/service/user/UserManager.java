@@ -29,6 +29,7 @@ import de.cubeisland.engine.module.core.util.Cleanable;
 import de.cubeisland.engine.module.core.util.Triplet;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.text.format.BaseFormatting;
 
 @Service
 @Version(1)
@@ -164,23 +165,21 @@ public interface UserManager extends Cleanable
 
     /**
      * Broadcasts a status message (not translated)
-     *
-     * @param starColor the color of the prepended star
+     *  @param starColor the color of the prepended star
      * @param message the message
      * @param sender the sender
      * @param params the parameters
      */
-    void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... params);
+    void broadcastStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params);
 
     /**
      * Broadcasts a translated status message
-     *
-     * @param starColor the color of the prepended star
+     *  @param starColor the color of the prepended star
      * @param message the message
      * @param sender the sender
      * @param params the parameters
      */
-    void broadcastTranslatedStatus(ChatFormat starColor, String message, CommandSender sender, Object... params);
+    void broadcastTranslatedStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params);
 
     /**
      * Broadcasts a status message (not translated)

@@ -41,7 +41,6 @@ import de.cubeisland.engine.module.service.database.Database;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.service.world.WorldManager;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.block.BlockType;
@@ -50,6 +49,7 @@ import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.command.CommandSource;
@@ -224,9 +224,9 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public Translation getTranslation(MessageType type, String message, Object... args)
+    public Translation getTranslation(BaseFormatting format, String message, Object... args)
     {
-        return getI18n().getTranslation(type, getLocale(), message, args);
+        return getI18n().getTranslation(format, getLocale(), message, args);
     }
 
     private I18n getI18n()
@@ -235,32 +235,33 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public Translation getTranslationN(MessageType type, int n, String singular, String plural, Object... args)
+    public Translation getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        return getI18n().getTranslationN(type, getLocale(), n, singular, plural, args);
+        return getI18n().getTranslationN(format, getLocale(), n, singular, plural, args);
     }
 
     /**
      * Sends a translated Message to this User
-     *  @param type
+     * @param type
+     * @param format
      * @param message the message to translate
      * @param args optional parameter
      */
     @Override
-    public void sendTranslated(MessageType type, String message, Object... args)
+    public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        this.sendMessage(this.getTranslation(type, message, args).get(getLocale()));
+        this.sendMessage(this.getTranslation(format, message, args).get(getLocale()));
     }
 
     @Override
-    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... args)
+    public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, args).get(getLocale()));
+        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).get(getLocale()));
     }
 
-    public void sendMessage(MessageType type, String message, Object... params)
+    public void sendMessage(BaseFormatting format, String message, Object... params)
     {
-        this.sendMessage(getI18n().composeMessage(this.getLocale(), type, message, params));
+        this.sendMessage(getI18n().composeMessage(this.getLocale(), format, message, params));
     }
 
     /**

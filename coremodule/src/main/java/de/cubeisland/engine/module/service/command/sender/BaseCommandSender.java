@@ -20,8 +20,8 @@ package de.cubeisland.engine.module.service.command.sender;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
 
 public abstract class BaseCommandSender implements CommandSender
@@ -43,26 +43,26 @@ public abstract class BaseCommandSender implements CommandSender
 
 
     @Override
-    public Translation getTranslation(MessageType type, String message, Object... args)
+    public Translation getTranslation(BaseFormatting format, String message, Object... args)
     {
-        return i18n.getTranslation(type, getLocale(), message, args);
+        return i18n.getTranslation(format, getLocale(), message, args);
     }
 
     @Override
-    public Translation getTranslationN(MessageType type, int n, String singular, String plural, Object... args)
+    public Translation getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        return i18n.getTranslationN(type, getLocale(), n, singular, plural, args);
+        return i18n.getTranslationN(format, getLocale(), n, singular, plural, args);
     }
 
     @Override
-    public void sendTranslated(MessageType type, String message, Object... args)
+    public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        this.sendMessage(Texts.of(this.getTranslation(type, message, args).get(getLocale())));
+        this.sendMessage(Texts.of(this.getTranslation(format, message, args).get(getLocale())));
     }
 
     @Override
-    public void sendTranslatedN(MessageType type, int n, String singular, String plural, Object... args)
+    public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(type, n, singular, plural, args).get(getLocale()));
+        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).get(getLocale()));
     }
 }

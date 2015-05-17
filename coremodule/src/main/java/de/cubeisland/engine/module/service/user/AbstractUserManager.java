@@ -48,7 +48,6 @@ import de.cubeisland.engine.module.service.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.util.Triplet;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
@@ -56,6 +55,8 @@ import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextColors;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
 
@@ -336,20 +337,20 @@ public abstract class AbstractUserManager implements UserManager
     }
 
     @Override
-    public void broadcastStatus(ChatFormat starColor, String message, CommandSender sender, Object... params)
+    public void broadcastStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params)
     {
         for (User user : this.onlineUsers)
         {
-            user.sendMessage(MessageType.of(starColor), "* {user} {input#message:color=WHITE}", sender.getDisplayName(), message);
+            user.sendMessage(starColor, "* {user} {input#message:color=WHITE}", sender.getDisplayName(), message);
         }
     }
 
     @Override
-    public void broadcastTranslatedStatus(ChatFormat starColor, String message, CommandSender sender, Object... params)
+    public void broadcastTranslatedStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params)
     {
         for (User user : this.onlineUsers)
         {
-            user.sendMessage(MessageType.of(starColor), "* {user} {input#message:color=WHITE}", sender.getDisplayName(),
+            user.sendMessage(starColor, "* {user} {input#message:color=WHITE}", sender.getDisplayName(),
                              user.getTranslation(NONE, message));
         }
     }
@@ -357,7 +358,7 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public void broadcastStatus(String message, CommandSender sender, Object... params)
     {
-        this.broadcastStatus(ChatFormat.WHITE, message, sender, params);
+        this.broadcastStatus(TextColors.WHITE, message, sender, params);
     }
 
     private void loadSalt()

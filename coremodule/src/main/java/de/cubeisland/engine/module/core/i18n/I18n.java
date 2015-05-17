@@ -55,9 +55,9 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
+import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
 
 import static java.util.stream.Collectors.toList;
@@ -162,12 +162,12 @@ public class I18n implements Provider<I18n>
         }
     }
 
-    public String translate(MessageType type, String message, Object... args)
+    public String translate(BaseFormatting format, String message, Object... args)
     {
-        return this.translate(getDefaultLocale(), type, message, args);
+        return this.translate(getDefaultLocale(), format, message, args);
     }
 
-    public String translate(Locale locale, MessageType type, String message, Object... args)
+    public String translate(Locale locale, BaseFormatting format, String message, Object... args)
     {
         if (locale == null)
         {
@@ -177,17 +177,17 @@ public class I18n implements Provider<I18n>
         {
             return null;
         }
-        return composeMessage(locale, type, this.translate(locale, message), args);
+        return composeMessage(locale, format, this.translate(locale, message), args);
     }
 
-    public String composeMessage(Locale locale, MessageType type, String message, Object[] args)
+    public String composeMessage(Locale locale, BaseFormatting format, String message, Object[] args)
     {
-        return this.compositor.composeMessage(type, locale, message, args);
+        return this.compositor.composeMessage(format, locale, message, args);
     }
 
-    public String translateN(MessageType type, int n, String singular, String plural, Object... args)
+    public String translateN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        return this.translateN(getDefaultLocale(), type, n, singular, plural, args);
+        return this.translateN(getDefaultLocale(), format, n, singular, plural, args);
     }
 
     private Locale getDefaultLocale()
@@ -195,7 +195,7 @@ public class I18n implements Provider<I18n>
         return Locale.getDefault();
     }
 
-    public String translateN(Locale locale, MessageType type, int n, String singular, String plural, Object... args)
+    public String translateN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
     {
         if (locale == null)
         {
@@ -205,7 +205,7 @@ public class I18n implements Provider<I18n>
         {
             return null;
         }
-        return this.compositor.composeMessage(type, locale, this.translateN(locale, n, singular, plural), args);
+        return this.compositor.composeMessage(format, locale, this.translateN(locale, n, singular, plural), args);
     }
 
     public String translate(String message)
@@ -281,15 +281,15 @@ public class I18n implements Provider<I18n>
         return languages;
     }
 
-    public Translation getTranslation(MessageType type, Locale locale, String msg, Object... args)
+    public Translation getTranslation(BaseFormatting format, Locale locale, String msg, Object... args)
     {
-        return new CubeEngineTranslation(this, type, locale, msg, args);
+        return new CubeEngineTranslation(this, format, locale, msg, args);
     }
 
-    public Translation getTranslationN(MessageType type, Locale locale, int n, String singular, String plural,
+    public Translation getTranslationN(BaseFormatting format, Locale locale, int n, String singular, String plural,
                                        Object... args)
     {
-        return new CubeEngineTranslation(this, type, locale, n, singular, plural, args);
+        return new CubeEngineTranslation(this, format, locale, n, singular, plural, args);
     }
 
     public I18nService getService()

@@ -17,59 +17,51 @@
  */
 package de.cubeisland.engine.module.core.util.formatter;
 
-import java.util.HashMap;
-import java.util.Map;
-import de.cubeisland.engine.module.core.util.ChatFormat;
+import java.awt.Color;
+import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.format.TextColors;
 
-public class MessageType
+public class MessageType implements TextColor.Base
 {
-    private static final Map<String,MessageType> messageTypes = new HashMap<>();
+    public final static MessageType POSITIVE = new MessageType(TextColors.GREEN);
+    public final static MessageType NEUTRAL = new MessageType(TextColors.YELLOW);
+    public final static MessageType NEGATIVE = new MessageType(TextColors.RED);
+    public final static MessageType CRITICAL = new MessageType(TextColors.DARK_RED);
+    public final static MessageType NONE = new MessageType(TextColors.RESET);
 
-    public final static MessageType POSITIVE = new MessageType("POSITIVE");
-    public final static MessageType NEUTRAL = new MessageType("NEUTRAL");
-    public final static MessageType NEGATIVE = new MessageType("NEGATIVE");
-    public final static MessageType CRITICAL = new MessageType("CRITICAL");
-    public final static MessageType NONE = new MessageType("NONE");
+    private TextColor.Base color;
 
-    public static MessageType valueOf(String s)
+    private MessageType(TextColor.Base color)
     {
-        return messageTypes.get(s.toUpperCase());
+        this.color = color;
     }
 
-    private final String name;
-
-    private MessageType additional = null;
-
-    private MessageType(String name)
+    @Override
+    public Color getColor()
     {
-        this.name = name;
-        messageTypes.put(name, this);
+        return this.color.getColor();
     }
 
-    public final String getName()
+    @Override
+    public String getId()
     {
-        return name;
+        return this.color.getId();
     }
 
-    public MessageType getAdditional()
+    @Override
+    public String getName()
     {
-        return additional;
+        return this.color.getName();
     }
 
-    public MessageType and(MessageType additional)
+    @Override
+    public char getCode()
     {
-        MessageType type = new MessageType(this.name);
-        type.additional = additional;
-        return additional;
+        return color.getCode();
     }
 
-    public MessageType and(ChatFormat cf)
+    public void setColor(TextColor.Base color)
     {
-        return this.and(of(cf));
-    }
-
-    public static MessageType of(ChatFormat cf)
-    {
-        return new MessageType(cf.name());
+        this.color = color;
     }
 }

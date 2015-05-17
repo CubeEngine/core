@@ -19,30 +19,29 @@ package de.cubeisland.engine.module.core.i18n;
 
 import java.util.Locale;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
-
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
 
 // TODO remove passing args. Waiting for https://github.com/SpongePowered/SpongeAPI/issues/639
 public class CubeEngineTranslation implements Translation
 {
     private I18n i18n;
-    private final MessageType type;
+    private final BaseFormatting format;
     private final Locale locale;
     private final int n;
     private final String toTranslate;
     private final String plural;
     private Object[] args;
 
-    public CubeEngineTranslation(I18n i18n, MessageType type, Locale locale, String toTranslate, Object... args)
+    public CubeEngineTranslation(I18n i18n, BaseFormatting format, Locale locale, String toTranslate, Object... args)
     {
-        this(i18n, type, locale, 0, toTranslate, null, args);
+        this(i18n, format, locale, 0, toTranslate, null, args);
     }
 
-    public CubeEngineTranslation(I18n i18n, MessageType type, Locale locale, int n, String singular, String plural, Object... args)
+    public CubeEngineTranslation(I18n i18n, BaseFormatting format, Locale locale, int n, String singular, String plural, Object... args)
     {
         this.i18n = i18n;
-        this.type = type;
+        this.format = format;
         this.locale = locale;
         this.n = n;
         this.toTranslate = singular;
@@ -70,9 +69,9 @@ public class CubeEngineTranslation implements Translation
     {
         if (plural != null)
         {
-            return i18n.translateN(locale, type, n, toTranslate, plural, args);
+            return i18n.translateN(locale, format, n, toTranslate, plural, args);
         }
-        return i18n.translate(locale, type, toTranslate, args);
+        return i18n.translate(locale, format, toTranslate, args);
     }
 
     @Override
@@ -81,8 +80,8 @@ public class CubeEngineTranslation implements Translation
 
         if (plural != null)
         {
-            return i18n.translateN(locale, type, n, toTranslate, plural, args);
+            return i18n.translateN(locale, format, n, toTranslate, plural, args);
         }
-        return i18n.translate(locale, type, toTranslate, args);
+        return i18n.translate(locale, format, toTranslate, args);
     }
 }

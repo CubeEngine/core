@@ -33,6 +33,7 @@ import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
@@ -63,9 +64,8 @@ public class HelpCommand implements CommandBase
         }
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
-        MessageType grey = MessageType.of(ChatFormat.GREY);
 
-        sender.sendTranslated(grey, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()));
+        sender.sendTranslated(GRAY, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -77,7 +77,7 @@ public class HelpCommand implements CommandBase
             labels.remove(labels.size() - 1);
         }
 
-        sender.sendTranslated(grey, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(
+        sender.sendTranslated(GRAY, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(
             new String[labels.size()])));
         sender.sendMessage(" ");
 
@@ -97,7 +97,7 @@ public class HelpCommand implements CommandBase
                         continue;
                     }
                     sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(),
-                                 WHITE, ": ", sender.getTranslation(grey, command.getDescriptor().getDescription()).get(sender.getLocale())));
+                                 WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription()).get(sender.getLocale())));
             }
                 sender.sendMessage(" ");
             }
@@ -110,7 +110,7 @@ public class HelpCommand implements CommandBase
 
         if (descriptor instanceof CubeDescriptor)
         {
-            sender.sendTranslated(grey, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getInformation().getName().toLowerCase() + "/" + StringUtils.implode("/", labels));
+            sender.sendTranslated(GRAY, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getInformation().getName().toLowerCase() + "/" + StringUtils.implode("/", labels));
         }
         return true;
     }
