@@ -34,8 +34,6 @@ import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
-import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
-import org.spongepowered.api.service.scheduler.SynchronousScheduler;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -119,13 +117,14 @@ public class CubeEngineSpongePlugin
             pluginLogger.error("An Error occured while starting the modules!", e);
         }
 
-        game.getCommandDispatcher().register(this, CommandSpec.builder().setDescription(Texts.of(
-            "Reloads the CubeEngine")).setExecutor((commandSource, commandContext) -> {
-            // TODO add reloadAll() to Modularity
-            modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
-            modularity.startAll();
-            return CommandResult.success();
-        }).build(), "reload");
+        game.getCommandDispatcher().register(this, CommandSpec.builder()
+                  .description(Texts.of("ReloaItemds the CubeEngine"))
+                  .executor((commandSource, commandContext) -> {
+                      // TODO add reloadAll() to Modularity
+                      modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
+                      modularity.startAll();
+                      return CommandResult.success();
+                  }).build(), "reload");
     }
 
     @Subscribe

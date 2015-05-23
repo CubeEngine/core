@@ -29,16 +29,10 @@ import de.cubeisland.engine.module.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 @ServiceProvider(WorldMatcher.class)
-public class WorldMatcher implements Provider<WorldMatcher>
+public class WorldMatcher
 {
     @Inject private WorldManager wm;
     @Inject private StringMatcher stringMatcher;
-
-    @Override
-    public WorldMatcher get()
-    {
-        return this;
-    }
 
     public World matchWorld(String name)
     {

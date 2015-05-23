@@ -35,7 +35,7 @@ import org.spongepowered.api.entity.projectile.Projectile;
  * This Matcher provides methods to match Entities.
  */
 @ServiceProvider(EntityMatcher.class)
-public class EntityMatcher implements Provider<EntityMatcher>
+public class EntityMatcher
 {
     private final Map<String, EntityType> nameMap = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
@@ -50,12 +50,6 @@ public class EntityMatcher implements Provider<EntityMatcher>
             nameMap.put(type.getName(), type);
         }
         // TODO read entity names
-    }
-
-    @Override
-    public EntityMatcher get()
-    {
-        return this;
     }
 
     /**

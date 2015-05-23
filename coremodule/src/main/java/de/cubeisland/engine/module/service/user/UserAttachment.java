@@ -30,7 +30,7 @@ public abstract class UserAttachment extends Attachment<User>
     public void onQuit(Text quitMessage)
     {}
 
-    public void onKick(Optional<Literal> kickMessage)
+    public void onKick(Text kickMessage)
     {}
 
     public void onChat(String format, Text message)

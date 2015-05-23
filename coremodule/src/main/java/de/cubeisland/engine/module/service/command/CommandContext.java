@@ -23,6 +23,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.service.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.module.service.permission.Permission;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import org.spongepowered.api.text.format.BaseFormatting;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -51,12 +52,12 @@ public class CommandContext extends ParameterizedContext
         ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(message);
     }
 
-    public void sendTranslated(MessageType type, String message, Object... args)
+    public void sendTranslated(BaseFormatting type, String message, Object... args)
     {
         ((CommandSender)this.getInvocation().getCommandSource()).sendTranslated(type, message, args);
     }
 
-    public void sendTranslatedN(MessageType type, int count, String sMessage, String pMessage, Object... args)
+    public void sendTranslatedN(BaseFormatting type, int count, String sMessage, String pMessage, Object... args)
     {
         ((CommandSender)this.getInvocation().getCommandSource()).sendTranslatedN(type, count, sMessage, pMessage, args);
     }

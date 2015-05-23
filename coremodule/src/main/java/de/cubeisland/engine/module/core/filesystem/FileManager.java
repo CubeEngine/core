@@ -51,7 +51,7 @@ import static java.nio.file.Files.createSymbolicLink;
  * Manages all the configurations of the CubeEngine.
  */
 @ServiceProvider(FileManager.class)
-public class FileManager implements Provider<FileManager>
+public class FileManager
 {
     @Inject private Logger logger;
     @Inject private Reflector reflector;
@@ -64,12 +64,6 @@ public class FileManager implements Provider<FileManager>
 
     private ConcurrentMap<Path, Resource> fileSources;
     private FileAttribute<?>[] folderCreateAttributes;
-
-    @Override
-    public FileManager get()
-    {
-        return this;
-    }
 
     @Enable
     public void onEnable()

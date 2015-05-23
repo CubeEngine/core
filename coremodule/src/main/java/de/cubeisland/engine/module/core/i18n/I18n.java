@@ -63,7 +63,7 @@ import org.spongepowered.api.text.translation.Translation;
 import static java.util.stream.Collectors.toList;
 
 @ServiceProvider(I18n.class)
-public class I18n implements Provider<I18n>
+public class I18n
 {
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
@@ -87,12 +87,6 @@ public class I18n implements Provider<I18n>
                                                                                                        log),
                                        getDefaultLocale());
         this.compositor = new ColoredMessageCompositor(reflector, fm);
-    }
-
-    @Override
-    public I18n get()
-    {
-        return this;
     }
 
     public MessageCompositor getCompositor()

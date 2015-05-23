@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
 @ServiceProvider(LogFactory.class)
-public class SpongeLogFactory extends DefaultLogFactory implements Provider<LogFactory>
+public class SpongeLogFactory extends DefaultLogFactory
 {
     private final Log4jProxyTarget baseTarget;
 
@@ -42,12 +42,6 @@ public class SpongeLogFactory extends DefaultLogFactory implements Provider<LogF
         baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
 
         getLog(CoreModule.class).addTarget(baseTarget);
-    }
-
-    @Override
-    public LogFactory get()
-    {
-        return this;
     }
 
     @Enable

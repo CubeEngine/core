@@ -25,10 +25,10 @@ import javax.inject.Provider;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.types.Profession;
+import org.spongepowered.api.data.type.Profession;
 
 @ServiceProvider(ProfessionMatcher.class)
-public class ProfessionMatcher implements Provider<ProfessionMatcher>
+public class ProfessionMatcher
 {
     private final Map<String, Profession> professions = new HashMap<>();
     @Inject private StringMatcher stringMatcher;
@@ -40,12 +40,6 @@ public class ProfessionMatcher implements Provider<ProfessionMatcher>
         {
             this.professions.put(profession.getName().toLowerCase(), profession);
         }
-    }
-
-    @Override
-    public ProfessionMatcher get()
-    {
-        return this;
     }
 
     public Profession profession(String name)

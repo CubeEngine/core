@@ -38,6 +38,7 @@ import de.cubeisland.engine.module.service.user.UserManager;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.core.util.Profiler;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
@@ -82,6 +83,7 @@ public class VanillaCommands
     {
         if (message == null || message.isEmpty())
         {
+            message = "";
             // TODO message = this.core.getGame().getServer().getShutdownMessage();
         }
         message = ChatFormat.parseFormats(message);
@@ -289,10 +291,11 @@ public class VanillaCommands
         Game game = this.core.getGame();
         if (plugin == null)
         {
-            context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", game.getMinecraftVersion().getName(), game.getImplementationVersion());
-            context.sendTranslated(NEUTRAL, "Sponge API {text:version\\::color=WHITE} {input#version:color=INDIGO}", game.getApiVersion());
+            Platform platform = game.getPlatform();
+            context.sendTranslated(NEUTRAL, "This server is running {name#server} in version {input#version:color=INDIGO}", platform.getMinecraftVersion().getName(), platform.getVersion());
+            context.sendTranslated(NEUTRAL, "Sponge API {text:version\\::color=WHITE} {input#version:color=INDIGO}", platform.getApiVersion());
             context.sendMessage(" ");
-            context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", core.getVersion().toString());
+            context.sendTranslated(NEUTRAL, "Expanded and improved by {text:CubeEngine:color=BRIGHT_GREEN} version {input#version:color=INDIGO}", core.getVersion());
             if (source)
             {
                 showSourceVersion(context.getSource(), core.getSourceVersion());

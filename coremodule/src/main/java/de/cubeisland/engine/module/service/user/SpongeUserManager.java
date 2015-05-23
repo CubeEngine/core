@@ -298,7 +298,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         {
             for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
-                attachment.onJoin(event.getJoinMessage());
+                attachment.onJoin(event.getMessage());
             }
         }
 
@@ -307,7 +307,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         {
             for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
-                attachment.onQuit(event.getQuitMessage());
+                attachment.onQuit(event.getMessage());
             }
         }
 
@@ -316,7 +316,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         {
             for (UserAttachment attachment : getExactUser(event.getUser()).getAll())
             {
-                attachment.onKick(event.getReason());
+                attachment.onKick(event.getMessage());
             }
         }
 

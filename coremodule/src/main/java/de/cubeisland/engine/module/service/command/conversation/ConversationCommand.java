@@ -90,7 +90,7 @@ public abstract class ConversationCommand extends ContainerCommand
 
     /* TODO Chat Tabcompletion Events
     @Subscribe
-    public void onTabComplete(ChatTabCompleteEvent event)
+    public void onTabComplete(PlayerChatTabCompleteEvent event)
     {
         User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
         if (this.hasUser(user))

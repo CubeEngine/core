@@ -22,7 +22,7 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.matcher.ProfessionMatcher;
-import org.spongepowered.api.data.types.Profession;
+import org.spongepowered.api.data.type.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>
 {

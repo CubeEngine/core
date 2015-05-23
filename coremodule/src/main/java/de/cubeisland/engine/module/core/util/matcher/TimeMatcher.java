@@ -29,7 +29,7 @@ import de.cubeisland.engine.module.core.util.StringUtils;
  * A Matcher for ingame time
  */
 @ServiceProvider(TimeMatcher.class)
-public class TimeMatcher implements Provider<TimeMatcher>
+public class TimeMatcher
 {
     private CoreModule core;
 
@@ -37,12 +37,6 @@ public class TimeMatcher implements Provider<TimeMatcher>
     public TimeMatcher(CoreModule core)
     {
         this.core = core;
-    }
-
-    @Override
-    public TimeMatcher get()
-    {
-        return this;
     }
 
     /**

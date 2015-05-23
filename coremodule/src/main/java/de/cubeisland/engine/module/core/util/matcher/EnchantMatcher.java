@@ -23,7 +23,7 @@ import javax.inject.Provider;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.manipulators.items.EnchantmentData;
+import org.spongepowered.api.data.manipulator.item.EnchantmentData;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -31,7 +31,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
  * This Matcher provides methods to match Enchantments.
  */
 @ServiceProvider(EnchantMatcher.class)
-public class EnchantMatcher implements Provider<EnchantMatcher>
+public class EnchantMatcher
 {
     private final HashMap<String, Enchantment> spongeNames;
     private StringMatcher stringMatcher;
@@ -45,12 +45,6 @@ public class EnchantMatcher implements Provider<EnchantMatcher>
         {
             this.spongeNames.put(enchantment.getName(), enchantment);
         }
-    }
-
-    @Override
-    public EnchantMatcher get()
-    {
-        return this;
     }
 
     /**

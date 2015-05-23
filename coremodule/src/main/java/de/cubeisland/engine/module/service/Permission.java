@@ -17,11 +17,15 @@
  */
 package de.cubeisland.engine.module.service;
 
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.world.World;
 
+@Service
+@Version(1)
 public interface Permission
 {
     String getName();

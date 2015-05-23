@@ -32,16 +32,10 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 
 @ServiceProvider(StringMatcher.class)
-public class StringMatcher implements Provider<StringMatcher>
+public class StringMatcher
 {
     private final DamerauLevenshteinAlgorithm editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
     @Inject private Log logger;
-
-    @Override
-    public StringMatcher get()
-    {
-        return this;
-    }
 
     /**
      * Returns all matches with their editDistance, having an editDistance <= maxDistance

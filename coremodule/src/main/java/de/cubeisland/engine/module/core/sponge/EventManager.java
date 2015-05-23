@@ -35,7 +35,7 @@ import org.spongepowered.api.event.Event;
  * This class manages all Event-(Un-)Registration and fires Events.
  */
 @ServiceProvider(EventManager.class)
-public class EventManager implements Provider<EventManager>
+public class EventManager
 {
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.service.event.EventManager eventManager;
@@ -47,12 +47,6 @@ public class EventManager implements Provider<EventManager>
         this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
         this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
-    }
-
-    @Override
-    public EventManager get()
-    {
-        return this;
     }
 
     /**

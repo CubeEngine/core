@@ -44,7 +44,7 @@ import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.service.world.WorldManager;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.data.manipulators.entities.InvulnerabilityData;
+import org.spongepowered.api.data.manipulator.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
@@ -242,7 +242,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     /**
      * Sends a translated Message to this User
-     * @param type
      * @param format
      * @param message the message to translate
      * @param args optional parameter

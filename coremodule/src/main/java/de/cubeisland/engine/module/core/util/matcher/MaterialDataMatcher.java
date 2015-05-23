@@ -24,10 +24,10 @@ import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.types.DyeColor;
+import org.spongepowered.api.data.type.DyeColor;
 
 @ServiceProvider(MaterialDataMatcher.class)
-public class MaterialDataMatcher implements Provider<MaterialDataMatcher>
+public class MaterialDataMatcher
 {
     @Inject private Game game;
     @Inject private StringMatcher stringMatcher;
@@ -37,12 +37,6 @@ public class MaterialDataMatcher implements Provider<MaterialDataMatcher>
     public void onEnable()
     {
         initDataValues(game);
-    }
-
-    @Override
-    public MaterialDataMatcher get()
-    {
-        return this;
     }
 
     private void initDataValues(Game game)

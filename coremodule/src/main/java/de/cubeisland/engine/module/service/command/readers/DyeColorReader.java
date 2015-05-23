@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
-import org.spongepowered.api.data.types.DyeColor;
+import org.spongepowered.api.data.type.DyeColor;
 
 public class DyeColorReader implements ArgumentReader<DyeColor>
 {

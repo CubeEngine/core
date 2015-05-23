@@ -25,7 +25,7 @@ import de.cubeisland.engine.module.service.command.ContainerCommand;
 import de.cubeisland.engine.module.service.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
-import org.spongepowered.api.data.manipulators.entities.WhitelistData;
+import org.spongepowered.api.data.manipulator.entity.WhitelistData;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;

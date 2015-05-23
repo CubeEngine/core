@@ -62,7 +62,7 @@ import static org.spongepowered.api.item.ItemTypes.*;
  * This Matcher provides methods to match Material or Items.
  */
 @ServiceProvider(MaterialMatcher.class)
-public class MaterialMatcher implements Provider<MaterialMatcher>
+public class MaterialMatcher
 {
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
@@ -117,12 +117,6 @@ public class MaterialMatcher implements Provider<MaterialMatcher>
         }
 
         // TODO legacy ID -> ItemType Map
-    }
-
-    @Override
-    public MaterialMatcher get()
-    {
-        return this;
     }
 
     private ItemType matchWithLevenshteinDistance(String s, Map<String, ItemType> map)

@@ -60,7 +60,7 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 
 @ServiceProvider(McUUID.class)
-public class McUUID implements Provider<McUUID>
+public class McUUID
 {
     private final static ObjectMapper mapper = new ObjectMapper();
     private static final String MOJANG_API_BASE_URL = "https://api.mojang.com/";
@@ -68,13 +68,7 @@ public class McUUID implements Provider<McUUID>
     private static final String MOJANG_API_URL_UUID_NAMEHISTORY = MOJANG_API_BASE_URL + "user/profiles/%s/names";
     private static final String AGENT = "minecraft";
 
-    @Inject Log log;
-
-    @Override
-    public McUUID get()
-    {
-        return this;
-    }
+    @Inject private Log log;
 
     static
     {

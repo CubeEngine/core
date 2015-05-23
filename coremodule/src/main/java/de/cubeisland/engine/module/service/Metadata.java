@@ -17,9 +17,13 @@
  */
 package de.cubeisland.engine.module.service;
 
+import de.cubeisland.engine.modularity.asm.marker.Service;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.service.user.User;
 import org.spongepowered.api.world.World;
 
+@Service
+@Version(1)
 public interface Metadata
 {
     /**
