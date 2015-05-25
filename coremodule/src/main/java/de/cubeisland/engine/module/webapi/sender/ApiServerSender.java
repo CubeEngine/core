@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
 
 public class ApiServerSender extends ApiCommandSender
 {
@@ -38,9 +40,9 @@ public class ApiServerSender extends ApiCommandSender
     }
 
     @Override
-    public String getDisplayName()
+    public Text getDisplayName()
     {
-        return "ApiCommandSender";
+        return Texts.of("ApiCommandSender");
     }
 
     @Override

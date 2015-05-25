@@ -35,7 +35,7 @@ public interface CommandSender extends CommandSource
     @Override
     String getName();
 
-    String getDisplayName();
+    Text getDisplayName();
 
     boolean hasPermission(String perm);
 

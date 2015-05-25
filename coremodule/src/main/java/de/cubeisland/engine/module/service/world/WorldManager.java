@@ -44,7 +44,7 @@ public interface WorldManager extends Cleanable
     boolean unloadWorld(World world);
     boolean deleteWorld(String worldName) throws IOException;
     boolean deleteWorld(World world) throws IOException;
-    Set<World> getWorlds();
+    List<World> getWorlds();
 
     WorldEntity getWorldEntity(World world);
 

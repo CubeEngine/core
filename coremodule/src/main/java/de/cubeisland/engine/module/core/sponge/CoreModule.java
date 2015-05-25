@@ -52,7 +52,6 @@ import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.i18n.I18nLanguageLoader;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.util.FreezeDetection;
-import de.cubeisland.engine.module.core.util.InventoryGuardFactory;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.util.Version;
 import de.cubeisland.engine.module.core.util.WorldLocation;
@@ -96,7 +95,6 @@ public final class CoreModule extends Module
 
     //region Core fields
     private SpongeCoreConfiguration config;
-    private InventoryGuardFactory inventoryGuard;
     private CorePerms corePerms;
     //endregion
 
@@ -186,8 +184,6 @@ public final class CoreModule extends Module
             BukkitUtils.disableCommandLogging();
         }
 
-        // TODO this.inventoryGuard = new InventoryGuardFactory(this, um, tm, em);
-
         if (this.config.preventSpamKick)
         {
             game.getEventManager().register(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
@@ -226,8 +222,7 @@ public final class CoreModule extends Module
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
-        manager.registerConverter(new PlayerConverter(game.getServer()),
-                                  org.spongepowered.api.entity.player.User.class);
+        manager.registerConverter(new PlayerConverter(game), org.spongepowered.api.entity.player.User.class);
         manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
 

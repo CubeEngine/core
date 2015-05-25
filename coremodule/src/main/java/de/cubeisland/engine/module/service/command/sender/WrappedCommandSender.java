@@ -53,9 +53,9 @@ public class WrappedCommandSender<W extends CommandSource> extends BaseCommandSe
     }
 
     @Override
-    public String getDisplayName()
+    public Text getDisplayName()
     {
-        return this.getWrappedSender().getName();
+        return Texts.of(getWrappedSender().getName());
     }
 
     @Override

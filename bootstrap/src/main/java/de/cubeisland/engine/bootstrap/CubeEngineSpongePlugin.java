@@ -118,7 +118,7 @@ public class CubeEngineSpongePlugin
         }
 
         game.getCommandDispatcher().register(this, CommandSpec.builder()
-                  .description(Texts.of("ReloaItemds the CubeEngine"))
+                  .description(Texts.of("Reloads the CubeEngine"))
                   .executor((commandSource, commandContext) -> {
                       // TODO add reloadAll() to Modularity
                       modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);

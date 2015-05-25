@@ -18,9 +18,10 @@
 package de.cubeisland.engine.module.service.world;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
@@ -29,7 +30,6 @@ import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
@@ -147,10 +147,10 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
     }
 
     @Override
-    public Set<World> getWorlds()
+    public List<World> getWorlds()
     {
         expect(isMainThread() , "Must be executed from main thread!");
 
-        return new HashSet<>(this.server.getWorlds());
+        return new ArrayList<>(this.server.getWorlds());
     }
 }

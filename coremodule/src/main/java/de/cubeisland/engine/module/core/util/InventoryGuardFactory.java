@@ -19,6 +19,8 @@ package de.cubeisland.engine.module.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
@@ -28,8 +30,10 @@ import de.cubeisland.engine.module.service.user.UserManager;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+@ServiceProvider(InventoryGuardFactory.class)
 public class InventoryGuardFactory
 {
+    @Inject
     public InventoryGuardFactory(CoreModule core, UserManager um, TaskManager tm, EventManager em)
     {
         this.core = core;
@@ -44,7 +48,7 @@ public class InventoryGuardFactory
     private EventManager em;
     private ThreadLocal<InventoryGuard> currentGuardConfig;
 
-    private InventoryGuardFactory prepareInv(Inventory inventory, User... users)
+    public InventoryGuardFactory prepareInv(Inventory inventory, User... users)
     {
         this.currentGuardConfig = new ThreadLocal<>();
         this.currentGuardConfig.set(new InventoryGuard(em, um, tm, inventory, users));

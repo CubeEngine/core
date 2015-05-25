@@ -50,6 +50,7 @@ import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.source.LocatedSource;
@@ -102,14 +103,14 @@ public class UserBase
         return null; // TODO
     }
 
-    public String getDisplayName()
+    public Text getDisplayName()
     {
         Optional<Player> player = this.getPlayer();
         if (player.isPresent())
         {
-            return player.get().getDisplayNameData().getDisplayName().toString();
+            return player.get().getDisplayNameData().getDisplayName();
         }
-        return this.getOfflinePlayer().getName();
+        return Texts.of(getOfflinePlayer().getName());
     }
 
     public void setDisplayName(String string)

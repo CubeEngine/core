@@ -22,6 +22,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
+import org.spongepowered.api.text.Text;
 
 public class ApiUser extends ApiCommandSender
 {
@@ -58,8 +59,8 @@ public class ApiUser extends ApiCommandSender
     }
 
     @Override
-    public String getDisplayName()
+    public Text getDisplayName()
     {
-        return user.getDisplayName().toString();
+        return user.getDisplayName();
     }
 }
