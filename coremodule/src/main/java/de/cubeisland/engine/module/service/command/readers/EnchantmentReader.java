@@ -48,7 +48,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         registry = game.getRegistry();
     }
 
-    public String getPossibleEnchantments(GameRegistry registry, ItemStack item)
+    public static String getPossibleEnchantments(GameRegistry registry, ItemStack item)
     {
         String collect = registry.getAllOf(Enchantment.class).stream()
                                  .filter(e -> item == null || e.canBeAppliedToStack(item))

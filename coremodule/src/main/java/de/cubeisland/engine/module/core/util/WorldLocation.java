@@ -57,4 +57,9 @@ public class WorldLocation
     {
         return new Location(world, x,y,z);
     }
+
+    public final Vector3d getRotation()
+    {
+        return new Vector3d(rx, ry, rz);
+    }
 }
