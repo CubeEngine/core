@@ -32,7 +32,7 @@ public class PlayerConverter extends SimpleConverter<User>
 
     public PlayerConverter(Game game)
     {
-        this.userStorage = game.getServiceManager().provide(UserStorage.class).get();
+        this.userStorage = game.getServiceManager().provide(UserStorage.class).orNull();
     }
 
     @Override

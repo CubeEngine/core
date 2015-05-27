@@ -31,6 +31,17 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.module.service.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Literal;
+import org.spongepowered.api.text.TextBuilder;
+import org.spongepowered.api.text.TextBuilder.Translatable;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.HoverAction.ShowText;
+import org.spongepowered.api.text.format.TextColors;
+
+import static de.cubeisland.engine.module.core.util.formatter.MessageType.CRITICAL;
+import static org.spongepowered.api.text.format.TextColors.*;
 
 public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler
 {
@@ -109,7 +120,24 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
         else
         {
             core.getLog().error(t, "Unexpected Command Exception: " + t.getMessage());
-            sender.sendTranslated(MessageType.CRITICAL, "Unexpected command failure: {text}", t.getMessage());
+
+            TextBuilder stackTrace = Texts.builder();
+            for (StackTraceElement element : t.getStackTrace())
+            {
+                String[] parts = element.toString().split("\\(");
+                parts[1] = parts[1].replace(")", "");
+                boolean our = parts[0].startsWith("de.cubeisland.engine");
+                String[] lineParts = parts[1].split(":");
+                TextBuilder lineBuilder = Texts.builder().append(Texts.of(our ? GOLD : GRAY, lineParts[0]));
+                if (lineParts.length == 2)
+                {
+                    lineBuilder.append(Texts.of(WHITE, ":", AQUA, lineParts[1]));
+                }
+                Text line = Texts.of(YELLOW, "(", lineBuilder.build(), YELLOW, ")");
+                stackTrace.append(Texts.of(DARK_GRAY, "at ", Texts.of(our ? GOLD : GRAY, parts[0], line), "\n"));
+            }
+            Text hover = Texts.builder().append(Texts.of(GRAY, t.getClass().getName(), ": ", t.getMessage())).onHover(new ShowText(stackTrace.build())).build();
+            sender.sendMessage(Texts.of(Texts.of(sender.getTranslation(CRITICAL, "Unexpected command failure:")), " ", hover));
         }
         return true;
     }
