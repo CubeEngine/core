@@ -69,13 +69,13 @@ public class ProxyCallable implements CommandCallable
             }
 
             manager.logExecution(wrapSender, ran, alias, arguments);
-            return Optional.absent();
+            return Optional.of(CommandResult.success());
         }
         catch (Exception e)
         {
             core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}",
                                 alias + " " + arguments);
-            return Optional.absent();
+            return Optional.of(CommandResult.empty());
         }
     }
 
