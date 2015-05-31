@@ -197,7 +197,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     protected void appendColumnDefinition(StringBuilder sb, TableField<R, ?> field)
     {
         sb.append(QUOTE).append(field.getName()).append(QUOTE).append(" ");
-        sb.append(field.getDataType().getCastTypeName());
+        sb.append(field.getDataType(db.getDSL().configuration()).getCastTypeName());
         if (field.getDataType().nullable())
         {
             sb.append(" DEFAULT NULL");
