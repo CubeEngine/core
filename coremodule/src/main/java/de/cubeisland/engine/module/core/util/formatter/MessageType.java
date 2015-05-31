@@ -23,45 +23,50 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class MessageType implements TextColor.Base
 {
-    public final static MessageType POSITIVE = new MessageType(TextColors.GREEN);
-    public final static MessageType NEUTRAL = new MessageType(TextColors.YELLOW);
-    public final static MessageType NEGATIVE = new MessageType(TextColors.RED);
-    public final static MessageType CRITICAL = new MessageType(TextColors.DARK_RED);
-    public final static MessageType NONE = new MessageType(TextColors.RESET);
+    public final static MessageType POSITIVE = new MessageType(() -> TextColors.GREEN);
+    public final static MessageType NEUTRAL = new MessageType(() -> TextColors.YELLOW);
+    public final static MessageType NEGATIVE = new MessageType(() -> TextColors.RED);
+    public final static MessageType CRITICAL = new MessageType(() -> TextColors.DARK_RED);
+    public final static MessageType NONE = new MessageType(() -> TextColors.RESET);
 
-    private TextColor.Base color;
+    private ColorProvider color;
 
-    private MessageType(TextColor.Base color)
+    private MessageType(ColorProvider provider)
     {
-        this.color = color;
+        this.color = provider;
     }
 
     @Override
     public Color getColor()
     {
-        return this.color.getColor();
+        return this.color.getColor().getColor();
     }
 
     @Override
     public String getId()
     {
-        return this.color.getId();
+        return this.color.getColor().getId();
     }
 
     @Override
     public String getName()
     {
-        return this.color.getName();
+        return this.color.getColor().getName();
     }
 
     @Override
     public char getCode()
     {
-        return color.getCode();
+        return color.getColor().getCode();
     }
 
     public void setColor(TextColor.Base color)
     {
-        this.color = color;
+        this.color = () -> color;
+    }
+
+    public interface ColorProvider
+    {
+        TextColor.Base getColor();
     }
 }

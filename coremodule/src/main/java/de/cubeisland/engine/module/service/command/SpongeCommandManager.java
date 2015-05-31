@@ -126,9 +126,10 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private CommandManager cm;
     @Inject private UserManager um;
     @Inject private PermissionManager pm;
+    @Inject private EventManager em;
 
     @Inject
-    public SpongeCommandManager(CoreModule core, Game game, ThreadFactory tf, LogFactory logFactory, I18n i18n, FileManager fm, EventManager em)
+    public SpongeCommandManager(CoreModule core, Game game, ThreadFactory tf, LogFactory logFactory, I18n i18n, FileManager fm)
     {
         super(new CommandManagerDescriptor());
         this.fm = fm;
@@ -152,13 +153,13 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         this.providerManager = new ProviderManager();
         providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
-
-        registerReaders(core, em);
     }
 
     @Enable
     public void onEnable()
     {
+        registerReaders(core, em);
+
         // depends on: server, module manager, ban manager
         this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager(), cm, fm, i18n));
         this.addCommand(new CoreCommands(core, cm, um));
