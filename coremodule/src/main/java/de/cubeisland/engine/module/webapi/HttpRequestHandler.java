@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.module.service.command.CommandManager;
-import de.cubeisland.engine.module.service.Permission;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.service.user.UserManager;
@@ -99,11 +98,11 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         User authUser = null;
         if (!authorized)
         {
-            if (!core.getModularity().getServiceManager().isImplemented(Permission.class))
-            {
-                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
-                return;
-            }
+            //if (!core.getModularity().getServiceManager().isImplemented(Permission.class))
+            //{
+            //    this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
+            //    return;
+            //}
             String user = params.get("user", String.class);
             String pass = params.get("pass", String.class);
             if (user == null || pass == null)

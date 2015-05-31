@@ -89,12 +89,6 @@ public class SpongePermissionManager implements PermissionManager
     }
 
     @Override
-    public void notifyPermissionRegistrationCompleted(Module module, Permission... permissions)
-    {
-        em.fireEvent(new NotifyPermissionRegistrationCompletedEvent(module, permissions));
-    }
-
-    @Override
     public void removePermission(Module module, String perm)
     {
         expectNotNull(module, "The module must not be null!");

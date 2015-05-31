@@ -37,15 +37,6 @@ public interface PermissionManager extends Cleanable
     void registerPermission(Module module, Permission permission);
 
     /**
-     * Calls a {@link NotifyPermissionRegistrationCompletedEvent}.
-     * Should be invoked manually after the registration of new permissions after {@link Module#onEnable()}
-     *
-     * @param module      the module
-     * @param permissions optionally specify the registered permissions
-     */
-    void notifyPermissionRegistrationCompleted(Module module, Permission... permissions);
-
-    /**
      * Removes a permission of a module
      *
      * @param module the module
