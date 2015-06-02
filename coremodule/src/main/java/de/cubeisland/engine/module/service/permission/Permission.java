@@ -63,7 +63,7 @@ public class Permission
     private Permission(Permission permission, String name, PermDefault def, boolean wildcard)
     {
         this.nameParent = permission;
-        this.baseName = name;
+        this.baseName = name.toLowerCase();
         this.def = def;
         this.wildcard = wildcard;
 
