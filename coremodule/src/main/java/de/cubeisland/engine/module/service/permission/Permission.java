@@ -19,12 +19,14 @@ package de.cubeisland.engine.module.service.permission;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.core.contract.Contract;
 import org.spongepowered.api.service.permission.Subject;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
+import static java.util.stream.Collectors.toSet;
 
 public class Permission
 {
@@ -335,5 +337,15 @@ public class Permission
     public static Permission detachedPermission(String permission, PermDefault permDefault)
     {
         return new Permission(null, permission, permDefault);
+    }
+
+    public Set<String> allParents()
+    {
+        Set<String> collect = parents.stream().map(Permission::getFullName).collect(toSet());
+        for (Permission parent : parents)
+        {
+            collect.addAll(parent.allParents());
+        }
+        return collect;
     }
 }

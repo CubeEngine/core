@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.service.permission;
 
+import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -58,4 +59,11 @@ public interface PermissionManager extends Cleanable
      * @param permission the permission
      */
     void removePermission(Module module, Permission permission);
+
+    /**
+     * Returns the permission node with given name or {@link Optional#absent()} if not found
+     * @param permission the permissions name
+     * @return the permission if found
+     */
+    Optional<Permission> getPermission(String permission);
 }

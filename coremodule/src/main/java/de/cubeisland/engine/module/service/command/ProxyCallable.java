@@ -90,7 +90,6 @@ public class ProxyCallable implements CommandCallable
         {
             suggestions = Collections.emptyList();
         }
-        Collections.sort(suggestions); // TODO put ? at the end
         return suggestions;
     }
 

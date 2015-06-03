@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
@@ -32,7 +33,6 @@ import de.cubeisland.engine.module.core.logging.LoggingUtil;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.sponge.EventManager;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
@@ -44,12 +44,10 @@ public class SpongePermissionManager implements PermissionManager
     private final Map<String, Permission> permissions = new HashMap<>();
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Log logger;
-    private EventManager em;
 
     @Inject
-    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm, EventManager em)
+    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
     {
-        this.em = em;
         this.logger = factory.getLog(CoreModule.class, "Permissions");
         this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Permissions"),
                                                   LoggingUtil.getFileFormat(false, false),
@@ -119,6 +117,12 @@ public class SpongePermissionManager implements PermissionManager
         {
             permissions.keySet().removeAll(removedPerms);
         }
+    }
+
+    @Override
+    public Optional<Permission> getPermission(String permission)
+    {
+        return Optional.fromNullable(permissions.get(permission));
     }
 
     @Override
