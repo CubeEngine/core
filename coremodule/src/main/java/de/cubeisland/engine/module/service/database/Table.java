@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.module.service.database.mysql.Keys;
 import de.cubeisland.engine.module.core.util.Version;
+import de.cubeisland.engine.module.service.database.mysql.Keys;
 import org.jooq.DataType;
 import org.jooq.ForeignKey;
 import org.jooq.Record;
@@ -39,11 +39,20 @@ import org.jooq.types.UShort;
 
 public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
-    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "integer unsigned", "integer unsigned");
-    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.SMALLINTUNSIGNED, "smallint unsigned", "smallint unsigned");
-    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.INTEGERUNSIGNED, "mediumint unsigned", "mediumint unsigned");
-    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.BOOLEAN, "boolean", "boolean");
-    public static final DataType<String> LONGTEXT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.CLOB, "longtext", "longtext");
+    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<>(SQLDialect.MYSQL,
+                                                                             SQLDataType.INTEGERUNSIGNED,
+                                                                             "integer unsigned", "integer unsigned");
+    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<>(SQLDialect.MYSQL,
+                                                                            SQLDataType.SMALLINTUNSIGNED,
+                                                                            "smallint unsigned", "smallint unsigned");
+    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<>(SQLDialect.MYSQL,
+                                                                               SQLDataType.INTEGERUNSIGNED,
+                                                                               "mediumint unsigned",
+                                                                               "mediumint unsigned");
+    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.BOOLEAN,
+                                                                          "boolean", "boolean");
+    public static final DataType<String> LONGTEXT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.CLOB,
+                                                                          "longtext", "longtext");
 
     public Table(String name, Version version, Database db)
     {
@@ -58,7 +67,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     private final List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private final List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
 
-    private final List<TableField<R, ? >[]> indices = new ArrayList<>();
+    private final List<TableField<R, ?>[]> indices = new ArrayList<>();
 
     private TableField<R, ?>[] fields;
 
@@ -96,7 +105,8 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     }
 
     @Override
-    public final List<ForeignKey<R, ?>> getReferences() {
+    public final List<ForeignKey<R, ?>> getReferences()
+    {
         return foreignKeys;
     }
 
@@ -176,6 +186,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         db.getLog().info(sb.toString());
         connection.prepareStatement(sb.toString()).execute();
     }
+
     private static final char QUOTE = '`';
 
     private void appendFieldList(StringBuilder sb, List<TableField<R, ?>> fields)
@@ -197,7 +208,23 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     protected void appendColumnDefinition(StringBuilder sb, TableField<R, ?> field)
     {
         sb.append(QUOTE).append(field.getName()).append(QUOTE).append(" ");
-        sb.append(field.getDataType(db.getDSL().configuration()).getCastTypeName());
+        DataType<?> type = field.getDataType(db.getDSL().configuration());
+        sb.append(type.getTypeName());
+        if (type.length() != 0)
+        {
+            sb.append("(").append(type.length()).append(")");
+        }
+        else if (type.precision() != 0)
+        {
+            if (type.scale() != 0)
+            {
+                sb.append("(").append(type.precision()).append(", ").append(type.scale()).append(")");
+            }
+            else
+            {
+                sb.append("(").append(type.precision()).append(")");
+            }
+        }
         if (field.getDataType().nullable())
         {
             sb.append(" DEFAULT NULL");
@@ -208,7 +235,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         }
     }
 
-    public void addIndex(TableField<R,?>... fields)
+    public void addIndex(TableField<R, ?>... fields)
     {
         this.indices.add(fields);
     }
