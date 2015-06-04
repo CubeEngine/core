@@ -69,6 +69,7 @@ public class LogProvider implements ValueProvider<Log>
             logger = logFactory.getLog(CoreModule.class, info.getIdentifier());
             // TODO manually add Target for non-modules
         }
+        loggers.put(info, logger);
         return logger;
     }
 }
