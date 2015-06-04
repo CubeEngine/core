@@ -25,6 +25,8 @@ import java.util.EnumSet;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -105,7 +107,7 @@ public class CubeEngineSpongePlugin
         pluginLogger.info("Start Modules");
         try
         {
-            modularity.startAll();
+            modularity.startModules();
             pluginLogger.info("Finished starting Modules");
         }
         catch (Exception e)
@@ -123,9 +125,8 @@ public class CubeEngineSpongePlugin
 
         game.getCommandDispatcher().register(this, CommandSpec.builder().description(Texts.of(
             "Reloads the CubeEngine")).executor((commandSource, commandContext) -> {
-            // TODO add reloadAll() to Modularity
-            modularity.getGraph().getRoot().getSuccessors().forEach(modularity::unload);
-            modularity.startAll();
+            modularity.stopModules();
+            modularity.startModules();
             return CommandResult.success();
         }).build(), "reload");
     }
