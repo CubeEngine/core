@@ -131,7 +131,6 @@ public final class CoreModule extends Module
         ((I18nLanguageLoader)i18n.getService().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
 
-        System.out.println("CoreModule onEnable...");
         ServiceManager sm = getModularity().getServiceManager();
 
         registerConverters(reflector);
@@ -208,8 +207,6 @@ public final class CoreModule extends Module
         this.freezeDetection = new FreezeDetection(this, tm, 20);
         this.freezeDetection.addListener(this::dumpThreads);
         this.freezeDetection.start();
-
-        System.out.println("CoreModule enabled...");
     }
 
     private void registerConverters(Reflector reflector)

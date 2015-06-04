@@ -83,7 +83,7 @@ public class ProxyCallable implements CommandCallable
     public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException
     {
         CommandSender wrapSender = wrapSender(source);
-        List<String> suggestions = manager.getSuggestions(newInvocation(wrapSender, arguments.isEmpty() ? alias : alias + " " + arguments));
+        List<String> suggestions = manager.getSuggestions(newInvocation(wrapSender, alias + " " + arguments));
         manager.logTabCompletion(wrapSender, alias, arguments);
 
         if (suggestions == null)

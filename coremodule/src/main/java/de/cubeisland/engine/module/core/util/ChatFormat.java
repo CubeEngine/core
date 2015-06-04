@@ -29,28 +29,28 @@ import org.spongepowered.api.text.format.TextStyles;
  */
 public enum ChatFormat
 {
-    BLACK('0', TextColors.BLACK),
-    DARK_BLUE('1', TextColors.DARK_BLUE),
-    DARK_GREEN('2', TextColors.DARK_GREEN),
-    DARK_AQUA('3', TextColors.DARK_AQUA),
-    DARK_RED('4', TextColors.DARK_RED),
-    PURPLE('5', TextColors.DARK_PURPLE),
-    GOLD('6', TextColors.GOLD),
-    GREY('7', TextColors.GRAY),
-    DARK_GREY('8', TextColors.DARK_GRAY),
-    INDIGO('9', TextColors.BLUE),
-    BRIGHT_GREEN('a', TextColors.GREEN),
-    AQUA('b', TextColors.AQUA),
-    RED('c', TextColors.RED),
-    PINK('d', TextColors.LIGHT_PURPLE),
-    YELLOW('e', TextColors.YELLOW),
-    WHITE('f', TextColors.WHITE),
-    MAGIC('k', TextStyles.OBFUSCATED),
-    BOLD('l', TextStyles.BOLD),
-    STRIKE('m', TextStyles.STRIKETHROUGH),
-    UNDERLINE('n', TextStyles.UNDERLINE),
-    ITALIC('o', TextStyles.ITALIC),
-    RESET('r', TextColors.RESET);
+    BLACK('0', () -> TextColors.BLACK),
+    DARK_BLUE('1', () -> TextColors.DARK_BLUE),
+    DARK_GREEN('2', () -> TextColors.DARK_GREEN),
+    DARK_AQUA('3', () -> TextColors.DARK_AQUA),
+    DARK_RED('4', () -> TextColors.DARK_RED),
+    PURPLE('5', () -> TextColors.DARK_PURPLE),
+    GOLD('6', () -> TextColors.GOLD),
+    GREY('7', () -> TextColors.GRAY),
+    DARK_GREY('8', () -> TextColors.DARK_GRAY),
+    INDIGO('9', () -> TextColors.BLUE),
+    BRIGHT_GREEN('a', () -> TextColors.GREEN),
+    AQUA('b', () -> TextColors.AQUA),
+    RED('c', () -> TextColors.RED),
+    PINK('d', () -> TextColors.LIGHT_PURPLE),
+    YELLOW('e', () -> TextColors.YELLOW),
+    WHITE('f', () -> TextColors.WHITE),
+    MAGIC('k', () -> TextStyles.OBFUSCATED),
+    BOLD('l', () -> TextStyles.BOLD),
+    STRIKE('m', () -> TextStyles.STRIKETHROUGH),
+    UNDERLINE('n', () -> TextStyles.UNDERLINE),
+    ITALIC('o', () -> TextStyles.ITALIC),
+    RESET('r', () -> TextColors.RESET);
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     public static final char BASE_CHAR = '\u00A7';
@@ -60,16 +60,21 @@ public enum ChatFormat
     private static final Pattern STRIP_REDUNDANT_FORMATS = Pattern.compile("(?:[&§][0-9a-fk-r])+([&§][0-9a-fk-r])");
 
     private final char formatChar;
-    private BaseFormatting base;
+    private FormatProvider base;
     private final String string;
 
-    ChatFormat(char formatChar, BaseFormatting base)
+    ChatFormat(char formatChar, FormatProvider base)
     {
         this.formatChar = formatChar;
         this.base = base;
         this.string = String.valueOf(new char[]{
             BASE_CHAR, formatChar
         });
+    }
+
+    public interface FormatProvider
+    {
+        BaseFormatting getFormat();
     }
 
     /**
@@ -179,6 +184,11 @@ public enum ChatFormat
 
     public String getName()
     {
-        return base.getName();
+        return base.getFormat().getName();
+    }
+
+    public BaseFormatting getBase()
+    {
+        return base.getFormat();
     }
 }
