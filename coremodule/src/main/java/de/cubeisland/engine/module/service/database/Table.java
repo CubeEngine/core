@@ -209,7 +209,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     {
         sb.append(QUOTE).append(field.getName()).append(QUOTE).append(" ");
         DataType<?> type = field.getDataType(db.getDSL().configuration());
-        sb.append(type.getTypeName());
+        String typeName = type.getTypeName();
+        boolean unsigned = typeName.contains("unsigned");
+        typeName = typeName.replace("unsigned", "");
+        sb.append(typeName);
         if (type.length() != 0)
         {
             sb.append("(").append(type.length()).append(")");
@@ -224,6 +227,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             {
                 sb.append("(").append(type.precision()).append(")");
             }
+        }
+        if (unsigned)
+        {
+            sb.append(" unsigned");
         }
         if (field.getDataType().nullable())
         {
