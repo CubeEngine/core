@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.service.permission;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -130,5 +131,11 @@ public class SpongePermissionManager implements PermissionManager
     {
         this.permissions.clear();
         this.modulePermissionMap.clear();
+    }
+
+    @Override
+    public Map<String, Permission> getPermissions()
+    {
+        return Collections.unmodifiableMap(this.permissions);
     }
 }

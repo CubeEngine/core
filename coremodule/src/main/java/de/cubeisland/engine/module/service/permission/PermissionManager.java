@@ -17,6 +17,7 @@
  */
 package de.cubeisland.engine.module.service.permission;
 
+import java.util.Map;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
@@ -66,4 +67,10 @@ public interface PermissionManager extends Cleanable
      * @return the permission if found
      */
     Optional<Permission> getPermission(String permission);
+
+    /**
+     * Returns a unmodifiable map of all registered permissions
+     * @return the registered permissions
+     */
+    Map<String, Permission> getPermissions();
 }
