@@ -59,4 +59,14 @@ public abstract class AsyncRecord<T extends AsyncRecord<T>> extends UpdatableRec
     {
         return supplyAsync(this::delete, executor);
     }
+
+    public CompletableFuture<Integer> storeAsync()
+    {
+        return supplyAsync(this::store);
+    }
+
+    public CompletableFuture<Integer> storeAsync(Executor executor)
+    {
+        return supplyAsync(this::store, executor);
+    }
 }

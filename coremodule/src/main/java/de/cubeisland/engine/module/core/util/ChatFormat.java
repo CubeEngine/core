@@ -17,11 +17,17 @@
  */
 package de.cubeisland.engine.module.core.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextBuilder;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 
 /**
@@ -58,6 +64,10 @@ public enum ChatFormat
     private static final String FORMAT_CHARS_STRING = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
     private static final Pattern STRIP_REDUNDANT_FORMATS = Pattern.compile("(?:[&§][0-9a-fk-r])+([&§][0-9a-fk-r])");
+    public static final String SPLIT_COLOR_KEEP = "((?<=&[0123456789aAbBcCdDeEfFgkKlLmMnNoOrR])|(?=&[0123456789aAbBcCdDeEfFgkKlLmMnNoOrR]))";
+    public static final String COLORS = "&[0123456789aAbBcCdDeEfFg]";
+    public static final String STYLES = "&[kKlLmMnNoOrR]";
+    public static final String SPLIT_PARAM_KEEP = "((?<=\\{[A-Z_]{0,50}\\})|(?=\\{[A-Z_]{0,50}\\}))";
 
     private final char formatChar;
     private FormatProvider base;
@@ -70,6 +80,68 @@ public enum ChatFormat
         this.string = String.valueOf(new char[]{
             BASE_CHAR, formatChar
         });
+    }
+
+    public static Text fromLegacy(String string, Map<String, Text> replacements)
+    {
+        String[] parts = string.split(SPLIT_COLOR_KEEP);
+        TextBuilder builder = Texts.builder();
+        TextColor nextColor = null;
+        TextStyle nextStyle = null;
+        for (String part : parts)
+        {
+            if (part.matches(COLORS))
+            {
+                nextColor = ((TextColor)getByChar(part.charAt(1)).getBase());
+                continue;
+            }
+            if (part.matches(STYLES))
+            {
+                TextStyle newStyle = (TextStyle)getByChar(part.charAt(1)).getBase();
+                if (nextStyle == null)
+                {
+                    nextStyle = newStyle;
+                }
+                else
+                {
+                    nextStyle = nextStyle.and(newStyle);
+                }
+                continue;
+            }
+
+            TextBuilder partBuilder = Texts.builder();
+            String[] toReplace = part.split(SPLIT_PARAM_KEEP);
+            for (String r : toReplace)
+            {
+                Text text = replacements.get(r);
+                if (text != null)
+                {
+                    partBuilder.append(text);
+                }
+                else if (!r.matches("\\{.+\\}"))
+                {
+                    partBuilder.append(Texts.of(r));
+                }
+            }
+            if (nextColor != null)
+            {
+                partBuilder.color(nextColor);
+                nextColor = null;
+            }
+            if (nextStyle != null)
+            {
+                partBuilder.style(nextStyle);
+                nextStyle = null;
+            }
+
+            builder.append(partBuilder.build());
+        }
+        return builder.build();
+    }
+
+    public static Text fromLegacy(String string)
+    {
+        return fromLegacy(string, Collections.emptyMap());
     }
 
     public interface FormatProvider
