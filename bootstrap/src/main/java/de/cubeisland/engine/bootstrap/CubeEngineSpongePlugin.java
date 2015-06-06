@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
@@ -48,6 +49,7 @@ import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Plugin(id = "CubeEngine", name = "CubeEngine", version = "1.0.0")
 public class CubeEngineSpongePlugin
@@ -100,6 +102,7 @@ public class CubeEngineSpongePlugin
         sm.registerService(File.class, dataFolder);
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
 
+        long delta = System.currentTimeMillis();
         pluginLogger.info("Load Modules");
         modularity.load(loadPath.toFile());
         pluginLogger.info("done.");
@@ -108,7 +111,7 @@ public class CubeEngineSpongePlugin
         try
         {
             modularity.startModules();
-            pluginLogger.info("Finished starting Modules");
+            pluginLogger.info("Finished starting Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         }
         catch (Exception e)
         {

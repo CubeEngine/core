@@ -52,6 +52,7 @@ import javax.inject.Provider;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackBuilder;
@@ -221,6 +222,12 @@ public class MaterialMatcher
             }
         }
         return type;
+    }
+
+
+    public BlockType block(String name)
+    {
+        return null; // TODO BlockTypes
     }
 
     /**

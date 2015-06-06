@@ -42,6 +42,8 @@ import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 @Version(1)
 public class SpongePermissionManager implements PermissionManager
 {
+    // TODO Modularity Events e.g. to react on shutdown of modules
+
     private final Map<String, Permission> permissions = new HashMap<>();
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Log logger;
@@ -92,7 +94,8 @@ public class SpongePermissionManager implements PermissionManager
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(perm, "The permission must not be null!");
-        expect(!perm.equals(Permission.BASE.getName() + ".*"), "The CubeEngine wildcard permission must not be unregistered!");
+        expect(!perm.equals(Permission.BASE.getName() + ".*"),
+               "The CubeEngine wildcard permission must not be unregistered!");
 
         Set<String> perms = this.modulePermissionMap.get(module);
         if (perms != null)
