@@ -57,7 +57,7 @@ public class SpongePaginationManager implements PaginationManager
     @Enable
     public void onEnable()
     {
-        cm.addCommands(cm, core, new PaginationCommands(this));
+        cm.addCommands(core, new PaginationCommands(this));
     }
 
     @Subscribe
