@@ -25,8 +25,11 @@ import com.google.common.base.Optional;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.block.AttachedData;
 import org.spongepowered.api.data.manipulator.block.PortionData;
+import org.spongepowered.api.data.type.Hinge;
+import org.spongepowered.api.data.type.Hinges;
 import org.spongepowered.api.data.type.PortionTypes;
 import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -287,5 +290,35 @@ public class BlockUtil
         }
 
         return world.getFullBlock(x, y, z);
+    }
+
+    public static Chunk getChunk(Location block)
+    {
+        return ((World)block.getExtent()).getChunk(block.getBlockPosition()).get();
+    }
+
+    public static Direction getOtherDoorDirection(Direction direction, Hinge hinge)
+    {
+        if (direction == NORTH)
+        {
+            direction = EAST;
+        }
+        else if (direction == EAST)
+        {
+            direction = SOUTH;
+        }
+        else if (direction == SOUTH)
+        {
+            direction = WEST;
+        }
+        else if (direction == WEST)
+        {
+            direction = NORTH;
+        }
+        if (hinge == Hinges.RIGHT) // TODO check if this is right might be the inverse
+        {
+            direction = direction.getOpposite();
+        }
+        return direction;
     }
 }
