@@ -53,7 +53,7 @@ public class UserEntity extends AsyncRecord<UserEntity>
         return this;
     }
 
-    public UInteger getKey()
+    public UInteger getId()
     {
         return getValue(TABLE_USER.KEY);
     }

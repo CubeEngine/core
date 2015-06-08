@@ -254,7 +254,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         updateLastName(user);
         this.cachedUserByUUID.put(user.getUniqueId(), user);
-        this.cachedUserByDbId.put(user.getEntity().getKey(), user);
+        this.cachedUserByDbId.put(user.getEntity().getId(), user);
         this.core.getLog().debug("User {} cached!", user.getName());
         this.attachDefaults(user);
     }
@@ -271,7 +271,7 @@ public abstract class AbstractUserManager implements UserManager
     protected synchronized void removeCachedUser(User user)
     {
         this.cachedUserByUUID.remove(user.getUniqueId());
-        this.cachedUserByDbId.remove(user.getEntity().getKey());
+        this.cachedUserByDbId.remove(user.getEntity().getId());
         this.core.getLog().debug("Removed cached user {}!", user.getName());
         user.detachAll();
     }
@@ -570,7 +570,7 @@ public abstract class AbstractUserManager implements UserManager
         }
         if (entity != null)
         {
-            User user = this.cachedUserByDbId.get(entity.getKey());
+            User user = this.cachedUserByDbId.get(entity.getId());
             if (user == null)
             {
                 user = new User(core, entity);

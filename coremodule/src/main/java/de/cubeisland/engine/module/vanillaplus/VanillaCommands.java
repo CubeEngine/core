@@ -40,6 +40,7 @@ import de.cubeisland.engine.module.core.util.Profiler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.world.World;
@@ -89,8 +90,8 @@ public class VanillaCommands
         message = ChatFormat.parseFormats(message);
 
         @SuppressWarnings("deprecation")
-        Literal literal = Texts.fromLegacy(message, '&');
-        this.core.getGame().getServer().shutdown(literal);
+        Text from = Texts.legacy('&').fromUnchecked(message);
+        this.core.getGame().getServer().shutdown(from);
     }
 
     /*

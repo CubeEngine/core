@@ -31,23 +31,20 @@ import java.util.Set;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Module;
-
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.ban.BanManager;
 import de.cubeisland.engine.module.service.ban.IpBan;
 import de.cubeisland.engine.module.service.ban.UserBan;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.service.world.WorldManager;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
@@ -195,7 +192,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public Long getId()
     {
-        return this.entity.getKey().longValue();
+        return this.entity.getId().longValue();
     }
 
     @Override
@@ -210,7 +207,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             core.getProvided(Log.class).debug("A module sent an untranslated message!");
         }
         @SuppressWarnings("deprecation")
-        Literal msg = Texts.fromLegacy(ChatFormat.parseFormats(string), '&');
+        Text msg = Texts.legacy('&').fromUnchecked(string);
         this.sendMessage(msg);
     }
 
