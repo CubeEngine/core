@@ -108,10 +108,13 @@ public class HelpCommand implements CommandBase
             }
         }
 
+        // TODO currently we have nothing here:
+        /*
         if (descriptor instanceof CubeDescriptor)
         {
             sender.sendTranslated(GRAY, "Detailed help: {input#link:color=INDIGO}", "http://engine.cubeisland.de/c/" + ((CubeDescriptor)descriptor).getModule().getInformation().getName().toLowerCase() + "/" + StringUtils.implode("/", labels));
         }
+        */
         return true;
     }
 

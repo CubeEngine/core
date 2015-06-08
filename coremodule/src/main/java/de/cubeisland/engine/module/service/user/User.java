@@ -34,6 +34,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.service.ban.BanManager;
 import de.cubeisland.engine.module.service.ban.IpBan;
 import de.cubeisland.engine.module.service.ban.UserBan;
@@ -206,9 +207,11 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             core.getProvided(Log.class).debug("A module sent an untranslated message!");
         }
-        @SuppressWarnings("deprecation")
+
+        /*@SuppressWarnings("deprecation")
         Text msg = Texts.legacy('&').fromUnchecked(string);
-        this.sendMessage(msg);
+        this.sendMessage(msg);*/
+        this.sendMessage(ChatFormat.fromLegacy(string));
     }
 
     @Override
@@ -314,26 +317,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         }
         return super.getLastPlayed();
         // TODO do we still need this? return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
-    }
-
-    public boolean safeTeleport(Location location, boolean keepDirection)
-    {
-        Optional<Location> safeLocation = ((CoreModule)core).getGame().getTeleportHelper().getSafeLocation(location);
-        if (safeLocation.isPresent())
-        {
-            location = safeLocation.get();
-        }
-
-        if (keepDirection)
-        {
-            this.teleport(location);
-            // TODO rotation stays? this.setRotation(getRotation());
-        }
-        else
-        {
-            this.teleport(location);
-        }
-        return true;
     }
 
     public boolean isPasswordSet()

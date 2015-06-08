@@ -118,7 +118,7 @@ public enum ChatFormat
                 {
                     partBuilder.append(text);
                 }
-                else if (!r.matches("\\{.+\\}"))
+                else// if (!r.matches("\\{.+\\}"))
                 {
                     partBuilder.append(Texts.of(r));
                 }
