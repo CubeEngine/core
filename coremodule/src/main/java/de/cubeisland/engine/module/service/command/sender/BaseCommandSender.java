@@ -20,9 +20,9 @@ package de.cubeisland.engine.module.service.command.sender;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.text.translation.Translation;
 
 public abstract class BaseCommandSender implements CommandSender
 {
@@ -43,13 +43,13 @@ public abstract class BaseCommandSender implements CommandSender
 
 
     @Override
-    public Translation getTranslation(BaseFormatting format, String message, Object... args)
+    public Translatable getTranslation(BaseFormatting format, String message, Object... args)
     {
         return i18n.getTranslation(format, getLocale(), message, args);
     }
 
     @Override
-    public Translation getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
         return i18n.getTranslationN(format, getLocale(), n, singular, plural, args);
     }
@@ -57,12 +57,12 @@ public abstract class BaseCommandSender implements CommandSender
     @Override
     public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        this.sendMessage(Texts.of(this.getTranslation(format, message, args).get(getLocale())));
+        this.sendMessage(Texts.of(this.getTranslation(format, message, args).getTranslation().get(getLocale())));
     }
 
     @Override
     public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).get(getLocale()));
+        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()));
     }
 }

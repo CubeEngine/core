@@ -23,6 +23,7 @@ import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.formatter.MessageType;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
 
@@ -42,9 +43,9 @@ public interface CommandSender extends CommandSource
     @Override
     Locale getLocale();
 
-    Translation getTranslation(BaseFormatting format, String message, Object... args);
+    Translatable getTranslation(BaseFormatting format, String message, Object... args);
 
-    Translation getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args);
+    Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args);
 
     void sendTranslated(BaseFormatting format, String message, Object... args);
 

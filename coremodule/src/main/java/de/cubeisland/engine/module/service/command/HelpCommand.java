@@ -97,7 +97,7 @@ public class HelpCommand implements CommandBase
                         continue;
                     }
                     sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(),
-                                 WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription()).get(sender.getLocale())));
+                                 WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription()).getTranslation().get(sender.getLocale())));
             }
                 sender.sendMessage(" ");
             }

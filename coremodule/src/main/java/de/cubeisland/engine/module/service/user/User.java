@@ -46,9 +46,9 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
@@ -224,7 +224,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public Translation getTranslation(BaseFormatting format, String message, Object... args)
+    public Translatable getTranslation(BaseFormatting format, String message, Object... args)
     {
         return getI18n().getTranslation(format, getLocale(), message, args);
     }
@@ -235,7 +235,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     }
 
     @Override
-    public Translation getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
         return getI18n().getTranslationN(format, getLocale(), n, singular, plural, args);
     }
@@ -249,13 +249,13 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        this.sendMessage(this.getTranslation(format, message, args).get(getLocale()));
+        this.sendMessage(this.getTranslation(format, message, args).getTranslation().get(getLocale()));
     }
 
     @Override
     public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).get(getLocale()));
+        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()));
     }
 
     public void sendMessage(BaseFormatting format, String message, Object... params)

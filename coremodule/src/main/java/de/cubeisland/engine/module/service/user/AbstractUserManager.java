@@ -434,7 +434,7 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(Texts.of(user.getTranslation(NONE, message).get(user.getLocale())));
+            user.kick(Texts.of(user.getTranslation(NONE, message).getTranslation().get(user.getLocale())));
         }
     }
 

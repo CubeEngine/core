@@ -57,6 +57,8 @@ import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
+import org.spongepowered.api.text.Text.Translatable;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.translation.Translation;
 
@@ -275,15 +277,15 @@ public class I18n
         return languages;
     }
 
-    public Translation getTranslation(BaseFormatting format, Locale locale, String msg, Object... args)
+    public Translatable getTranslation(BaseFormatting format, Locale locale, String msg, Object... args)
     {
-        return new CubeEngineTranslation(this, format, locale, msg, args);
+        return Texts.of(new CubeEngineTranslation(this, format, locale, msg, args));
     }
 
-    public Translation getTranslationN(BaseFormatting format, Locale locale, int n, String singular, String plural,
-                                       Object... args)
+    public Translatable getTranslationN(BaseFormatting format, Locale locale, int n, String singular, String plural,
+                                        Object... args)
     {
-        return new CubeEngineTranslation(this, format, locale, n, singular, plural, args);
+        return Texts.of(new CubeEngineTranslation(this, format, locale, n, singular, plural, args));
     }
 
     public I18nService getService()
