@@ -33,6 +33,7 @@ import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.DispatcherCommand;
 import de.cubeisland.engine.butler.ProviderManager;
+import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
 import de.cubeisland.engine.butler.parametric.ParametricBuilder;
@@ -296,6 +297,13 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
             childPerm.setParent(perm);
             pm.registerPermission(module, childPerm);
+        }
+        else if (command instanceof AliasCommand)
+        {
+            if (((AliasCommand)command).getTarget().getDescriptor() instanceof CubeDescriptor)
+            {
+                module = ((CubeDescriptor)((AliasCommand)command).getTarget().getDescriptor()).getModule();
+            }
         }
         boolean b = super.addCommand(command);
 
