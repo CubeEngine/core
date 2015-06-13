@@ -82,20 +82,20 @@ public enum ChatFormat
         });
     }
 
-    public static Text fromLegacy(String string, Map<String, Text> replacements)
+    public static Text fromLegacy(String string, Map<String, Text> replacements, char formatChar)
     {
-        String[] parts = string.split(SPLIT_COLOR_KEEP);
+        String[] parts = string.split(SPLIT_COLOR_KEEP.replace('&', formatChar));
         TextBuilder builder = Texts.builder();
         TextColor nextColor = null;
         TextStyle nextStyle = null;
         for (String part : parts)
         {
-            if (part.matches(COLORS))
+            if (part.matches(COLORS.replace('&', formatChar)))
             {
                 nextColor = ((TextColor)getByChar(part.charAt(1)).getBase());
                 continue;
             }
-            if (part.matches(STYLES))
+            if (part.matches(STYLES.replace('&', formatChar)))
             {
                 TextStyle newStyle = (TextStyle)getByChar(part.charAt(1)).getBase();
                 if (nextStyle == null)
@@ -110,7 +110,7 @@ public enum ChatFormat
             }
 
             TextBuilder partBuilder = Texts.builder();
-            String[] toReplace = part.split(SPLIT_PARAM_KEEP);
+            String[] toReplace = part.split(SPLIT_PARAM_KEEP.replace('&', formatChar));
             for (String r : toReplace)
             {
                 Text text = replacements.get(r);
@@ -139,9 +139,9 @@ public enum ChatFormat
         return builder.build();
     }
 
-    public static Text fromLegacy(String string)
+    public static Text fromLegacy(String string, char formatchar)
     {
-        return fromLegacy(string, Collections.emptyMap());
+        return fromLegacy(string, Collections.emptyMap(), formatchar);
     }
 
     public interface FormatProvider

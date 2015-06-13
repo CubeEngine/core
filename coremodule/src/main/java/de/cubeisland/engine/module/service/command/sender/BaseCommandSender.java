@@ -17,12 +17,15 @@
  */
 package de.cubeisland.engine.module.service.command.sender;
 
+import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.text.Text.Translatable;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
+
+import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
+import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
 
 public abstract class BaseCommandSender implements CommandSender
 {
@@ -57,12 +60,12 @@ public abstract class BaseCommandSender implements CommandSender
     @Override
     public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        this.sendMessage(Texts.of(this.getTranslation(format, message, args).getTranslation().get(getLocale())));
+        sendMessage(fromLegacy(this.getTranslation(format, message, args).getTranslation().get(getLocale()), BASE_CHAR));
     }
 
     @Override
     public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()));
+        sendMessage(fromLegacy(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()), BASE_CHAR));
     }
 }

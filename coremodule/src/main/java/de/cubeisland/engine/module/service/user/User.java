@@ -54,6 +54,7 @@ import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.world.Location;
 
 import static de.cubeisland.engine.module.core.util.BlockUtil.isNonObstructingSolidBlock;
+import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
 import static org.spongepowered.api.service.permission.SubjectData.GLOBAL_CONTEXT;
 
 /**
@@ -211,7 +212,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         /*@SuppressWarnings("deprecation")
         Text msg = Texts.legacy('&').fromUnchecked(string);
         this.sendMessage(msg);*/
-        this.sendMessage(ChatFormat.fromLegacy(string));
+        this.sendMessage(ChatFormat.fromLegacy(string, BASE_CHAR));
     }
 
     @Override

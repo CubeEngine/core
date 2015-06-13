@@ -102,11 +102,12 @@ public class MySQLDatabase extends AbstractDatabase implements Database
         AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Database"),
                                                      LoggingUtil.getFileFormat(true, false),
                                                      true, LoggingUtil.getCycler(), threadFactory);
-        target.setLevel(LogLevel.INFO);
+        target.setLevel(LogLevel.DEBUG);
         logger.addTarget(target);
 
         LogTarget parentTarget = logger.addDelegate(logFactory.getLog(CoreModule.class));
-        parentTarget.appendFilter(new PrefixFilter("[DB]"));
+        parentTarget.appendFilter(new PrefixFilter("[DB] "));
+        parentTarget.setLevel(LogLevel.INFO);
 
         // Now go connect to the database:
         this.logger.info("Connecting to the database...");
