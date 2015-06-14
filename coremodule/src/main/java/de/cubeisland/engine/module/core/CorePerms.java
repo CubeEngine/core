@@ -44,7 +44,5 @@ public class CorePerms extends PermissionContainer<CoreModule>
     public final Permission COMMAND_DEOP_OTHER = DEOP.child("other", PermDefault.FALSE);
     public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
 
-    public final Permission COMMAND_VERSION_PLUGINS = COMMAND.childWildcard("version").child("plugins");
-
     public final Permission SPAM = getBasePerm().child("spam");
 }

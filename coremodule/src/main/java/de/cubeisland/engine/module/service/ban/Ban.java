@@ -18,7 +18,9 @@
 package de.cubeisland.engine.module.service.ban;
 
 import java.util.Date;
-
+import de.cubeisland.engine.module.service.command.CommandSender;
+import de.cubeisland.engine.module.service.command.sender.WrappedCommandSender;
+import de.cubeisland.engine.module.service.user.User;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.util.command.CommandSource;
 
@@ -31,9 +33,14 @@ public abstract class Ban<T>
     private Date created;
     private Date expires;
 
-    protected Ban(CommandSource source, Literal reason, Date expires)
+    protected Ban(CommandSender source, Literal reason, Date expires)
     {
         this(source, reason, new Date(System.currentTimeMillis()), expires);
+    }
+
+    protected Ban(CommandSender source, Literal reason, Date created, Date expires)
+    {
+        this(getSource(source), reason, created, expires);
     }
 
     protected Ban(CommandSource source, Literal reason, Date created, Date expires)
@@ -45,6 +52,22 @@ public abstract class Ban<T>
         this.reason = reason;
         this.created = created;
         this.expires = expires;
+    }
+
+    private static CommandSource getSource(CommandSender source)
+    {
+        if (source instanceof User)
+        {
+            return ((User)source).getPlayer().get();
+        }
+        else if (source instanceof WrappedCommandSender)
+        {
+            return ((WrappedCommandSender)source).getWrappedSender();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Source is not a wrapped CommandSender neither a User");
+        }
     }
 
     /**

@@ -30,8 +30,6 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
-import de.cubeisland.engine.modularity.core.graph.Node;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;

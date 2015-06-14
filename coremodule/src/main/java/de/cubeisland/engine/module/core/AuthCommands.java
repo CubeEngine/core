@@ -131,13 +131,12 @@ public class AuthCommands
                 {
                     Literal msg = Texts.of(context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
                                     + context.getTranslation(NEUTRAL, "For your security you were banned 10 seconds."));
-                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context.getPlayer().get(), msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
+                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context, msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
                         this.core.getConfiguration().security.banDuration))));
 
                     if (!core.getGame().getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context.getPlayer().get(),
-                                                         msg, new Date(
+                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context, msg, new Date(
                             System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
                                 this.core.getConfiguration().security.banDuration))));
                     }

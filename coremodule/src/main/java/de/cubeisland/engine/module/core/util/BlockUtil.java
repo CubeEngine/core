@@ -282,7 +282,7 @@ public class BlockUtil
     @SuppressWarnings("deprecation")
     public static Location getHighestBlockAt(World world, final int x, final int z)
     {
-        int y = world.getBuildHeight() - 1;
+        int y = world.getDimension().getBuildHeight() - 1;
 
         while (world.getBlockType(x, y, z) == AIR && y > 0)
         {

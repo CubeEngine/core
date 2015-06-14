@@ -422,36 +422,6 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return this.address;
     }
 
-    public void banIp(CommandSource source, String reason)
-    {
-        this.banIp(source, reason, null);
-    }
-
-    public void banIp(CommandSource source, String reason, Date expire)
-    {
-        this.banIp(source, reason, new Date(System.currentTimeMillis()), expire);
-    }
-
-    public void banIp(CommandSource source, String reason, Date created, Date expire)
-    {
-        getCore().getModularity().start(BanManager.class).addBan(new IpBan(this.getAddress().getAddress(), source, Texts.of(reason), created, expire));
-    }
-
-    public void ban(CommandSource source, String reason)
-    {
-        this.ban(source, reason, null);
-    }
-
-    public void ban(CommandSource source, String reason, Date expire)
-    {
-        this.ban(source, reason, new Date(System.currentTimeMillis()), expire);
-    }
-
-    public void ban(CommandSource source, String reason, Date created, Date expire)
-    {
-        getCore().getModularity().start(BanManager.class).addBan(new UserBan(this.getOfflinePlayer(), source, Texts.of(reason), created, expire));
-    }
-
     public UserEntity getEntity()
     {
         return entity;

@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.service.ban;
 import java.util.Date;
 
 import de.cubeisland.engine.module.core.util.ChatFormat;
+import de.cubeisland.engine.module.service.command.CommandSender;
 import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.util.command.CommandSource;
@@ -30,19 +31,26 @@ public class UserBan extends Ban<User>
 {
     private final User target;
 
-    public UserBan(User target, CommandSource source, Literal reason)
+    public UserBan(User target, CommandSender source, Literal reason)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), null);
     }
 
-    public UserBan(User target, CommandSource source, Literal reason, Date expires)
+    public UserBan(User target, CommandSender source, Literal reason, Date expires)
     {
         this(target, source, reason, new Date(System.currentTimeMillis()), expires);
     }
 
-    public UserBan(User target, CommandSource source, Literal reason, Date created, Date expires)
+    public UserBan(User target, CommandSender source, Literal reason, Date created, Date expires)
     {
         super(source, reason, created, expires);
+        expectNotNull(target, "The user must not be null!");
+        this.target = target;
+    }
+
+    public UserBan(User target, CommandSource commandSource, Literal reason, Date created, Date expires)
+    {
+        super(commandSource, reason, created, expires);
         expectNotNull(target, "The user must not be null!");
         this.target = target;
     }
