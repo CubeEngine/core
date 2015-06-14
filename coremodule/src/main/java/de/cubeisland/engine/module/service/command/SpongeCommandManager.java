@@ -91,8 +91,6 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.module.core.util.matcher.MaterialDataMatcher;
 import de.cubeisland.engine.module.service.user.UserManager;
 import de.cubeisland.engine.module.service.world.WorldManager;
-import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
-import de.cubeisland.engine.module.vanillaplus.WhitelistCommand;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
@@ -164,11 +162,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         // depends on: server, module manager, ban manager
         this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager(), cm, fm, i18n));
         this.addCommand(new CoreCommands(core, cm, um));
-        if (this.core.getConfiguration().improveVanilla)
-        {
-            this.addCommands(core, new VanillaCommands(core));
-            this.addCommand(new WhitelistCommand(core));
-        }
     }
 
     @Override

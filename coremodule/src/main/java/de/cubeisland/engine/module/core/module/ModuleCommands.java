@@ -35,7 +35,6 @@ import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.vanillaplus.VanillaCommands;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.service.command.ContainerCommand;
 import de.cubeisland.engine.module.service.command.CommandContext;
@@ -44,10 +43,10 @@ import org.spongepowered.api.plugin.PluginManager;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 
-
 @Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
 {
+    private static final String SOURCE_LINK = "https://github.com/CubeEngineDev/CubeEngine/tree/";
     private final CoreModule core;
     private final Modularity modularity;
     private final PluginManager pm;
@@ -63,6 +62,23 @@ public class ModuleCommands extends ContainerCommand
         this.fm = fm;
         this.modulesFolder = core.getProvided(Path.class).getParent();
         cm.getProviderManager().register(core, new ModuleReader(modularity, i18n));
+    }
+
+    public static void showSourceVersion(CommandSender context, String sourceVersion)
+    {
+        if (sourceVersion == null)
+        {
+            return;
+        }
+        if (sourceVersion.contains("-") && sourceVersion.length() > 40)
+        {
+            final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1,
+                                                          sourceVersion.length() - 32);
+            context.sendTranslated(POSITIVE, "Source Version: {input}", sourceVersion);
+            context.sendTranslated(POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
+            return;
+        }
+        context.sendTranslated(POSITIVE, "Source Version: unknown");
     }
 
     public static class ModuleReader implements ArgumentReader<Module>
@@ -210,7 +226,7 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion());
         if (source && moduleInfo.getSourceVersion() != null)
         {
-            VanillaCommands.showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
+            showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
         }
 
         /* TODO

@@ -26,10 +26,6 @@ public class SpongeCoreConfiguration extends CoreConfiguration
     @Comment("Whether to prevent Bukkit from kicking players for spamming")
     public boolean preventSpamKick = false;
 
-    @Comment("Whether to replace the vanilla standard commands with improved ones")
-    @Name("commands.improve-vanilla")
-    public boolean improveVanilla = true;
-
     @Comment({"The enhanced system introduces a few user experience improvements,", "but my cause problems with different plugins that inject commands (e.g. MCore)"})
     @Name("commands.use-enhanced-system")
     public boolean useEnhancedSystem = false;
