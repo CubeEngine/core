@@ -20,8 +20,8 @@ package de.cubeisland.engine.module.core.module;
 import java.lang.Thread.UncaughtExceptionHandler;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.service.task.thread.BaseThreadFactory;
-import de.cubeisland.engine.module.service.task.thread.LoggingThread;
+import de.cubeisland.engine.service.task.thread.BaseThreadFactory;
+import de.cubeisland.engine.service.task.thread.LoggingThread;
 import de.cubeisland.engine.logscribe.LogLevel;
 
 public class ModuleThreadFactory extends BaseThreadFactory

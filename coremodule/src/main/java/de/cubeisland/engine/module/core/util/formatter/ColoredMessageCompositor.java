@@ -19,8 +19,7 @@ package de.cubeisland.engine.module.core.util.formatter;
 
 import java.util.Locale;
 
-import de.cubeisland.engine.module.core.filesystem.FileExtensionFilter;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.messagecompositor.DefaultMessageCompositor;
 import de.cubeisland.engine.reflect.Reflector;

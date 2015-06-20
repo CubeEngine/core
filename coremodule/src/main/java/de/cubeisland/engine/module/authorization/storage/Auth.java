@@ -19,7 +19,7 @@ package de.cubeisland.engine.module.authorization.storage;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import de.cubeisland.engine.module.service.database.AsyncRecord;
+import de.cubeisland.engine.service.database.AsyncRecord;
 
 import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
 

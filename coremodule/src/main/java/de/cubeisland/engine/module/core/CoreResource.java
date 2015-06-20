@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core;
 
-import de.cubeisland.engine.module.core.filesystem.Resource;
+import de.cubeisland.engine.service.filesystem.Resource;
 
 /**
  * Holds all the resource of the core

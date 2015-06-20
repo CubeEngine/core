@@ -20,13 +20,13 @@ package de.cubeisland.engine.module.authorization;
 import java.util.Arrays;
 import de.cubeisland.engine.module.authorization.storage.Auth;
 import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.service.user.UserAttachment;
-import de.cubeisland.engine.module.service.user.UserAuthorizedEvent;
+import de.cubeisland.engine.service.database.Database;
+import de.cubeisland.engine.service.user.UserAttachment;
+import de.cubeisland.engine.service.user.UserAuthorizedEvent;
 import org.jooq.DSLContext;
 
 import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
-import static de.cubeisland.engine.module.service.user.TableUser.TABLE_USER;
+import static de.cubeisland.engine.service.user.TableUser.TABLE_USER;
 
 public class AuthAttachment extends UserAttachment
 {

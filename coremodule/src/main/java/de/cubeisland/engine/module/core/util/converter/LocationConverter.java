@@ -26,7 +26,7 @@ import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 
-import de.cubeisland.engine.module.service.world.WorldManager;
+import de.cubeisland.engine.service.world.WorldManager;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 

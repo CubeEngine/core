@@ -20,12 +20,9 @@ package de.cubeisland.engine.module.core.util.matcher;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Provider;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
-import de.cubeisland.engine.module.service.world.WorldManager;
+import de.cubeisland.engine.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
 @ServiceProvider(WorldMatcher.class)

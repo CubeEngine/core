@@ -21,7 +21,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,10 +45,10 @@ import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.i18n.I18nLanguageLoader;
-import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.service.filesystem.FileManager;
+import de.cubeisland.engine.service.i18n.I18n;
+import de.cubeisland.engine.service.i18n.I18nLanguageLoader;
+import de.cubeisland.engine.service.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.util.FreezeDetection;
 import de.cubeisland.engine.module.core.util.Profiler;
 import de.cubeisland.engine.module.core.util.Version;
@@ -67,7 +66,7 @@ import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
-import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.service.task.TaskManager;
 import de.cubeisland.engine.reflect.Reflector;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
@@ -77,7 +76,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
-import static de.cubeisland.engine.module.core.logging.LoggingUtil.*;
+import static de.cubeisland.engine.service.logging.LoggingUtil.*;
 
 @ModuleInfo(name = "CoreModule", description = "The core module of CubeEngine")
 public final class CoreModule extends Module

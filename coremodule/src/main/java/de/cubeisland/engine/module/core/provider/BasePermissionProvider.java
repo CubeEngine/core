@@ -22,7 +22,7 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.module.service.permission.Permission;
+import de.cubeisland.engine.service.permission.Permission;
 
 @Provider(Permission.class)
 public class BasePermissionProvider implements ValueProvider<Permission>

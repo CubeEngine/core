@@ -17,9 +17,8 @@
  */
 package de.cubeisland.engine.module.core.util;
 
-import de.cubeisland.engine.module.service.command.CommandSender;
+import de.cubeisland.engine.service.command.CommandSender;
 import org.spongepowered.api.text.Text.Translatable;
-import org.spongepowered.api.text.translation.Translation;
 
 import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
 

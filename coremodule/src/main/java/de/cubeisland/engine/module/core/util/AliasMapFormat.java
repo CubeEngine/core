@@ -34,12 +34,12 @@ public class AliasMapFormat
 {
     public static boolean parseStringList(Path file, TreeMap<String, List<String>> map, boolean update) throws IOException
     {
-        return parseStringList(de.cubeisland.engine.module.core.filesystem.FileUtil.readStringList(file), map, update);
+        return parseStringList(de.cubeisland.engine.service.filesystem.FileUtil.readStringList(file), map, update);
     }
 
     public static boolean parseStringList(InputStream stream, TreeMap<String, List<String>> map, boolean update) throws IOException
     {
-        return parseStringList(de.cubeisland.engine.module.core.filesystem.FileUtil.readStringList(stream), map, update);
+        return parseStringList(de.cubeisland.engine.service.filesystem.FileUtil.readStringList(stream), map, update);
     }
 
     public static boolean parseStringList(List<String> input, TreeMap<String, List<String>> map, boolean update) throws IOException
@@ -92,6 +92,6 @@ public class AliasMapFormat
                 sb.append("    ").append(entityname).append("\n");
             }
         }
-        de.cubeisland.engine.module.core.filesystem.FileUtil.saveFile(sb.toString(), file);
+        de.cubeisland.engine.service.filesystem.FileUtil.saveFile(sb.toString(), file);
     }
 }

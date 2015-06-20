@@ -17,7 +17,7 @@
  */
 package de.cubeisland.engine.module.core.sponge;
 
-import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.service.task.TaskManager;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.api.data.property.BurningFuelProperty;
 import org.spongepowered.api.item.inventory.ItemStack;

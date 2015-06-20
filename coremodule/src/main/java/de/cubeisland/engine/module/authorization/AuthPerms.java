@@ -17,8 +17,8 @@
  */
 package de.cubeisland.engine.module.authorization;
 
-import de.cubeisland.engine.module.service.permission.Permission;
-import de.cubeisland.engine.module.service.permission.PermissionContainer;
+import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.permission.PermissionContainer;
 
 public class AuthPerms extends PermissionContainer<Authorization>
 {

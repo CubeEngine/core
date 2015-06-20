@@ -31,9 +31,8 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.logging.SpongeLogFactory;
+import de.cubeisland.engine.service.filesystem.FileManager;
+import de.cubeisland.engine.service.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 @Provider(Log.class)

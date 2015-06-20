@@ -17,9 +17,9 @@
  */
 package de.cubeisland.engine.module.core;
 
-import de.cubeisland.engine.module.service.permission.Permission;
-import de.cubeisland.engine.module.service.permission.PermDefault;
-import de.cubeisland.engine.module.service.permission.PermissionContainer;
+import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.permission.PermDefault;
+import de.cubeisland.engine.service.permission.PermissionContainer;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 
 @SuppressWarnings("all")

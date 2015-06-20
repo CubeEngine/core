@@ -27,7 +27,7 @@ import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.module.core.module.ModuleThreadFactory;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.service.task.thread.CoreThreadFactory;
+import de.cubeisland.engine.service.task.thread.CoreThreadFactory;
 
 @Provider(ThreadFactory.class)
 public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
