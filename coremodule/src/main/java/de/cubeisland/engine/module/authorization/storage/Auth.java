@@ -15,23 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.service.command.sender;
+package de.cubeisland.engine.module.authorization.storage;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import de.cubeisland.engine.module.service.database.AsyncRecord;
 
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import org.spongepowered.api.util.command.source.CommandBlockSource;
-import org.spongepowered.api.world.Location;
+import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
 
-public class BlockCommandSender extends WrappedCommandSender<CommandBlockSource>
+@Entity
+@Table(name = "mail")
+public class Auth extends AsyncRecord<Auth>
 {
-    public BlockCommandSender(I18n i18n, CommandBlockSource sender)
+    public Auth()
     {
-        super(i18n, sender);
-    }
-
-    public Location getBlock()
-    {
-        return getWrappedSender().getLocation();
+        super(TABLE_AUTH);
     }
 }

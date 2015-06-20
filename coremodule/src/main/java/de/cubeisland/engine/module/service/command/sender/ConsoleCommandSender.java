@@ -17,13 +17,14 @@
  */
 package de.cubeisland.engine.module.service.command.sender;
 
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.util.command.source.ConsoleSource;
 
 public class ConsoleCommandSender extends WrappedCommandSender<ConsoleSource>
 {
-    public ConsoleCommandSender(CoreModule core)
+    public ConsoleCommandSender(I18n i18n, ConsoleSource console)
     {
-        super(core, core.getGame().getServer().getConsole());
+        super(i18n, console);
     }
 }

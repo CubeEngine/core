@@ -60,7 +60,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     {
         if (invocation.getCommandSource() instanceof User)
         {
-            return ((User)invocation.getCommandSource()).getWorld();
+            return ((User)invocation.getCommandSource()).asPlayer().getWorld();
         }
         throw new TooFewArgumentsException();
     }

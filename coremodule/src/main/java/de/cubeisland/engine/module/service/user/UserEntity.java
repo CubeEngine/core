@@ -47,7 +47,6 @@ public class UserEntity extends AsyncRecord<UserEntity>
         this.setValue(TABLE_USER.LASTNAME, player.getName().toLowerCase());
         this.setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
         this.setValue(TABLE_USER.FIRSTSEEN, this.getValue(TABLE_USER.LASTSEEN));
-        this.setValue(TABLE_USER.PASSWD, new byte[0]);
         this.setValue(TABLE_USER.NOGC, false);
         this.setUUID(player.getUniqueId());
         return this;

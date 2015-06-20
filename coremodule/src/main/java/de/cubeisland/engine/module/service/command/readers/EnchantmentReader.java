@@ -69,7 +69,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         if (enchantment == null)
         {
             User sender = (User)invocation.getCommandSource();
-            String possibleEnchs = getPossibleEnchantments(registry, sender.getItemInHand().orNull());
+            String possibleEnchs = getPossibleEnchantments(registry, sender.asPlayer().getItemInHand().orNull());
 
             sender.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)

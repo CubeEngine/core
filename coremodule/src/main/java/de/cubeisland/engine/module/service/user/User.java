@@ -18,88 +18,56 @@
 package de.cubeisland.engine.module.service.user;
 
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.module.service.ban.BanManager;
-import de.cubeisland.engine.module.service.ban.IpBan;
-import de.cubeisland.engine.module.service.ban.UserBan;
 import de.cubeisland.engine.module.service.command.CommandSender;
-import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.service.world.WorldManager;
-import org.jooq.types.UInteger;
-import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.data.manipulator.entity.InvulnerabilityData;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.GameProfile;
 import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.service.profile.GameProfileResolver;
+import org.spongepowered.api.service.user.UserStorage;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.util.Tristate;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.world.Location;
 
-import static de.cubeisland.engine.module.core.util.BlockUtil.isNonObstructingSolidBlock;
 import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
-import static org.spongepowered.api.service.permission.SubjectData.GLOBAL_CONTEXT;
 
 /**
  * A CubeEngine User (can exist offline too).
  * <p>Do not instantiate outside of {@link UserManager} implementations
  */
-public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
+public class User implements CommandSender, AttachmentHolder<UserAttachment>
 {
+    private final Game game;
+    private final UUID uuid;
     private final UserEntity entity;
+    private final Modularity modularity;
+    private org.spongepowered.api.entity.player.User player;
 
-    boolean loggedInState = false;
     private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
-    private final CoreModule core;
 
-    /**
-     * Do not instantiate outside of {@link UserManager} implementations
-     *
-     * @param core
-     * @param player
-     */
-    public User(CoreModule core, org.spongepowered.api.entity.player.User player)
+    public User(Modularity modularity, UserEntity entity, org.spongepowered.api.entity.player.User player)
     {
-        super(core, player.getUniqueId());
-        this.entity = core.getModularity().start(Database.class).getDSL().newRecord(TableUser.TABLE_USER).newUser(player);
-        this.attachments = new HashMap<>();
-        this.core = core;
-    }
-
-    /**
-     * Do not instantiate outside of {@link UserManager} implementations
-     *
-     * @param entity
-     */
-    public User(CoreModule core, UserEntity entity)
-    {
-        super(core, entity.getUniqueId());
-        this.core = core;
+        this.game = modularity.start(Game.class);
+        this.modularity = modularity;
+        this.uuid = entity.getUniqueId();
         this.entity = entity;
         this.attachments = new HashMap<>();
-    }
-
-    @Override
-    public CoreModule getCore()
-    {
-        return this.core;
+        this.player = player;
     }
 
     @Override
@@ -200,19 +168,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public void sendMessage(String string)
     {
-        if (string == null)
+        if (string != null)
         {
-            return;
+            this.sendMessage(ChatFormat.fromLegacy(string, BASE_CHAR));
         }
-        if (!Thread.currentThread().getStackTrace()[1].getClassName().equals(this.getClass().getName()))
-        {
-            core.getProvided(Log.class).debug("A module sent an untranslated message!");
-        }
-
-        /*@SuppressWarnings("deprecation")
-        Text msg = Texts.legacy('&').fromUnchecked(string);
-        this.sendMessage(msg);*/
-        this.sendMessage(ChatFormat.fromLegacy(string, BASE_CHAR));
     }
 
     @Override
@@ -232,7 +191,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     private I18n getI18n()
     {
-        return getCore().getModularity().start(I18n.class);
+        return modularity.start(I18n.class);
     }
 
     @Override
@@ -309,117 +268,15 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return -1;
     }
 
-    @Override
-    public Date getLastPlayed()
-    {
-        if (this.isOnline())
-        {
-            return new Date();
-        }
-        return super.getLastPlayed();
-        // TODO do we still need this? return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
-    }
-
-    public boolean isPasswordSet()
-    {
-        byte[] value = this.entity.getValue(TableUser.TABLE_USER.PASSWD);
-        return value != null && value.length > 0;
-    }
-
-    public void logout()
-    {
-        this.loggedInState = false;
-    }
-
-    public boolean isLoggedIn()
-    {
-        return this.loggedInState;
-    }
-
-    public void setPermission(String permission, boolean b)
-    {
-        getPlayer().get().getSubjectData().setPermission(GLOBAL_CONTEXT, permission, Tristate.fromBoolean(b)); // TODO context
-    }
-
-    public void setPermission(Map<String, Boolean> permissions)
-    {
-        for (Entry<String, Boolean> entry : permissions.entrySet())
-        {
-            this.setPermission(entry.getKey(), entry.getValue());
-        }
-    }
-
-    public boolean isInvulnerable()
-    {
-        return getData(InvulnerabilityData.class).isPresent();
-    }
-
-
-    public void setInvulnerable(boolean state)
-    {
-        InvulnerabilityData data = ((CoreModule)core).getGame().getRegistry().getManipulatorRegistry().getBuilder(InvulnerabilityData.class).get().create();
-        data.setInvulnerableTicks(100000000);
-        offer(data);
-    }
-
-    public UInteger getWorldId()
-    {
-        try
-        {
-            return getCore().getModularity().start(WorldManager.class).getWorldId(this.getWorld());
-        }
-        catch (IllegalArgumentException ex)
-        {
-            return null;
-        }
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (o == null)
-        {
-            return false;
-        }
-        if (this == o)
-        {
-            return true;
-        }
-        else if (o instanceof org.spongepowered.api.entity.player.User)
-        {
-            return this.getOfflinePlayer().equals(o);
-        }
-        else if (o instanceof CommandSender)
-        {
-            return ((CommandSender)o).getUniqueId().equals(this.getUniqueId());
-        }
-        else if (o instanceof CommandSource)
-        {
-            return ((CommandSource)o).getName().equals(this.getName());
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return this.getOfflinePlayer().hashCode();
-    }
-
     private InetSocketAddress address = null;
     public void refreshIP()
     {
         address = this.getPlayer().get().getConnection().getAddress();
     }
 
-    @Override
     public InetSocketAddress getAddress()
     {
-        if (this.isOnline())
-        {
-            return super.getAddress();
-        }
-        return this.address;
+        return address;
     }
 
     public UserEntity getEntity()
@@ -427,54 +284,78 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         return entity;
     }
 
-    public Iterator<Location> getLineOfSight(int maxDistance)
-    {
-        return null;
-        /* TODO
-        if (maxDistance > Bukkit.getServer().getViewDistance() * 16) {
-            maxDistance = Bukkit.getServer().getViewDistance() * 16;
-        }
-        return new BlockIterator(this, maxDistance);
-        */
-    }
-
-    public Location getTargetBlock(int maxDistance)
-    {
-        Iterator<Location> lineOfSight = this.getLineOfSight(maxDistance);
-        while (lineOfSight.hasNext())
-        {
-            Location next = lineOfSight.next();
-            if (next.getType().isSolidCube() && !isNonObstructingSolidBlock(next.getType()))
-            {
-                return next;
-            }
-        }
-        return null;
-    }
-
-    public Location getTargetBlock(int maxDistance, BlockType... transparent)
-    {
-        Iterator<Location> lineOfSight = this.getLineOfSight(maxDistance);
-        List<BlockType> list = Arrays.asList(transparent);
-        while (lineOfSight.hasNext())
-        {
-            Location next = lineOfSight.next();
-            if (!list.contains(next.getType()))
-            {
-                return next;
-            }
-        }
-        return null;
-    }
-
     @Override
     public String getName()
     {
-        String name = super.getName();
-        if (name == null)
+        return getUser().getName();
+    }
+
+    public Optional<Player> getPlayer()
+    {
+        if (player == null)
         {
-            return this.entity.getValue(TableUser.TABLE_USER.LASTNAME);
+            player = game.getServer().getPlayer(uuid).orNull();
+            if (player == null)
+            {
+                getUser();
+            }
         }
-        return name;
+        if (player instanceof Player)
+        {
+            return Optional.of(((Player)player));
+        }
+        return Optional.absent();
+    }
+
+    public Player asPlayer()
+    {
+        return getPlayer().orNull();
+    }
+
+    public org.spongepowered.api.entity.player.User getUser()
+    {
+        UserStorage storage = game.getServiceManager().provide(UserStorage.class).get();
+        player = storage.get(uuid).orNull();
+        if (player == null)
+        {
+            GameProfileResolver resolver = game.getServiceManager().provide(GameProfileResolver.class).get();
+            try
+            {
+                GameProfile profile = resolver.get(uuid).get();
+                player = storage.getOrCreate(profile);
+            }
+            catch (InterruptedException | ExecutionException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
+        return player;
+    }
+
+    @Override
+    public Text getDisplayName()
+    {
+        if (getPlayer().isPresent())
+        {
+            return asPlayer().getDisplayNameData().getDisplayName();
+        }
+        return Texts.of();
+    }
+
+    @Override
+    public boolean hasPermission(String perm)
+    {
+        return getUser().hasPermission(perm);
+    }
+
+    @Override
+    public UUID getUniqueId()
+    {
+        return uuid;
+    }
+
+    public boolean canSee(Player player)
+    {
+        return true; // TODO
     }
 }

@@ -31,8 +31,6 @@ public interface CommandSender extends CommandSource
 {
     UUID NON_PLAYER_UUID = new UUID(0, 0);
 
-    CoreModule getCore();
-
     @Override
     String getName();
 

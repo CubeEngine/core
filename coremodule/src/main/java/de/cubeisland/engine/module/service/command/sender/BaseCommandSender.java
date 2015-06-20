@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.module.service.command.sender;
 
-import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.service.command.CommandSender;
 import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.format.BaseFormatting;
 
@@ -30,20 +29,11 @@ import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
 public abstract class BaseCommandSender implements CommandSender
 {
     private final I18n i18n;
-    private CoreModule core;
 
-    protected BaseCommandSender(CoreModule core)
+    protected BaseCommandSender(I18n i18n)
     {
-        this.core = core;
-        this.i18n = core.getModularity().start(I18n.class);
+        this.i18n = i18n;
     }
-
-    @Override
-    public CoreModule getCore()
-    {
-        return this.core;
-    }
-
 
     @Override
     public Translatable getTranslation(BaseFormatting format, String message, Object... args)

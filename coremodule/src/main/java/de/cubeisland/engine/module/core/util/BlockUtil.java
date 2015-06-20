@@ -109,7 +109,7 @@ public class BlockUtil
     {
         Collection<Location> blocks = new HashSet<>();
         Location onTop = block.getRelative(UP);
-        while (isDetachableFromBelow(onTop.getType()))
+        while (isDetachableFromBelow(onTop.getBlockType()))
         {
             blocks.add(onTop);
             for (Location attachedBlock : getAttachedBlocks(onTop))
@@ -139,7 +139,7 @@ public class BlockUtil
     {
         for (final Direction face : DIRECTIONS)
         {
-            BlockType type = block.getRelative(face).getType();
+            BlockType type = block.getRelative(face).getBlockType();
             if (type == WATER || type == FLOWING_WATER)
             {
                 return true;

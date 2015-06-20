@@ -76,7 +76,7 @@ public class InventoryGuard
         {
             for (User user : users)
             {
-                user.openInventory(this.inventory);
+                user.asPlayer().openInventory(this.inventory);
             }
         }
     }

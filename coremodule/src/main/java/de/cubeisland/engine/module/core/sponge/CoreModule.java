@@ -68,6 +68,7 @@ import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
+import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.service.task.TaskManager;
 import de.cubeisland.engine.module.webapi.ApiConfig;
 import de.cubeisland.engine.module.webapi.ApiServer;
@@ -112,6 +113,7 @@ public final class CoreModule extends Module
     @Inject private ThreadFactory tf;
     @Inject private LogFactory logFactory;
     @Inject private I18n i18n;
+    @Inject private CommandManager cm;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -188,7 +190,7 @@ public final class CoreModule extends Module
             game.getEventManager().register(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
         }
 
-        apiServer.registerApiHandlers(this, new CommandController(this));
+        apiServer.registerApiHandlers(this, new CommandController(i18n, tm, cm));
 
         Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())

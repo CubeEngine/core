@@ -47,7 +47,6 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
                                                                        this);
     public final TableField<UserEntity, Boolean> NOGC = createField("nogc", BOOLEAN.nullable(false), this);
     public final TableField<UserEntity, Timestamp> LASTSEEN = createField("lastseen", DATETIME.nullable(false), this);
-    public final TableField<UserEntity, byte[]> PASSWD = createField("passwd", VARBINARY.length(128), this);
     public final TableField<UserEntity, Timestamp> FIRSTSEEN = createField("firstseen", DATETIME.nullable(false), this);
     public final TableField<UserEntity, String> LANGUAGE = createField("language", VARCHAR.length(5), this);
     public final TableField<UserEntity, Long> LEAST = createField("UUIDleast", BIGINT.nullable(false), this);
@@ -55,10 +54,10 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
 
     public TableUser(String prefix, Database database)
     {
-        super(prefix + "user", new Version(2), database);
+        super(prefix + "user", new Version(3), database);
         this.setAIKey(this.KEY);
         this.addUniqueKey(LEAST, MOST);
-        this.addFields(KEY, LASTNAME, NOGC, LASTSEEN, PASSWD, FIRSTSEEN, LANGUAGE, LEAST, MOST);
+        this.addFields(KEY, LASTNAME, NOGC, LASTSEEN, FIRSTSEEN, LANGUAGE, LEAST, MOST);
         TABLE_USER = this;
     }
 
@@ -131,6 +130,10 @@ public class TableUser extends AutoIncrementTable<UserEntity, UInteger> implemen
             connection.prepareStatement("ALTER TABLE " + this.getName() +
                                             " CHANGE `player` `lastname` VARCHAR(16) " +
                                             "CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL").execute();
+        }
+        if (dbVersion.getMajor() == 2)
+        {
+            connection.prepareStatement("ALTER TABLE " + this.getName() + " DROP COLUMN `passwd`");
         }
     }
 }

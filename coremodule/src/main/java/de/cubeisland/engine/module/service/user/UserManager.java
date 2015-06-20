@@ -35,16 +35,6 @@ import org.spongepowered.api.text.format.BaseFormatting;
 @Version(1)
 public interface UserManager extends Cleanable
 {
-    boolean login(User user, String password);
-
-    boolean checkPassword(User user, String password);
-
-    void setPassword(User user, String password);
-
-    void resetPassword(User user);
-
-    void resetAllPasswords();
-
     /**
      * Removes the user permanently. Data cannot be restored later on
      *
@@ -189,8 +179,6 @@ public interface UserManager extends Cleanable
      * @param params the parameters
      */
     void broadcastStatus(String message, CommandSender sender, Object... params);
-
-    Triplet<Long, String, Integer> getFailedLogin(User user);
 
     void kickAll(String message);
 

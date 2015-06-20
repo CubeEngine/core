@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.cubeisland.engine.module.authorization.AuthAttachment;
 import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
@@ -111,7 +112,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 return;
             }
             User exactUser = core.getModularity().start(UserManager.class).findExactUser(user);
-            if (exactUser == null || !exactUser.isPasswordSet() || !core.getModularity().start(UserManager.class).checkPassword(exactUser, pass))
+            AuthAttachment auth = exactUser.get(AuthAttachment.class);
+            if (!auth.isPasswordSet() || !auth.checkPassword(pass))
             {
                 this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;

@@ -102,17 +102,6 @@ public class CoreConfiguration extends ReflectedYaml
     @Comment("Whether to enable the Web API server")
     public boolean useWebapi = false;
 
-    public SecuritySection security;
-
-    public class SecuritySection implements Section
-    {
-        @Comment("Enable fail2ban on login")
-        public boolean fail2ban = true;
-
-        @Comment("Ban duration on fail2ban")
-        public int banDuration = 10;
-    }
-
     @Override
     public String[] head()
     {

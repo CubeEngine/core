@@ -23,6 +23,7 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
 
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.service.command.sender.BlockCommandSender;
 import de.cubeisland.engine.module.service.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.module.service.permission.Permission;
@@ -133,6 +134,7 @@ public class ProxyCallable implements CommandCallable
 
     private CommandSender wrapSender(org.spongepowered.api.util.command.CommandSource spongeSender)
     {
+        I18n i18n = core.getModularity().start(I18n.class);
         if (spongeSender instanceof CommandSender)
         {
             return (CommandSender)spongeSender;
@@ -147,11 +149,11 @@ public class ProxyCallable implements CommandCallable
         }
         else if (spongeSender instanceof CommandBlockSource)
         {
-            return new BlockCommandSender(core, (CommandBlockSource)spongeSender);
+            return new BlockCommandSender(i18n, (CommandBlockSource)spongeSender);
         }
         else
         {
-            return new WrappedCommandSender(core, spongeSender);
+            return new WrappedCommandSender(i18n, spongeSender);
         }
     }
 

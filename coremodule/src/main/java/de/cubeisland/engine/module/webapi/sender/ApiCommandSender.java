@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.service.command.sender.BaseCommandSender;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.text.Text;
@@ -48,9 +49,9 @@ public abstract class ApiCommandSender extends BaseCommandSender
     private ObjectMapper mapper;
     private final List<String> messages = new ArrayList<>();
 
-    public ApiCommandSender(CoreModule core, ObjectMapper mapper)
+    public ApiCommandSender(I18n i18n, ObjectMapper mapper)
     {
-        super(core);
+        super(i18n);
         this.mapper = mapper;
     }
 

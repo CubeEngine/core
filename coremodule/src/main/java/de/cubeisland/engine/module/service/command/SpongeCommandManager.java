@@ -137,7 +137,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
         this.baseDispatcher = core.getGame().getCommandDispatcher();
 
-        this.consoleSender = new ConsoleCommandSender(core);
+        this.consoleSender = new ConsoleCommandSender(i18n, core.getGame().getServer().getConsole());
 
         this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder());
 

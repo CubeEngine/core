@@ -28,9 +28,12 @@ import org.spongepowered.api.text.Texts;
 
 public class ApiServerSender extends ApiCommandSender
 {
-    public ApiServerSender(CoreModule core, ObjectMapper mapper)
+    private I18n i18n;
+
+    public ApiServerSender(I18n i18n, ObjectMapper mapper)
     {
-        super(core, mapper);
+        super(i18n, mapper);
+        this.i18n = i18n;
     }
 
     @Override
@@ -48,7 +51,7 @@ public class ApiServerSender extends ApiCommandSender
     @Override
     public Locale getLocale()
     {
-        return getCore().getModularity().start(I18n.class).getDefaultLanguage().getLocale();
+        return i18n.getDefaultLanguage().getLocale();
     }
 
     @Override

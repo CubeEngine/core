@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.service.command.sender;
 import java.util.Locale;
 import java.util.UUID;
 
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
@@ -30,9 +31,9 @@ public class WrappedCommandSender<W extends CommandSource> extends BaseCommandSe
 {
     private final W wrapped;
 
-    public WrappedCommandSender(CoreModule core, W sender)
+    public WrappedCommandSender(I18n i18n, W sender)
     {
-        super(core);
+        super(i18n);
         this.wrapped = sender;
     }
 

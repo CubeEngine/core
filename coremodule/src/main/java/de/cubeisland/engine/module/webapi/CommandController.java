@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.task.TaskManager;
@@ -32,22 +33,26 @@ import de.cubeisland.engine.module.webapi.sender.ApiUser;
 public class CommandController
 {
     private final ObjectMapper mapper = new ObjectMapper();
-    private final CoreModule core;
+    private final TaskManager tm;
+    private final CommandManager cm;
+    private I18n i18n;
 
-    public CommandController(CoreModule core)
+    public CommandController(I18n i18n, TaskManager tm, CommandManager cm)
     {
-        this.core = core;
+        this.tm = tm;
+        this.cm = cm;
+        this.i18n = i18n;
     }
 
     @Action
     public ApiResponse command(ApiRequest request, final @Value("cmd") String command)
     {
         User authUser = request.getAuthUser();
-        final ApiCommandSender sender = authUser == null ? new ApiServerSender(core, mapper) : new ApiUser(core, authUser, mapper);
+        final ApiCommandSender sender = authUser == null ? new ApiServerSender(i18n, mapper) : new ApiUser(i18n, authUser, mapper);
 
 
-        Future<ApiResponse> future =  core.getModularity().start(TaskManager.class).callSync(() -> {
-            core.getModularity().start(CommandManager.class).runCommand(sender, command);
+        Future<ApiResponse> future =  tm.callSync(() -> {
+            cm.runCommand(sender, command);
             ApiResponse apiResponse = new ApiResponse();
             apiResponse.setContent(sender.flush());
             return apiResponse;

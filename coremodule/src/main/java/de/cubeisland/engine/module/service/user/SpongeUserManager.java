@@ -52,6 +52,8 @@ import org.spongepowered.api.event.entity.player.PlayerKickEvent;
 import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
 import org.spongepowered.api.event.message.CommandEvent;
 
+import static de.cubeisland.engine.module.service.user.TableUser.TABLE_USER;
+
 
 @ServiceImpl(UserManager.class)
 @Version(1)
@@ -98,7 +100,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         while (it.hasNext())
         {
             user = it.next();
-            if (!user.isOnline())
+            if (!user.getPlayer().isPresent())
             {
                 core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(),
                                    user.getUniqueId());
@@ -149,25 +151,23 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 return user;
             }
         }
-        UserEntity userEntity = this.database.getDSL().selectFrom(TableUser.TABLE_USER).where(
-            TableUser.TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
+        UserEntity userEntity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
         if (userEntity != null)
         {
             org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
-                User user = new User(core, userEntity);
+                User user = new User(core.getModularity(), userEntity, null);
                 this.cacheUser(user);
                 return user;
             }
-            userEntity.setValue(TableUser.TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace(
-                "{name}", userEntity.getValue(TableUser.TABLE_USER.LASTNAME)));
+            userEntity.setValue(TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getValue(TABLE_USER.LASTNAME)));
             userEntity.updateAsync();
         }
         if (create)
         {
             org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
-            User user = new User(core, offlinePlayer);
+            User user = new User(core.getModularity(), userEntity, offlinePlayer);
             user.getEntity().insertAsync();
             this.cacheUser(user);
             return user;
@@ -191,8 +191,9 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
             user = this.loadUserFromDatabase(player.getUniqueId());
             if (user == null)
             {
-                user = new User(core, player);
-                future = user.getEntity().insertAsync();
+                UserEntity userEntity = database.getDSL().newRecord(TABLE_USER).newUser(player);
+                user = new User(core.getModularity(), userEntity, player);
+                future = userEntity.insertAsync();
             }
             this.cacheUser(user);
         }
@@ -231,7 +232,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
             tm.runTask(core, () -> {
                 synchronized (SpongeUserManager.this)
                 {
-                    if (!user.isOnline())
+                    if (!user.getPlayer().isPresent())
                     {
                         onlineUsers.remove(user);
                     }
@@ -240,12 +241,12 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
 
             Optional<UUID> uid = tm.runTaskDelayed(core, () -> {
                 scheduledForRemoval.remove(user.getUniqueId());
-                user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+                user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                 Profiler.startProfiling("removalTask");
                 user.getEntity().updateAsync();
                 core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling(
                     "removalTask", TimeUnit.MILLISECONDS));
-                if (user.isOnline())
+                if (user.getPlayer().isPresent())
                 {
                     removeCachedUser(user);
                 }
@@ -285,7 +286,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
         @Override
         public void run()
         {
-            cachedUserByUUID.values().stream().filter(user -> !user.isOnline()).filter(
+            cachedUserByUUID.values().stream().filter(user -> !user.getPlayer().isPresent()).filter(
                 user -> scheduledForRemoval.containsKey(user.getUniqueId())).forEach(
                 SpongeUserManager.this::removeCachedUser);
         }

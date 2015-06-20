@@ -15,23 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.service.command.sender;
+package de.cubeisland.engine.module.authorization;
 
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
-import org.spongepowered.api.util.command.source.CommandBlockSource;
-import org.spongepowered.api.world.Location;
-
-public class BlockCommandSender extends WrappedCommandSender<CommandBlockSource>
+public class AuthConfiguration extends ReflectedYaml
 {
-    public BlockCommandSender(I18n i18n, CommandBlockSource sender)
-    {
-        super(i18n, sender);
-    }
+    @Comment("Enable fail2ban on login")
+    public boolean fail2ban = true;
 
-    public Location getBlock()
-    {
-        return getWrappedSender().getLocation();
-    }
+    @Comment("Ban duration on fail2ban")
+    public int banDuration = 10;
 }

@@ -17,10 +17,8 @@
  */
 package de.cubeisland.engine.module.service.user;
 
-import com.google.common.base.Optional;
 import de.cubeisland.engine.module.core.attachment.Attachment;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Literal;
 
 public abstract class UserAttachment extends Attachment<User>
 {

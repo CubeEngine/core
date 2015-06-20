@@ -17,17 +17,7 @@
  */
 package de.cubeisland.engine.module.service.user;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,24 +27,24 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.i18n.I18n;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.core.sponge.EventManager;
+import de.cubeisland.engine.module.core.util.ChatFormat;
+import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.service.command.sender.ConsoleCommandSender;
-import de.cubeisland.engine.module.core.filesystem.FileManager;
-import de.cubeisland.engine.module.core.filesystem.FileUtil;
-import de.cubeisland.engine.module.core.i18n.I18n;
-import de.cubeisland.engine.module.service.permission.Permission;
-import de.cubeisland.engine.module.core.sponge.EventManager;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.database.Database;
-import de.cubeisland.engine.module.core.util.StringUtils;
-import de.cubeisland.engine.module.core.util.Triplet;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
-import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
+import de.cubeisland.engine.module.service.permission.Permission;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -72,7 +62,6 @@ public abstract class AbstractUserManager implements UserManager
     protected ConcurrentHashMap<UInteger, User> cachedUserByDbId = new ConcurrentHashMap<>();
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
-    protected final MessageDigest messageDigest;
 
     protected final Database database;
     private CommandManager cm;
@@ -92,17 +81,6 @@ public abstract class AbstractUserManager implements UserManager
         this.onlineUsers = new CopyOnWriteArrayList<>();
 
         this.defaultAttachments = new HashSet<>();
-
-        this.loadSalt();
-
-        try
-        {
-            messageDigest = MessageDigest.getInstance("SHA-512");
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new RuntimeException("SHA-512 hash algorithm not available!");
-        }
     }
 
     public void onEnable()
@@ -110,58 +88,6 @@ public abstract class AbstractUserManager implements UserManager
         database.registerTable(TableUser.class);
     }
 
-    @Override
-    public boolean login(User user, String password)
-    {
-        if (!user.isLoggedIn())
-        {
-            user.loggedInState = this.checkPassword(user, password);
-        }
-        em.fireEvent(new UserAuthorizedEvent(this.core, user));
-        return user.isLoggedIn();
-    }
-
-    @Override
-    public boolean checkPassword(User user, String password)
-    {
-        synchronized (this.messageDigest)
-        {
-            messageDigest.reset();
-            password += this.salt;
-            password += user.getEntity().getValue(TableUser.TABLE_USER.FIRSTSEEN).toString();
-            return Arrays.equals(user.getEntity().getValue(TableUser.TABLE_USER.PASSWD), messageDigest.digest(password.getBytes()));
-        }
-    }
-
-    @Override
-    public void setPassword(User user, String password)
-    {
-        synchronized (this.messageDigest)
-        {
-            this.messageDigest.reset();
-            password += this.salt;
-            password += user.getEntity().getValue(TableUser.TABLE_USER.FIRSTSEEN).toString();
-            user.getEntity().setValue(TableUser.TABLE_USER.PASSWD, this.messageDigest.digest(password.getBytes()));
-            user.getEntity().updateAsync();
-        }
-    }
-
-    @Override
-    public void resetPassword(User user)
-    {
-        user.getEntity().setValue(TableUser.TABLE_USER.PASSWD, null);
-        user.getEntity().updateAsync();
-    }
-
-    @Override
-    public void resetAllPasswords()
-    {
-        this.database.getDSL().update(TableUser.TABLE_USER).set(TableUser.TABLE_USER.PASSWD, (byte[])null).execute();
-        for (User user : this.getLoadedUsers())
-        {
-            user.getEntity().refresh();
-        }
-    }
 
     @Override
     public void removeUser(final User user)
@@ -195,9 +121,9 @@ public abstract class AbstractUserManager implements UserManager
 
     protected User loadUserFromDatabase(UUID uuid)
     {
-        UserEntity entity = this.database.getDSL().selectFrom(TableUser.TABLE_USER).where(TableUser.TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(
-            TableUser.TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-        return entity == null ? null : new User(core, entity);
+        UserEntity entity = this.database.getDSL().selectFrom(TableUser.TABLE_USER).where(TableUser.TABLE_USER.LEAST.eq(
+            uuid.getLeastSignificantBits()).and(TableUser.TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
+        return entity == null ? null : new User(core.getModularity(), entity, null);
     }
 
     @Override
@@ -213,7 +139,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return null;
         }
-        user = new User(core, entity);
+        user = new User(core.getModularity(), entity, null);
         this.cacheUser(user);
         return user;
     }
@@ -361,71 +287,16 @@ public abstract class AbstractUserManager implements UserManager
         this.broadcastStatus(TextColors.WHITE, message, sender, params);
     }
 
-    private void loadSalt()
-    {
-        Path file = fm.getDataPath().resolve(".salt");
-        try (BufferedReader reader = Files.newBufferedReader(file, Charset.defaultCharset()))
-        {
-            this.salt = reader.readLine();
-        }
-        catch (NoSuchFileException e)
-        {
-            try
-            {
-                this.salt = StringUtils.randomString(new SecureRandom(), 32);
-                try (BufferedWriter writer = Files.newBufferedWriter(file, Charset.defaultCharset()))
-                {
-                    writer.write(this.salt);
-                }
-            }
-            catch (Exception inner)
-            {
-                throw new IllegalStateException("Could not store the static salt in '" + file + "'!", inner);
-            }
-        }
-        catch (Exception e)
-        {
-            throw new IllegalStateException("Could not store the static salt in '" + file + "'!", e);
-        }
-        FileUtil.hideFile(file);
-        FileUtil.setReadOnly(file);
-    }
-
-    private final Map<Long, Triplet<Long, String, Integer>> failedLogins = new HashMap<>();
-
-    @Override
-    public Triplet<Long, String, Integer> getFailedLogin(User user)
-    {
-        return this.failedLogins.get(user.getId());
-    }
-
-    protected void addFailedLogin(User user)
-    {
-        Triplet<Long, String, Integer> loginFail = this.getFailedLogin(user);
-        if (loginFail == null)
-        {
-            loginFail = new Triplet<>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
-            this.failedLogins.put(user.getId(), loginFail);
-        }
-        else
-        {
-            loginFail.setFirst(System.currentTimeMillis());
-            loginFail.setSecond(user.getAddress().getAddress().getHostAddress());
-            loginFail.setThird(loginFail.getThird() + 1);
-        }
-    }
-
-    protected void removeFailedLogins(User user)
-    {
-        this.failedLogins.remove(user.getId());
-    }
-
     @Override
     public synchronized void kickAll(String message)
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(Texts.of(message));
+            Optional<Player> player = user.getPlayer();
+            if (player.isPresent())
+            {
+                player.get().kick(ChatFormat.fromLegacy(message, '&'));
+            }
         }
     }
 
@@ -434,7 +305,12 @@ public abstract class AbstractUserManager implements UserManager
     {
         for (User user : this.cachedUserByUUID.values())
         {
-            user.kick(Texts.of(user.getTranslation(NONE, message).getTranslation().get(user.getLocale())));
+            Optional<Player> player = user.getPlayer();
+            if (player.isPresent())
+            {
+                Text text = ChatFormat.fromLegacy(user.getTranslation(NONE, message).getTranslation().get(user.getLocale()), '&');
+                player.get().kick(text);
+            }
         }
     }
 
@@ -573,7 +449,7 @@ public abstract class AbstractUserManager implements UserManager
             User user = this.cachedUserByDbId.get(entity.getId());
             if (user == null)
             {
-                user = new User(core, entity);
+                user = new User(core.getModularity(), entity, null);
                 this.cacheUser(user);
             }
             return user;

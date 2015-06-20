@@ -15,30 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core;
+package de.cubeisland.engine.module.authorization;
 
 import de.cubeisland.engine.module.service.permission.Permission;
-import de.cubeisland.engine.module.service.permission.PermDefault;
 import de.cubeisland.engine.module.service.permission.PermissionContainer;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 
-@SuppressWarnings("all")
-public class CorePerms extends PermissionContainer<CoreModule>
+public class AuthPerms extends PermissionContainer<Authorization>
 {
-    public CorePerms(CoreModule module)
+    public AuthPerms(Authorization module)
     {
         super(module);
-        this.registerAllPermissions();
+        registerAllPermissions();
     }
 
     private final Permission COMMAND = getBasePerm().childWildcard("command");
 
-    public final Permission COMMAND_OP_NOTIFY = COMMAND.childWildcard("op").child("notify");
+    private final Permission CLEARPASSWORD = COMMAND.childWildcard("clearpassword");
+    public final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.child("all");
+    public final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.child("other");
 
-    private final Permission DEOP = COMMAND.childWildcard("deop");
-    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify");
-    public final Permission COMMAND_DEOP_OTHER = DEOP.child("other", PermDefault.FALSE);
-    public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
-
-    public final Permission SPAM = getBasePerm().child("spam");
+    public final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.childWildcard("setpassword").child("other");
 }

@@ -120,7 +120,7 @@ public class CuboidBlockClipboard
 
         public BlockData(Location block, BlockVector3 relative)
         {
-            this.material = block.getType();
+            this.material = block.getBlockType();
             this.dataContainer = block.toContainer();
         }
     }

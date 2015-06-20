@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core;
+package de.cubeisland.engine.module.authorization;
 
 import java.util.Date;
 import java.util.UUID;
@@ -35,10 +35,10 @@ import de.cubeisland.engine.module.service.command.CommandSender;
 import de.cubeisland.engine.module.service.command.annotation.CommandPermission;
 import de.cubeisland.engine.module.service.command.annotation.Unloggable;
 import de.cubeisland.engine.module.service.permission.PermDefault;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.service.user.User;
 import de.cubeisland.engine.module.service.user.UserList;
 import de.cubeisland.engine.module.service.user.UserManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
 
@@ -46,17 +46,17 @@ import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
 
 public class AuthCommands
 {
-    private final CoreModule core;
+    private final Authorization module;
+    private final Game game;
     private final BanManager banManager;
-    private final UserManager um;
 
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
-    public AuthCommands(CoreModule core, BanManager bm, UserManager um)
+    public AuthCommands(Authorization module, Game game, BanManager bm)
     {
-        this.core = core;
+        this.module = module;
+        this.game = game;
         this.banManager = bm;
-        this.um = um;
     }
 
     @Unloggable
@@ -65,12 +65,12 @@ public class AuthCommands
     {
         if ((context.getSource().equals(player)))
         {
-            um.setPassword(player, password);
+            player.attachOrGet(AuthAttachment.class, module).setPassword(password);
             context.sendTranslated(POSITIVE, "Your password has been set!");
             return;
         }
-        context.ensurePermission(core.perms().COMMAND_SETPASSWORD_OTHER);
-        um.setPassword(player, password);
+        context.ensurePermission(module.perms().COMMAND_SETPASSWORD_OTHER);
+        player.attachOrGet(AuthAttachment.class, module).setPassword(password);
         context.sendTranslated(POSITIVE, "{user}'s password has been set!", player);
     }
 
@@ -85,24 +85,23 @@ public class AuthCommands
             {
                 throw new TooFewArgumentsException();
             }
-            this.um.resetPassword((User)sender);
+            ((User)sender).attachOrGet(AuthAttachment.class, module).resetPassword();
             sender.sendTranslated(POSITIVE, "Your password has been reset!");
             return;
         }
         if (players.isAll())
         {
-            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_ALL);
-            um.resetAllPasswords();
+            context.ensurePermission(module.perms().COMMAND_CLEARPASSWORD_ALL);
+            module.resetAllPasswords();
             sender.sendTranslated(POSITIVE, "All passwords reset!");
             return;
         }
-        User target = context.get(0);
-        if (!target.equals(context.getSource()))
+        context.ensurePermission(module.perms().COMMAND_CLEARPASSWORD_OTHER);
+        for (User user : players.list())
         {
-            context.ensurePermission(core.perms().COMMAND_CLEARPASSWORD_OTHER);
+            user.attachOrGet(AuthAttachment.class, module).resetPassword();
+            sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", user.getName());
         }
-        this.um.resetPassword(target);
-        sender.sendTranslated(POSITIVE, "{user}'s password has been reset!", target.getName());
     }
 
     @Unloggable
@@ -111,19 +110,21 @@ public class AuthCommands
     @Restricted(value = User.class, msg = "Only players can log in!")
     public void login(User context, String password)
     {
-        if (context.isLoggedIn())
+        AuthAttachment attachment = context.attachOrGet(AuthAttachment.class, module);
+        if (attachment.isLoggedIn())
         {
             context.sendTranslated(POSITIVE, "You are already logged in!");
             return;
         }
-        boolean isLoggedIn = um.login(context, password);
+        boolean isLoggedIn = attachment.login(password);
         if (isLoggedIn)
         {
             context.sendTranslated(POSITIVE, "You logged in successfully!");
             return;
         }
         context.sendTranslated(NEGATIVE, "Wrong password!");
-        if (this.core.getConfiguration().security.fail2ban)
+        AuthConfiguration config = this.module.getConfig();
+        if (config.fail2ban)
         {
             if (fails.get(context.getUniqueId()) != null)
             {
@@ -131,16 +132,16 @@ public class AuthCommands
                 {
                     Literal msg = Texts.of(context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
                                     + context.getTranslation(NEUTRAL, "For your security you were banned 10 seconds."));
-                    this.banManager.addBan(new UserBan(context.getOfflinePlayer(), context, msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                        this.core.getConfiguration().security.banDuration))));
+                    this.banManager.addBan(new UserBan(context.getUser(), context, msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
+                        config.banDuration))));
 
-                    if (!core.getGame().getServer().getOnlineMode())
+                    if (!game.getServer().getOnlineMode())
                     {
                         this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context, msg, new Date(
                             System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                                this.core.getConfiguration().security.banDuration))));
+                                config.banDuration))));
                     }
-                    context.kick(msg);
+                    context.asPlayer().kick(msg);
                 }
             }
             fails.put(context.getUniqueId(), System.currentTimeMillis());
@@ -151,9 +152,10 @@ public class AuthCommands
     @Restricted(value = User.class, msg = "You might use /stop for this.")
     public void logout(User context)
     {
-        if (context.isLoggedIn())
+        AuthAttachment attachment = context.attachOrGet(AuthAttachment.class, module);
+        if (attachment.isLoggedIn())
         {
-            context.logout();
+            attachment.logout();
             context.sendTranslated(POSITIVE, "You're now logged out.");
             return;
         }
