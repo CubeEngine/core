@@ -99,9 +99,6 @@ public class CoreConfiguration extends ReflectedYaml
         public boolean logDatabaseQueries = false;
     }
 
-    @Comment("Whether to enable the Web API server")
-    public boolean useWebapi = false;
-
     @Override
     public String[] head()
     {

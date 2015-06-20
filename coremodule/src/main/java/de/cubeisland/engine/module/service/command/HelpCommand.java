@@ -65,7 +65,7 @@ public class HelpCommand implements CommandBase
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
 
-        sender.sendTranslated(GRAY, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()));
+        sender.sendTranslated(GRAY, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()).getTranslation().get(sender.getLocale()));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())

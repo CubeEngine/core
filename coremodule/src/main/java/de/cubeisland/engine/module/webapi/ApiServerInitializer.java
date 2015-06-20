@@ -20,6 +20,8 @@ package de.cubeisland.engine.module.webapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.module.service.command.CommandManager;
+import de.cubeisland.engine.module.service.user.UserManager;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
@@ -29,13 +31,15 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
 {
-    private final CoreModule core;
+    private CommandManager cm;
+    private UserManager um;
     private final ApiServer server;
     private final ObjectMapper objectMapper;
 
-    ApiServerInitializer(CoreModule core, ApiServer server)
+    ApiServerInitializer(CommandManager cm, UserManager um, ApiServer server)
     {
-        this.core = core;
+        this.cm = cm;
+        this.um = um;
         this.server = server;
         this.objectMapper = new ObjectMapper();
     }
@@ -49,7 +53,7 @@ public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
             .addLast("decoder", new HttpRequestDecoder())
             .addLast("aggregator", new HttpObjectAggregator(this.server.getMaxContentLength()))
             .addLast("encoder", new HttpResponseEncoder())
-            .addLast("httpHandler", new HttpRequestHandler(core, this.server, this.objectMapper));
+            .addLast("httpHandler", new HttpRequestHandler(cm, um, this.server, this.objectMapper));
         if (this.server.isCompressionEnabled())
         {
             ch.pipeline().addLast("deflater", new HttpContentCompressor(this.server.getCompressionLevel(), this.server.getCompressionWindowBits(), this.server.getCompressionMemoryLevel()));

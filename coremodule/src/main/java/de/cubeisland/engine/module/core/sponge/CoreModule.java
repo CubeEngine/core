@@ -44,7 +44,6 @@ import de.cubeisland.engine.modularity.asm.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
 import de.cubeisland.engine.module.core.filesystem.FileManager;
@@ -68,17 +67,8 @@ import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
-import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.service.task.TaskManager;
-import de.cubeisland.engine.module.webapi.ApiConfig;
-import de.cubeisland.engine.module.webapi.ApiServer;
-import de.cubeisland.engine.module.webapi.CommandController;
-import de.cubeisland.engine.module.webapi.ConsoleLogEvent;
-import de.cubeisland.engine.module.webapi.InetAddressConverter;
-import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.reflect.Reflector;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
@@ -113,7 +103,6 @@ public final class CoreModule extends Module
     @Inject private ThreadFactory tf;
     @Inject private LogFactory logFactory;
     @Inject private I18n i18n;
-    @Inject private CommandManager cm;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -132,8 +121,6 @@ public final class CoreModule extends Module
     {
         ((I18nLanguageLoader)i18n.getService().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
-
-        ServiceManager sm = getModularity().getServiceManager();
 
         registerConverters(reflector);
         fm.dropResources(CoreResource.values());
@@ -160,26 +147,6 @@ public final class CoreModule extends Module
         // CorePermissions - depends on PermissionManager
         this.corePerms = new CorePerms(this);
 
-        // ApiServer - depends on Reflector
-        ApiServer apiServer = new ApiServer(this);
-        apiServer.configure(reflector.load(ApiConfig.class, moduleFolder.resolve("webapi.yml").toFile()));
-
-        if (this.config.useWebapi)
-        {
-            try
-            {
-                apiServer.start();
-                sm.registerService(ApiServer.class, apiServer);
-                ConsoleLogEvent e = new ConsoleLogEvent(apiServer);
-                e.start();
-                ((Logger)LogManager.getLogger()).addAppender(e);
-            }
-            catch (ApiStartupException ex)
-            {
-                this.logger.error(ex, "The web API will not be available as the server failed to start properly...");
-            }
-        }
-
         if (!this.config.logging.logCommands)
         {
             BukkitUtils.disableCommandLogging();
@@ -190,7 +157,6 @@ public final class CoreModule extends Module
             game.getEventManager().register(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
         }
 
-        apiServer.registerApiHandlers(this, new CommandController(i18n, tm, cm));
 
         Iterator<Runnable> it = this.initHooks.iterator();
         while (it.hasNext())
@@ -224,8 +190,6 @@ public final class CoreModule extends Module
         manager.registerConverter(new PlayerConverter(game), org.spongepowered.api.entity.player.User.class);
         manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
-
-        manager.registerConverter(new InetAddressConverter(), InetAddress.class);
     }
 
     @Disable

@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,24 +35,34 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.inject.Inject;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 
 import de.cubeisland.engine.module.core.filesystem.FileManager;
+import de.cubeisland.engine.module.core.i18n.I18n;
 import de.cubeisland.engine.module.core.logging.LoggingUtil;
+import de.cubeisland.engine.module.service.command.CommandManager;
 import de.cubeisland.engine.module.service.permission.PermDefault;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.service.permission.Permission;
+import de.cubeisland.engine.module.service.task.TaskManager;
+import de.cubeisland.engine.module.service.user.UserManager;
 import de.cubeisland.engine.module.webapi.exception.ApiStartupException;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.reflect.Reflector;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 import static java.util.Locale.ENGLISH;
@@ -59,9 +70,9 @@ import static java.util.Locale.ENGLISH;
 /**
  * This class represents the API server and provides methods to configure and control it
  */
+@ServiceProvider(ApiServer.class)
 public class ApiServer
 {
-    private final CoreModule core;
     private final Log log;
     private final AtomicInteger maxContentLength = new AtomicInteger(1048576);
     private final AtomicBoolean compress = new AtomicBoolean(false);
@@ -86,16 +97,24 @@ public class ApiServer
     private final ConcurrentMap<String, Set<WebSocketRequestHandler>> subscriptions = new ConcurrentHashMap<>();
     private final AtomicInteger maxConnectionCount = new AtomicInteger(1);
 
+    @Inject private Reflector reflector;
+    @Inject private Path moduleFolder;
+    @Inject private Log logger;
+    @Inject private CommandManager cm;
+    @Inject private I18n i18n;
+    @Inject private TaskManager tm;
+    @Inject private UserManager um;
+    private CoreModule module;
 
-    public ApiServer(CoreModule core)
+    @Inject
+    public ApiServer(CoreModule module, LogFactory logFactory, FileManager fm, ThreadFactory tf)
     {
-        this.core = core;
-        LogFactory logFactory = core.getModularity().start(LogFactory.class);
+        this.module = module;
         this.log = logFactory.getLog(ApiServer.class, "WebAPI");
-        this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(core.getModularity().start(FileManager.class), "WebAPI"),
+        this.log.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "WebAPI"),
                                                   LoggingUtil.getFileFormat(true, true),
                                                   true, LoggingUtil.getCycler(),
-                                                  core.getProvided(ThreadFactory.class)));
+                                                  tf));
         // TODO this.log.addTarget(new LogProxyTarget(logFactory.getParent()));
         try
         {
@@ -105,6 +124,28 @@ public class ApiServer
         {
             this.log.warn("Failed to get the localhost!");
         }
+    }
+
+    @Enable
+    public void onEnable()
+    {
+        reflector.getDefaultConverterManager().registerConverter(new InetAddressConverter(), InetAddress.class);
+
+        this.configure(reflector.load(ApiConfig.class, moduleFolder.resolve("webapi.yml").toFile()));
+
+        try
+        {
+            this.start();
+            ConsoleLogEvent e = new ConsoleLogEvent(this);
+            e.start();
+            ((Logger)LogManager.getLogger()).addAppender(e);
+        }
+        catch (ApiStartupException ex)
+        {
+            this.logger.error(ex, "The web API will not be available as the server failed to start properly...");
+        }
+
+        this.registerApiHandlers(module, new CommandController(i18n, tm, cm));
     }
 
     public Log getLog()
@@ -157,10 +198,10 @@ public class ApiServer
 
             try
             {
-                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.core.getProvided(ThreadFactory.class)));
+                this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.module.getProvided(ThreadFactory.class)));
                 serverBootstrap.group(this.eventLoopGroup.get())
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ApiServerInitializer(this.core, this))
+                    .childHandler(new ApiServerInitializer(cm, um, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
 
                 this.bootstrap.set(serverBootstrap);

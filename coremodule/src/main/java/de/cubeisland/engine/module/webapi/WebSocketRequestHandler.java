@@ -52,17 +52,17 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final Log log;
-    private final CoreModule core;
     private final ApiServer server;
     private WebSocketServerHandshaker handshaker = null;
     private ObjectMapper objectMapper;
     private User authUser;
 
     private ChannelHandlerContext last;
+    private CommandManager cm;
 
-    public WebSocketRequestHandler(CoreModule core, ApiServer server, ObjectMapper mapper, User authUser)
+    public WebSocketRequestHandler(CommandManager cm, ApiServer server, ObjectMapper mapper, User authUser)
     {
-        this.core = core;
+        this.cm = cm;
         this.server = server;
         this.objectMapper = mapper;
         this.authUser = authUser;
@@ -162,8 +162,7 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                         responseNode.put("response", "Unknown route");
                         break;
                     }
-                    Parameters params = new Parameters(qsDecoder.parameters(),
-                                                       core.getModularity().start(CommandManager.class).getProviderManager());
+                    Parameters params = new Parameters(qsDecoder.parameters(), cm.getProviderManager());
                     ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
                     ApiResponse response = handler.execute(request);
                     if (msgid != null)

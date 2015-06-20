@@ -56,13 +56,15 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Log log;
-    private final CoreModule core;
     private final ApiServer server;
+    private final CommandManager cm;
+    private final UserManager um;
     private ObjectMapper objectMapper;
 
-    HttpRequestHandler(CoreModule core, ApiServer server, ObjectMapper mapper)
+    HttpRequestHandler(CommandManager cm, UserManager um, ApiServer server, ObjectMapper mapper)
     {
-        this.core = core;
+        this.cm = cm;
+        this.um = um;
         this.server = server;
         this.objectMapper = mapper;
         this.log = server.getLog();
@@ -95,7 +97,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         boolean authorized = this.server.isAuthorized(inetSocketAddress.getAddress());
         QueryStringDecoder qsDecoder = new QueryStringDecoder(message.getUri(), this.UTF8, true, 100);
-        final Parameters params = new Parameters(qsDecoder.parameters(), core.getModularity().start(CommandManager.class).getProviderManager());
+        final Parameters params = new Parameters(qsDecoder.parameters(), cm.getProviderManager());
         User authUser = null;
         if (!authorized)
         {
@@ -111,7 +113,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
-            User exactUser = core.getModularity().start(UserManager.class).findExactUser(user);
+            User exactUser = um.findExactUser(user);
             AuthAttachment auth = exactUser.get(AuthAttachment.class);
             if (!auth.isPasswordSet() || !auth.checkPassword(pass))
             {
@@ -134,7 +136,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             WebSocketRequestHandler handler;
             if (!(ctx.pipeline().last() instanceof WebSocketRequestHandler))
             {
-                handler = new WebSocketRequestHandler(core, server, objectMapper, authUser);
+                handler = new WebSocketRequestHandler(cm, server, objectMapper, authUser);
                 ctx.pipeline().addLast("wsEncoder", new TextWebSocketFrameEncoder(objectMapper));
                 ctx.pipeline().addLast("handler", handler);
             }
