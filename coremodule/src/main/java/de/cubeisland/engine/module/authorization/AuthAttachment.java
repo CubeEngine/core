@@ -90,7 +90,7 @@ public class AuthAttachment extends UserAttachment
         auth = dsl.selectFrom(TABLE_AUTH).where(TABLE_AUTH.ID.eq(getHolder().getEntity().getId())).fetchOne();
         if (auth == null)
         {
-            auth = dsl.newRecord(TABLE_AUTH);
+            auth = dsl.newRecord(TABLE_AUTH).newAuth(getHolder());
             auth.insertAsync();
         }
     }

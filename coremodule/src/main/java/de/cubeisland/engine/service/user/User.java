@@ -314,6 +314,10 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
 
     public org.spongepowered.api.entity.player.User getUser()
     {
+        if (getPlayer().isPresent())
+        {
+            return asPlayer();
+        }
         UserStorage storage = game.getServiceManager().provide(UserStorage.class).get();
         player = storage.get(uuid).orNull();
         if (player == null)

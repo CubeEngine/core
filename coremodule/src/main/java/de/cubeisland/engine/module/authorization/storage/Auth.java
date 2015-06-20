@@ -20,6 +20,7 @@ package de.cubeisland.engine.module.authorization.storage;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import de.cubeisland.engine.service.database.AsyncRecord;
+import de.cubeisland.engine.service.user.User;
 
 import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
 
@@ -30,5 +31,12 @@ public class Auth extends AsyncRecord<Auth>
     public Auth()
     {
         super(TABLE_AUTH);
+    }
+
+    public Auth newAuth(User user)
+    {
+        this.setValue(TABLE_AUTH.ID, user.getEntity().getId());
+        this.setValue(TABLE_AUTH.PASSWD, null);
+        return this;
     }
 }

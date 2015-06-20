@@ -34,7 +34,7 @@ public class TableAuth extends AutoIncrementTable<Auth, UInteger>
 
     public TableAuth(String prefix, Database db)
     {
-        super(prefix + "mail", new Version(1), db);
+        super(prefix + "auth", new Version(1), db);
         setAIKey(ID);
         addForeignKey(TABLE_USER.getPrimaryKey(), ID);
         addFields(ID, PASSWD);
