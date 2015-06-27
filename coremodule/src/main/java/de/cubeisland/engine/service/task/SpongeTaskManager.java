@@ -41,34 +41,31 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.service.scheduler.AsynchronousScheduler;
-import org.spongepowered.api.service.scheduler.SynchronousScheduler;
+import org.spongepowered.api.service.scheduler.SchedulerService;
 import org.spongepowered.api.service.scheduler.Task;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @ServiceImpl(TaskManager.class)
 @Version(1)
 public class SpongeTaskManager implements TaskManager
 {
     private final Object plugin;
-    private AsynchronousScheduler asyncScheduler;
-    private SynchronousScheduler syncScheduler;
+    private SchedulerService scheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
 
     @Inject
     public SpongeTaskManager(Game game)
     {
         this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
-        this.asyncScheduler = game.getAsyncScheduler();
-        this.syncScheduler = game.getSyncScheduler();
+        this.scheduler = game.getScheduler();
         this.moduleTasks = new ConcurrentHashMap<>();
     }
 
@@ -87,64 +84,58 @@ public class SpongeTaskManager implements TaskManager
         return IDs;
     }
 
-
     @Override
-    public Optional<UUID> runTask(Module module, Runnable runnable)
+    public UUID runTask(Module module, Runnable runnable)
     {
         return this.runTaskDelayed(module, runnable, 0);
     }
 
     @Override
-    public Optional<UUID> runTaskDelayed(Module module, Runnable runnable, long delay)
+    public UUID runTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, syncScheduler.runTaskAfter(plugin, runnable, delay));
+        return addTaskId(module, scheduler.getTaskBuilder().delay(delay).execute(runnable).submit(plugin));
     }
 
     @Override
-    public Optional<UUID> runTimer(Module module, Runnable runnable, long delay, long interval)
+    public UUID runTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, syncScheduler.runRepeatingTaskAfter(plugin, runnable, delay, interval));
+        return addTaskId(module, scheduler.getTaskBuilder().delay(delay).interval(interval).execute(runnable).submit(plugin));
     }
 
     @Override
-    public Optional<UUID> runAsynchronousTask(Module module, Runnable runnable)
+    public UUID runAsynchronousTask(Module module, Runnable runnable)
     {
         return this.runAsynchronousTaskDelayed(module, runnable, 0);
     }
 
     @Override
-    public Optional<UUID> runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
+    public UUID runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
-        return addTaskId(module, asyncScheduler.runTaskAfter(plugin, runnable, TimeUnit.MILLISECONDS, delay * 50));
+        return addTaskId(module, scheduler.getTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }
 
-    private Optional<UUID> addTaskId(Module module, Optional<Task> task)
+    private UUID addTaskId(Module module, Task task)
     {
         final Set<UUID> tasks = this.getModuleIDs(module);
-        if (task.isPresent())
-        {
-            tasks.add(task.get().getUniqueId());
-            return Optional.of(task.get().getUniqueId());
-        }
-        return Optional.absent();
+        tasks.add(task.getUniqueId());
+        return task.getUniqueId();
     }
 
     @Override
-    public Optional<UUID> runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
+    public UUID runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, asyncScheduler.runRepeatingTaskAfter(plugin, runnable, TimeUnit.MILLISECONDS,
-                                                                      delay * 50, interval * 50));
+        return addTaskId(module, scheduler.getTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }
 
     @Override
@@ -158,12 +149,7 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public void cancelTask(Module module, UUID uuid)
     {
-        Optional<Task> task = syncScheduler.getTaskById(uuid);
-        if (task.isPresent())
-        {
-            task.get().cancel();
-        }
-        task = asyncScheduler.getTaskById(uuid);
+        Optional<Task> task = scheduler.getTaskById(uuid);
         if (task.isPresent())
         {
             task.get().cancel();
@@ -187,30 +173,6 @@ public class SpongeTaskManager implements TaskManager
                 cancelTask(module, taskID);
             }
         }
-    }
-
-    @Override
-    public boolean isCurrentlyRunning(UUID taskID)
-    {
-        Optional<Task> task = this.syncScheduler.getTaskById(taskID);
-        if (task.isPresent())
-        {
-            // TODO
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isQueued(UUID taskID)
-    {
-        Optional<Task> task = this.syncScheduler.getTaskById(taskID);
-        if (task.isPresent())
-        {
-            // TODO
-            return true;
-        }
-        return false;
     }
 
     @Override

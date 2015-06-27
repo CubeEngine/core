@@ -239,7 +239,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 }
             });
 
-            Optional<UUID> uid = tm.runTaskDelayed(core, () -> {
+            UUID uid = tm.runTaskDelayed(core, () -> {
                 scheduledForRemoval.remove(user.getUniqueId());
                 user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
                 Profiler.startProfiling("removalTask");
@@ -252,14 +252,7 @@ public class SpongeUserManager extends AbstractUserManager implements UserManage
                 }
             }, core.getConfiguration().usermanager.keepInMemory);
 
-            if (!uid.isPresent())
-            {
-                core.getLog().warn("The delayed removed of player '{}' could not be scheduled... removing them now.");
-                removeCachedUser(user);
-                return;
-            }
-
-            scheduledForRemoval.put(user.getUniqueId(), uid.get());
+            scheduledForRemoval.put(user.getUniqueId(), uid);
         }
 
         @Subscribe(order = Order.EARLY)

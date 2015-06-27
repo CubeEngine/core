@@ -80,7 +80,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.scheduler.runTimer(corePlugin, this.workerTask, 0, 1).get();
+            this.taskID = this.scheduler.runTimer(corePlugin, this.workerTask, 0, 1);
         }
     }
 

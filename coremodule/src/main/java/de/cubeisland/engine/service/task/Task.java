@@ -51,7 +51,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runAsynchronousTimer(this.module, this, delay, repeat).get();
+        this.taskid = this.tm.runAsynchronousTimer(this.module, this, delay, repeat);
     }
 
     /**
@@ -61,7 +61,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncTask(int delay)
     {
-        this.taskid = this.tm.runAsynchronousTaskDelayed(this.module, this, delay).get();
+        this.taskid = this.tm.runAsynchronousTaskDelayed(this.module, this, delay);
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runTimer(this.module, this, delay, repeat).get();
+        this.taskid = this.tm.runTimer(this.module, this, delay, repeat);
     }
 
     /**
@@ -82,6 +82,6 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncTask(int delay)
     {
-        this.taskid = this.tm.runTaskDelayed(this.module, this, delay).get();
+        this.taskid = this.tm.runTaskDelayed(this.module, this, delay);
     }
 }

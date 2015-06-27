@@ -64,7 +64,7 @@ public class FreezeDetection
 
     public void start()
     {
-        this.taskId = this.taskManager.runAsynchronousTimer(core, new HeartbeatLogger(), 0, 1).orNull();
+        this.taskId = this.taskManager.runAsynchronousTimer(core, new HeartbeatLogger(), 0, 1);
         if (this.taskId == null)
         {
             throw new RuntimeException("Failed to schedule the heartbeat logging for freeze detection");

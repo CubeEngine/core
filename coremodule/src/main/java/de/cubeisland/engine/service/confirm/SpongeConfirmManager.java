@@ -89,7 +89,7 @@ public class SpongeConfirmManager implements ConfirmManager
             confirmationTimeoutTasks = new LinkedList<>();
         }
         confirmationTimeoutTasks.add(new Pair<>(module, taskManager.runTaskDelayed(
-            module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT).get()));
+            module, new ConfirmationTimeoutTask(sender), CONFIRM_TIMEOUT)));
         this.confirmationTimeoutTasks.put(sender, confirmationTimeoutTasks);
     }
 

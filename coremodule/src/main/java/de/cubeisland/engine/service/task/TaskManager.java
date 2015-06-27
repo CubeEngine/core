@@ -41,7 +41,7 @@ public interface TaskManager
      * @param runnable the task
      * @return the ID of the task
      */
-    Optional<UUID> runTask(Module module, Runnable runnable);
+    UUID runTask(Module module, Runnable runnable);
 
     /**
      * Schedules a delayed task for a module with the given delay on the main server thread
@@ -51,7 +51,7 @@ public interface TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    Optional<UUID> runTaskDelayed(Module module, Runnable runnable, long delay);
+    UUID runTaskDelayed(Module module, Runnable runnable, long delay);
 
     /**
      * Schedules a repeating task for a module with the given delay and interval
@@ -62,7 +62,7 @@ public interface TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    Optional<UUID> runTimer(Module module, Runnable runnable, long delay, long interval);
+    UUID runTimer(Module module, Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a asynchronous delayed task for a module
@@ -71,7 +71,7 @@ public interface TaskManager
      * @param runnable the task
      * @return the ID of the task
      */
-    Optional<UUID> runAsynchronousTask(Module module, Runnable runnable);
+    UUID runAsynchronousTask(Module module, Runnable runnable);
 
     /**
      * Schedules a asynchronous delayed task for a module with the given delay
@@ -81,7 +81,7 @@ public interface TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    Optional<UUID> runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay);
+    UUID runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay);
 
     /**
      * Schedules a asynchronous repeating task for a module with the given delay and interval
@@ -92,7 +92,7 @@ public interface TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    Optional<UUID> runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
+    UUID runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a method for execution on the main server thread
@@ -112,22 +112,6 @@ public interface TaskManager
     void cancelTask(Module module, UUID uuid);
 
     void cancelTasks(Module module);
-
-    /**
-     * Checks whether the given task ID revers to a task that's currently running
-     *
-     * @param taskID the task ID
-     * @return true if there is a running task for this ID
-     */
-    boolean isCurrentlyRunning(UUID taskID);
-
-    /**
-     * Checks whether the given task ID is
-     *
-     * @param taskID the task ID
-     * @return true if there is a task for this ID
-     */
-    boolean isQueued(UUID taskID);
 
     /**
      * This method can be used to remove all objects related to the given module
