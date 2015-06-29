@@ -35,6 +35,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.asm.marker.Disable;
+import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -90,6 +92,7 @@ public class SpongeUserManager implements UserManager
     protected ScheduledExecutorService nativeScheduler;
     protected Map<UUID, UUID> scheduledForRemoval = new HashMap<>();
 
+    @Enable
     public void onEnable()
     {
         database.registerTable(TableUser.class);
@@ -293,7 +296,8 @@ public class SpongeUserManager implements UserManager
             return;
         }
 
-        onlineUsers.stream().filter(user -> perm == null || perm.isAuthorized(user)).forEach(user -> user.sendTranslated(messageType, message, params));
+        onlineUsers.stream().filter(user -> perm == null || perm.isAuthorized(user)).forEach(user -> user.sendTranslated(
+            messageType, message, params));
         cm.getConsoleSender().sendTranslated(messageType, message, params);
     }
 
@@ -352,7 +356,8 @@ public class SpongeUserManager implements UserManager
     {
         for (Player player : core.getGame().getServer().getOnlinePlayers())
         {
-            player.kick(fromLegacy(i18n.getTranslation(NONE, player.getLocale(), message).getTranslation().get(player.getLocale()), '&'));
+            player.kick(fromLegacy(i18n.getTranslation(NONE, player.getLocale(), message).getTranslation().get(
+                player.getLocale()), '&'));
         }
     }
 
@@ -492,9 +497,11 @@ public class SpongeUserManager implements UserManager
         return null;
     }
 
+    @Disable
     protected void shutdown()
     {
-        this.clean();
+        Timestamp time = new Timestamp(currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.getMillis());
+        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
 
         this.onlineUsers.clear();
         this.onlineUsers = null;
@@ -529,13 +536,6 @@ public class SpongeUserManager implements UserManager
             this.nativeScheduler.shutdownNow();
             this.nativeScheduler = null;
         }
-    }
-
-    @Override
-    public void clean()
-    {
-        Timestamp time = new Timestamp(currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.getMillis());
-        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
     }
 
     protected final class DefaultAttachment

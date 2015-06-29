@@ -32,7 +32,7 @@ import org.spongepowered.api.text.format.BaseFormatting;
 
 @Service
 @Version(1)
-public interface UserManager extends Cleanable
+public interface UserManager
 {
     /**
      * Removes the user permanently. Data cannot be restored later on
