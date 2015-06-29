@@ -19,6 +19,7 @@ package de.cubeisland.engine.service.user;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -92,8 +93,6 @@ public interface UserManager extends Cleanable
     Set<User> getOnlineUsers();
 
     Set<User> getLoadedUsers();
-
-    void shutdown();
 
     /**
      * Finds an User (can create a new User if a found player is online but not
@@ -180,8 +179,6 @@ public interface UserManager extends Cleanable
 
     void kickAll(String message);
 
-    void kickAll(String message, Object... params);
-
     void attachToAll(Class<? extends UserAttachment> attachmentClass, Module module);
 
     void detachFromAll(Class<? extends UserAttachment> attachmentClass);
@@ -196,7 +193,11 @@ public interface UserManager extends Cleanable
 
     void removeDefaultAttachments();
 
-    Set<Long> getAllIds();
-
     void cleanup(Module module);
+
+    UserEntity getEntity(UUID uuid);
+
+    CompletableFuture<UserEntity> loadEntity(UUID uuid);
+
+    org.spongepowered.api.entity.player.User getPlayer(UUID uuid);
 }

@@ -58,7 +58,7 @@ public abstract class Ban<T>
     {
         if (source instanceof User)
         {
-            return ((User)source).getPlayer().get();
+            return ((User)source).asPlayer();
         }
         else if (source instanceof WrappedCommandSender)
         {

@@ -18,7 +18,6 @@
 package de.cubeisland.engine.service.user;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -26,48 +25,40 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
+import de.cubeisland.engine.service.command.sender.BaseCommandSender;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.service.command.CommandSender;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.GameProfile;
+import org.spongepowered.api.data.manipulator.entity.InvisibilityData;
 import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.service.profile.GameProfileResolver;
-import org.spongepowered.api.service.user.UserStorage;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
-
-import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
 
 /**
  * A CubeEngine User (can exist offline too).
  * <p>Do not instantiate outside of {@link UserManager} implementations
  */
-public class User implements CommandSender, AttachmentHolder<UserAttachment>
+public class User extends BaseCommandSender implements AttachmentHolder<UserAttachment>
 {
-    private final Game game;
+    private UserManager um;
     private final UUID uuid;
-    private final UserEntity entity;
-    private final Modularity modularity;
     private org.spongepowered.api.entity.player.User player;
+    private Map<Class<? extends UserAttachment>, UserAttachment> attachments = new ConcurrentHashMap<>();
 
-    private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
+    private CompletableFuture<UserEntity> future;
 
-    public User(Modularity modularity, UserEntity entity, org.spongepowered.api.entity.player.User player)
+    public User(I18n i18n, UserManager um, UUID uuid)
     {
-        this.game = modularity.start(Game.class);
-        this.modularity = modularity;
-        this.uuid = entity.getUniqueId();
-        this.entity = entity;
-        this.attachments = new HashMap<>();
-        this.player = player;
+        super(i18n);
+        this.um = um;
+        this.uuid = uuid;
+        this.player = um.getPlayer(uuid);
+        this.future = um.loadEntity(uuid);
     }
 
     @Override
@@ -160,67 +151,9 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
         }
     }
 
-    public Long getId()
-    {
-        return this.entity.getId().longValue();
-    }
-
-    @Override
-    public void sendMessage(String string)
-    {
-        if (string != null)
-        {
-            this.sendMessage(ChatFormat.fromLegacy(string, BASE_CHAR));
-        }
-    }
-
-    @Override
-    public void sendMessage(Text msg)
-    {
-        if (getPlayer().isPresent())
-        {
-            getPlayer().get().sendMessage(msg);
-        }
-    }
-
-    @Override
-    public Translatable getTranslation(BaseFormatting format, String message, Object... args)
-    {
-        return getI18n().getTranslation(format, getLocale(), message, args);
-    }
-
-    private I18n getI18n()
-    {
-        return modularity.start(I18n.class);
-    }
-
-    @Override
-    public Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
-    {
-        return getI18n().getTranslationN(format, getLocale(), n, singular, plural, args);
-    }
-
-    /**
-     * Sends a translated Message to this User
-     * @param format
-     * @param message the message to translate
-     * @param args optional parameter
-     */
-    @Override
-    public void sendTranslated(BaseFormatting format, String message, Object... args)
-    {
-        this.sendMessage(this.getTranslation(format, message, args).getTranslation().get(getLocale()));
-    }
-
-    @Override
-    public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
-    {
-        this.sendMessage(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()));
-    }
-
     public void sendMessage(BaseFormatting format, String message, Object... params)
     {
-        this.sendMessage(getI18n().composeMessage(this.getLocale(), format, message, params));
+        this.sendMessage(i18n.composeMessage(this.getLocale(), format, message, params));
     }
 
     /**
@@ -231,20 +164,10 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
     @Override
     public Locale getLocale()
     {
-        if (this.entity.getLocale() != null)
-        {
-            return this.entity.getLocale();
-        }
-        Locale locale = null;
-        Optional<Player> player = getPlayer();
-        if (player.isPresent())
-        {
-            locale = player.get().getLocale();
-        }
+        Locale locale = getEntity().getLocale();
         if (locale == null)
         {
-
-            locale = getI18n().getDefaultLanguage().getLocale();
+            return getPlayer().transform(Player::getLocale).or(i18n.getDefaultLanguage().getLocale());
         }
         return locale;
     }
@@ -255,20 +178,28 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
         {
             throw new NullPointerException();
         }
-        this.entity.setLocale(locale);
+        getEntity().setLocale(locale);
     }
 
-    public int getPing()
+    public UserEntity getEntity()
     {
-        Optional<Player> player = getPlayer();
-        if (player.isPresent())
+        try
         {
-            return player.get().getConnection().getPing();
+            return future.get();
         }
-        return -1;
+        catch (InterruptedException | ExecutionException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public CompletableFuture<UserEntity> entity()
+    {
+        return future;
     }
 
     private InetSocketAddress address = null;
+
     public void refreshIP()
     {
         address = this.getPlayer().get().getConnection().getAddress();
@@ -277,11 +208,6 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
     public InetSocketAddress getAddress()
     {
         return address;
-    }
-
-    public UserEntity getEntity()
-    {
-        return entity;
     }
 
     @Override
@@ -294,11 +220,7 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
     {
         if (player == null)
         {
-            player = game.getServer().getPlayer(uuid).orNull();
-            if (player == null)
-            {
-                getUser();
-            }
+            player = um.getPlayer(uuid);
         }
         if (player instanceof Player)
         {
@@ -307,33 +229,9 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
         return Optional.absent();
     }
 
-    public Player asPlayer()
-    {
-        return getPlayer().orNull();
-    }
-
     public org.spongepowered.api.entity.player.User getUser()
     {
-        if (getPlayer().isPresent())
-        {
-            return asPlayer();
-        }
-        UserStorage storage = game.getServiceManager().provide(UserStorage.class).get();
-        player = storage.get(uuid).orNull();
-        if (player == null)
-        {
-            GameProfileResolver resolver = game.getServiceManager().provide(GameProfileResolver.class).get();
-            try
-            {
-                GameProfile profile = resolver.get(uuid).get();
-                player = storage.getOrCreate(profile);
-            }
-            catch (InterruptedException | ExecutionException e)
-            {
-                throw new IllegalStateException(e);
-            }
-        }
-        return player;
+        return getPlayer().transform(p -> (org.spongepowered.api.entity.player.User)p).or(player);
     }
 
     @Override
@@ -343,7 +241,7 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
         {
             return asPlayer().getDisplayNameData().getDisplayName();
         }
-        return Texts.of();
+        return Texts.of(player.getName());
     }
 
     @Override
@@ -360,6 +258,29 @@ public class User implements CommandSender, AttachmentHolder<UserAttachment>
 
     public boolean canSee(Player player)
     {
-        return true; // TODO
+        return getPlayer().isPresent() && player.getOrCreate(InvisibilityData.class).transform(p -> p.isInvisibleTo(asPlayer())).or(false);
+    }
+
+    public Player asPlayer()
+    {
+        return player.getPlayer().get();
+    }
+
+    @Override
+    public void sendMessage(String msg)
+    {
+        if (msg != null)
+        {
+            sendMessage(Texts.of(msg));
+        }
+    }
+
+    @Override
+    public void sendMessage(Text msg)
+    {
+        if (getPlayer().isPresent())
+        {
+            asPlayer().sendMessage(msg);
+        }
     }
 }

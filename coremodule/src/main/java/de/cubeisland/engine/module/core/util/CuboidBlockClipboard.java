@@ -67,7 +67,7 @@ public class CuboidBlockClipboard
             {
                 for (int z = 0; z < this.size.z; ++z)
                 {
-                    data[x][y][z] = new BlockData(world.getFullBlock(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
+                    data[x][y][z] = new BlockData(world.getLocation(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
                 }
             }
         }

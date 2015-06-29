@@ -105,8 +105,8 @@ public class CubeEngineSpongePlugin
         long delta = System.currentTimeMillis();
         pluginLogger.info("Load Modules");
         modularity.load(loadPath.toFile());
-        pluginLogger.info("done.");
-
+        pluginLogger.info("done in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
+        delta = System.currentTimeMillis();
         pluginLogger.info("Start Modules");
         try
         {

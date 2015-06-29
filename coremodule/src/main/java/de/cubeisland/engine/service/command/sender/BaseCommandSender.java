@@ -27,7 +27,7 @@ import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
 
 public abstract class BaseCommandSender implements CommandSender
 {
-    private final I18n i18n;
+    protected final I18n i18n;
 
     protected BaseCommandSender(I18n i18n)
     {

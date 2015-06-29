@@ -289,7 +289,7 @@ public class BlockUtil
             --y;
         }
 
-        return world.getFullBlock(x, y, z);
+        return world.getLocation(x, y, z);
     }
 
     public static Chunk getChunk(Location block)

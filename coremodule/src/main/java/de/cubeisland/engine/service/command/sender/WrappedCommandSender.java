@@ -61,7 +61,7 @@ public class WrappedCommandSender<W extends CommandSource> extends BaseCommandSe
     @Override
     public Locale getLocale()
     {
-        return Locale.getDefault();
+        return i18n.getDefaultLanguage().getLocale();
     }
 
     @Override
@@ -103,7 +103,10 @@ public class WrappedCommandSender<W extends CommandSource> extends BaseCommandSe
     @Override
     public void sendMessage(String msg)
     {
-        this.sendMessage(Texts.of(msg));
+        if (msg != null)
+        {
+            this.sendMessage(Texts.of(msg));
+        }
     }
 
     @Override

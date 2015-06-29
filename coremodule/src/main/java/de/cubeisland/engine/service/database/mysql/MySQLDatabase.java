@@ -96,6 +96,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database
         // Disable HikariPool Debug ConsoleSpam
         ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
         ((Logger)LogManager.getLogger(PoolUtilities.class)).setLevel(Level.INFO);
+        ((Logger)LogManager.getLogger(HikariConfig.class)).setLevel(Level.INFO);
 
         // Setting up Logger...
         this.logger = logger;

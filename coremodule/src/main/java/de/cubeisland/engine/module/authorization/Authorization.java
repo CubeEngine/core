@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
@@ -61,7 +62,7 @@ public class Authorization extends Module
     final MessageDigest messageDigest;
 
     private AuthPerms perms;
-    private final Map<Long, Triplet<Long, String, Integer>> failedLogins = new HashMap<>();
+    private final Map<UUID, Triplet<Long, String, Integer>> failedLogins = new HashMap<>();
     private AuthConfiguration config;
 
     public Authorization()
@@ -123,7 +124,7 @@ public class Authorization extends Module
 
     public Triplet<Long, String, Integer> getFailedLogin(User user)
     {
-        return this.failedLogins.get(user.getId());
+        return this.failedLogins.get(user.getUniqueId());
     }
 
     protected void addFailedLogin(User user)
@@ -132,7 +133,7 @@ public class Authorization extends Module
         if (loginFail == null)
         {
             loginFail = new Triplet<>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
-            this.failedLogins.put(user.getId(), loginFail);
+            this.failedLogins.put(user.getUniqueId(), loginFail);
         }
         else
         {
@@ -144,7 +145,7 @@ public class Authorization extends Module
 
     protected void removeFailedLogins(User user)
     {
-        this.failedLogins.remove(user.getId());
+        this.failedLogins.remove(user.getUniqueId());
     }
 
     public void resetAllPasswords()

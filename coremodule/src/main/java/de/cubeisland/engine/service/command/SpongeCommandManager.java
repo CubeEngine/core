@@ -331,7 +331,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         org.spongepowered.api.util.command.CommandSource source = null;
         if (sender instanceof User)
         {
-            source = ((User)sender).getPlayer().get();
+            source = ((User)sender).asPlayer();
         }
         else if (sender instanceof WrappedCommandSender)
         {

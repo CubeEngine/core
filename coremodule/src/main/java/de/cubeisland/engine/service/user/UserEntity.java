@@ -28,10 +28,8 @@ import static de.cubeisland.engine.service.user.TableUser.TABLE_USER;
 
 public class UserEntity extends AsyncRecord<UserEntity>
 {
-    @Transient
-    private UUID uid = null;
-    @Transient
-    private Locale locale;
+    @Transient private UUID uid = null;
+    @Transient private Locale locale;
 
     public UserEntity()
     {
