@@ -19,6 +19,7 @@ package de.cubeisland.engine.service.command.sender;
 
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.command.CommandSender;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.format.BaseFormatting;
 
@@ -35,26 +36,26 @@ public abstract class BaseCommandSender implements CommandSender
     }
 
     @Override
-    public Translatable getTranslation(BaseFormatting format, String message, Object... args)
+    public Text getTranslation(BaseFormatting format, String message, Object... args)
     {
-        return i18n.getTranslation(format, getLocale(), message, args);
+        return i18n.getTranslation(getLocale(), format, message, args);
     }
 
     @Override
-    public Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        return i18n.getTranslationN(format, getLocale(), n, singular, plural, args);
+        return i18n.getTranslationN(getLocale(), format, n, singular, plural, args);
     }
 
     @Override
     public void sendTranslated(BaseFormatting format, String message, Object... args)
     {
-        sendMessage(fromLegacy(this.getTranslation(format, message, args).getTranslation().get(getLocale()), BASE_CHAR));
+        sendMessage(this.getTranslation(format, message, args));
     }
 
     @Override
     public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        sendMessage(fromLegacy(this.getTranslationN(format, n, singular, plural, args).getTranslation().get(getLocale()), BASE_CHAR));
+        sendMessage(this.getTranslationN(format, n, singular, plural, args));
     }
 }

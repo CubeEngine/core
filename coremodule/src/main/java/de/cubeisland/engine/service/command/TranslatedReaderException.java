@@ -15,17 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.command;
 
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
+import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import org.spongepowered.api.text.Text;
 
-@Names("decimal")
-public class DecimalFormatter extends de.cubeisland.engine.messagecompositor.macro.example.DecimalFormatter
+public class TranslatedReaderException extends ReaderException
 {
-    @Override
-    protected String formatNumber(Number number, MacroContext context)
+    private Text text;
+
+    public TranslatedReaderException(Text text)
     {
-        return super.formatNumber(number, context);
+        this.text = text;
+    }
+
+    public Text getText()
+    {
+        return text;
     }
 }

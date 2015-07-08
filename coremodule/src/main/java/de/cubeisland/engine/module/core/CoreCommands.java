@@ -38,8 +38,8 @@ import de.cubeisland.engine.service.user.UserManager;
 import de.cubeisland.engine.module.core.util.Profiler;
 import org.spongepowered.api.plugin.PluginManager;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.POSITIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.POSITIVE;
 
 @Command(name = "cubeengine", alias = "ce",
     desc = "These are the basic commands of the CubeEngine.")

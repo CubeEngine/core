@@ -31,9 +31,9 @@ import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
 import org.spongepowered.api.text.Texts;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.*;
 
 public class HelpCommand implements CommandBase
@@ -61,7 +61,7 @@ public class HelpCommand implements CommandBase
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
 
-        sender.sendTranslated(GRAY, "Description: {input}", sender.getTranslation(NONE, descriptor.getDescription()).getTranslation().get(sender.getLocale()));
+        sender.sendTranslated(GRAY, "Description: {input}", Texts.toPlain(sender.getTranslation(NONE, descriptor.getDescription())));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -92,8 +92,7 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(),
-                                 WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription()).getTranslation().get(sender.getLocale())));
+                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription())));
             }
                 sender.sendMessage(" ");
             }

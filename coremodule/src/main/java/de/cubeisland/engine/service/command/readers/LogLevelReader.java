@@ -21,8 +21,9 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 
 public class LogLevelReader implements ArgumentReader<LogLevel>
 {
@@ -41,7 +42,7 @@ public class LogLevelReader implements ArgumentReader<LogLevel>
         LogLevel logLevel = LogLevel.toLevel(arg);
         if (logLevel == null)
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE, "The given log level is unknown."));
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE, "The given log level is unknown."));
         }
         return logLevel;
     }

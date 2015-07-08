@@ -30,13 +30,13 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.service.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.HoverAction.ShowText;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.CRITICAL;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.CRITICAL;
 import static org.spongepowered.api.text.format.TextColors.*;
 
 public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler

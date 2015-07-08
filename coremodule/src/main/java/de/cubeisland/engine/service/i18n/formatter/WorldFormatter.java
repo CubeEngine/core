@@ -15,21 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
-import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
-import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.component.Text;
+import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
+import de.cubeisland.engine.service.i18n.StyledComponent;
 import org.spongepowered.api.world.World;
+
+import static org.spongepowered.api.text.format.TextColors.GOLD;
 
 @Names("world")
 public class WorldFormatter extends ReflectedFormatter
 {
     @Format
-    public String format(World world, MacroContext context)
+    public MessageComponent format(World world, Context context)
     {
-        return ChatFormat.GOLD + world.getName();
+        return new StyledComponent(GOLD, new Text(world.getName()));
     }
 }

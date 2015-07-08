@@ -15,22 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.component.Text;
+import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
+import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
 
-import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-
-public class StringFormatter extends AbstractFormatter<String>
+public class BooleanFormatter extends AbstractFormatter<Boolean>
 {
-    public StringFormatter()
+    public BooleanFormatter()
     {
-        super(toSet("name","input","message"));
+        super("bool");
     }
 
     @Override
-    public String process(String object, MacroContext context)
+    public MessageComponent format(Boolean object, Context context)
     {
-        return object;
+        return new Text(String.valueOf(object)); // TODO translation ?
     }
 }

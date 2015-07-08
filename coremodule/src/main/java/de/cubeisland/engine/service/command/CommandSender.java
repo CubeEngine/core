@@ -38,9 +38,9 @@ public interface CommandSender extends CommandSource
     @Override
     Locale getLocale();
 
-    Translatable getTranslation(BaseFormatting format, String message, Object... args);
+    Text getTranslation(BaseFormatting format, String message, Object... args);
 
-    Translatable getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args);
+    Text getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args);
 
     void sendTranslated(BaseFormatting format, String message, Object... args);
 

@@ -20,11 +20,12 @@ package de.cubeisland.engine.service.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 
 public class ItemStackReader implements ArgumentReader<ItemStack>
 {
@@ -44,7 +45,7 @@ public class ItemStackReader implements ArgumentReader<ItemStack>
         ItemStack item = materialMatcher.itemStack(arg);
         if (item == null)
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

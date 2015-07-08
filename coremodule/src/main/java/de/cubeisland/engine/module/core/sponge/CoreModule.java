@@ -186,7 +186,6 @@ public final class CoreModule extends Module
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
-        manager.registerConverter(new PlayerConverter(game), org.spongepowered.api.entity.player.User.class);
         manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
     }

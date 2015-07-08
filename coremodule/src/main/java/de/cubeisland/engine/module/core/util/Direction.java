@@ -18,9 +18,10 @@
 package de.cubeisland.engine.module.core.util;
 
 import de.cubeisland.engine.service.command.CommandSender;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Translatable;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 
 public enum Direction
 {
@@ -52,7 +53,7 @@ public enum Direction
         return Direction.NORTH;
     }
 
-    public Translatable translated(CommandSender sender)
+    public Text translated(CommandSender sender)
     {
         switch (this)
         {

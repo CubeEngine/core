@@ -21,6 +21,8 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
+import de.cubeisland.engine.service.user.SpongeUserManager;
+import de.cubeisland.engine.service.user.UserManager;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.User;
@@ -29,9 +31,11 @@ import org.spongepowered.api.service.user.UserStorage;
 public class PlayerConverter extends SimpleConverter<User>
 {
     private final UserStorage userStorage;
+    private UserManager um;
 
-    public PlayerConverter(Game game)
+    public PlayerConverter(UserManager um, Game game)
     {
+        this.um = um;
         this.userStorage = game.getServiceManager().provide(UserStorage.class).orNull();
     }
 
@@ -46,7 +50,9 @@ public class PlayerConverter extends SimpleConverter<User>
     {
         if (node instanceof StringNode)
         {
-            return userStorage.get(((StringNode)node).getValue()).orNull();
+            return um.findUser(((StringNode)node).getValue()).asPlayer();
+
+            // TODO wait for UserStorage impl return userStorage.get(((StringNode)node).getValue()).orNull();
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

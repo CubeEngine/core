@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
+import de.cubeisland.engine.modularity.asm.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
@@ -41,6 +42,7 @@ import de.cubeisland.engine.module.core.util.Triplet;
 import de.cubeisland.engine.service.ban.BanManager;
 import de.cubeisland.engine.service.command.CommandManager;
 import de.cubeisland.engine.service.database.Database;
+import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.service.user.TableUser;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserManager;
@@ -57,6 +59,7 @@ public class Authorization extends Module
     @Inject private CommandManager cm;
     @Inject private Game game;
     @Inject private BanManager bm;
+    @Inject private PermissionManager pm;
 
     String salt;
     final MessageDigest messageDigest;
@@ -91,6 +94,14 @@ public class Authorization extends Module
         um.addDefaultAttachment(AuthAttachment.class, this);
     }
 
+
+    @Disable
+    public void onDisable()
+    {
+        cm.removeCommands(this);
+        um.removeDefaultAttachments(this);
+        pm.removePermissions(this);
+    }
 
     private void loadSalt()
     {

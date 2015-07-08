@@ -48,14 +48,23 @@ import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.messagecompositor.MessageCompositor;
+import de.cubeisland.engine.messagecompositor.parser.formatter.example.DecimalFormatter;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.service.filesystem.FileExtensionFilter;
-import de.cubeisland.engine.service.filesystem.FileManager;
-import de.cubeisland.engine.module.core.util.formatter.ColoredMessageCompositor;
+import de.cubeisland.engine.service.i18n.formatter.BiomeFormatter;
+import de.cubeisland.engine.service.i18n.formatter.BooleanFormatter;
+import de.cubeisland.engine.service.i18n.formatter.ColorPostProcessor;
+import de.cubeisland.engine.service.i18n.formatter.CommandSenderFormatter;
+import de.cubeisland.engine.service.i18n.formatter.IntegerFormatter;
+import de.cubeisland.engine.service.i18n.formatter.StringFormatter;
+import de.cubeisland.engine.service.i18n.formatter.TextMacro;
+import de.cubeisland.engine.service.i18n.formatter.VectorFormatter;
+import de.cubeisland.engine.service.i18n.formatter.WorldFormatter;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.service.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.service.filesystem.FileManager;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
@@ -68,7 +77,7 @@ public class I18n
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
-    private ColoredMessageCompositor compositor;
+    private TextCompositor compositor;
 
     @Inject
     private Log log;
@@ -83,13 +92,23 @@ public class I18n
         this.addPoFilesFromDirectory(fm.getTranslationPath());
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
-        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(reflector, fm,
-                                                                                                       log),
-                                       getDefaultLocale());
-        this.compositor = new ColoredMessageCompositor(reflector, fm);
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(reflector, fm, log), getDefaultLocale());
+        this.compositor = new TextCompositor();
+
+        compositor.registerFormatter(new WorldFormatter());
+        compositor.registerFormatter(new StringFormatter());
+        compositor.registerFormatter(new BooleanFormatter());
+        compositor.registerFormatter(new IntegerFormatter());
+        compositor.registerFormatter(new CommandSenderFormatter());
+        compositor.registerFormatter(new TextMacro());
+        compositor.registerFormatter(new BiomeFormatter());
+        compositor.registerFormatter(new VectorFormatter());
+        compositor.registerFormatter(new DecimalFormatter());
+
+        compositor.addPostProcessor(new ColorPostProcessor());
     }
 
-    public MessageCompositor getCompositor()
+    public TextCompositor getCompositor()
     {
         return compositor;
     }
@@ -156,12 +175,12 @@ public class I18n
         }
     }
 
-    public String translate(BaseFormatting format, String message, Object... args)
+    public Text translate(BaseFormatting format, String message, Object... args)
     {
         return this.translate(getDefaultLocale(), format, message, args);
     }
 
-    public String translate(Locale locale, BaseFormatting format, String message, Object... args)
+    public Text translate(Locale locale, BaseFormatting format, String message, Object... args)
     {
         if (locale == null)
         {
@@ -174,12 +193,12 @@ public class I18n
         return composeMessage(locale, format, this.translate(locale, message), args);
     }
 
-    public String composeMessage(Locale locale, BaseFormatting format, String message, Object[] args)
+    public Text composeMessage(Locale locale, BaseFormatting format, String message, Object[] args)
     {
-        return this.compositor.composeMessage(format, locale, message, args);
+        return Texts.of(format, this.compositor.composeMessage(locale, message, args));
     }
 
-    public String translateN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text translateN(BaseFormatting format, int n, String singular, String plural, Object... args)
     {
         return this.translateN(getDefaultLocale(), format, n, singular, plural, args);
     }
@@ -189,7 +208,7 @@ public class I18n
         return Locale.getDefault();
     }
 
-    public String translateN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text translateN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
     {
         if (locale == null)
         {
@@ -199,7 +218,8 @@ public class I18n
         {
             return null;
         }
-        return this.compositor.composeMessage(format, locale, this.translateN(locale, n, singular, plural), args);
+        return Texts.of(format, this.compositor.composeMessage(locale, this.translateN(locale, n, singular, plural),
+                                                               args));
     }
 
     public String translate(String message)
@@ -275,15 +295,14 @@ public class I18n
         return languages;
     }
 
-    public Translatable getTranslation(BaseFormatting format, Locale locale, String msg, Object... args)
+    public Text getTranslation(Locale locale, BaseFormatting format, String msg, Object... args)
     {
-        return Texts.of(new CubeEngineTranslation(this, format, locale, msg, args));
+        return this.translate(locale, format, msg, args);
     }
 
-    public Translatable getTranslationN(BaseFormatting format, Locale locale, int n, String singular, String plural,
-                                        Object... args)
+    public Text getTranslationN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
     {
-        return Texts.of(new CubeEngineTranslation(this, format, locale, n, singular, plural, args));
+        return this.translateN(locale, format, n, singular, plural, args);
     }
 
     public I18nService getService()

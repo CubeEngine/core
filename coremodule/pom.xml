@@ -99,7 +99,7 @@
         <dependency>
             <groupId>de.cubeisland.engine</groupId>
             <artifactId>messagecompositor</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.cubeisland.engine</groupId>

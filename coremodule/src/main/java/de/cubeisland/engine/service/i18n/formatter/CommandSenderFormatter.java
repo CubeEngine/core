@@ -15,44 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import de.cubeisland.engine.messagecompositor.macro.reflected.Format;
-import de.cubeisland.engine.messagecompositor.macro.reflected.Names;
-import de.cubeisland.engine.messagecompositor.macro.reflected.ReflectedFormatter;
-import de.cubeisland.engine.module.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
+import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
+import de.cubeisland.engine.service.i18n.StyledComponent;
 import org.spongepowered.api.entity.Tamer;
 import org.spongepowered.api.util.command.CommandSource;
+
+import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;
 
 @Names({"user","sender","tamer"})
 public class CommandSenderFormatter extends ReflectedFormatter
 {
-    public CommandSenderFormatter()
+    @Format
+    public MessageComponent format(String string, Context context)
     {
-        this.addPostProcessor(new ColorPostProcessor(ChatFormat.DARK_GREEN));
+        return new StyledComponent(DARK_GREEN, string);
     }
 
     @Format
-    public String format(String string, MacroContext context)
-    {
-        return string;
-    }
-
-    @Format
-    public String format(CommandSource sender, MacroContext context)
+    public MessageComponent format(CommandSource sender, Context context)
     {
         return this.format(sender.getName(), context);
     }
 
     @Format
-    public String format(de.cubeisland.engine.butler.CommandSource sender, MacroContext context)
+    public MessageComponent format(de.cubeisland.engine.butler.CommandSource sender, Context context)
     {
         return this.format(sender.getName(), context);
     }
 
     @Format
-    public String format(Tamer tamer, MacroContext context) // includes OfflinePlayer as it implements AnimalTamer
+    public MessageComponent format(Tamer tamer, Context context) // includes OfflinePlayer as it implements AnimalTamer
     {
         return this.format(tamer.getName(), context);
     }

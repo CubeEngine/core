@@ -20,8 +20,9 @@ package de.cubeisland.engine.service.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 
 public class ByteReader implements ArgumentReader<Byte>
 {
@@ -43,7 +44,7 @@ public class ByteReader implements ArgumentReader<Byte>
         }
         catch (NumberFormatException e)
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
         }
     }
 }

@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
 import java.util.HashMap;
 import java.util.Map;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.*;
 
 @SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml

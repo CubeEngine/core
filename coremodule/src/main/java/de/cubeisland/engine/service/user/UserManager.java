@@ -25,8 +25,7 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.CommandSender;
 import de.cubeisland.engine.service.permission.Permission;
-import de.cubeisland.engine.module.core.util.Cleanable;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.text.format.BaseFormatting;
 

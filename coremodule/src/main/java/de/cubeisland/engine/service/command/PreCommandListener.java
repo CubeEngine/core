@@ -32,8 +32,8 @@ import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.module.core.util.StringUtils.implode;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEUTRAL;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.spongepowered.api.event.Order.POST;
 
 public class PreCommandListener

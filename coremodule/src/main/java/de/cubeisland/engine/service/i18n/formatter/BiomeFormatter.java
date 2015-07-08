@@ -15,24 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.macro.AbstractFormatter;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import de.cubeisland.engine.module.core.util.ChatFormat;
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
+import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import de.cubeisland.engine.service.i18n.StyledComponent;
 import org.spongepowered.api.world.biome.BiomeType;
+
+import static org.spongepowered.api.text.format.TextColors.DARK_AQUA;
 
 public class BiomeFormatter extends AbstractFormatter<BiomeType>
 {
     public BiomeFormatter()
     {
-        super(toSet("biome"));
-        this.addPostProcessor(new ColorPostProcessor(ChatFormat.DARK_AQUA));
+        super("biome");
     }
 
     @Override
-    public String process(BiomeType object, MacroContext context)
+    protected MessageComponent format(BiomeType arg, Context context)
     {
-        return object.getName(); // TODO translation ?
+        return new StyledComponent(DARK_AQUA, arg.getName()); // TODO translation
     }
 }

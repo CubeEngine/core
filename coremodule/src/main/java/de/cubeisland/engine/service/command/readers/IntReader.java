@@ -37,8 +37,9 @@ package de.cubeisland.engine.service.command.readers;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 
 public class IntReader implements ArgumentReader<Integer>
 {
@@ -60,7 +61,7 @@ public class IntReader implements ArgumentReader<Integer>
         }
         catch (NumberFormatException e)
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
                                                      "Could not parse {input} to integer!", num));
         }
     }

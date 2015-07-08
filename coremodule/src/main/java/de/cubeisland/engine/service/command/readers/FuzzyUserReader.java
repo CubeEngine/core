@@ -24,11 +24,12 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserManager;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -72,7 +73,7 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
                            .collect(toList()));
             if (users.isEmpty())
             {
-                throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
+                throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }

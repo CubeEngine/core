@@ -21,11 +21,12 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserManager;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 
 /**
  * This argument is used to get users
@@ -48,7 +49,7 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
         User user = um.findUser(arg);
         if (user == null)
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
                                                                                        "Player {user} not found!",
                                                                                        arg));
         }

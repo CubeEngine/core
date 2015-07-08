@@ -32,6 +32,7 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.service.command.CommandManager;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
@@ -41,7 +42,7 @@ import de.cubeisland.engine.service.command.CommandContext;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.*;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.*;
 
 @Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
@@ -103,7 +104,7 @@ public class ModuleCommands extends ContainerCommand
                     return module;
                 }
             }
-            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
                                                                                  "The given module could not be found!"));        }
     }
 

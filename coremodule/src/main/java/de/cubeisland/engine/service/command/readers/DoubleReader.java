@@ -23,8 +23,9 @@ import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 
 public class DoubleReader implements ArgumentReader<Double>
 {
@@ -53,7 +54,7 @@ public class DoubleReader implements ArgumentReader<Double>
             }
             catch (ParseException e1)
             {
-                throw new ReaderException(i18n.translate(locale, MessageType.NEGATIVE,
+                throw new TranslatedReaderException(i18n.translate(locale, MessageType.NEGATIVE,
                                                          "Could not parse {input} to double!", arg));
             }
         }

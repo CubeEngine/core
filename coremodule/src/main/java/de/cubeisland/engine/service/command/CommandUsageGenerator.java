@@ -27,9 +27,10 @@ import de.cubeisland.engine.service.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.service.command.property.PermissionProvider;
 import de.cubeisland.engine.service.user.User;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.Texts;
 
 import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {
@@ -75,7 +76,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     {
         if (invocation != null && invocation.getCommandSource() instanceof CommandSender)
         {
-            return ((CommandSender)invocation.getCommandSource()).getTranslation(NONE, valueLabel).getTranslation().get(invocation.getLocale());
+            return Texts.toPlain(((CommandSender)invocation.getCommandSource()).getTranslation(NONE, valueLabel));
         }
         return valueLabel;
     }

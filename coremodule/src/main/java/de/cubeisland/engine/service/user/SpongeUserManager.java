@@ -35,6 +35,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
+import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.modularity.asm.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
@@ -42,8 +43,9 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
+import de.cubeisland.engine.module.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.module.core.util.converter.UserConverter;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.service.command.CommandManager;
@@ -55,6 +57,7 @@ import de.cubeisland.engine.service.permission.Permission;
 import de.cubeisland.engine.service.task.TaskManager;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.service.profile.GameProfileResolver;
 import org.spongepowered.api.service.user.UserStorage;
@@ -62,7 +65,7 @@ import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColors;
 
 import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NONE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 import static de.cubeisland.engine.service.user.TableUser.TABLE_USER;
 import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.toSet;
@@ -82,6 +85,7 @@ public class SpongeUserManager implements UserManager
     @Inject private EventManager em;
     @Inject private I18n i18n;
     @Inject private Reflector reflector;
+    @Inject private Game game;
 
     protected List<User> onlineUsers = new CopyOnWriteArrayList<>();
     protected Set<DefaultAttachment> defaultAttachments = new HashSet<>();
@@ -104,7 +108,10 @@ public class SpongeUserManager implements UserManager
         em.registerListener(core, new UserListener(this, tm, core));
         em.registerListener(core, new AttachmentHookListener(this));
 
-        reflector.getDefaultConverterManager().registerConverter(new UserConverter(this), User.class);
+        ConverterManager manager = reflector.getDefaultConverterManager();
+        manager.registerConverter(new UserConverter(this), User.class);
+        manager.registerConverter(new PlayerConverter(this, game), org.spongepowered.api.entity.player.User.class);
+
     }
 
     @Override
@@ -356,8 +363,7 @@ public class SpongeUserManager implements UserManager
     {
         for (Player player : core.getGame().getServer().getOnlinePlayers())
         {
-            player.kick(fromLegacy(i18n.getTranslation(NONE, player.getLocale(), message).getTranslation().get(
-                player.getLocale()), '&'));
+            player.kick(i18n.getTranslation(player.getLocale(), NONE, message));
         }
     }
 

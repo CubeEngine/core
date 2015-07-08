@@ -15,12 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n.formatter;
 
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import de.cubeisland.engine.messagecompositor.parser.formatter.PostProcessor;
 import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
-import de.cubeisland.engine.messagecompositor.macro.PostProcessor;
-import de.cubeisland.engine.messagecompositor.macro.Reader;
+import de.cubeisland.engine.service.i18n.StyledComponent;
+
+import static de.cubeisland.engine.module.core.util.ChatFormat.GOLD;
 
 public class ColorPostProcessor implements PostProcessor
 {
@@ -28,7 +31,7 @@ public class ColorPostProcessor implements PostProcessor
 
     public ColorPostProcessor()
     {
-        this(ChatFormat.GOLD);
+        this(GOLD);
     }
 
     public ColorPostProcessor(ChatFormat defaultColor)
@@ -37,31 +40,21 @@ public class ColorPostProcessor implements PostProcessor
     }
 
     @Override
-    public String process(String object, MacroContext context)
+    public MessageComponent process(MessageComponent component, Context context)
     {
-        ChatFormat color = context.readMapped("color", ChatFormat.class);
-        if (color == null)
+        // TODO only format macros
+        String colorString = context.get("color");
+        ChatFormat color = defaultColor;
+        if (colorString != null)
         {
-            color = defaultColor;
-        }
-        String source = context.getSourceMessage();
-        if (source.length() > 2 && source.charAt(0) == ChatFormat.BASE_CHAR)
-        {
-            ChatFormat byChar = ChatFormat.getByChar(source.charAt(1));
-            if (byChar != null)
+            try
             {
-                return color + ChatFormat.stripFormats(object) + byChar;
+                color = ChatFormat.valueOf(colorString);
+            }
+            catch (IllegalArgumentException ignored)
+            {
             }
         }
-        return color + object + ChatFormat.RESET;
-    }
-
-    public static class ColorReader implements Reader<ChatFormat>
-    {
-        @Override
-        public ChatFormat read(String raw)
-        {
-            return ChatFormat.valueOf(raw.toUpperCase());
-        }
+        return new StyledComponent(color.getBase(), component);
     }
 }

@@ -15,32 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.module.core.util.formatter;
+package de.cubeisland.engine.service.i18n;
 
-import java.util.Set;
-import de.cubeisland.engine.messagecompositor.macro.ConstantMacro;
-import de.cubeisland.engine.messagecompositor.macro.MacroContext;
+import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
+import de.cubeisland.engine.messagecompositor.parser.component.Text;
+import org.spongepowered.api.text.format.BaseFormatting;
 
-import static de.cubeisland.engine.messagecompositor.macro.AbstractFormatter.toSet;
-
-public class TextMacro extends ConstantMacro
+public class StyledComponent implements MessageComponent
 {
-    private final Set<String> names;
+    private final BaseFormatting format;
+    private final MessageComponent component;
 
-    public TextMacro()
+    public StyledComponent(BaseFormatting format, MessageComponent component)
     {
-        this.names = toSet("text");
+        this.format = format;
+        this.component = component;
     }
 
-    @Override
-    public String process(MacroContext macroContext)
+    public StyledComponent(BaseFormatting format, String text)
     {
-        return macroContext.getArg(0);
+        this(format, new Text(text));
     }
 
-    @Override
-    public Set<String> names()
+    public BaseFormatting getFormat()
     {
-        return this.names;
+        return format;
+    }
+
+    public MessageComponent getComponent()
+    {
+        return component;
     }
 }

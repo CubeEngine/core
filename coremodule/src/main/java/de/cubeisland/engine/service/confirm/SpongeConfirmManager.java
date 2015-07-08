@@ -34,7 +34,7 @@ import de.cubeisland.engine.module.core.contract.NotNull;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.service.task.TaskManager;
 import de.cubeisland.engine.module.core.util.Pair;
-import de.cubeisland.engine.module.core.util.formatter.MessageType;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 
 @ServiceImpl(ConfirmManager.class)
 @Version(1)

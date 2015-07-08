@@ -23,13 +23,14 @@ import java.util.Map;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 
 public class DifficultyReader implements ArgumentReader<Difficulty>
 {
@@ -61,7 +62,7 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
             Difficulty difficulty = difficultyMap.get(Integer.valueOf(token));
             if (difficulty == null)
             {
-                throw new ReaderException(i18n.translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
+                throw new TranslatedReaderException(i18n.translate(locale, NEGATIVE, "The given difficulty level is unknown!"));
             }
             return difficulty;
         }
@@ -74,7 +75,7 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
                     return difficulty;
                 }
             }
-            throw new ReaderException(i18n.translate(locale, NEGATIVE, "{input} is not a known difficulty!", token));
+            throw new TranslatedReaderException(i18n.translate(locale, NEGATIVE, "{input} is not a known difficulty!", token));
         }
     }
 }

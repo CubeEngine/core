@@ -24,12 +24,13 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
+import de.cubeisland.engine.service.command.TranslatedReaderException;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
-import static de.cubeisland.engine.module.core.util.formatter.MessageType.NEGATIVE;
+import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 
 public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
@@ -49,7 +50,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
         Optional<World> world = wm.getWorld(name);
         if (!world.isPresent())
         {
-            throw new ReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
+            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
         }
         return world.get();
     }
