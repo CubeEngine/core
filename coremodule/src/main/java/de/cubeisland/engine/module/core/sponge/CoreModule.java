@@ -68,6 +68,7 @@ import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.service.task.TaskManager;
 import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.service.world.WorldManager;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
