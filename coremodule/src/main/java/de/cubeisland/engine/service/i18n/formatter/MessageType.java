@@ -65,6 +65,11 @@ public class MessageType implements TextColor.Base
         this.color = () -> color;
     }
 
+    public TextColor.Base getSpongeColor()
+    {
+        return color.getColor();
+    }
+
     public interface ColorProvider
     {
         TextColor.Base getColor();

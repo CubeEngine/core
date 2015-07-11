@@ -25,7 +25,7 @@ import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
 import de.cubeisland.engine.module.core.util.math.BlockVector2;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
-import de.cubeisland.engine.service.i18n.StyledComponent;
+import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
 
 import static org.spongepowered.api.text.format.TextColors.*;
 

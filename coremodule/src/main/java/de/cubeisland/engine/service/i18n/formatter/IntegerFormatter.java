@@ -22,7 +22,7 @@ import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
-import de.cubeisland.engine.service.i18n.StyledComponent;
+import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.text.format.TextColors;
 
 @Names({"amount", "integer", "long", "short"})

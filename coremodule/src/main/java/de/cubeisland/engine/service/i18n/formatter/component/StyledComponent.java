@@ -15,11 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.cubeisland.engine.service.i18n;
+package de.cubeisland.engine.service.i18n.formatter.component;
 
 import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
 import de.cubeisland.engine.messagecompositor.parser.component.Text;
 import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.format.TextStyle;
 
 public class StyledComponent implements MessageComponent
 {
@@ -45,5 +47,25 @@ public class StyledComponent implements MessageComponent
     public MessageComponent getComponent()
     {
         return component;
+    }
+
+    public static MessageComponent colored(TextColor.Base color, MessageComponent component)
+    {
+        return new StyledComponent(color, component);
+    }
+
+    public static MessageComponent styled(TextStyle.Base style, MessageComponent component)
+    {
+        return new StyledComponent(style, component);
+    }
+
+    public static MessageComponent colored(TextColor.Base color, String text)
+    {
+        return new StyledComponent(color, text);
+    }
+
+    public static MessageComponent styled(TextStyle.Base style, String text)
+    {
+        return new StyledComponent(style, text);
     }
 }

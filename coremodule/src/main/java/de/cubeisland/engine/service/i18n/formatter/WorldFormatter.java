@@ -18,14 +18,13 @@
 package de.cubeisland.engine.service.i18n.formatter;
 
 import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
 import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
 import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
-import de.cubeisland.engine.service.i18n.StyledComponent;
 import org.spongepowered.api.world.World;
 
+import static de.cubeisland.engine.service.i18n.formatter.component.StyledComponent.colored;
 import static org.spongepowered.api.text.format.TextColors.GOLD;
 
 @Names("world")
@@ -34,6 +33,6 @@ public class WorldFormatter extends ReflectedFormatter
     @Format
     public MessageComponent format(World world, Context context)
     {
-        return new StyledComponent(GOLD, new Text(world.getName()));
+        return colored(GOLD, world.getName());
     }
 }

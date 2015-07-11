@@ -17,11 +17,12 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
+import de.cubeisland.engine.messagecompositor.parser.component.FoundFormatter;
 import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
 import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
 import de.cubeisland.engine.messagecompositor.parser.formatter.PostProcessor;
 import de.cubeisland.engine.module.core.util.ChatFormat;
-import de.cubeisland.engine.service.i18n.StyledComponent;
+import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
 
 import static de.cubeisland.engine.module.core.util.ChatFormat.GOLD;
 
@@ -42,7 +43,10 @@ public class ColorPostProcessor implements PostProcessor
     @Override
     public MessageComponent process(MessageComponent component, Context context)
     {
-        // TODO only format macros
+        if (!(component instanceof FoundFormatter))
+        {
+            return component;
+        }
         String colorString = context.get("color");
         ChatFormat color = defaultColor;
         if (colorString != null)
@@ -54,6 +58,10 @@ public class ColorPostProcessor implements PostProcessor
             catch (IllegalArgumentException ignored)
             {
             }
+        }
+        else if (defaultColor == ChatFormat.RESET)
+        {
+            return component;
         }
         return new StyledComponent(color.getBase(), component);
     }

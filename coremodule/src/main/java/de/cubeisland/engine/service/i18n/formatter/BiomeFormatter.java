@@ -20,7 +20,7 @@ package de.cubeisland.engine.service.i18n.formatter;
 import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
 import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
 import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.service.i18n.StyledComponent;
+import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_AQUA;
