@@ -17,11 +17,11 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.reflected.Format;
+import org.cubeengine.dirigent.formatter.reflected.Names;
+import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.spongepowered.api.world.World;
 
 import static de.cubeisland.engine.service.i18n.formatter.component.StyledComponent.colored;
@@ -31,7 +31,7 @@ import static org.spongepowered.api.text.format.TextColors.GOLD;
 public class WorldFormatter extends ReflectedFormatter
 {
     @Format
-    public MessageComponent format(World world, Context context)
+    public Component format(World world, Context context)
     {
         return colored(GOLD, world.getName());
     }

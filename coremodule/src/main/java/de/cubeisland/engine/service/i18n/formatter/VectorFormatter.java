@@ -17,15 +17,15 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.ChainedComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
 import de.cubeisland.engine.module.core.util.math.BlockVector2;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.reflected.Format;
+import org.cubeengine.dirigent.formatter.reflected.Names;
+import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
+import org.cubeengine.dirigent.parser.component.ChainedComponent;
+import org.cubeengine.dirigent.Component;
 
 import static org.spongepowered.api.text.format.TextColors.*;
 
@@ -33,7 +33,7 @@ import static org.spongepowered.api.text.format.TextColors.*;
 public class VectorFormatter extends ReflectedFormatter
 {
     @Format
-    public MessageComponent format(BlockVector2 v, Context context)
+    public Component format(BlockVector2 v, Context context)
     {
         String arg0 = context.getFlag(0);
         String arg1 = context.getFlag(1);
@@ -55,7 +55,7 @@ public class VectorFormatter extends ReflectedFormatter
     }
 
     @Format
-    public MessageComponent format(BlockVector3 v, Context context)
+    public Component format(BlockVector3 v, Context context)
     {
         String arg0 = context.getFlag(0);
         String arg1 = context.getFlag(1);

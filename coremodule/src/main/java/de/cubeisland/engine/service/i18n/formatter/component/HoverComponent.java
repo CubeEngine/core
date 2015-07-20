@@ -17,23 +17,20 @@
  */
 package de.cubeisland.engine.service.i18n.formatter.component;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.parser.component.Text;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.HoverAction;
-import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextStyle;
 
-public class HoverComponent implements MessageComponent
+public class HoverComponent implements Component
 {
     private final Object hover;
-    private final MessageComponent component;
+    private final Component component;
 
-    private HoverComponent(Object hover, MessageComponent component)
+    private HoverComponent(Object hover, Component component)
     {
         this.hover = hover;
         this.component = component;
@@ -49,57 +46,57 @@ public class HoverComponent implements MessageComponent
         return hover;
     }
 
-    public MessageComponent getComponent()
+    public Component getComponent()
     {
         return component;
     }
 
-    public static MessageComponent hoverAchievment(Achievement achievement, MessageComponent component)
+    public static Component hoverAchievment(Achievement achievement, Component component)
     {
         return new HoverComponent(achievement, component);
     }
 
-    public static MessageComponent hoverItem(ItemStack item, MessageComponent component)
+    public static Component hoverItem(ItemStack item, Component component)
     {
         return new HoverComponent(item, component);
     }
 
-    public static MessageComponent hoverEntity(Entity entity, String name, MessageComponent component)
+    public static Component hoverEntity(Entity entity, String name, Component component)
     {
         return new HoverComponent(new HoverAction.ShowEntity.Ref(entity, name), component);
     }
 
-    public static MessageComponent hoverText(org.spongepowered.api.text.Text text, MessageComponent component)
+    public static Component hoverText(org.spongepowered.api.text.Text text, Component component)
     {
         return new HoverComponent(text, component);
     }
 
-    public static MessageComponent hoverText(String text, MessageComponent component)
+    public static Component hoverText(String text, Component component)
     {
         return new HoverComponent(Texts.of(text), component);
     }
 
-    public static MessageComponent hoverAchievment(Achievement achievement, String component)
+    public static Component hoverAchievment(Achievement achievement, String component)
     {
         return new HoverComponent(achievement, component);
     }
 
-    public static MessageComponent hoverItem(ItemStack item, String component)
+    public static Component hoverItem(ItemStack item, String component)
     {
         return new HoverComponent(item, component);
     }
 
-    public static MessageComponent hoverEntity(Entity entity, String name, String component)
+    public static Component hoverEntity(Entity entity, String name, String component)
     {
         return new HoverComponent(new HoverAction.ShowEntity.Ref(entity, name), component);
     }
 
-    public static MessageComponent hoverText(org.spongepowered.api.text.Text text, String component)
+    public static Component hoverText(org.spongepowered.api.text.Text text, String component)
     {
         return new HoverComponent(text, component);
     }
 
-    public static MessageComponent hoverText(String text, String component)
+    public static Component hoverText(String text, String component)
     {
         return new HoverComponent(Texts.of(text), component);
     }

@@ -17,18 +17,18 @@
  */
 package de.cubeisland.engine.service.i18n.formatter.component;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.parser.component.Text;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextStyle;
 
-public class StyledComponent implements MessageComponent
+public class StyledComponent implements Component
 {
     private final BaseFormatting format;
-    private final MessageComponent component;
+    private final Component component;
 
-    public StyledComponent(BaseFormatting format, MessageComponent component)
+    public StyledComponent(BaseFormatting format, Component component)
     {
         this.format = format;
         this.component = component;
@@ -44,27 +44,27 @@ public class StyledComponent implements MessageComponent
         return format;
     }
 
-    public MessageComponent getComponent()
+    public Component getComponent()
     {
         return component;
     }
 
-    public static MessageComponent colored(TextColor.Base color, MessageComponent component)
+    public static Component colored(TextColor.Base color, Component component)
     {
         return new StyledComponent(color, component);
     }
 
-    public static MessageComponent styled(TextStyle.Base style, MessageComponent component)
+    public static Component styled(TextStyle.Base style, Component component)
     {
         return new StyledComponent(style, component);
     }
 
-    public static MessageComponent colored(TextColor.Base color, String text)
+    public static Component colored(TextColor.Base color, String text)
     {
         return new StyledComponent(color, text);
     }
 
-    public static MessageComponent styled(TextStyle.Base style, String text)
+    public static Component styled(TextStyle.Base style, String text)
     {
         return new StyledComponent(style, text);
     }

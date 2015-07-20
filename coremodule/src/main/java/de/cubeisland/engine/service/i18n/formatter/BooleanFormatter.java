@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
-import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.AbstractFormatter;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.parser.component.Text;
 
 public class BooleanFormatter extends AbstractFormatter<Boolean>
 {
@@ -30,7 +30,7 @@ public class BooleanFormatter extends AbstractFormatter<Boolean>
     }
 
     @Override
-    public MessageComponent format(Boolean object, Context context)
+    public Component format(Boolean object, Context context)
     {
         return new Text(String.valueOf(object)); // TODO translation ?
     }

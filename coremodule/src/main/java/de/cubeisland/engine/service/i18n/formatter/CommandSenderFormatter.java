@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.reflected.Format;
+import org.cubeengine.dirigent.formatter.reflected.Names;
+import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.spongepowered.api.entity.Tamer;
 import org.spongepowered.api.util.command.CommandSource;
 
@@ -32,25 +32,25 @@ import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;
 public class CommandSenderFormatter extends ReflectedFormatter
 {
     @Format
-    public MessageComponent format(String string, Context context)
+    public Component format(String string, Context context)
     {
         return new StyledComponent(DARK_GREEN, string);
     }
 
     @Format
-    public MessageComponent format(CommandSource sender, Context context)
+    public Component format(CommandSource sender, Context context)
     {
         return this.format(sender.getName(), context);
     }
 
     @Format
-    public MessageComponent format(de.cubeisland.engine.butler.CommandSource sender, Context context)
+    public Component format(de.cubeisland.engine.butler.CommandSource sender, Context context)
     {
         return this.format(sender.getName(), context);
     }
 
     @Format
-    public MessageComponent format(Tamer tamer, Context context) // includes OfflinePlayer as it implements AnimalTamer
+    public Component format(Tamer tamer, Context context) // includes OfflinePlayer as it implements AnimalTamer
     {
         return this.format(tamer.getName(), context);
     }

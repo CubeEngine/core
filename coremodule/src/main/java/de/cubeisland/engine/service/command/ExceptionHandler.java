@@ -122,7 +122,7 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
             {
                 String[] parts = element.toString().split("\\(");
                 parts[1] = parts[1].replace(")", "");
-                boolean our = parts[0].startsWith("de.cubeisland.engine");
+                boolean our = parts[0].startsWith("de.cubeisland") || parts[0].startsWith("org.cubeengine");
                 String[] lineParts = parts[1].split(":");
                 TextBuilder lineBuilder = Texts.builder().append(Texts.of(our ? GOLD : GRAY, lineParts[0]));
                 if (lineParts.length == 2)

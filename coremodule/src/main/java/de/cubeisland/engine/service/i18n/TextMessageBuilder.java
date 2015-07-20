@@ -18,13 +18,12 @@
 package de.cubeisland.engine.service.i18n;
 
 import java.net.URL;
-import de.cubeisland.engine.messagecompositor.parser.component.ErrorComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.ErrorText;
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.MessageBuilder;
 import de.cubeisland.engine.service.i18n.formatter.component.ClickComponent;
 import de.cubeisland.engine.service.i18n.formatter.component.HoverComponent;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.builder.MessageBuilder;
+import org.cubeengine.dirigent.parser.component.ErrorComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.Text;
@@ -37,7 +36,6 @@ import org.spongepowered.api.text.action.HoverAction.ShowEntity;
 import org.spongepowered.api.text.action.HoverAction.ShowItem;
 import org.spongepowered.api.text.action.HoverAction.ShowText;
 import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_RED;
@@ -58,13 +56,13 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
     }
 
     @Override
-    public void build(de.cubeisland.engine.messagecompositor.parser.component.Text component, TextBuilder builder)
+    public void build(org.cubeengine.dirigent.parser.component.Text component, TextBuilder builder)
     {
         builder.append(Texts.of(component.getString()));
     }
 
     @Override
-    public void buildOther(MessageComponent component, TextBuilder builder)
+    public void buildOther(Component component, TextBuilder builder)
     {
         if (component instanceof StyledComponent)
         {
@@ -144,9 +142,9 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
     public void build(ErrorComponent component, TextBuilder builder)
     {
         TextBuilder b = Texts.builder();
-        if (component instanceof ErrorText)
+        if (component instanceof org.cubeengine.dirigent.parser.component.Text)
         {
-            b.append(Texts.of(DARK_RED, ((ErrorText)component).getString()));
+            b.append(Texts.of(DARK_RED, ((org.cubeengine.dirigent.parser.component.Text)component).getString()));
         }
         else
         {

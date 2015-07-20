@@ -17,31 +17,31 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Format;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.Names;
-import de.cubeisland.engine.messagecompositor.parser.formatter.reflected.ReflectedFormatter;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.reflected.Format;
+import org.cubeengine.dirigent.formatter.reflected.Names;
+import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.spongepowered.api.text.format.TextColors;
 
 @Names({"amount", "integer", "long", "short"})
 public class IntegerFormatter extends ReflectedFormatter
 {
     @Format
-    public MessageComponent format(Integer i, Context context)
+    public Component format(Integer i, Context context)
     {
         return new StyledComponent(TextColors.GOLD, String.valueOf(i));
     }
 
     @Format
-    public MessageComponent format(Long l, Context context)
+    public Component format(Long l, Context context)
     {
         return new StyledComponent(TextColors.GOLD, String.valueOf(l));
     }
 
     @Format
-    public MessageComponent format(Short s, Context context)
+    public Component format(Short s, Context context)
     {
         return new StyledComponent(TextColors.GOLD, String.valueOf(s));
     }

@@ -18,10 +18,10 @@
 package de.cubeisland.engine.service.i18n.formatter;
 
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
-import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.AbstractFormatter;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.parser.component.Text;
 
 public class StringFormatter extends AbstractFormatter<String>
 {
@@ -31,7 +31,7 @@ public class StringFormatter extends AbstractFormatter<String>
     }
 
     @Override
-    public MessageComponent format(String object, Context context)
+    public Component format(String object, Context context)
     {
         return new Text(object);
     }

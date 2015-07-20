@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.FoundFormatter;
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
-import de.cubeisland.engine.messagecompositor.parser.formatter.PostProcessor;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.PostProcessor;
+import org.cubeengine.dirigent.parser.component.FoundFormatter;
 
 import static de.cubeisland.engine.module.core.util.ChatFormat.GOLD;
 
@@ -41,7 +41,7 @@ public class ColorPostProcessor implements PostProcessor
     }
 
     @Override
-    public MessageComponent process(MessageComponent component, Context context)
+    public Component process(Component component, Context context)
     {
         if (!(component instanceof FoundFormatter))
         {

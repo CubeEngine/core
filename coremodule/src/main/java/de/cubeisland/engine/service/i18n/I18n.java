@@ -48,11 +48,12 @@ import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.messagecompositor.parser.BuilderMessageCompositor;
-import de.cubeisland.engine.messagecompositor.parser.formatter.example.DecimalFormatter;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.module.core.util.ChatFormat;
+import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
+import de.cubeisland.engine.reflect.Reflector;
+import de.cubeisland.engine.service.filesystem.FileExtensionFilter;
+import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.formatter.BiomeFormatter;
 import de.cubeisland.engine.service.i18n.formatter.BooleanFormatter;
 import de.cubeisland.engine.service.i18n.formatter.ColorPostProcessor;
@@ -63,17 +64,13 @@ import de.cubeisland.engine.service.i18n.formatter.StringFormatter;
 import de.cubeisland.engine.service.i18n.formatter.TextMacro;
 import de.cubeisland.engine.service.i18n.formatter.VectorFormatter;
 import de.cubeisland.engine.service.i18n.formatter.WorldFormatter;
-import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
-import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.service.filesystem.FileExtensionFilter;
-import de.cubeisland.engine.service.filesystem.FileManager;
+import org.cubeengine.dirigent.builder.BuilderDirigent;
+import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Translatable;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextStyle.Base;
 
 import static java.util.stream.Collectors.toList;
 
@@ -83,7 +80,7 @@ public class I18n
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
-    private BuilderMessageCompositor<Text, TextBuilder> compositor;
+    private BuilderDirigent<Text, TextBuilder> compositor;
 
     @Inject
     private Log log;
@@ -99,7 +96,7 @@ public class I18n
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
         this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(reflector, fm, log), getDefaultLocale());
-        this.compositor = new BuilderMessageCompositor<>(new TextMessageBuilder());
+        this.compositor = new BuilderDirigent<>(new TextMessageBuilder());
 
         compositor.registerFormatter(new WorldFormatter());
         compositor.registerFormatter(new StringFormatter());
@@ -114,7 +111,7 @@ public class I18n
         compositor.addPostProcessor(new ColorPostProcessor());
     }
 
-    public BuilderMessageCompositor<Text, TextBuilder> getCompositor()
+    public BuilderDirigent<Text, TextBuilder> getCompositor()
     {
         return compositor;
     }
@@ -205,7 +202,7 @@ public class I18n
         {
             format = ((MessageType)format).getSpongeColor();
         }
-        return compositor.composeMessage(locale, message, args).builder().color(((TextColor)format)).build();
+        return compositor.compose(locale, message, args).builder().color(((TextColor)format)).build();
     }
 
     public Text translateN(BaseFormatting format, int n, String singular, String plural, Object... args)

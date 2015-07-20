@@ -19,17 +19,17 @@ package de.cubeisland.engine.service.i18n.formatter;
 
 import java.util.Collections;
 import java.util.Set;
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
-import de.cubeisland.engine.messagecompositor.parser.formatter.ConstantFormatter;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.ConstantFormatter;
+import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.parser.component.Text;
 
 public class TextMacro extends ConstantFormatter
 {
     private final Set<String> names= Collections.singleton("text");// new HashSet<>(Arrays.asList("text"));
 
     @Override
-    public MessageComponent format(Context context)
+    public Component format(Context context)
     {
         return new Text(context.getFlag(0));
     }

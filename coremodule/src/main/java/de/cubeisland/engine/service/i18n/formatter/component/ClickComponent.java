@@ -18,20 +18,15 @@
 package de.cubeisland.engine.service.i18n.formatter.component;
 
 import java.net.URL;
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.component.Text;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.statistic.achievement.Achievement;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.action.HoverAction;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.parser.component.Text;
 
-public class ClickComponent implements MessageComponent
+public class ClickComponent implements Component
 {
     private final Object click;
-    private final MessageComponent component;
+    private final Component component;
 
-    private ClickComponent(Object hover, MessageComponent component)
+    private ClickComponent(Object hover, Component component)
     {
         this.click = hover;
         this.component = component;
@@ -47,27 +42,27 @@ public class ClickComponent implements MessageComponent
         return click;
     }
 
-    public MessageComponent getComponent()
+    public Component getComponent()
     {
         return component;
     }
 
-    public static MessageComponent openURL(URL url, MessageComponent component)
+    public static Component openURL(URL url, Component component)
     {
         return new ClickComponent(url, component);
     }
 
-    public static MessageComponent runCommand(String command, MessageComponent component)
+    public static Component runCommand(String command, Component component)
     {
         return new ClickComponent(command, component);
     }
 
-    public static MessageComponent openURL(URL url, String text)
+    public static Component openURL(URL url, String text)
     {
         return new ClickComponent(url, text);
     }
 
-    public static MessageComponent runCommand(String command, String text)
+    public static Component runCommand(String command, String text)
     {
         return new ClickComponent(command, text);
     }

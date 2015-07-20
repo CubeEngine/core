@@ -17,10 +17,10 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import de.cubeisland.engine.messagecompositor.parser.component.MessageComponent;
-import de.cubeisland.engine.messagecompositor.parser.formatter.AbstractFormatter;
-import de.cubeisland.engine.messagecompositor.parser.formatter.Context;
 import de.cubeisland.engine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.formatter.AbstractFormatter;
+import org.cubeengine.dirigent.formatter.Context;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_AQUA;
@@ -33,7 +33,7 @@ public class BiomeFormatter extends AbstractFormatter<BiomeType>
     }
 
     @Override
-    protected MessageComponent format(BiomeType arg, Context context)
+    protected Component format(BiomeType arg, Context context)
     {
         return new StyledComponent(DARK_AQUA, arg.getName()); // TODO translation
     }
