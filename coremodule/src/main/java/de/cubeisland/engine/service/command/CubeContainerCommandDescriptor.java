@@ -19,12 +19,16 @@ package de.cubeisland.engine.service.command;
 
 import de.cubeisland.engine.butler.parametric.ContainerCommandDescriptor;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
+import de.cubeisland.engine.service.permission.PermissionManager;
+import org.spongepowered.api.service.permission.PermissionDescription;
+
+import static de.cubeisland.engine.service.command.CubeCommandDescriptor.registerParameterPermissions;
 
 public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor implements CubeDescriptor
 {
     private boolean loggable;
-    private Permission permission;
+    private RawPermission permission;
     private boolean checkPerm;
     private Module module;
 
@@ -39,14 +43,24 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
         return loggable;
     }
 
-    public void setPermission(Permission permission, boolean checkPerm)
+    public void setPermission(RawPermission permission, boolean checkPerm)
     {
         this.permission = permission;
         this.checkPerm = checkPerm;
     }
 
     @Override
-    public Permission getPermission()
+    public PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent)
+    {
+        if (!getPermission().isRegistered())
+        {
+            getPermission().fallbackDescription("Allows using the command " + getName()).registerPermission(module, pm, parent);
+        }
+        return getPermission().getRegistered();
+    }
+
+    @Override
+    public RawPermission getPermission()
     {
         return permission;
     }

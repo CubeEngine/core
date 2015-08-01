@@ -19,17 +19,16 @@ package de.cubeisland.engine.service.webapi;
 
 import java.util.LinkedHashMap;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.service.permission.Permission;
 
 public abstract class ApiHandler
 {
     private final Module module;
     private final String route; // and command (for ws)
-    private final Permission permission;
+    private final String permission;
     private final LinkedHashMap<String, Class> parameters;
     private final RequestMethod reqMethod;
 
-    protected ApiHandler(Module module, String route, Permission perm, LinkedHashMap<String, Class> params, RequestMethod reqMethod)
+    protected ApiHandler(Module module, String route, String perm, LinkedHashMap<String, Class> params, RequestMethod reqMethod)
     {
         this.module = module;
         this.route = route;
@@ -50,7 +49,7 @@ public abstract class ApiHandler
         return route;
     }
 
-    public Permission getPermission()
+    public String getPermission()
     {
         return permission;
     }

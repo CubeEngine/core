@@ -18,6 +18,7 @@
 package de.cubeisland.engine.service.command;
 
 import java.lang.annotation.Annotation;
+import de.cubeisland.engine.butler.filter.Filters;
 import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.parametric.ParametricBuilder;
@@ -26,8 +27,7 @@ import de.cubeisland.engine.service.command.annotation.CommandPermission;
 import de.cubeisland.engine.service.command.annotation.ParameterPermission;
 import de.cubeisland.engine.service.command.annotation.Unloggable;
 import de.cubeisland.engine.service.command.property.PermissionProvider;
-import de.cubeisland.engine.service.permission.PermDefault;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
 
 import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
@@ -53,8 +53,16 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
                     throw new IllegalArgumentException("A Parameter cannot be required and have a permission"); // TODO custom execption
                 }
                 ParameterPermission annot = (ParameterPermission)annotation;
-                Permission paramPerm = descriptor.getPermission().child(annot.value(), annot.permDefault());
-                parameter.setProperty(new PermissionProvider(paramPerm));
+                PermissionProvider provider = new PermissionProvider(new RawPermission(annot.value(), annot.desc()));
+                parameter.setProperty(provider);
+
+                Filters filters = parameter.valueFor(Filters.class);
+                if (filters == null)
+                {
+                    filters = new Filters();
+                    parameter.setProperty(filters);
+                }
+                filters.addFilter(new PermissionFilter(provider.value()));
             }
         }
 
@@ -74,22 +82,21 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
         super.fillDescriptor(descriptor, annotation, origin);
 
         String permName = descriptor.getName();
+        String permDesc = null;
         boolean checkPerm = true;
-        PermDefault def = PermDefault.DEFAULT;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
-            def = perm.permDefault();
+            permDesc = perm.desc().isEmpty() ? null : perm.desc();
             checkPerm = perm.checkPermission();
         }
-        Permission permission = origin.getModule().getProvided(Permission.class).childWildcard("command").child(permName, def);
 
-        descriptor.setPermission(permission, checkPerm);
+        descriptor.setPermission(new RawPermission(permName + ".use", permDesc), checkPerm);
 
         if (checkPerm)
         {
-            descriptor.addFilter(new PermissionFilter(permission));
+            descriptor.addFilter(new PermissionFilter(descriptor.getPermission()));
         }
 
         descriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));

@@ -79,7 +79,6 @@ import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.logging.LoggingUtil;
 import de.cubeisland.engine.module.core.module.ModuleCommands;
-import de.cubeisland.engine.service.permission.Permission;
 import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
@@ -98,6 +97,7 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.command.CommandService;
+import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.util.command.CommandMapping;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.World;
@@ -153,18 +153,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     public void onEnable()
     {
         registerReaders(core, em);
-
-        // depends on: server, module manager, ban manager
-        this.addCommand(new ModuleCommands(core, core.getModularity(), core.getGame().getPluginManager(), cm, fm, i18n));
-        this.addCommand(new CoreCommands(core, cm, um));
-
-        if (core.getConfiguration().logging.logCommands)
-        {
-            commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
-                                                        LoggingUtil.getFileFormat(true, false),
-                                                        true, LoggingUtil.getCycler(),
-                                                        tf));
-        }
     }
 
     @Override
@@ -176,14 +164,14 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     public void registerReaders(CoreModule core, EventManager em)
     {
-        I18n i18n = core.getModularity().start(I18n.class);
+        I18n i18n = core.getModularity().getInstance(I18n.class);
 
-        MaterialDataMatcher materialDataMatcher = core.getModularity().start(MaterialDataMatcher.class);
-        EnchantMatcher enchantMatcher = core.getModularity().start(EnchantMatcher.class);
-        MaterialMatcher materialMatcher = core.getModularity().start(MaterialMatcher.class);
-        ProfessionMatcher professionMatcher = core.getModularity().start(ProfessionMatcher.class);
-        EntityMatcher entityMatcher = core.getModularity().start(EntityMatcher.class);
-        WorldManager wm = core.getModularity().start(WorldManager.class);
+        MaterialDataMatcher materialDataMatcher = core.getModularity().getInstance(MaterialDataMatcher.class);
+        EnchantMatcher enchantMatcher = core.getModularity().getInstance(EnchantMatcher.class);
+        MaterialMatcher materialMatcher = core.getModularity().getInstance(MaterialMatcher.class);
+        ProfessionMatcher professionMatcher = core.getModularity().getInstance(ProfessionMatcher.class);
+        EntityMatcher entityMatcher = core.getModularity().getInstance(EntityMatcher.class);
+        WorldManager wm = core.getModularity().getInstance(WorldManager.class);
 
         providerManager.register(core, new PlayerCompleter(um), User.class, org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);
@@ -288,11 +276,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         Module module = core;
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
-            module = ((CubeDescriptor)command.getDescriptor()).getModule();
-            Permission perm = module.getProvided(Permission.class).childWildcard("command");
-            Permission childPerm = ((CubeDescriptor)command.getDescriptor()).getPermission();
-            childPerm.setParent(perm);
-            pm.registerPermission(module, childPerm);
+            CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
+            module = descriptor.getModule();
+
+            PermissionDescription modulePerm = pm.getModulePermission(module);
+            pm.register(module, "command." + descriptor.getPermission(), "Allows using the command " + command.getDescriptor().getName(), modulePerm);
         }
         else if (command instanceof AliasCommand)
         {
@@ -325,6 +313,15 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
+    public void logCommands(boolean logCommands)
+    {
+        commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
+                                                    LoggingUtil.getFileFormat(true, false),
+                                                    true, LoggingUtil.getCycler(),
+                                                    tf));
+    }
+
+    @Override
     public boolean runCommand(CommandSender sender, String commandLine)
     {
         expect(isMainThread(), "Commands may only be called synchronously!");
@@ -341,7 +338,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         {
             return execute(new CommandInvocation(sender, commandLine, providerManager));
         }
-        return baseDispatcher.process(source, commandLine).isPresent();
+        return baseDispatcher.process(source, commandLine).getSuccessCount().isPresent();
     }
 
     @Override

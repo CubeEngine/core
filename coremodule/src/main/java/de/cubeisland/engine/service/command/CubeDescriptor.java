@@ -18,15 +18,19 @@
 package de.cubeisland.engine.service.command;
 
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
+import de.cubeisland.engine.service.permission.PermissionManager;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 public interface CubeDescriptor
 {
     boolean isLoggable();
 
-    Permission getPermission();
+    RawPermission getPermission();
 
     boolean isCheckPerm();
 
     Module getModule();
+
+    PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent);
 }

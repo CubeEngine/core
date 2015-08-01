@@ -39,7 +39,7 @@ public class AuthAttachment extends UserAttachment
         {
             isLoggedIn = this.checkPassword(password);
         }
-        getModule().getModularity().start(EventManager.class).fireEvent(new UserAuthorizedEvent(getModule(), getHolder()));
+        getModule().getModularity().getInstance(EventManager.class).fireEvent(new UserAuthorizedEvent(getModule(), getHolder()));
         return isLoggedIn;
     }
 
@@ -86,7 +86,7 @@ public class AuthAttachment extends UserAttachment
     @Override
     public void onAttach()
     {
-        DSLContext dsl = getModule().getModularity().start(Database.class).getDSL();
+        DSLContext dsl = getModule().getModularity().getInstance(Database.class).getDSL();
         auth = dsl.selectFrom(TABLE_AUTH).where(TABLE_AUTH.ID.eq(getHolder().getEntity().getId())).fetchOne();
         if (auth == null)
         {

@@ -17,14 +17,19 @@
  */
 package de.cubeisland.engine.service.command;
 
+import de.cubeisland.engine.butler.parameter.Parameter;
+import de.cubeisland.engine.butler.parameter.ParameterGroup;
 import de.cubeisland.engine.butler.parametric.ParametricCommandDescriptor;
 import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.PermissionProvider;
+import de.cubeisland.engine.service.command.property.RawPermission;
+import de.cubeisland.engine.service.permission.PermissionManager;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class CubeCommandDescriptor extends ParametricCommandDescriptor implements CubeDescriptor
 {
     private boolean loggable;
-    private Permission permission;
+    private RawPermission permission;
     private boolean checkPerm;
     private Module module;
 
@@ -39,16 +44,52 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
         return loggable;
     }
 
-    public void setPermission(Permission permission, boolean checkPerm)
+    public void setPermission(RawPermission permission, boolean checkPerm)
     {
         this.permission = permission;
         this.checkPerm = checkPerm;
     }
 
     @Override
-    public Permission getPermission()
+    public RawPermission getPermission()
     {
         return permission;
+    }
+
+    @Override
+    public PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent)
+    {
+        if (!getPermission().isRegistered())
+        {
+            PermissionDescription thisPerm = getPermission().fallbackDescription("Allows using the command " + getName()).registerPermission(module, pm, parent);
+            registerParameterPermissions(module, pm, thisPerm, getParameters());
+        }
+        return getPermission().getRegistered();
+    }
+
+    public static void registerParameterPermissions(Module module, PermissionManager pm, PermissionDescription thisPerm, Parameter parameter)
+    {
+        RawPermission rawPermission = parameter.valueFor(PermissionProvider.class);
+        if (rawPermission != null)
+        {
+            rawPermission.registerPermission(module, pm, thisPerm);
+        }
+
+        if (parameter instanceof ParameterGroup)
+        {
+            for (Parameter param : ((ParameterGroup)parameter).getPositional())
+            {
+                registerParameterPermissions(module, pm, thisPerm, param);
+            }
+            for (Parameter param : ((ParameterGroup)parameter).getNonPositional())
+            {
+                registerParameterPermissions(module, pm, thisPerm, param);
+            }
+            for (Parameter param : ((ParameterGroup)parameter).getFlags())
+            {
+                registerParameterPermissions(module, pm, thisPerm, param);
+            }
+        }
     }
 
     @Override

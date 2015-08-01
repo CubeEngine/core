@@ -46,10 +46,9 @@ import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.logging.LoggingUtil;
 import de.cubeisland.engine.service.command.CommandManager;
-import de.cubeisland.engine.service.permission.PermDefault;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.util.StringUtils;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.service.task.TaskManager;
 import de.cubeisland.engine.service.user.UserManager;
 import de.cubeisland.engine.service.webapi.exception.ApiStartupException;
@@ -104,6 +103,7 @@ public class ApiServer
     @Inject private I18n i18n;
     @Inject private TaskManager tm;
     @Inject private UserManager um;
+    @Inject private PermissionManager pm;
     private CoreModule module;
 
     @Inject
@@ -269,26 +269,25 @@ public class ApiServer
                 }
                 route = owner.getInformation().getName() + "/" + route;
                 route = HttpRequestHandler.normalizePath(route);
-                Permission perm = null;
+                String perm = null;
                 if (aAction.needsAuth())
                 {
-
-                    perm = owner.getProvided(Permission.class).childWildcard("webapi");
+                    perm = pm.getModulePermission(owner).getId() + ".webapi.";
                     if (method.isAnnotationPresent(ApiPermission.class))
                     {
                         ApiPermission apiPerm = method.getAnnotation(ApiPermission.class);
                         if (apiPerm.value().isEmpty())
                         {
-                            perm = perm.child(route, apiPerm.permDefault());
+                            perm = perm + route;
                         }
                         else
                         {
-                            perm = perm.child(apiPerm.value(), apiPerm.permDefault());
+                            perm = perm + apiPerm.value();
                         }
                     }
                     else
                     {
-                        perm = perm.child(route, PermDefault.DEFAULT);
+                        perm = perm + route;
                     }
                 }
                 LinkedHashMap<String, Class> params = new LinkedHashMap<>();

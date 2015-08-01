@@ -24,7 +24,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.CommandManager;
 import de.cubeisland.engine.service.command.ContainerCommand;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
 import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.service.user.User;
@@ -46,15 +46,13 @@ public abstract class ConversationCommand extends ContainerCommand
     protected ConversationCommand(Module module)
     {
         super(module);
-        module.getModularity().start(EventManager.class).registerListener(module, this);
-        cm = getModule().getModularity().start(CommandManager.class);
-        um = getModule().getModularity().start(UserManager.class);
+        module.getModularity().getInstance(EventManager.class).registerListener(module, this);
+        cm = getModule().getModularity().getInstance(CommandManager.class);
+        um = getModule().getModularity().getInstance(UserManager.class);
         getDescriptor().setDispatcher(cm); // needed for exceptionhandler
-        Permission childPerm = getDescriptor().getPermission();
-        childPerm.setParent(module.getProvided(Permission.class).childWildcard("command"));
-        module.getModularity().start(PermissionManager.class).registerPermission(module, childPerm);
+        RawPermission permission = getDescriptor().getPermission();
+        permission.registerPermission(module, module.getModularity().getInstance(PermissionManager.class), null);
         this.registerSubCommands();
-
     }
 
     public Module getModule()

@@ -25,9 +25,9 @@ import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.annotation.CommandPermission;
 import de.cubeisland.engine.service.command.annotation.Unloggable;
-import de.cubeisland.engine.service.permission.PermDefault;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
 import de.cubeisland.engine.service.permission.PermissionManager;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 {
@@ -35,19 +35,19 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 
     public ContainerCommand(Module module)
     {
-        super(new CubeContainerCommandDescriptor(), module.getModularity().start(CommandManager.class).getCommandBuilder());
-        pm = module.getModularity().start(PermissionManager.class);
+        super(new CubeContainerCommandDescriptor(), module.getModularity().getInstance(CommandManager.class).getCommandBuilder());
+        pm = module.getModularity().getInstance(PermissionManager.class);
         String permName = getDescriptor().getName();
+        String permDesc = null;
         boolean checkPerm = true;
-        PermDefault def = PermDefault.DEFAULT;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
-            def = perm.permDefault();
+            permDesc = perm.desc().isEmpty() ? null : perm.desc();
             checkPerm = perm.checkPermission();
         }
-        getDescriptor().setPermission(Permission.detachedPermission(permName, def), checkPerm);
+        getDescriptor().setPermission(new RawPermission(permName, permDesc), checkPerm);
         getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 
@@ -77,21 +77,19 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
     {
         if (!(command instanceof AliasCommand) && command.getDescriptor() instanceof CubeDescriptor)
         {
-            CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
-            Module module = descriptor.getModule();
-            Permission childPerm = descriptor.getPermission();
-            childPerm.setParent(this.getDescriptor().getPermission());
-            pm.registerPermission(module, childPerm);
+            PermissionDescription thisPerm = getPermission();
+            ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, thisPerm);
         }
         return super.addCommand(command);
     }
 
-    public Permission getPermission(String... alias)
+    public PermissionDescription getPermission(String... alias)
     {
         CommandBase command = this.getCommand(alias);
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
-            return ((CubeDescriptor)command.getDescriptor()).getPermission();
+
+            return  ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, null);// registers permission if not yet registered
         }
         return null;
     }

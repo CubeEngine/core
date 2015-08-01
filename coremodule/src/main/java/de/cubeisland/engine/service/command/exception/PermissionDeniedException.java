@@ -18,7 +18,9 @@
 package de.cubeisland.engine.service.command.exception;
 
 import de.cubeisland.engine.butler.CommandException;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.text.Texts;
 
 /**
  * This exception is thrown when a CommandSource is not allowed to perform an action.
@@ -26,25 +28,30 @@ import de.cubeisland.engine.service.permission.Permission;
  */
 public class PermissionDeniedException extends CommandException
 {
-    private final Permission permission;
+    private final RawPermission permission;
     private final boolean canCheck;
 
-    public PermissionDeniedException(Permission permission)
+    public PermissionDeniedException(RawPermission permission)
     {
         this(permission, true);
     }
 
-    public PermissionDeniedException(Permission permission, boolean canCheck)
+    public PermissionDeniedException(RawPermission permission, boolean canCheck)
     {
         this.permission = permission;
         this.canCheck = canCheck;
     }
 
-    public PermissionDeniedException(String message, Permission permission)
+    public PermissionDeniedException(RawPermission permission, String message)
     {
         super(message);
         this.permission = permission;
         this.canCheck = true;
+    }
+
+    public PermissionDeniedException(PermissionDescription description)
+    {
+        this(new RawPermission(description.getId(), Texts.toPlain(description.getDescription())));
     }
 
     /**
@@ -52,7 +59,7 @@ public class PermissionDeniedException extends CommandException
      *
      * @return the permission
      */
-    public Permission getPermission()
+    public RawPermission getPermission()
     {
         return permission;
     }

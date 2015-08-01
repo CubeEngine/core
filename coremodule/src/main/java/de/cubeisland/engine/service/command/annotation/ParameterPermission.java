@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.service.command.annotation;
 
-import de.cubeisland.engine.service.permission.PermDefault;
-
 public @interface ParameterPermission
 {
     String value() default "";
-    PermDefault permDefault() default PermDefault.OP;
+
+    String desc() default "";
 }

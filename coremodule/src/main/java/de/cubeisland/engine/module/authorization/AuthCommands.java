@@ -34,7 +34,6 @@ import de.cubeisland.engine.service.command.CommandContext;
 import de.cubeisland.engine.service.command.CommandSender;
 import de.cubeisland.engine.service.command.annotation.CommandPermission;
 import de.cubeisland.engine.service.command.annotation.Unloggable;
-import de.cubeisland.engine.service.permission.PermDefault;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserList;
 import org.spongepowered.api.Game;
@@ -105,7 +104,7 @@ public class AuthCommands
 
     @Unloggable
     @Command(desc = "Logs you in with your password!")
-    @CommandPermission(permDefault = PermDefault.TRUE)
+    @CommandPermission(checkPermission = false) // TODO assign by default
     @Restricted(value = User.class, msg = "Only players can log in!")
     public void login(User context, String password)
     {

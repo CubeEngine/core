@@ -23,10 +23,10 @@ import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
 
+import de.cubeisland.engine.service.command.property.RawPermission;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.command.sender.BlockCommandSender;
 import de.cubeisland.engine.service.command.sender.WrappedCommandSender;
-import de.cubeisland.engine.service.permission.Permission;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.service.user.UserManager;
 import org.spongepowered.api.entity.player.Player;
@@ -53,7 +53,7 @@ public class ProxyCallable implements CommandCallable
     }
 
     @Override
-    public Optional<CommandResult> process(CommandSource source, String arguments) throws CommandException
+    public CommandResult process(CommandSource source, String arguments) throws CommandException
     {
         try
         {
@@ -70,13 +70,13 @@ public class ProxyCallable implements CommandCallable
             }
 
             manager.logExecution(wrapSender, ran, alias, arguments);
-            return Optional.of(CommandResult.success());
+            return CommandResult.success();
         }
         catch (Exception e)
         {
             core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}",
                                 alias + " " + arguments);
-            return Optional.of(CommandResult.empty());
+            return CommandResult.empty();
         }
     }
 
@@ -100,10 +100,10 @@ public class ProxyCallable implements CommandCallable
         CommandDescriptor descriptor = getDescriptor();
         if (descriptor instanceof CubeCommandDescriptor)
         {
-            Permission permission = ((CubeCommandDescriptor)descriptor).getPermission();
+            RawPermission permission = ((CubeCommandDescriptor)descriptor).getPermission();
             if (permission != null)
             {
-                source.hasPermission(permission.getFullName());
+                source.hasPermission(permission.getName());
             }
         }
         return true;
@@ -134,18 +134,18 @@ public class ProxyCallable implements CommandCallable
 
     private CommandSender wrapSender(org.spongepowered.api.util.command.CommandSource spongeSender)
     {
-        I18n i18n = core.getModularity().start(I18n.class);
+        I18n i18n = core.getModularity().getInstance(I18n.class);
         if (spongeSender instanceof CommandSender)
         {
             return (CommandSender)spongeSender;
         }
         else if (spongeSender instanceof Player)
         {
-            return core.getModularity().start(UserManager.class).getExactUser(spongeSender.getName());
+            return core.getModularity().getInstance(UserManager.class).getExactUser(spongeSender.getName());
         }
         else if (spongeSender instanceof ConsoleSource)
         {
-            return core.getModularity().start(CommandManager.class).getConsoleSender();
+            return core.getModularity().getInstance(CommandManager.class).getConsoleSender();
         }
         else if (spongeSender instanceof CommandBlockSource)
         {

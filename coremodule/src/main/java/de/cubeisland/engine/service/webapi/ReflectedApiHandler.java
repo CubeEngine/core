@@ -27,7 +27,6 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.CommandManager;
-import de.cubeisland.engine.service.permission.Permission;
 
 public final class ReflectedApiHandler extends ApiHandler
 {
@@ -35,7 +34,7 @@ public final class ReflectedApiHandler extends ApiHandler
     private final Object holder;
     private final ProviderManager providerManager;
 
-    public ReflectedApiHandler(Module module, String route, Permission permission,
+    public ReflectedApiHandler(Module module, String route, String permission,
                                LinkedHashMap<String, Class> params, RequestMethod reqMethod, Method method,
                                Object holder)
     {
@@ -43,7 +42,7 @@ public final class ReflectedApiHandler extends ApiHandler
         this.method = method;
         this.method.setAccessible(true);
         this.holder = holder;
-        this.providerManager = module.getModularity().start(CommandManager.class).getProviderManager();
+        this.providerManager = module.getModularity().getInstance(CommandManager.class).getProviderManager();
     }
 
     @Override

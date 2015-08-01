@@ -43,8 +43,11 @@ import de.cubeisland.engine.modularity.asm.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
+import de.cubeisland.engine.module.core.module.ModuleCommands;
+import de.cubeisland.engine.service.command.CommandManager;
 import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.i18n.I18nLanguageLoader;
@@ -59,7 +62,6 @@ import de.cubeisland.engine.module.core.util.converter.EnchantmentConverter;
 import de.cubeisland.engine.module.core.util.converter.ItemStackConverter;
 import de.cubeisland.engine.module.core.util.converter.LevelConverter;
 import de.cubeisland.engine.module.core.util.converter.MaterialConverter;
-import de.cubeisland.engine.module.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.module.core.util.converter.VersionConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldConverter;
 import de.cubeisland.engine.module.core.util.converter.WorldLocationConverter;
@@ -68,7 +70,7 @@ import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
 import de.cubeisland.engine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.service.task.TaskManager;
 import de.cubeisland.engine.reflect.Reflector;
-import de.cubeisland.engine.service.world.WorldManager;
+import de.cubeisland.engine.service.user.UserManager;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
@@ -103,6 +105,8 @@ public final class CoreModule extends Module
     @Inject private ThreadFactory tf;
     @Inject private LogFactory logFactory;
     @Inject private I18n i18n;
+    @Inject private CommandManager cm;
+    @Inject private UserManager um;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -175,15 +179,22 @@ public final class CoreModule extends Module
         this.freezeDetection = new FreezeDetection(this, tm, 20);
         this.freezeDetection.addListener(this::dumpThreads);
         this.freezeDetection.start();
+
+
+        cm.logCommands(getConfiguration().logging.logCommands);
+
+        // depends on: server, module manager, ban manager
+        cm.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager(), cm, fm, i18n));
+        cm.addCommand(new CoreCommands(this, cm, um));
     }
 
     private void registerConverters(Reflector reflector)
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(getModularity().start(MaterialMatcher.class)), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(getModularity().start(MaterialMatcher.class)), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(getModularity().start(EnchantMatcher.class)), Enchantment.class);
+        manager.registerConverter(new ItemStackConverter(getModularity().getInstance(MaterialMatcher.class)), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(getModularity().getInstance(MaterialMatcher.class)), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(getModularity().getInstance(EnchantMatcher.class)), Enchantment.class);
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);

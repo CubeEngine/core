@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.asm.marker.Setup;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.contract.Contract;
 import de.cubeisland.engine.reflect.ReflectedFile;
@@ -64,7 +65,7 @@ public class FileManager
     private ConcurrentMap<Path, Resource> fileSources;
     private FileAttribute<?>[] folderCreateAttributes;
 
-    @Enable
+    @Setup
     public void onEnable()
     {
         try

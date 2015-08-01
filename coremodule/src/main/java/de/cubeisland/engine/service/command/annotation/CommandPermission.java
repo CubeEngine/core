@@ -22,7 +22,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import de.cubeisland.engine.service.permission.PermDefault;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,7 +37,8 @@ public @interface CommandPermission
      * 'cubeengine.<module>.command' will be prepended to this.
      */
     String value() default "";
-    PermDefault permDefault() default PermDefault.OP;
+
+    String desc() default "";
 }
 
 

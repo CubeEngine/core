@@ -17,19 +17,20 @@
  */
 package de.cubeisland.engine.service.command.property;
 
-import de.cubeisland.engine.butler.util.property.AbstractProperty;
-import de.cubeisland.engine.service.permission.Permission;
-import org.spongepowered.api.service.permission.Subject;
+import de.cubeisland.engine.butler.util.property.Property;
 
-public class PermissionProvider extends AbstractProperty<Permission>
+public class PermissionProvider implements Property<RawPermission>
 {
-    public PermissionProvider(Permission value)
+    private RawPermission permission;
+
+    public PermissionProvider(RawPermission permission)
     {
-        super(value);
+        this.permission = permission;
     }
 
-    public boolean isAuthorized(Subject permissible)
+    @Override
+    public RawPermission value()
     {
-        return value().isAuthorized(permissible);
+        return permission;
     }
 }

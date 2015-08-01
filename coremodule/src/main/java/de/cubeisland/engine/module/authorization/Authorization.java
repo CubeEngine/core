@@ -100,7 +100,7 @@ public class Authorization extends Module
     {
         cm.removeCommands(this);
         um.removeDefaultAttachments(this);
-        pm.removePermissions(this);
+        pm.cleanup(this);
     }
 
     private void loadSalt()

@@ -21,12 +21,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import de.cubeisland.engine.service.permission.PermDefault;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ApiPermission
 {
-    public String value();
-    public PermDefault permDefault() default PermDefault.OP;
+    String value();
 }

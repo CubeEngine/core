@@ -21,19 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.EnumSet;
-import java.util.concurrent.TimeUnit;
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.EntitySpawnEvent;
 import org.spongepowered.api.event.message.CommandEvent;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.event.state.PostInitializationEvent;
@@ -44,7 +37,6 @@ import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.util.RelativePositions;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
@@ -107,11 +99,11 @@ public class CubeEngineSpongePlugin
         modularity.load(loadPath.toFile());
         pluginLogger.info("done in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         delta = System.currentTimeMillis();
-        pluginLogger.info("Start Modules");
+        pluginLogger.info("Set up Modules");
         try
         {
-            modularity.startModules();
-            pluginLogger.info("Finished starting Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
+            modularity.setupModules();
+            pluginLogger.info("Finished setting up Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         }
         catch (Exception e)
         {
@@ -122,14 +114,19 @@ public class CubeEngineSpongePlugin
     @Subscribe
     public void init(InitializationEvent event)
     {
+
+        pluginLogger.info("Enable Modules");
+        long delta = System.currentTimeMillis();
+        modularity.enableModules();
+        pluginLogger.info("Finished enabling Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         // During this state, the plugin should finish any work needed in order to be functional.
         // Global event handlers and command registration are handled during initialization.
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
         game.getCommandDispatcher().register(this, CommandSpec.builder().description(Texts.of(
             "Reloads the CubeEngine")).executor((commandSource, commandContext) -> {
-            modularity.stopModules();
-            modularity.startModules();
+            modularity.disableModules();
+            modularity.enableModules();
             return CommandResult.success();
         }).build(), "reload");
     }

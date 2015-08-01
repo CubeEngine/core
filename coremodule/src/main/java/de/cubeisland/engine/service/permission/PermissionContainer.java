@@ -17,55 +17,22 @@
  */
 package de.cubeisland.engine.service.permission;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.HashSet;
-import java.util.Set;
 import de.cubeisland.engine.modularity.core.Module;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 public abstract class PermissionContainer<T extends Module>
 {
     public final T module;
-    private final PermissionManager pm;
+    protected final PermissionManager pm;
 
     public PermissionContainer(T module)
     {
         this.module = module;
-        pm = module.getModularity().start(PermissionManager.class);
+        pm = module.getModularity().getInstance(PermissionManager.class);
     }
 
-    private Set<Permission> getPermissions()
+    protected PermissionDescription register(String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
     {
-        HashSet<Permission> perms = new HashSet<>();
-        for (Field field : this.getClass().getFields())
-        {
-            int mask = field.getModifiers();
-            if (!((mask & Modifier.STATIC) == Modifier.STATIC)) // ignore static
-            {
-                if (Permission.class.isAssignableFrom(field.getType()))
-                {
-                    try
-                    {
-                        perms.add((Permission)field.get(this));
-                    }
-                    catch (IllegalAccessException ignored)
-                    {}
-                }
-            }
-        }
-        return perms;
-    }
-
-    public void registerAllPermissions()
-    {
-        for (Permission perm : getPermissions())
-        {
-            pm.registerPermission(module, perm);
-        }
-    }
-
-    public final Permission getBasePerm()
-    {
-        return module.getProvided(Permission.class);
+        return pm.register(module, permission, description, parent, assigned);
     }
 }

@@ -17,10 +17,9 @@
  */
 package de.cubeisland.engine.module.core;
 
-import de.cubeisland.engine.service.permission.Permission;
-import de.cubeisland.engine.service.permission.PermDefault;
-import de.cubeisland.engine.service.permission.PermissionContainer;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import de.cubeisland.engine.service.permission.PermissionContainer;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 @SuppressWarnings("all")
 public class CorePerms extends PermissionContainer<CoreModule>
@@ -28,17 +27,15 @@ public class CorePerms extends PermissionContainer<CoreModule>
     public CorePerms(CoreModule module)
     {
         super(module);
-        this.registerAllPermissions();
     }
 
-    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final PermissionDescription COMMAND = register("command", "Base Commands Permission", null);
+    public final PermissionDescription COMMAND_OP_NOTIFY = register("op.notify", "Shows notifications when op-Command is used", COMMAND);
 
-    public final Permission COMMAND_OP_NOTIFY = COMMAND.childWildcard("op").child("notify");
+    public final PermissionDescription COMMAND_DEOP_NOTIFY = register("deop.notify", "Shows notifications when deop-Command is used", COMMAND);
+    public final PermissionDescription COMMAND_DEOP_OTHER = register("deop.other", "Allow using deop on other players", COMMAND); // TODO PermDefaults?
 
-    private final Permission DEOP = COMMAND.childWildcard("deop");
-    public final Permission COMMAND_DEOP_NOTIFY = DEOP.child("notify");
-    public final Permission COMMAND_DEOP_OTHER = DEOP.child("other", PermDefault.FALSE);
-    public final Permission COMMAND_RELOAD_NOTIFY = COMMAND.childWildcard("reload").child("notify");
+    public final PermissionDescription COMMAND_RELOAD_NOTIFY = register("reload.notify", "Shows notifications when reloading the server", COMMAND);
 
-    public final Permission SPAM = getBasePerm().child("spam");
+    public final PermissionDescription SPAM = register("spam", "Prevents getting kicked for the Vanilla Spam Reason", null);
 }

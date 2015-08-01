@@ -45,7 +45,6 @@ import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
 import de.cubeisland.engine.module.core.util.converter.PlayerConverter;
 import de.cubeisland.engine.module.core.util.converter.UserConverter;
-import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import de.cubeisland.engine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
 import de.cubeisland.engine.service.command.CommandManager;
@@ -53,7 +52,7 @@ import de.cubeisland.engine.service.command.CommandSender;
 import de.cubeisland.engine.service.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.service.database.Database;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import de.cubeisland.engine.service.task.TaskManager;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
@@ -64,7 +63,6 @@ import org.spongepowered.api.service.user.UserStorage;
 import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColors;
 
-import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 import static de.cubeisland.engine.service.user.TableUser.TABLE_USER;
 import static java.lang.System.currentTimeMillis;
@@ -101,7 +99,7 @@ public class SpongeUserManager implements UserManager
     {
         database.registerTable(TableUser.class);
 
-        final long delay = (long)core.getConfiguration().usermanager.cleanup;
+        final long delay = 10; // TODO (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
         this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
 
@@ -296,27 +294,26 @@ public class SpongeUserManager implements UserManager
     }
 
     @Override
-    public void broadcastTranslatedWithPerm(MessageType messageType, String message, Permission perm, Object... params)
+    public void broadcastTranslatedWithPerm(MessageType messageType, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
             return;
         }
 
-        onlineUsers.stream().filter(user -> perm == null || perm.isAuthorized(user)).forEach(user -> user.sendTranslated(
+        onlineUsers.stream().filter(user -> perm == null || user.hasPermission(perm)).forEach(user -> user.sendTranslated(
             messageType, message, params));
         cm.getConsoleSender().sendTranslated(messageType, message, params);
     }
 
     @Override
-    public void broadcastMessageWithPerm(MessageType type, String message, Permission perm, Object... params)
+    public void broadcastMessageWithPerm(MessageType type, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
             return;
         }
-        onlineUsers.stream().filter(user -> perm == null || perm.isAuthorized(user)).forEach(user -> user.sendMessage(
-            NONE, message, params));
+        onlineUsers.stream().filter(user -> perm == null || user.hasPermission(perm)).forEach(user -> user.sendMessage(NONE, message, params));
         ConsoleCommandSender cSender = cm.getConsoleSender();
         cSender.sendMessage(i18n.composeMessage(cSender.getLocale(), type, message, params));
     }
@@ -476,7 +473,7 @@ public class SpongeUserManager implements UserManager
         {
             onlinePlayerMap.put(onlineUser.getName(), onlineUser);
         }
-        String foundUser = core.getModularity().start(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
+        String foundUser = core.getModularity().getInstance(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
             return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());

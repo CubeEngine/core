@@ -17,22 +17,19 @@
  */
 package de.cubeisland.engine.module.authorization;
 
-import de.cubeisland.engine.service.permission.Permission;
 import de.cubeisland.engine.service.permission.PermissionContainer;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class AuthPerms extends PermissionContainer<Authorization>
 {
     public AuthPerms(Authorization module)
     {
         super(module);
-        registerAllPermissions();
     }
 
-    private final Permission COMMAND = getBasePerm().childWildcard("command");
+    private final PermissionDescription COMMAND = register("command.", "Base Commands Permission", null);
 
-    private final Permission CLEARPASSWORD = COMMAND.childWildcard("clearpassword");
-    public final Permission COMMAND_CLEARPASSWORD_ALL = CLEARPASSWORD.child("all");
-    public final Permission COMMAND_CLEARPASSWORD_OTHER = CLEARPASSWORD.child("other");
-
-    public final Permission COMMAND_SETPASSWORD_OTHER = COMMAND.childWildcard("setpassword").child("other");
+    public final PermissionDescription COMMAND_CLEARPASSWORD_ALL = register("clearpassword.all", "Allows clearing all passwords", COMMAND);
+    public final PermissionDescription COMMAND_CLEARPASSWORD_OTHER = register("clearpassword.other", "Allows clearing passwords of other players", COMMAND);
+    public final PermissionDescription COMMAND_SETPASSWORD_OTHER = register("setpassword.other", "Allows setting passwords of other players", COMMAND);
 }

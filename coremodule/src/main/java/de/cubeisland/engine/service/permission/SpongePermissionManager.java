@@ -17,7 +17,6 @@
  */
 package de.cubeisland.engine.service.permission;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,17 +24,23 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.logging.LoggingUtil;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.service.ServiceReference;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.service.permission.PermissionDescription.Builder;
+import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.text.Texts;
 
-import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
 
 @ServiceImpl(value = PermissionManager.class)
@@ -44,19 +49,42 @@ public class SpongePermissionManager implements PermissionManager
 {
     // TODO Modularity Events e.g. to react on shutdown of modules
 
-    private final Map<String, Permission> permissions = new HashMap<>();
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
+    private final Map<Module, PermissionDescription> modulePermissions = new HashMap<>();
+    private final Map<String, PermissionDescription> permissions = new HashMap<>();
+
     private final Log logger;
+    private final Object plugin;
+    private Game game;
+
+    private boolean registered = false;
 
     @Inject
-    public SpongePermissionManager(CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
+    public SpongePermissionManager(Game game, CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
     {
+        this.game = game;
         this.logger = factory.getLog(CoreModule.class, "Permissions");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Permissions"),
-                                                  LoggingUtil.getFileFormat(false, false),
-                                                  false, LoggingUtil.getCycler(),
-                                                  threadFactory));
-        this.registerPermission(core, Permission.BASE);
+        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Permissions"), LoggingUtil.getFileFormat(
+            false, false), false, LoggingUtil.getCycler(), threadFactory));
+        plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
+    }
+
+    private void registerBasePermission()
+    {
+        ServiceReference<PermissionService> service = game.getServiceManager().potentiallyProvide(PermissionService.class);
+        service.executeWhenPresent(input -> {
+            Builder builder = input.newDescriptionBuilder(plugin).orNull();
+            if (builder == null)
+            {
+                return false;
+            }
+            builder.id("cubengine");
+            builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
+            builder.assign("permission:*", true);
+            builder.register();
+            return true;
+        });
+
     }
 
     private Set<String> getPermissions(Module module)
@@ -69,6 +97,66 @@ public class SpongePermissionManager implements PermissionManager
         return perms;
     }
 
+    @Override
+    public PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
+    {
+        if (!registered)
+        {
+            registered = true;
+            registerBasePermission();
+        }
+        Builder builder = game.getServiceManager().provideUnchecked(PermissionService.class).newDescriptionBuilder(plugin).orNull();
+        Set<String> perms = modulePermissionMap.get(module);
+        if (perms == null)
+        {
+            perms = new HashSet<>();
+            modulePermissionMap.put(module, perms);
+        }
+        perms.add(permission);
+
+        if (builder == null)
+        {
+            return null;
+        }
+        if (parent == null)
+        {
+            parent = getModulePermission(module);
+        }
+        permission = parent.getId() + "." + permission;
+        builder.id(permission);
+        if (description != null)
+        {
+            builder.description(Texts.of(description));
+        }
+        for (PermissionDescription assignment : assigned)
+        {
+            builder.assign("permission:" + assignment.getId(), true);
+        }
+        PermissionDescription registered = builder.register();
+        permissions.put(permission, registered);
+        return registered;
+    }
+
+    @Override
+    public PermissionDescription getModulePermission(Module module)
+    {
+        PermissionDescription perm = modulePermissions.get(module);
+        if (perm == null)
+        {
+            Builder builder = game.getServiceManager().provideUnchecked(PermissionService.class).newDescriptionBuilder(plugin).orNull();
+            if (builder == null)
+            {
+                return null;
+            }
+            String moduleName = module.getInformation().getName();
+            builder.id("cubengine." + moduleName);
+            builder.description(Texts.of(String.format("Base Permission for the %s Module", moduleName))); // TODO TRANSLATABLE
+            perm = builder.register();
+            modulePermissions.put(module, perm);
+        }
+        return perm;
+    }
+/*
     @Override
     public void registerPermission(Module module, Permission permission)
     {
@@ -88,45 +176,19 @@ public class SpongePermissionManager implements PermissionManager
             this.registerPermission(module, parentPerm);
         }
     }
+    */
 
     @Override
-    public void removePermission(Module module, String perm)
+    public void cleanup(Module module)
     {
         expectNotNull(module, "The module must not be null!");
-        expectNotNull(perm, "The permission must not be null!");
-        expect(!perm.equals(Permission.BASE.getName() + ".*"),
-               "The CubeEngine wildcard permission must not be unregistered!");
-
-        Set<String> perms = this.modulePermissionMap.get(module);
-        if (perms != null)
-        {
-            perms.remove(perm);
-            permissions.remove(perm);
-        }
+        this.modulePermissionMap.remove(module);
     }
 
     @Override
-    public void removePermission(Module module, Permission permission)
+    public PermissionDescription getPermission(String permission)
     {
-        this.removePermission(module, permission.getName());
-    }
-
-    @Override
-    public void removePermissions(Module module)
-    {
-        expectNotNull(module, "The module must not be null!");
-
-        Set<String> removedPerms = this.modulePermissionMap.remove(module);
-        if (removedPerms != null)
-        {
-            permissions.keySet().removeAll(removedPerms);
-        }
-    }
-
-    @Override
-    public Optional<Permission> getPermission(String permission)
-    {
-        return Optional.fromNullable(permissions.get(permission));
+        return permissions.get(permission);
     }
 
     @Override
@@ -134,11 +196,5 @@ public class SpongePermissionManager implements PermissionManager
     {
         this.permissions.clear();
         this.modulePermissionMap.clear();
-    }
-
-    @Override
-    public Map<String, Permission> getPermissions()
-    {
-        return Collections.unmodifiableMap(this.permissions);
     }
 }

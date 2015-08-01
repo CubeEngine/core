@@ -24,7 +24,6 @@ import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.CommandSender;
-import de.cubeisland.engine.service.permission.Permission;
 import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.text.format.BaseFormatting;
@@ -120,7 +119,7 @@ public interface UserManager
      * @param perm the permission to check
      * @param params the parameters
      */
-    void broadcastTranslatedWithPerm(MessageType messageType, String message, Permission perm, Object... params);
+    void broadcastTranslatedWithPerm(MessageType messageType, String message, String perm, Object... params);
 
     /**
      * Broadcasts a message (not translated)
@@ -129,7 +128,7 @@ public interface UserManager
      * @param perm the permission to check
      * @param params the parameters
      */
-    void broadcastMessageWithPerm(MessageType messageType, String message, Permission perm, Object... params);
+    void broadcastMessageWithPerm(MessageType messageType, String message, String perm, Object... params);
 
     /**
      * Broadcasts a translated message

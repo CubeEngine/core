@@ -43,7 +43,7 @@ public class ConfirmResult implements CommandResult
     @Override
     public void process(CommandInvocation context)
     {
-        module.getModularity().start(SpongeConfirmManager.class).registerConfirmation(this, this.module, sender);
+        module.getModularity().getInstance(SpongeConfirmManager.class).registerConfirmation(this, this.module, sender);
     }
 
     public void run()

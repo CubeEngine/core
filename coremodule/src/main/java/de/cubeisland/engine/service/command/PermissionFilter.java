@@ -22,7 +22,7 @@ import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.filter.Filter;
 import de.cubeisland.engine.butler.filter.FilterException;
 import de.cubeisland.engine.service.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
 
 /**
  * A Filter checking a CommandSenders Permission.
@@ -30,9 +30,9 @@ import de.cubeisland.engine.service.permission.Permission;
  */
 public class PermissionFilter implements Filter
 {
-    private Permission permission;
+    private RawPermission permission;
 
-    public PermissionFilter(Permission permission)
+    public PermissionFilter(RawPermission permission)
     {
         this.permission = permission;
     }
@@ -43,7 +43,7 @@ public class PermissionFilter implements Filter
         CommandSource source = invocation.getCommandSource();
         if (source instanceof CommandSender)
         {
-            if (!((CommandSender)source).hasPermission(permission.getFullName()))
+            if (!((CommandSender)source).hasPermission(permission.getName()))
             {
                 throw new PermissionDeniedException(permission);
             }

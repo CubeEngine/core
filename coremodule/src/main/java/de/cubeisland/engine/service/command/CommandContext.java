@@ -21,8 +21,12 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parametric.context.ParameterizedContext;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.exception.PermissionDeniedException;
-import de.cubeisland.engine.service.permission.Permission;
+import de.cubeisland.engine.service.command.property.RawPermission;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.util.command.CommandSource;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -61,11 +65,15 @@ public class CommandContext extends ParameterizedContext
         ((CommandSender)this.getInvocation().getCommandSource()).sendTranslatedN(type, count, sMessage, pMessage, args);
     }
 
-    public void ensurePermission(Permission permission) throws PermissionDeniedException
+    public void ensurePermission(PermissionDescription permission) throws PermissionDeniedException
     {
-        if (!permission.isAuthorized((CommandSender)this.getInvocation().getCommandSource()))
+        if (getInvocation().getCommandSource() instanceof Subject)
         {
-            throw new PermissionDeniedException(permission);
+            if (((Subject)getInvocation().getCommandSource()).hasPermission(permission.getId()))
+            {
+                return;
+            }
         }
+        throw new PermissionDeniedException(new RawPermission(permission.getId(), Texts.toPlain(permission.getDescription()))); // TODO
     }
 }

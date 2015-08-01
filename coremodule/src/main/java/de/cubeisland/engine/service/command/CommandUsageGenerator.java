@@ -25,6 +25,7 @@ import de.cubeisland.engine.butler.parameter.Parameter;
 import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
 import de.cubeisland.engine.service.command.exception.PermissionDeniedException;
 import de.cubeisland.engine.service.command.property.PermissionProvider;
+import de.cubeisland.engine.service.command.property.RawPermission;
 import de.cubeisland.engine.service.user.User;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
@@ -54,9 +55,10 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     {
         if (parameter.hasProperty(PermissionProvider.class) && source instanceof Subject)
         {
-            if (!parameter.valueFor(PermissionProvider.class).isAuthorized((Subject)(source)))
+            RawPermission rawPerm = parameter.valueFor(PermissionProvider.class);
+            if (!((Subject)source).hasPermission(rawPerm.getName()))
             {
-                throw new PermissionDeniedException(parameter.valueFor(PermissionProvider.class));
+                throw new PermissionDeniedException(rawPerm);
             }
         }
     }

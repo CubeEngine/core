@@ -203,7 +203,7 @@ public class ModuleCommands extends ContainerCommand
                   .forEach(node -> {
                       try
                       {
-                          modularity.start(node);
+                          modularity.getInstance(node);
                           context.sendTranslated(POSITIVE,
                                                  "The module {name#module} has been successfully loaded and enabled!",
                                                  ((ModuleMetadata)node.getInformation()).getName());

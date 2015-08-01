@@ -17,12 +17,12 @@
  */
 package de.cubeisland.engine.service.permission;
 
-import java.util.Map;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.util.Cleanable;
+import org.spongepowered.api.service.permission.PermissionDescription;
 
 /**
  * Registers permissions to the server.
@@ -36,41 +36,21 @@ public interface PermissionManager extends Cleanable
      *
      * @param permission the permission
      */
-    void registerPermission(Module module, Permission permission);
+    PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, PermissionDescription... assigned);
 
-    /**
-     * Removes a permission of a module
-     *
-     * @param module the module
-     * @param perm   the permission
-     */
-    void removePermission(Module module, String perm);
+    PermissionDescription getModulePermission(Module module);
 
     /**
      * Removes all the permissions of the given module
      *
      * @param module the module
      */
-    void removePermissions(Module module);
-
-    /**
-     * Removes a permission of a module
-     *
-     * @param module     the module
-     * @param permission the permission
-     */
-    void removePermission(Module module, Permission permission);
+    void cleanup(Module module);
 
     /**
      * Returns the permission node with given name or {@link Optional#absent()} if not found
      * @param permission the permissions name
      * @return the permission if found
      */
-    Optional<Permission> getPermission(String permission);
-
-    /**
-     * Returns a unmodifiable map of all registered permissions
-     * @return the registered permissions
-     */
-    Map<String, Permission> getPermissions();
+    PermissionDescription getPermission(String permission);
 }
