@@ -39,13 +39,12 @@ import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
 import de.cubeisland.engine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.Disable;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Disable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
-import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.util.matcher.EnchantMatcher;
 import de.cubeisland.engine.module.core.util.matcher.EntityMatcher;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
@@ -78,7 +77,6 @@ import de.cubeisland.engine.service.command.sender.WrappedCommandSender;
 import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.logging.LoggingUtil;
-import de.cubeisland.engine.module.core.module.ModuleCommands;
 import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.module.core.sponge.EventManager;
@@ -315,10 +313,14 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public void logCommands(boolean logCommands)
     {
-        commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
-                                                    LoggingUtil.getFileFormat(true, false),
-                                                    true, LoggingUtil.getCycler(),
-                                                    tf));
+        if (logCommands)
+        {
+            commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
+                                                        LoggingUtil.getFileFormat(true, false),
+                                                        true, LoggingUtil.getCycler(),
+                                                        tf));
+        }
+
     }
 
     @Override

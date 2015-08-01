@@ -22,7 +22,7 @@ import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.sponge.CoreModule;

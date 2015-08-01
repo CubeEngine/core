@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;

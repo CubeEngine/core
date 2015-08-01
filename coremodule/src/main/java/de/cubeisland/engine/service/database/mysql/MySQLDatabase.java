@@ -52,7 +52,7 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.LogTarget;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.Disable;
+import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.service.filesystem.FileManager;
 import de.cubeisland.engine.service.logging.LoggingUtil;

@@ -20,7 +20,7 @@ package de.cubeisland.engine.service.paginate;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.service.command.CommandManager;

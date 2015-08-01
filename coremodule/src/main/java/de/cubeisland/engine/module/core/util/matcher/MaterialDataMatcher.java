@@ -19,10 +19,8 @@ package de.cubeisland.engine.module.core.util.matcher;
 
 import java.util.HashMap;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 

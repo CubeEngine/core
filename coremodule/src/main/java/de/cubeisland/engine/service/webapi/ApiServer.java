@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.modularity.asm.marker.Enable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 
