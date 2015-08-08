@@ -28,6 +28,7 @@ import de.cubeisland.engine.butler.parametric.Reader;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
@@ -97,11 +98,11 @@ public class ModuleCommands extends ContainerCommand
         public Module read(Class type, CommandInvocation invocation) throws ReaderException
         {
             String name = invocation.consume(1);
-            for (Module module : this.mm.getModules())
+            for (LifeCycle module : this.mm.getModules())
             {
-                if (module.getInformation().getName().equals(name))
+                if (((ModuleMetadata)module.getInformation()).getName().equals(name))
                 {
-                    return module;
+                    return ((Module)module.getInstance());
                 }
             }
             throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
@@ -112,7 +113,7 @@ public class ModuleCommands extends ContainerCommand
     @Command(alias = "show", desc = "Lists all the loaded modules")
     public void list(CommandContext context)
     {
-        Set<Module> modules = this.modularity.getModules();
+        Set<LifeCycle> modules = this.modularity.getModules();
         if (modules.isEmpty())
         {
             context.sendTranslated(NEUTRAL, "There are no modules loaded!");
@@ -120,9 +121,9 @@ public class ModuleCommands extends ContainerCommand
         }
         context.sendTranslated(NEUTRAL, "These are the loaded modules.");
         context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
-        for (Module module : modules)
+        for (LifeCycle module : modules)
         {
-            context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + module.getInformation().getName());
+            context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + ((ModuleMetadata)module.getInformation()).getName());
             // TODO not enabled modules?
         }
     }
@@ -198,12 +199,13 @@ public class ModuleCommands extends ContainerCommand
         // TODO check if already loaded
 //        context.sendTranslated(NEUTRAL, "This module is already loaded, try reloading it.");
         fm.copyModule(modulePath);
+      /*
         modularity.load(modulePath.toFile()).stream()
                   .filter(node -> node.getInformation() instanceof ModuleMetadata)
                   .forEach(node -> {
                       try
                       {
-                          modularity.getInstance(node);
+                          modularity.provide(node);
                           context.sendTranslated(POSITIVE,
                                                  "The module {name#module} has been successfully loaded and enabled!",
                                                  ((ModuleMetadata)node.getInformation()).getName());
@@ -216,6 +218,7 @@ public class ModuleCommands extends ContainerCommand
                           context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
                       }
                   });
+                  */
     }
 
     @Command(desc = "Get info about a module")

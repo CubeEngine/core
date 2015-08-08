@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
-import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 
 public class ModulePathProvider implements ValueProvider<Path>
@@ -36,19 +36,19 @@ public class ModulePathProvider implements ValueProvider<Path>
     }
 
     @Override
-    public Path get(DependencyInformation info, Modularity modularity)
+    public Path get(LifeCycle lifeCycle, Modularity modularity)
     {
-        if (info instanceof ModuleMetadata)
+        if (lifeCycle.getInformation() instanceof ModuleMetadata)
         {
             try
             {
-                return Files.createDirectories(path.resolve(((ModuleMetadata)info).getName()));
+                return Files.createDirectories(path.resolve(((ModuleMetadata)lifeCycle.getInformation()).getName()));
             }
             catch (IOException e)
             {
                 throw new IllegalStateException("Could not create module folder" + e);
             }
         }
-        throw new IllegalArgumentException(info.getIdentifier() + " is not a Module");
+        throw new IllegalArgumentException(lifeCycle.getInformation().getIdentifier().name() + " is not a Module");
     }
 }

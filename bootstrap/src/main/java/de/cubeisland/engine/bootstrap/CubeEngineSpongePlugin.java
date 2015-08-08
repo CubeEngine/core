@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -87,16 +86,15 @@ public class CubeEngineSpongePlugin
         catch (IOException e)
         {}
 
-        ServiceManager sm = modularity.getServiceManager();
-        sm.registerService(Game.class, game);
-        sm.registerService(Modularity.class, modularity);
-        sm.registerService(Logger.class, pluginLogger);
-        sm.registerService(File.class, dataFolder);
+        modularity.register(Game.class, game);
+        modularity.register(Logger.class, pluginLogger);
+        modularity.register(File.class, dataFolder);
+
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
 
         long delta = System.currentTimeMillis();
         pluginLogger.info("Load Modules");
-        modularity.load(loadPath.toFile());
+        modularity.load(loadPath.toFile(), "de/cubeisland/engine", "org/cubeengine");
         pluginLogger.info("done in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         delta = System.currentTimeMillis();
         pluginLogger.info("Set up Modules");

@@ -192,9 +192,9 @@ public final class CoreModule extends Module
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(getModularity().getInstance(MaterialMatcher.class)), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(getModularity().getInstance(MaterialMatcher.class)), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(getModularity().getInstance(EnchantMatcher.class)), Enchantment.class);
+        manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);

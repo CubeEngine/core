@@ -27,6 +27,7 @@ import de.cubeisland.engine.logscribe.LogTarget;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.Provider;
+import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
@@ -41,19 +42,19 @@ public class LogProvider implements ValueProvider<Log>
     @Inject private LogFactory logFactory;
     @Inject private FileManager fm;
     @Inject private ThreadFactory tf;
-    private Map<DependencyInformation, Log> loggers = new HashMap<>();
+    private Map<LifeCycle, Log> loggers = new HashMap<>();
 
     @Override
-    public Log get(DependencyInformation info, Modularity modularity)
+    public Log get(LifeCycle lifeCycle, Modularity modularity)
     {
-        Log logger = loggers.get(info);
+        Log logger = loggers.get(lifeCycle);
         if (logger != null)
         {
             return logger;
         }
-        if (info instanceof ModuleMetadata)
+        if (lifeCycle instanceof ModuleMetadata)
         {
-            String name = ((ModuleMetadata)info).getName();
+            String name = ((ModuleMetadata)lifeCycle).getName();
 
             logger = logFactory.getLog(CoreModule.class, name);
 
@@ -65,10 +66,10 @@ public class LogProvider implements ValueProvider<Log>
         }
         else
         {
-            logger = logFactory.getLog(CoreModule.class, info.getIdentifier());
+            logger = logFactory.getLog(CoreModule.class, lifeCycle.getInformation().getIdentifier().name());
             // TODO manually add Target for non-modules
         }
-        loggers.put(info, logger);
+        loggers.put(lifeCycle, logger);
         return logger;
     }
 }

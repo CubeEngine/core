@@ -473,7 +473,7 @@ public class SpongeUserManager implements UserManager
         {
             onlinePlayerMap.put(onlineUser.getName(), onlineUser);
         }
-        String foundUser = core.getModularity().getInstance(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
+        String foundUser = core.getModularity().provide(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
             return this.getExactUser(onlinePlayerMap.get(foundUser).getUniqueId());

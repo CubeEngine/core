@@ -35,8 +35,8 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 
     public ContainerCommand(Module module)
     {
-        super(new CubeContainerCommandDescriptor(), module.getModularity().getInstance(CommandManager.class).getCommandBuilder());
-        pm = module.getModularity().getInstance(PermissionManager.class);
+        super(new CubeContainerCommandDescriptor(), module.getModularity().provide(CommandManager.class).getCommandBuilder());
+        pm = module.getModularity().provide(PermissionManager.class);
         String permName = getDescriptor().getName();
         String permDesc = null;
         boolean checkPerm = true;

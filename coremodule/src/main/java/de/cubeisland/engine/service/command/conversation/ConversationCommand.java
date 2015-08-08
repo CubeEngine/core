@@ -46,12 +46,12 @@ public abstract class ConversationCommand extends ContainerCommand
     protected ConversationCommand(Module module)
     {
         super(module);
-        module.getModularity().getInstance(EventManager.class).registerListener(module, this);
-        cm = getModule().getModularity().getInstance(CommandManager.class);
-        um = getModule().getModularity().getInstance(UserManager.class);
+        module.getModularity().provide(EventManager.class).registerListener(module, this);
+        cm = getModule().getModularity().provide(CommandManager.class);
+        um = getModule().getModularity().provide(UserManager.class);
         getDescriptor().setDispatcher(cm); // needed for exceptionhandler
         RawPermission permission = getDescriptor().getPermission();
-        permission.registerPermission(module, module.getModularity().getInstance(PermissionManager.class), null);
+        permission.registerPermission(module, module.getModularity().provide(PermissionManager.class), null);
         this.registerSubCommands();
     }
 

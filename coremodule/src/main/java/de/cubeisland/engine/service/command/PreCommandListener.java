@@ -47,8 +47,8 @@ public class PreCommandListener
     public PreCommandListener(CoreModule core)
     {
         this.core = core;
-        i18n = core.getModularity().getInstance(I18n.class);
-        stringMatcher = core.getModularity().getInstance(StringMatcher.class);
+        i18n = core.getModularity().provide(I18n.class);
+        stringMatcher = core.getModularity().provide(StringMatcher.class);
     }
 
     @Subscribe(order = POST)

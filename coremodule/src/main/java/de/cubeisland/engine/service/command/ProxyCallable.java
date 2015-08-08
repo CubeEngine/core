@@ -134,18 +134,18 @@ public class ProxyCallable implements CommandCallable
 
     private CommandSender wrapSender(org.spongepowered.api.util.command.CommandSource spongeSender)
     {
-        I18n i18n = core.getModularity().getInstance(I18n.class);
+        I18n i18n = core.getModularity().provide(I18n.class);
         if (spongeSender instanceof CommandSender)
         {
             return (CommandSender)spongeSender;
         }
         else if (spongeSender instanceof Player)
         {
-            return core.getModularity().getInstance(UserManager.class).getExactUser(spongeSender.getName());
+            return core.getModularity().provide(UserManager.class).getExactUser(spongeSender.getName());
         }
         else if (spongeSender instanceof ConsoleSource)
         {
-            return core.getModularity().getInstance(CommandManager.class).getConsoleSender();
+            return core.getModularity().provide(CommandManager.class).getConsoleSender();
         }
         else if (spongeSender instanceof CommandBlockSource)
         {

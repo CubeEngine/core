@@ -162,14 +162,14 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     public void registerReaders(CoreModule core, EventManager em)
     {
-        I18n i18n = core.getModularity().getInstance(I18n.class);
+        I18n i18n = core.getModularity().provide(I18n.class);
 
-        MaterialDataMatcher materialDataMatcher = core.getModularity().getInstance(MaterialDataMatcher.class);
-        EnchantMatcher enchantMatcher = core.getModularity().getInstance(EnchantMatcher.class);
-        MaterialMatcher materialMatcher = core.getModularity().getInstance(MaterialMatcher.class);
-        ProfessionMatcher professionMatcher = core.getModularity().getInstance(ProfessionMatcher.class);
-        EntityMatcher entityMatcher = core.getModularity().getInstance(EntityMatcher.class);
-        WorldManager wm = core.getModularity().getInstance(WorldManager.class);
+        MaterialDataMatcher materialDataMatcher = core.getModularity().provide(MaterialDataMatcher.class);
+        EnchantMatcher enchantMatcher = core.getModularity().provide(EnchantMatcher.class);
+        MaterialMatcher materialMatcher = core.getModularity().provide(MaterialMatcher.class);
+        ProfessionMatcher professionMatcher = core.getModularity().provide(ProfessionMatcher.class);
+        EntityMatcher entityMatcher = core.getModularity().provide(EntityMatcher.class);
+        WorldManager wm = core.getModularity().provide(WorldManager.class);
 
         providerManager.register(core, new PlayerCompleter(um), User.class, org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);

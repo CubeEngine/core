@@ -101,7 +101,7 @@ public class BukkitUtils
                     if (time - this.lastReceived <= 5000)
                     {
                         core.getLog().info("Shutting down the server now!");
-                        core.getModularity().getInstance(TaskManager.class).runTask(core, () -> {
+                        core.getModularity().provide(TaskManager.class).runTask(core, () -> {
                             core.getGame().getServer().shutdown(Texts.of()); // tODO default message?
                             lastReceived = -1;
                         });

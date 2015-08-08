@@ -42,7 +42,7 @@ public class PaginatedResult implements CommandResult
         this.context = context;
         this.iterator = iterator;
 
-        context.getModule().getModularity().getInstance(PaginationManager.class).registerResult(context.getSource(), this);
+        context.getModule().getModularity().provide(PaginationManager.class).registerResult(context.getSource(), this);
     }
 
     @Override

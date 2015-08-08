@@ -46,7 +46,7 @@ public class SyncTaskQueue implements TaskQueue
     public SyncTaskQueue(CoreModule core, Queue<Runnable> taskQueue)
     {
         this.corePlugin = core;
-        this.scheduler = this.corePlugin.getModularity().getInstance(TaskManager.class);
+        this.scheduler = this.corePlugin.getModularity().provide(TaskManager.class);
         this.taskQueue = taskQueue;
         this.taskID = null;
         this.isShutdown = false;

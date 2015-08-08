@@ -21,7 +21,6 @@ import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 
 import static java.util.stream.Collectors.toList;
@@ -40,7 +39,7 @@ public class ModuleCompleter implements Completer
     {
         String token = invocation.currentToken();
         return modularity.getModules().stream()
-                          .map(Module::getInformation)
+                          .map(lifeCycle -> (ModuleMetadata)lifeCycle.getInformation())
                           .map(ModuleMetadata::getName)
                           .filter(id -> id.startsWith(token))
                           .collect(toList());

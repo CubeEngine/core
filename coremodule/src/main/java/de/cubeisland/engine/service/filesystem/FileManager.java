@@ -54,19 +54,20 @@ public class FileManager
 {
     @Inject private Logger logger;
     @Inject private Reflector reflector;
-    @Inject private File dataFolder;
+    private File dataFolder;
 
     private Path languagePath;
     private Path logPath;
     private Path tempPath;
-    private Path translationPath;
 
+    private Path translationPath;
     private ConcurrentMap<Path, Resource> fileSources;
     private FileAttribute<?>[] folderCreateAttributes;
 
-    @Setup
-    public void onEnable()
+    @Inject
+    public FileManager(File dataFolder)
     {
+        this.dataFolder = dataFolder;
         try
         {
             createSymbolicLink(Paths.get(System.getProperty("user.dir", "."), "CubeEngine"), dataFolder.toPath());

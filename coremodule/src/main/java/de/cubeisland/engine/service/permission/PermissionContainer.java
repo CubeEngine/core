@@ -28,7 +28,7 @@ public abstract class PermissionContainer<T extends Module>
     public PermissionContainer(T module)
     {
         this.module = module;
-        pm = module.getModularity().getInstance(PermissionManager.class);
+        pm = module.getModularity().provide(PermissionManager.class);
     }
 
     protected PermissionDescription register(String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
