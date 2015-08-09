@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.inject.Provider;
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.service.ServiceProvider;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Subscribe;
@@ -33,6 +35,7 @@ import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
+import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
@@ -89,6 +92,9 @@ public class CubeEngineSpongePlugin
         modularity.register(Game.class, game);
         modularity.register(Logger.class, pluginLogger);
         modularity.register(File.class, dataFolder);
+        modularity.register(PermissionService.class, new ServiceProvider<>(PermissionService.class, () -> {
+            return game.getServiceManager().provide(PermissionService.class).orNull();
+        }));
 
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
 
