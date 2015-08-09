@@ -59,8 +59,10 @@ public class SpongePermissionManager implements PermissionManager
 
     private boolean registered = false;
 
+    @Inject private PermissionService permissionService;
+
     @Inject
-    public SpongePermissionManager(Game game, CoreModule core, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
+    public SpongePermissionManager(Game game, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
     {
         this.game = game;
         this.logger = factory.getLog(CoreModule.class, "Permissions");
@@ -78,7 +80,7 @@ public class SpongePermissionManager implements PermissionManager
             {
                 return false;
             }
-            builder.id("cubengine");
+            builder.id("cubeengine");
             builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
             builder.assign("permission:*", true);
             builder.register();
@@ -143,13 +145,13 @@ public class SpongePermissionManager implements PermissionManager
         PermissionDescription perm = modulePermissions.get(module);
         if (perm == null)
         {
-            Builder builder = game.getServiceManager().provideUnchecked(PermissionService.class).newDescriptionBuilder(plugin).orNull();
+            Builder builder = permissionService.newDescriptionBuilder(plugin).orNull();
             if (builder == null)
             {
                 return null;
             }
             String moduleName = module.getInformation().getName();
-            builder.id("cubengine." + moduleName);
+            builder.id("cubeengine." + moduleName.toLowerCase());
             builder.description(Texts.of(String.format("Base Permission for the %s Module", moduleName))); // TODO TRANSLATABLE
             perm = builder.register();
             modulePermissions.put(module, perm);

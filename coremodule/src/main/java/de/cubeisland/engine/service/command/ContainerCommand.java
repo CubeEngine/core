@@ -32,10 +32,12 @@ import org.spongepowered.api.service.permission.PermissionDescription;
 public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
 {
     private final PermissionManager pm;
+    private Module module;
 
     public ContainerCommand(Module module)
     {
         super(new CubeContainerCommandDescriptor(), module.getModularity().provide(CommandManager.class).getCommandBuilder());
+        this.module = module;
         pm = module.getModularity().provide(PermissionManager.class);
         String permName = getDescriptor().getName();
         String permDesc = null;
@@ -88,8 +90,8 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
         CommandBase command = this.getCommand(alias);
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
-
-            return  ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, null);// registers permission if not yet registered
+            PermissionDescription cmdPerm = pm.register(module, "command", "", null);
+            return ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, cmdPerm);// registers permission if not yet registered
         }
         return null;
     }

@@ -22,15 +22,16 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import de.cubeisland.engine.module.core.sponge.CoreModule;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.User;
 
 public class OfflinePlayerReader implements ArgumentReader<User>
 {
-    private final CoreModule core;
+    private Game game;
 
-    public OfflinePlayerReader(CoreModule core)
+    public OfflinePlayerReader(Game game)
     {
-        this.core = core;
+        this.game = game;
     }
 
     @Override

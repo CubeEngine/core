@@ -125,6 +125,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private PermissionManager pm;
     @Inject private EventManager em;
     @Inject private ThreadFactory tf;
+    @Inject private Game game;
 
     @Inject
     public SpongeCommandManager(CoreModule core, Game game, LogFactory logFactory, I18n i18n, FileManager fm)
@@ -192,7 +193,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);
         providerManager.register(core, new ProfessionReader(professionMatcher), Profession.class);
-        providerManager.register(core, new OfflinePlayerReader(core), org.spongepowered.api.entity.player.User.class);
+        providerManager.register(core, new OfflinePlayerReader(game), org.spongepowered.api.entity.player.User.class);
         providerManager.register(core, new DimensionTypeReader(core.getGame()), DimensionType.class);
         providerManager.register(core, new DifficultyReader(i18n, core.getGame()), Difficulty.class);
         providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);

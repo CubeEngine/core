@@ -214,6 +214,8 @@ public final class CoreModule extends Module
             this.freezeDetection = null;
         }
 
+        this.cm.removeCommands(this);
+
         Profiler.clean();
     }
 

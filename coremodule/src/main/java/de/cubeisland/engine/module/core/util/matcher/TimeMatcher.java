@@ -31,14 +31,6 @@ import de.cubeisland.engine.module.core.util.StringUtils;
 @ServiceProvider(TimeMatcher.class)
 public class TimeMatcher
 {
-    private CoreModule core;
-
-    @Inject
-    public TimeMatcher(CoreModule core)
-    {
-        this.core = core;
-    }
-
     /**
      * Parse time
      * @param time
