@@ -24,7 +24,7 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
 import de.cubeisland.engine.module.core.util.matcher.MaterialMatcher;
-import org.spongepowered.api.data.manipulator.item.DurabilityData;
+import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter extends SimpleConverter<ItemStack>
@@ -43,10 +43,10 @@ public class ItemStackConverter extends SimpleConverter<ItemStack>
         {
             return NullNode.emptyNode();
         }
-        Optional<DurabilityData> dura = object.getData(DurabilityData.class);
+        Optional<DurabilityData> dura = object.get(DurabilityData.class);
         if (dura.isPresent())
         {
-            return StringNode.of(object.getItem().getName() + ":" + dura.get().getDurability());
+            return StringNode.of(object.getItem().getName() + ":" + dura.get().durability());
         }
         return StringNode.of(object.getItem().getName());
     }

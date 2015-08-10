@@ -23,9 +23,13 @@ import javax.inject.Provider;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.module.core.sponge.CoreModule;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.data.manipulator.item.EnchantmentData;
+import org.spongepowered.api.data.manipulator.catalog.CatalogItemData;
+import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
+import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
+
+import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENCHANTMENT_DATA;
 
 /**
  * This Matcher provides methods to match Enchantments.
@@ -68,16 +72,19 @@ public class EnchantMatcher
         {
             enchStrength = ench.getMaximumLevel();
         }
+        ItemEnchantment enchantment= new ItemEnchantment(ench, enchStrength);
         if (force)
         {
-            EnchantmentData data = item.getOrCreate(EnchantmentData.class).get();
-            data.setUnsafe(ench, enchStrength);
+            EnchantmentData data = item.getOrCreate(ENCHANTMENT_DATA).get();
+            data.enchantments().add(enchantment);
+            item.offer(data);
             return true;
         }
         try
         {
             EnchantmentData data = item.getOrCreate(EnchantmentData.class).get();
-            data.set(ench, enchStrength);
+            data.enchantments().add(enchantment);
+            item.offer(data);
             return true;
         }
         catch (IllegalArgumentException ignored)

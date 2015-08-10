@@ -23,8 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 import com.google.common.base.Optional;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.data.manipulator.block.AttachedData;
-import org.spongepowered.api.data.manipulator.block.PortionData;
+import org.spongepowered.api.data.manipulator.mutable.block.AttachedData;
+import org.spongepowered.api.data.manipulator.mutable.block.PortionData;
 import org.spongepowered.api.data.type.Hinge;
 import org.spongepowered.api.data.type.Hinges;
 import org.spongepowered.api.data.type.PortionTypes;
@@ -63,7 +63,7 @@ public class BlockUtil
         Collection<Location> blocks = new HashSet<>();
         for (org.spongepowered.api.util.Direction bf : BLOCK_FACES)
         {
-            Optional<AttachedData> attached = block.getRelative(bf).getData(AttachedData.class);
+            Optional<AttachedData> attached = block.getRelative(bf).get(AttachedData.class);
             if (attached.isPresent())
             {
                 // TODO
@@ -150,10 +150,10 @@ public class BlockUtil
 
     public static boolean isInvertedStep(Location location)
     {
-        Optional<PortionData> data = location.getData(PortionData.class);
+        Optional<PortionData> data = location.get(PortionData.class);
         if (data.isPresent())
         {
-            return data.get().getValue() == PortionTypes.TOP;
+            return data.get().type().get() == PortionTypes.TOP;
         }
         return false;
     }

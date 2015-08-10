@@ -28,6 +28,7 @@ import org.spongepowered.api.entity.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.util.ban.Ban.Ip;
 import org.spongepowered.api.util.ban.BanBuilder;
+import org.spongepowered.api.util.ban.Bans;
 
 import static de.cubeisland.engine.module.core.contract.Contract.expect;
 import static de.cubeisland.engine.module.core.contract.Contract.expectNotNull;
@@ -39,13 +40,11 @@ import static java.util.stream.Collectors.toSet;
 public class SpongeBanManager implements BanManager
 {
     private final BanService manager;
-    private final BanBuilder banBuilder;
 
     @Inject
     public SpongeBanManager(CoreModule core)
     {
         manager = core.getGame().getServiceManager().provide(BanService.class).get();
-        banBuilder = core.getGame().getRegistry().getBuilderOf(BanBuilder.class).get();
     }
 
     @Override
@@ -56,12 +55,12 @@ public class SpongeBanManager implements BanManager
 
         if (ban instanceof UserBan)
         {
-            manager.ban(banBuilder.user(((UserBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
+            manager.ban(Bans.builder().user(((UserBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
                 ban.getExpires()).source(ban.getSource()).build());
         }
         else if (ban instanceof IpBan)
         {
-            manager.ban(banBuilder.address(((IpBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
+            manager.ban(Bans.builder().address(((IpBan)ban).getTarget()).reason(ban.getReason()).expirationDate(
                 ban.getExpires()).source(ban.getSource()).build());
         }
     }

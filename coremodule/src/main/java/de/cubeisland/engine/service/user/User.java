@@ -33,11 +33,13 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.module.core.attachment.AttachmentHolder;
 import de.cubeisland.engine.service.command.sender.BaseCommandSender;
 import de.cubeisland.engine.service.i18n.I18n;
-import org.spongepowered.api.data.manipulator.entity.InvisibilityData;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.BaseFormatting;
+
+import static org.spongepowered.api.data.key.Keys.DISPLAY_NAME;
+import static org.spongepowered.api.data.manipulator.catalog.CatalogEntityData.INVISIBILITY_DATA;
 
 /**
  * A CubeEngine User (can exist offline too).
@@ -239,7 +241,7 @@ public class User extends BaseCommandSender implements AttachmentHolder<UserAtta
     {
         if (getPlayer().isPresent())
         {
-            return asPlayer().getDisplayNameData().getDisplayName();
+            return asPlayer().get(DISPLAY_NAME).or(Texts.of(player.getName()));
         }
         return Texts.of(player.getName());
     }
@@ -258,7 +260,8 @@ public class User extends BaseCommandSender implements AttachmentHolder<UserAtta
 
     public boolean canSee(Player player)
     {
-        return getPlayer().isPresent() && player.getOrCreate(InvisibilityData.class).transform(p -> p.isInvisibleTo(asPlayer())).or(false);
+        return getPlayer().isPresent() && player.get(INVISIBILITY_DATA).transform(
+            p -> p.invisibleToPlayerIds().contains(getUniqueId())).or(false);
     }
 
     public Player asPlayer()

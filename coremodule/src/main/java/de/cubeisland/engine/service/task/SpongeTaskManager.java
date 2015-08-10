@@ -96,7 +96,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, scheduler.getTaskBuilder().delay(delay).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().delay(delay).execute(runnable).submit(plugin));
     }
 
     @Override
@@ -105,7 +105,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, scheduler.getTaskBuilder().delay(delay).interval(interval).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().delay(delay).interval(interval).execute(runnable).submit(plugin));
     }
 
     @Override
@@ -119,7 +119,7 @@ public class SpongeTaskManager implements TaskManager
     {
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
-        return addTaskId(module, scheduler.getTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }
 
     private UUID addTaskId(Module module, Task task)
@@ -135,7 +135,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, scheduler.getTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }
 
     @Override

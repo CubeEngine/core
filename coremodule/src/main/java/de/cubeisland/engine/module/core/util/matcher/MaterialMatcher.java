@@ -104,7 +104,7 @@ public class MaterialMatcher
     @Inject
     public MaterialMatcher( Game game)
     {
-        this.builder = game.getRegistry().getItemBuilder();
+        this.builder = game.getRegistry().createItemBuilder();
 
         // Read names from GameDirectory
         for (Entry<String, Set<ItemType>> entry : game.getRegistry().getGameDictionary().getAllItems().entrySet())
