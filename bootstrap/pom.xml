@@ -3,15 +3,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>de.cubeisland.engine.module</groupId>
+        <groupId>org.cubeengine</groupId>
         <artifactId>parent</artifactId>
         <version>1</version>
     </parent>
 
-    <groupId>de.cubeisland.engine</groupId>
+    <groupId>org.cubeengine</groupId>
     <artifactId>bootstrap</artifactId>
     <name>CubeEngine</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
@@ -95,7 +95,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.cubeisland.engine.bootstrap.Main</mainClass>
+                            <mainClass>org.cubeengine.bootstrap.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
