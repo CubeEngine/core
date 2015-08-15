@@ -17,11 +17,13 @@
  */
 package de.cubeisland.engine.service.permission;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -73,20 +75,23 @@ public class SpongePermissionManager implements PermissionManager
 
     private void registerBasePermission()
     {
-        ServiceReference<PermissionService> service = game.getServiceManager().potentiallyProvide(PermissionService.class);
-        service.executeWhenPresent(input -> {
-            Builder builder = input.newDescriptionBuilder(plugin).orNull();
-            if (builder == null)
-            {
-                return false;
-            }
-            builder.id("cubeengine");
-            builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
-            builder.assign("permission:*", true);
-            builder.register();
-            return true;
-        });
-
+        if (!registered)
+        {
+            registered = true;
+            ServiceReference<PermissionService> service = game.getServiceManager().potentiallyProvide(PermissionService.class);
+            service.executeWhenPresent(input -> {
+                Builder builder = input.newDescriptionBuilder(plugin).orNull();
+                if (builder == null)
+                {
+                    return false;
+                }
+                builder.id("cubeengine");
+                builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
+                builder.assign("permission:*", true);
+                builder.register();
+                return true;
+            });
+        }
     }
 
     private Set<String> getPermissions(Module module)
@@ -102,41 +107,54 @@ public class SpongePermissionManager implements PermissionManager
     @Override
     public PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
     {
-        if (!registered)
-        {
-            registered = true;
-            registerBasePermission();
-        }
-        Builder builder = game.getServiceManager().provideUnchecked(PermissionService.class).newDescriptionBuilder(plugin).orNull();
+        Stream<String> toAssign = Arrays.asList(assigned).stream().map(PermissionDescription::getId).map(s -> "permission:" + s);
+        return register(module, getPermission(module, permission, parent), description, toAssign);
+    }
+
+    private String getPermission(Module module, String permission, PermissionDescription parent)
+    {
+        permission = (parent == null ? getModulePermission(module).getId() : parent.getId()) + "." + permission;
+        return permission;
+    }
+
+    private PermissionDescription register(Module module, String permission, String description, Stream<String> toAssign)
+    {
+        registerBasePermission();
         Set<String> perms = modulePermissionMap.get(module);
         if (perms == null)
         {
             perms = new HashSet<>();
             modulePermissionMap.put(module, perms);
         }
+
         perms.add(permission);
 
-        if (builder == null)
-        {
-            return null;
-        }
-        if (parent == null)
-        {
-            parent = getModulePermission(module);
-        }
-        permission = parent.getId() + "." + permission;
-        builder.id(permission);
-        if (description != null)
-        {
-            builder.description(Texts.of(description));
-        }
-        for (PermissionDescription assignment : assigned)
-        {
-            builder.assign("permission:" + assignment.getId(), true);
-        }
-        PermissionDescription registered = builder.register();
-        permissions.put(permission, registered);
-        return registered;
+        return permissionService.newDescriptionBuilder(plugin).transform(builder -> {
+            builder.id(permission);
+            if (description != null)
+            {
+                builder.description(Texts.of(description));
+            }
+            return builder;
+        }).transform(b -> assignAndRegister(b, toAssign)).orNull();
+    }
+
+
+    private PermissionDescription assignAndRegister(Builder builder, Stream<String> assign)
+    {
+        assign.forEach(s -> builder.assign(s, true));
+        PermissionDescription register = builder.register();
+        permissions.put(register.getId(), register);
+        return register;
+    }
+
+    @Override
+    public PermissionDescription register(Module module, String permission, String description,
+                                          PermissionDescription parent, String... assigned)
+    {
+        String parentId = getModulePermission(module).getId() + ".";
+        Stream<String> toAssign = Arrays.asList(assigned).stream().map(s -> "permission:" + parentId + s);
+        return register(module, getPermission(module, permission, parent), description, toAssign);
     }
 
     @Override

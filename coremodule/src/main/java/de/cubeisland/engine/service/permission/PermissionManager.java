@@ -37,6 +37,7 @@ public interface PermissionManager extends Cleanable
      * @param permission the permission
      */
     PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, PermissionDescription... assigned);
+    PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, String... assigned);
 
     PermissionDescription getModulePermission(Module module);
 

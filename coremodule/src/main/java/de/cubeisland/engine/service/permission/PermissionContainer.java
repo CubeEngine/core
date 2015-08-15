@@ -35,4 +35,9 @@ public abstract class PermissionContainer<T extends Module>
     {
         return pm.register(module, permission, description, parent, assigned);
     }
+
+    protected PermissionDescription registerS(String permission, String description, PermissionDescription parent, String... assigned)
+    {
+        return pm.register(module, permission, description, parent, assigned);
+    }
 }
