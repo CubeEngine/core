@@ -35,8 +35,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.HoverAction.ShowText;
+import org.spongepowered.api.text.action.TextActions;
 
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.CRITICAL;
+import static org.spongepowered.api.text.action.TextActions.*;
 import static org.spongepowered.api.text.format.TextColors.*;
 
 public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHandler
@@ -132,7 +134,7 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
                 Text line = Texts.of(YELLOW, "(", lineBuilder.build(), YELLOW, ")");
                 stackTrace.append(Texts.of(DARK_GRAY, "at ", Texts.of(our ? GOLD : GRAY, parts[0], line), "\n"));
             }
-            Text hover = Texts.builder().append(Texts.of(GRAY, t.getClass().getName(), ": ", t.getMessage())).onHover(new ShowText(stackTrace.build())).build();
+            Text hover = Texts.builder().append(Texts.of(GRAY, t.getClass().getName(), ": ", t.getMessage())).onHover(showText(stackTrace.build())).build();
             sender.sendMessage(Texts.of(Texts.of(sender.getTranslation(CRITICAL, "Unexpected command failure:")), " ", hover));
         }
         return true;

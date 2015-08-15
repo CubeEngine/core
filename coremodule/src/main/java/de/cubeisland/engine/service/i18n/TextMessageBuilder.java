@@ -29,15 +29,18 @@ import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.ClickAction.OpenUrl;
 import org.spongepowered.api.text.action.ClickAction.RunCommand;
 import org.spongepowered.api.text.action.HoverAction.ShowAchievement;
 import org.spongepowered.api.text.action.HoverAction.ShowEntity;
 import org.spongepowered.api.text.action.HoverAction.ShowItem;
 import org.spongepowered.api.text.action.HoverAction.ShowText;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextStyle;
 
+import static org.spongepowered.api.text.action.TextActions.*;
 import static org.spongepowered.api.text.format.TextColors.DARK_RED;
 
 public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
@@ -88,11 +91,11 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         Object toClick = click.getClick();
         if (toClick instanceof URL)
         {
-            b.onClick(new OpenUrl(((URL)toClick)));
+            b.onClick(openUrl((URL)toClick));
         }
         else if (toClick instanceof String)
         {
-            b.onClick(new RunCommand(((String)toClick)));
+            b.onClick(runCommand(((String)toClick)));
         }
 
         builder.append(b.build());
@@ -106,19 +109,19 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         Object toHover = hover.getHover();
         if (toHover instanceof Achievement)
         {
-            b.onHover(new ShowAchievement(((Achievement)toHover)));
+            b.onHover(showAchievement(((Achievement)toHover)));
         }
         else if (toHover instanceof ItemStack)
         {
-            b.onHover(new ShowItem(((ItemStack)toHover)));
+            b.onHover(showItem(((ItemStack)toHover)));
         }
         else if (toHover instanceof ShowEntity.Ref)
         {
-            b.onHover(new ShowEntity(((ShowEntity.Ref)toHover)));
+            b.onHover(showEntity(((ShowEntity.Ref)toHover)));
         }
         else if (toHover instanceof Text)
         {
-            b.onHover(new ShowText(((Text)toHover)));
+            b.onHover(showText(((Text)toHover)));
         }
         builder.append(b.build());
     }
@@ -150,6 +153,6 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         {
             b.append(Texts.of(DARK_RED, "ERROR"));
         }
-        b.onHover(new ShowText(Texts.of(component.getError())));
+        b.onHover(showText(Texts.of(component.getError())));
     }
 }
