@@ -33,6 +33,7 @@ import org.spongepowered.api.event.state.PostInitializationEvent;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Texts;
@@ -89,6 +90,7 @@ public class CubeEngineSpongePlugin
         {}
 
         modularity.register(Game.class, game);
+        // TODO wait for impl modularity.register(BanService.class, game.getServiceManager().provideUnchecked(BanService.class));
         modularity.register(Logger.class, pluginLogger);
         modularity.register(File.class, dataFolder);
         modularity.register(PermissionService.class, new ServiceProvider<>(PermissionService.class, () -> {

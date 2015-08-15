@@ -20,16 +20,12 @@ package de.cubeisland.engine.module.authorization;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import de.cubeisland.engine.butler.filter.Restricted;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.parametric.Default;
 import de.cubeisland.engine.butler.parametric.Desc;
 import de.cubeisland.engine.butler.parametric.Optional;
-import de.cubeisland.engine.service.ban.BanManager;
-import de.cubeisland.engine.service.ban.IpBan;
-import de.cubeisland.engine.service.ban.UserBan;
 import de.cubeisland.engine.service.command.CommandContext;
 import de.cubeisland.engine.service.command.CommandSender;
 import de.cubeisland.engine.service.command.annotation.CommandPermission;
@@ -37,24 +33,28 @@ import de.cubeisland.engine.service.command.annotation.Unloggable;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserList;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text.Literal;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.ban.Bans;
 
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.*;
+import static java.lang.System.currentTimeMillis;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class AuthCommands
 {
     private final Authorization module;
     private final Game game;
-    private final BanManager banManager;
+    private final BanService bs;
 
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
-    public AuthCommands(Authorization module, Game game, BanManager bm)
+    public AuthCommands(Authorization module, Game game, BanService bs)
     {
         this.module = module;
         this.game = game;
-        this.banManager = bm;
+        this.bs = bs;
     }
 
     @Unloggable
@@ -126,23 +126,20 @@ public class AuthCommands
         {
             if (fails.get(context.getUniqueId()) != null)
             {
-                if (fails.get(context.getUniqueId()) + TimeUnit.SECONDS.toMillis(10) > System.currentTimeMillis())
+                if (fails.get(context.getUniqueId()) + SECONDS.toMillis(10) > currentTimeMillis())
                 {
                     Literal msg = Texts.of(context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
                                     + context.getTranslation(NEUTRAL, "For your security you were banned 10 seconds."));
-                    this.banManager.addBan(new UserBan(context.getUser(), context, msg, new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                        config.banDuration))));
-
+                    Date expires = new Date(currentTimeMillis() + SECONDS.toMillis(config.banDuration));
+                    this.bs.ban(Bans.builder().user(context.getUser()).reason(msg).expirationDate(expires).source(context.asPlayer()).build());
                     if (!game.getServer().getOnlineMode())
                     {
-                        this.banManager.addBan(new IpBan(context.getAddress().getAddress(), context, msg, new Date(
-                            System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(
-                                config.banDuration))));
+                        this.bs.ban(Bans.builder().address(context.getAddress().getAddress()).reason(msg).expirationDate(expires).source(context.asPlayer()).build());
                     }
                     context.asPlayer().kick(msg);
                 }
             }
-            fails.put(context.getUniqueId(), System.currentTimeMillis());
+            fails.put(context.getUniqueId(), currentTimeMillis());
         }
     }
 

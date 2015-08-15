@@ -30,23 +30,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.core.marker.Disable;
-import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.marker.Disable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.module.authorization.storage.TableAuth;
-import de.cubeisland.engine.service.filesystem.FileManager;
-import de.cubeisland.engine.service.filesystem.FileUtil;
 import de.cubeisland.engine.module.core.util.StringUtils;
 import de.cubeisland.engine.module.core.util.Triplet;
-import de.cubeisland.engine.service.ban.BanManager;
 import de.cubeisland.engine.service.command.CommandManager;
 import de.cubeisland.engine.service.database.Database;
+import de.cubeisland.engine.service.filesystem.FileManager;
+import de.cubeisland.engine.service.filesystem.FileUtil;
 import de.cubeisland.engine.service.permission.PermissionManager;
 import de.cubeisland.engine.service.user.TableUser;
 import de.cubeisland.engine.service.user.User;
 import de.cubeisland.engine.service.user.UserManager;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.service.ban.BanService;
 
 import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
 
@@ -58,7 +58,7 @@ public class Authorization extends Module
     @Inject private UserManager um;
     @Inject private CommandManager cm;
     @Inject private Game game;
-    @Inject private BanManager bm;
+    @Inject private BanService bs;
     @Inject private PermissionManager pm;
 
     String salt;
@@ -89,7 +89,7 @@ public class Authorization extends Module
 
         perms = new AuthPerms(this);
         config = fm.loadConfig(this, AuthConfiguration.class);
-        cm.addCommands(this, new AuthCommands(this, game, bm));
+        cm.addCommands(this, new AuthCommands(this, game, bs));
 
         um.addDefaultAttachment(AuthAttachment.class, this);
     }
