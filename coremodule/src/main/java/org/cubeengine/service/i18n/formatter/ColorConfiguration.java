@@ -23,6 +23,8 @@ import org.cubeengine.module.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 import org.spongepowered.api.text.format.TextFormat;
 
+import static org.cubeengine.service.i18n.formatter.MessageType.*;
+
 @SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml
 {

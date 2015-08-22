@@ -40,6 +40,7 @@ import org.spongepowered.api.util.ban.Bans;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.cubeengine.service.i18n.formatter.MessageType.*;
 
 public class AuthCommands
 {

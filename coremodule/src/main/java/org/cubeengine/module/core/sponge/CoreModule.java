@@ -81,6 +81,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
 
 import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static org.cubeengine.service.logging.LoggingUtil.getCycler;
+import static org.cubeengine.service.logging.LoggingUtil.getFileFormat;
+import static org.cubeengine.service.logging.LoggingUtil.getLogFile;
 
 @ModuleInfo(name = "CoreModule", description = "The core module of CubeEngine")
 public final class CoreModule extends Module
@@ -148,7 +151,7 @@ public final class CoreModule extends Module
 
         this.config = reflector.load(SpongeCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
 
-        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Core"),
+        AsyncFileTarget target = new AsyncFileTarget(getLogFile(fm, "Core"),
                                                      LoggingUtil.getFileFormat(true, true),
                                                      true, LoggingUtil.getCycler(),
                                                      tf);

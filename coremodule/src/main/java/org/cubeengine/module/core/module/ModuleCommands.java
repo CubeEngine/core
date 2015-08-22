@@ -42,6 +42,8 @@ import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
 
+import static org.cubeengine.service.i18n.formatter.MessageType.*;
+
 @Command(name = "module", desc = "Provides ingame module plugin management functionality")
 public class ModuleCommands extends ContainerCommand
 {
