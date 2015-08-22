@@ -1495,13 +1495,11 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public int _INVALID_getLastDamage()
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void _INVALID_setLastDamage(int i)
     {
         throw new UnsupportedOperationException();
@@ -1517,7 +1515,6 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void _INVALID_damage(int i)
     {
         throw new UnsupportedOperationException();
@@ -1533,31 +1530,26 @@ public class UserBase implements Player
         }
     }
 
-    @Override
     public void _INVALID_damage(int i, Entity entity)
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public int _INVALID_getHealth()
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void _INVALID_setHealth(int i)
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public int _INVALID_getMaxHealth()
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void _INVALID_setMaxHealth(int i)
     {
         throw new UnsupportedOperationException();
