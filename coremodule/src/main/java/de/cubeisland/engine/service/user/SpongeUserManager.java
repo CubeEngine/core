@@ -52,7 +52,6 @@ import de.cubeisland.engine.service.command.CommandSender;
 import de.cubeisland.engine.service.command.sender.ConsoleCommandSender;
 import de.cubeisland.engine.service.database.Database;
 import de.cubeisland.engine.service.i18n.I18n;
-import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import de.cubeisland.engine.service.task.TaskManager;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
@@ -60,13 +59,13 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.service.profile.GameProfileResolver;
 import org.spongepowered.api.service.user.UserStorage;
-import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextFormat;
 
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.NONE;
 import static de.cubeisland.engine.service.user.TableUser.TABLE_USER;
 import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.toSet;
+import static org.spongepowered.api.text.format.TextColors.WHITE;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -294,20 +293,19 @@ public class SpongeUserManager implements UserManager
     }
 
     @Override
-    public void broadcastTranslatedWithPerm(MessageType messageType, String message, String perm, Object... params)
+    public void broadcastTranslatedWithPerm(TextFormat format, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
             return;
         }
 
-        onlineUsers.stream().filter(user -> perm == null || user.hasPermission(perm)).forEach(user -> user.sendTranslated(
-            messageType, message, params));
-        cm.getConsoleSender().sendTranslated(messageType, message, params);
+        onlineUsers.stream().filter(user -> perm == null || user.hasPermission(perm)).forEach(user -> user.sendTranslated(format, message, params));
+        cm.getConsoleSender().sendTranslated(format, message, params);
     }
 
     @Override
-    public void broadcastMessageWithPerm(MessageType type, String message, String perm, Object... params)
+    public void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
@@ -315,23 +313,23 @@ public class SpongeUserManager implements UserManager
         }
         onlineUsers.stream().filter(user -> perm == null || user.hasPermission(perm)).forEach(user -> user.sendMessage(NONE, message, params));
         ConsoleCommandSender cSender = cm.getConsoleSender();
-        cSender.sendMessage(i18n.composeMessage(cSender.getLocale(), type, message, params));
+        cSender.sendMessage(i18n.composeMessage(cSender.getLocale(), format, message, params));
     }
 
     @Override
-    public void broadcastTranslated(MessageType messageType, String message, Object... params)
+    public void broadcastTranslated(TextFormat format, String message, Object... params)
     {
-        this.broadcastTranslatedWithPerm(messageType, message, null, params);
+        this.broadcastTranslatedWithPerm(format, message, null, params);
     }
 
     @Override
-    public void broadcastMessage(MessageType messageType, String message, Object... params)
+    public void broadcastMessage(TextFormat format, String message, Object... params)
     {
-        this.broadcastMessageWithPerm(messageType, message, null, params);
+        this.broadcastMessageWithPerm(format, message, null, params);
     }
 
     @Override
-    public void broadcastStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params)
+    public void broadcastStatus(TextFormat starColor, String message, CommandSender sender, Object... params)
     {
         for (User user : this.onlineUsers)
         {
@@ -340,7 +338,7 @@ public class SpongeUserManager implements UserManager
     }
 
     @Override
-    public void broadcastTranslatedStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params)
+    public void broadcastTranslatedStatus(TextFormat starColor, String message, CommandSender sender, Object... params)
     {
         for (User user : this.onlineUsers)
         {
@@ -352,7 +350,7 @@ public class SpongeUserManager implements UserManager
     @Override
     public void broadcastStatus(String message, CommandSender sender, Object... params)
     {
-        this.broadcastStatus(TextColors.WHITE, message, sender, params);
+        this.broadcastStatus(new TextFormat(WHITE), message, sender, params);
     }
 
     @Override

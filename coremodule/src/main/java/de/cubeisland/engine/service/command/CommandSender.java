@@ -21,8 +21,7 @@ import java.util.Locale;
 import java.util.UUID;
 import de.cubeisland.engine.butler.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Translatable;
-import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextFormat;
 
 public interface CommandSender extends CommandSource
 {
@@ -38,13 +37,13 @@ public interface CommandSender extends CommandSource
     @Override
     Locale getLocale();
 
-    Text getTranslation(BaseFormatting format, String message, Object... args);
+    Text getTranslation(TextFormat format, String message, Object... args);
 
-    Text getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args);
+    Text getTranslationN(TextFormat format, int n, String singular, String plural, Object... args);
 
-    void sendTranslated(BaseFormatting format, String message, Object... args);
+    void sendTranslated(TextFormat format, String message, Object... args);
 
-    void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args);
+    void sendTranslatedN(TextFormat format, int n, String singular, String plural, Object... args);
 
     @Override
     UUID getUniqueId();

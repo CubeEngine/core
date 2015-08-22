@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
@@ -51,12 +50,15 @@ public enum ChatFormat
     PINK('d', () -> TextColors.LIGHT_PURPLE),
     YELLOW('e', () -> TextColors.YELLOW),
     WHITE('f', () -> TextColors.WHITE),
+
+    RESET('r', () -> TextColors.RESET),
+
     MAGIC('k', () -> TextStyles.OBFUSCATED),
     BOLD('l', () -> TextStyles.BOLD),
     STRIKE('m', () -> TextStyles.STRIKETHROUGH),
     UNDERLINE('n', () -> TextStyles.UNDERLINE),
-    ITALIC('o', () -> TextStyles.ITALIC),
-    RESET('r', () -> TextColors.RESET);
+    ITALIC('o', () -> TextStyles.ITALIC)
+    ;
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
     public static final char BASE_CHAR = '\u00A7';
@@ -70,13 +72,23 @@ public enum ChatFormat
     public static final String SPLIT_PARAM_KEEP = "((?<=\\{[A-Z_]{0,50}\\})|(?=\\{[A-Z_]{0,50}\\}))";
 
     private final char formatChar;
-    private FormatProvider base;
+    private ColorProvider color;
+    private StyleProvider style;
     private final String string;
 
-    ChatFormat(char formatChar, FormatProvider base)
+    ChatFormat(char formatChar, ColorProvider base)
     {
         this.formatChar = formatChar;
-        this.base = base;
+        this.color = base;
+        this.string = String.valueOf(new char[]{
+            BASE_CHAR, formatChar
+        });
+    }
+
+    ChatFormat(char formatChar, StyleProvider base)
+    {
+        this.formatChar = formatChar;
+        this.style = base;
         this.string = String.valueOf(new char[]{
             BASE_CHAR, formatChar
         });
@@ -92,12 +104,12 @@ public enum ChatFormat
         {
             if (part.matches(COLORS.replace('&', formatChar)))
             {
-                nextColor = ((TextColor)getByChar(part.charAt(1)).getBase());
+                nextColor = getByChar(part.charAt(1)).color.getColor();
                 continue;
             }
             if (part.matches(STYLES.replace('&', formatChar)))
             {
-                TextStyle newStyle = (TextStyle)getByChar(part.charAt(1)).getBase();
+                TextStyle newStyle = getByChar(part.charAt(1)).style.getColor();
                 if (nextStyle == null)
                 {
                     nextStyle = newStyle;
@@ -144,9 +156,19 @@ public enum ChatFormat
         return fromLegacy(string, Collections.emptyMap(), formatchar);
     }
 
-    public interface FormatProvider
+    public TextColor getColor()
     {
-        BaseFormatting getFormat();
+        return color.getColor();
+    }
+
+    public interface ColorProvider
+    {
+        TextColor getColor();
+    }
+
+    public interface StyleProvider
+    {
+        TextStyle getColor();
     }
 
     /**
@@ -252,15 +274,5 @@ public enum ChatFormat
         {
             FORMAT_CHARS_MAP.put(format.getChar(), format);
         }
-    }
-
-    public String getName()
-    {
-        return base.getFormat().getName();
-    }
-
-    public BaseFormatting getBase()
-    {
-        return base.getFormat();
     }
 }

@@ -59,7 +59,6 @@ import de.cubeisland.engine.service.i18n.formatter.BooleanFormatter;
 import de.cubeisland.engine.service.i18n.formatter.ColorPostProcessor;
 import de.cubeisland.engine.service.i18n.formatter.CommandSenderFormatter;
 import de.cubeisland.engine.service.i18n.formatter.IntegerFormatter;
-import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import de.cubeisland.engine.service.i18n.formatter.StringFormatter;
 import de.cubeisland.engine.service.i18n.formatter.TextMacro;
 import de.cubeisland.engine.service.i18n.formatter.VectorFormatter;
@@ -69,8 +68,7 @@ import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.format.TextFormat;
 
 import static java.util.stream.Collectors.toList;
 
@@ -178,12 +176,12 @@ public class I18n
         }
     }
 
-    public Text translate(BaseFormatting format, String message, Object... args)
+    public Text translate(TextFormat format, String message, Object... args)
     {
         return this.translate(getDefaultLocale(), format, message, args);
     }
 
-    public Text translate(Locale locale, BaseFormatting format, String message, Object... args)
+    public Text translate(Locale locale, TextFormat format, String message, Object... args)
     {
         if (locale == null)
         {
@@ -196,16 +194,12 @@ public class I18n
         return composeMessage(locale, format, this.translate(locale, message), args);
     }
 
-    public Text composeMessage(Locale locale, BaseFormatting format, String message, Object[] args)
+    public Text composeMessage(Locale locale, TextFormat format, String message, Object[] args)
     {
-        if (format instanceof MessageType)
-        {
-            format = ((MessageType)format).getSpongeColor();
-        }
-        return compositor.compose(locale, message, args).builder().color(((TextColor)format)).build();
+        return compositor.compose(locale, message, args).builder().format(format).build();
     }
 
-    public Text translateN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text translateN(TextFormat format, int n, String singular, String plural, Object... args)
     {
         return this.translateN(getDefaultLocale(), format, n, singular, plural, args);
     }
@@ -215,7 +209,7 @@ public class I18n
         return Locale.getDefault();
     }
 
-    public Text translateN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text translateN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
     {
         if (locale == null)
         {
@@ -301,12 +295,12 @@ public class I18n
         return languages;
     }
 
-    public Text getTranslation(Locale locale, BaseFormatting format, String msg, Object... args)
+    public Text getTranslation(Locale locale, TextFormat format, String msg, Object... args)
     {
         return this.translate(locale, format, msg, args);
     }
 
-    public Text getTranslationN(Locale locale, BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text getTranslationN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
     {
         return this.translateN(locale, format, n, singular, plural, args);
     }

@@ -130,14 +130,7 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
     {
         TextBuilder b = Texts.builder();
         buildAny(styled.getComponent(), b);
-        if (styled.getFormat() instanceof TextColor)
-        {
-            b.color((TextColor)styled.getFormat());
-        }
-        else if (styled.getFormat() instanceof TextStyle)
-        {
-            b.style((TextStyle)styled.getFormat());
-        }
+        b.format(styled.getFormat());
         builder.append(b.build());
     }
 

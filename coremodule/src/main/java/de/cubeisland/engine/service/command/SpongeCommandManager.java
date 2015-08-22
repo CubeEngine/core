@@ -279,7 +279,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             module = descriptor.getModule();
 
             PermissionDescription modulePerm = pm.getModulePermission(module);
-            pm.register(module, "command." + descriptor.getPermission(), "Allows using the command " + command.getDescriptor().getName(), modulePerm);
+            pm.register(module, "command." + descriptor.getPermission().getName() , "Allows using the command " + command.getDescriptor().getName(), modulePerm);
         }
         else if (command instanceof AliasCommand)
         {

@@ -90,7 +90,11 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
         CommandBase command = this.getCommand(alias);
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
-            PermissionDescription cmdPerm = pm.register(module, "command", "", null);
+            PermissionDescription cmdPerm = pm.getPermission(pm.getModulePermission(module).getId() + ".command");
+            if (cmdPerm == null)
+            {
+                cmdPerm = pm.register(module, "command", "", null);
+            }
             return ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, cmdPerm);// registers permission if not yet registered
         }
         return null;

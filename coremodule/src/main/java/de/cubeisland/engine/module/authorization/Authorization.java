@@ -50,7 +50,7 @@ import org.spongepowered.api.service.ban.BanService;
 
 import static de.cubeisland.engine.module.authorization.storage.TableAuth.TABLE_AUTH;
 
-@ModuleInfo(name = "Authorizazion", description = "Provides password authorization")
+@ModuleInfo(name = "Authorization", description = "Provides password authorization")
 public class Authorization extends Module
 {
     @Inject private FileManager fm;

@@ -149,8 +149,8 @@ public class SpongePermissionManager implements PermissionManager
     }
 
     @Override
-    public PermissionDescription register(Module module, String permission, String description,
-                                          PermissionDescription parent, String... assigned)
+    public PermissionDescription registerS(Module module, String permission, String description,
+                                           PermissionDescription parent, String... assigned)
     {
         String parentId = getModulePermission(module).getId() + ".";
         Stream<String> toAssign = Arrays.asList(assigned).stream().map(s -> "permission:" + parentId + s);

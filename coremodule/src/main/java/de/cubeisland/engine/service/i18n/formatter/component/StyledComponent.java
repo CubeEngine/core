@@ -19,27 +19,52 @@ package de.cubeisland.engine.service.i18n.formatter.component;
 
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.parser.component.Text;
-import org.spongepowered.api.text.format.BaseFormatting;
 import org.spongepowered.api.text.format.TextColor;
+import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyle;
 
 public class StyledComponent implements Component
 {
-    private final BaseFormatting format;
+    private final TextFormat format;
     private final Component component;
 
-    public StyledComponent(BaseFormatting format, Component component)
+    public StyledComponent(TextFormat format, Component component)
     {
         this.format = format;
         this.component = component;
     }
 
-    public StyledComponent(BaseFormatting format, String text)
+    public StyledComponent(TextColor format, Component component)
+    {
+        this.format = new TextFormat(format);
+        this.component = component;
+    }
+
+    public StyledComponent(TextStyle format, Component component)
+    {
+        this.format = new TextFormat(format);
+        this.component = component;
+    }
+
+    public StyledComponent(TextFormat format, String text)
     {
         this(format, new Text(text));
     }
 
-    public BaseFormatting getFormat()
+    public StyledComponent(TextColor format, String text)
+    {
+        this.format = new TextFormat(format);
+        this.component = new Text(text);
+    }
+
+    public StyledComponent(TextStyle format, String text)
+    {
+        this.format = new TextFormat(format);
+        this.component = new Text(text);
+    }
+
+
+    public TextFormat getFormat()
     {
         return format;
     }
@@ -49,23 +74,23 @@ public class StyledComponent implements Component
         return component;
     }
 
-    public static Component colored(TextColor.Base color, Component component)
+    public static Component colored(TextColor color, Component component)
     {
-        return new StyledComponent(color, component);
+        return new StyledComponent(new TextFormat(color), component);
     }
 
-    public static Component styled(TextStyle.Base style, Component component)
+    public static Component styled(TextStyle style, Component component)
     {
-        return new StyledComponent(style, component);
+        return new StyledComponent(new TextFormat(style), component);
     }
 
-    public static Component colored(TextColor.Base color, String text)
+    public static Component colored(TextColor color, String text)
     {
-        return new StyledComponent(color, text);
+        return new StyledComponent(new TextFormat(color), text);
     }
 
-    public static Component styled(TextStyle.Base style, String text)
+    public static Component styled(TextStyle style, String text)
     {
-        return new StyledComponent(style, text);
+        return new StyledComponent(new TextFormat(style), text);
     }
 }

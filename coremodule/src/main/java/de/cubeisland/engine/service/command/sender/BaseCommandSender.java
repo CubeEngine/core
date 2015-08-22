@@ -20,11 +20,7 @@ package de.cubeisland.engine.service.command.sender;
 import de.cubeisland.engine.service.i18n.I18n;
 import de.cubeisland.engine.service.command.CommandSender;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Text.Translatable;
-import org.spongepowered.api.text.format.BaseFormatting;
-
-import static de.cubeisland.engine.module.core.util.ChatFormat.BASE_CHAR;
-import static de.cubeisland.engine.module.core.util.ChatFormat.fromLegacy;
+import org.spongepowered.api.text.format.TextFormat;
 
 public abstract class BaseCommandSender implements CommandSender
 {
@@ -36,25 +32,25 @@ public abstract class BaseCommandSender implements CommandSender
     }
 
     @Override
-    public Text getTranslation(BaseFormatting format, String message, Object... args)
+    public Text getTranslation(TextFormat format, String message, Object... args)
     {
         return i18n.getTranslation(getLocale(), format, message, args);
     }
 
     @Override
-    public Text getTranslationN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public Text getTranslationN(TextFormat format, int n, String singular, String plural, Object... args)
     {
         return i18n.getTranslationN(getLocale(), format, n, singular, plural, args);
     }
 
     @Override
-    public void sendTranslated(BaseFormatting format, String message, Object... args)
+    public void sendTranslated(TextFormat format, String message, Object... args)
     {
         sendMessage(this.getTranslation(format, message, args));
     }
 
     @Override
-    public void sendTranslatedN(BaseFormatting format, int n, String singular, String plural, Object... args)
+    public void sendTranslatedN(TextFormat format, int n, String singular, String plural, Object... args)
     {
         sendMessage(this.getTranslationN(format, n, singular, plural, args));
     }

@@ -38,6 +38,7 @@ import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.spec.CommandSpec;

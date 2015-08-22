@@ -25,8 +25,7 @@ import de.cubeisland.engine.service.command.property.RawPermission;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.text.format.BaseFormatting;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.text.format.TextFormat;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -55,12 +54,12 @@ public class CommandContext extends ParameterizedContext
         ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(message);
     }
 
-    public void sendTranslated(BaseFormatting type, String message, Object... args)
+    public void sendTranslated(TextFormat type, String message, Object... args)
     {
         ((CommandSender)this.getInvocation().getCommandSource()).sendTranslated(type, message, args);
     }
 
-    public void sendTranslatedN(BaseFormatting type, int count, String sMessage, String pMessage, Object... args)
+    public void sendTranslatedN(TextFormat type, int count, String sMessage, String pMessage, Object... args)
     {
         ((CommandSender)this.getInvocation().getCommandSource()).sendTranslatedN(type, count, sMessage, pMessage, args);
     }

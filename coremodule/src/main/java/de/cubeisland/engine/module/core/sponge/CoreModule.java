@@ -43,6 +43,7 @@ import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.marker.Setup;
 import de.cubeisland.engine.module.core.CoreCommands;
 import de.cubeisland.engine.module.core.CorePerms;
 import de.cubeisland.engine.module.core.CoreResource;
@@ -120,13 +121,29 @@ public final class CoreModule extends Module
         return mainThread;
     }
 
+    @Setup
+    public void onSetup()
+    {
+        ConverterManager manager = reflector.getDefaultConverterManager();
+        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
+        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
+        manager.registerConverter(new DurationConverter(), Duration.class);
+        manager.registerConverter(new VersionConverter(), Version.class);
+        manager.registerConverter(new LevelConverter(), LogLevel.class);
+        manager.registerConverter(new WorldConverter(game.getServer()), World.class);
+    }
+
     @Enable
     public void onEnable()
     {
         ((I18nLanguageLoader)i18n.getService().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
 
-        registerConverters(reflector);
+        ConverterManager manager = reflector.getDefaultConverterManager();
+        manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
+
         fm.dropResources(CoreResource.values());
 
         this.config = reflector.load(SpongeCoreConfiguration.class, moduleFolder.resolve("core.yml").toFile());
@@ -186,20 +203,6 @@ public final class CoreModule extends Module
         // depends on: server, module manager, ban manager
         cm.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager(), cm, fm, i18n));
         cm.addCommand(new CoreCommands(this, cm, um));
-    }
-
-    private void registerConverters(Reflector reflector)
-    {
-        ConverterManager manager = reflector.getDefaultConverterManager();
-        manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
-        manager.registerConverter(new WorldConverter(game.getServer()), World.class);
-        manager.registerConverter(new DurationConverter(), Duration.class);
-        manager.registerConverter(new VersionConverter(), Version.class);
-        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
-        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
     }
 
     @Disable

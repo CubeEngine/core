@@ -17,61 +17,14 @@
  */
 package de.cubeisland.engine.service.i18n.formatter;
 
-import java.awt.Color;
-import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextFormat;
 
-public class MessageType implements TextColor.Base
+public class MessageType
 {
-    public final static MessageType POSITIVE = new MessageType(() -> TextColors.GREEN);
-    public final static MessageType NEUTRAL = new MessageType(() -> TextColors.YELLOW);
-    public final static MessageType NEGATIVE = new MessageType(() -> TextColors.RED);
-    public final static MessageType CRITICAL = new MessageType(() -> TextColors.DARK_RED);
-    public final static MessageType NONE = new MessageType(() -> TextColors.RESET);
-
-    private ColorProvider color;
-
-    private MessageType(ColorProvider provider)
-    {
-        this.color = provider;
-    }
-
-    @Override
-    public Color getColor()
-    {
-        return this.color.getColor().getColor();
-    }
-
-    @Override
-    public String getId()
-    {
-        return this.color.getColor().getId();
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.color.getColor().getName();
-    }
-
-    @Override
-    public char getCode()
-    {
-        return color.getColor().getCode();
-    }
-
-    public void setColor(TextColor.Base color)
-    {
-        this.color = () -> color;
-    }
-
-    public TextColor.Base getSpongeColor()
-    {
-        return color.getColor();
-    }
-
-    public interface ColorProvider
-    {
-        TextColor.Base getColor();
-    }
+    public final static TextFormat POSITIVE = new TextFormat(TextColors.GREEN);
+    public final static TextFormat NEUTRAL = new TextFormat(TextColors.YELLOW);
+    public final static TextFormat NEGATIVE = new TextFormat(TextColors.RED);
+    public final static TextFormat CRITICAL = new TextFormat(TextColors.DARK_RED);
+    public final static TextFormat NONE = new TextFormat(TextColors.RESET);
 }

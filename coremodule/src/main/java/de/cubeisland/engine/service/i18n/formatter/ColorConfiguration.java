@@ -21,13 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 import de.cubeisland.engine.module.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.spongepowered.api.text.format.TextFormat;
 
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.*;
 
 @SuppressWarnings("all")
 public class ColorConfiguration extends ReflectedYaml
 {
-    public Map<MessageType, ChatFormat> colorMap = new HashMap<MessageType, ChatFormat>()
+    public Map<TextFormat, ChatFormat> colorMap = new HashMap<TextFormat, ChatFormat>()
     {
         {
             this.put(POSITIVE, ChatFormat.BRIGHT_GREEN);

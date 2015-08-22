@@ -30,6 +30,7 @@ import de.cubeisland.engine.butler.SimpleCommandDescriptor;
 import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextFormat;
 
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEGATIVE;
 import static de.cubeisland.engine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -61,7 +62,7 @@ public class HelpCommand implements CommandBase
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSender sender = (CommandSender)invocation.getCommandSource();
 
-        sender.sendTranslated(GRAY, "Description: {input}", Texts.toPlain(sender.getTranslation(NONE, descriptor.getDescription())));
+        sender.sendTranslated(new TextFormat(GRAY), "Description: {input}", Texts.toPlain(sender.getTranslation(NONE, descriptor.getDescription())));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -73,8 +74,7 @@ public class HelpCommand implements CommandBase
             labels.remove(labels.size() - 1);
         }
 
-        sender.sendTranslated(GRAY, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(
-            new String[labels.size()])));
+        sender.sendTranslated(new TextFormat(GRAY), "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
         sender.sendMessage(" ");
 
         if (helpTarget instanceof DispatcherCommand)
@@ -92,7 +92,7 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", sender.getTranslation(GRAY, command.getDescriptor().getDescription())));
+                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", sender.getTranslation(new TextFormat(GRAY), command.getDescriptor().getDescription())));
             }
                 sender.sendMessage(" ");
             }

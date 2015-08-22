@@ -24,9 +24,8 @@ import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.service.command.CommandSender;
-import de.cubeisland.engine.service.i18n.formatter.MessageType;
 import org.jooq.types.UInteger;
-import org.spongepowered.api.text.format.BaseFormatting;
+import org.spongepowered.api.text.format.TextFormat;
 
 @Service
 @Version(1)
@@ -114,12 +113,12 @@ public interface UserManager
 
     /**
      * Broadcasts a translated message
-     * @param messageType the messageType
+     * @param format the format
      * @param message the message to broadcast
      * @param perm the permission to check
      * @param params the parameters
      */
-    void broadcastTranslatedWithPerm(MessageType messageType, String message, String perm, Object... params);
+    void broadcastTranslatedWithPerm(TextFormat format, String message, String perm, Object... params);
 
     /**
      * Broadcasts a message (not translated)
@@ -128,25 +127,25 @@ public interface UserManager
      * @param perm the permission to check
      * @param params the parameters
      */
-    void broadcastMessageWithPerm(MessageType messageType, String message, String perm, Object... params);
+    void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params);
 
     /**
      * Broadcasts a translated message
      *
-     * @param messageType the messageType
+     * @param format the format
      * @param message the message to broadcast
      * @param params the parameters
      */
-    void broadcastTranslated(MessageType messageType, String message, Object... params);
+    void broadcastTranslated(TextFormat format, String message, Object... params);
 
     /**
      * Broadcasts a message (not translated)
      *
-     * @param messageType the messageType
+     * @param format the format
      * @param message the message to broadcast
      * @param params the parameters
      */
-    void broadcastMessage(MessageType messageType, String message, Object... params);
+    void broadcastMessage(TextFormat format, String message, Object... params);
 
     /**
      * Broadcasts a status message (not translated)
@@ -155,7 +154,7 @@ public interface UserManager
      * @param sender the sender
      * @param params the parameters
      */
-    void broadcastStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params);
+    void broadcastStatus(TextFormat starColor, String message, CommandSender sender, Object... params);
 
     /**
      * Broadcasts a translated status message
@@ -164,7 +163,7 @@ public interface UserManager
      * @param sender the sender
      * @param params the parameters
      */
-    void broadcastTranslatedStatus(BaseFormatting starColor, String message, CommandSender sender, Object... params);
+    void broadcastTranslatedStatus(TextFormat starColor, String message, CommandSender sender, Object... params);
 
     /**
      * Broadcasts a status message (not translated)
