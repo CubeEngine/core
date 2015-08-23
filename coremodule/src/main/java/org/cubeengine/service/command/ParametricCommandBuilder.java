@@ -84,15 +84,17 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
         String permName = descriptor.getName();
         String permDesc = null;
         boolean checkPerm = true;
+        String[] group = null;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
             permDesc = perm.desc().isEmpty() ? null : perm.desc();
             checkPerm = perm.checkPermission();
+            group = perm.group();
         }
 
-        descriptor.setPermission(new RawPermission(permName + ".use", permDesc), checkPerm);
+        descriptor.setPermission(new RawPermission(permName + ".use", permDesc).assign(group), checkPerm);
 
         if (checkPerm)
         {

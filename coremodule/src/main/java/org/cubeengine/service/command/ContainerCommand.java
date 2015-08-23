@@ -42,14 +42,16 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
         String permName = getDescriptor().getName();
         String permDesc = null;
         boolean checkPerm = true;
+        String[] groups = null;
         CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
             permDesc = perm.desc().isEmpty() ? null : perm.desc();
             checkPerm = perm.checkPermission();
+            groups = perm.group();
         }
-        getDescriptor().setPermission(new RawPermission(permName, permDesc), checkPerm);
+        getDescriptor().setPermission(new RawPermission(permName, permDesc).assign(groups), checkPerm);
         getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 

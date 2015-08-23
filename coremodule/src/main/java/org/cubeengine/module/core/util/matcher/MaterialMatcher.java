@@ -98,10 +98,12 @@ public class MaterialMatcher
                                                                                       FLINT_AND_STEEL, BOW, FISHING_ROD,
                                                                                       SHEARS)));
     @Inject private StringMatcher stringMatcher;
+    private Game game;
 
     @Inject
     public MaterialMatcher( Game game)
     {
+        this.game = game;
         this.builder = game.getRegistry().createItemBuilder();
 
         // Read names from GameDirectory
@@ -225,7 +227,7 @@ public class MaterialMatcher
 
     public BlockType block(String name)
     {
-        return null; // TODO BlockTypes
+        return game.getRegistry().getType(BlockType.class, name).orNull();
     }
 
     /**

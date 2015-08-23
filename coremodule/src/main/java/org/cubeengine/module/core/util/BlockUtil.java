@@ -122,7 +122,7 @@ public class BlockUtil
         return blocks;
     }
 
-    public static Collection<Location> getDetachableBlocks(Location block)
+    public static Collection<Location> getDetachableBlocks(Location<World> block)
     {
         Collection<Location> blocks = new HashSet<>();
 

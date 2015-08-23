@@ -38,11 +38,13 @@ public class EntityMatcher
 {
     private final Map<String, EntityType> nameMap = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
+    private Game game;
     private StringMatcher stringMatcher;
 
     @Inject
     public EntityMatcher(Game game, StringMatcher stringMatcher)
     {
+        this.game = game;
         this.stringMatcher = stringMatcher;
         for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
         {
@@ -63,6 +65,11 @@ public class EntityMatcher
         if (name == null)
         {
             return null;
+        }
+        EntityType type = game.getRegistry().getType(EntityType.class, name).orNull();
+        if (type != null)
+        {
+            return type;
         }
         Map<String, EntityType> entities = this.nameMap;
         String s = name.toLowerCase(Locale.ENGLISH);

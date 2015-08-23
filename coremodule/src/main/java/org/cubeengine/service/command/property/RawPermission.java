@@ -25,11 +25,18 @@ public class RawPermission
 {
     private boolean registered = false;
     private PermissionDescription register;
+    private String[] groups;
 
     public RawPermission(String permission, String description)
     {
         this.name = permission;
         this.description = description;
+    }
+
+    public RawPermission assign(String[] groups)
+    {
+        this.groups = groups == null ? new String[0] : groups;
+        return this;
     }
 
     private String name;
@@ -49,7 +56,13 @@ public class RawPermission
     {
         if (!registered)
         {
-            this.register = pm.register(module, name, description, parent);
+            String modulePerm = pm.getModulePermission(module).getId();
+            for (int i = 0; i < groups.length; i++)
+            {
+                groups[i] = modulePerm + "." + groups[i];
+            }
+
+            this.register = pm.registerS(module, name, description, parent, groups);
             name = register.getId();
             registered = true;
         }

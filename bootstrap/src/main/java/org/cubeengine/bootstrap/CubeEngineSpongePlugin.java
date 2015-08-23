@@ -120,13 +120,21 @@ public class CubeEngineSpongePlugin
     @Subscribe
     public void init(InitializationEvent event)
     {
+        // During this state, the plugin should finish any work needed in order to be functional.
+        // Global event handlers and command registration are handled during initialization.
+    }
+
+    @Subscribe
+    public void postInit(PostInitializationEvent event)
+    {
+        // By this state, inter-plugin communication should be ready to occur.
+        // Plugins providing an API should be ready to accept basic requests.
 
         pluginLogger.info("Enable Modules");
         long delta = System.currentTimeMillis();
         modularity.enableModules();
         pluginLogger.info("Finished enabling Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
-        // During this state, the plugin should finish any work needed in order to be functional.
-        // Global event handlers and command registration are handled during initialization.
+
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
         game.getCommandDispatcher().register(this, CommandSpec.builder().description(Texts.of(
@@ -135,13 +143,6 @@ public class CubeEngineSpongePlugin
             modularity.enableModules();
             return CommandResult.success();
         }).build(), "reload");
-    }
-
-    @Subscribe
-    public void postInit(PostInitializationEvent event)
-    {
-        // By this state, inter-plugin communication should be ready to occur.
-        // Plugins providing an API should be ready to accept basic requests.
 
         // TODO register our services in Sponge
     }

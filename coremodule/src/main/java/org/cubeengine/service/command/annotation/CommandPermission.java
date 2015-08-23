@@ -39,6 +39,12 @@ public @interface CommandPermission
     String value() default "";
 
     String desc() default "";
+
+    /**
+     * A list of grouping permissions this command permission should be assigned to.
+     * The grouping permissions are always relative to the module registering the command.
+     */
+    String[] group() default {};
 }
 
 
