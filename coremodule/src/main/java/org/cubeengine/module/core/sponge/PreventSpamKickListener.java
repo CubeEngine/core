@@ -18,8 +18,8 @@
 package org.cubeengine.module.core.sponge;
 
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerKickEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.living.player.PlayerKickEvent;
 import org.spongepowered.api.text.Texts;
 
 public class PreventSpamKickListener
@@ -31,10 +31,10 @@ public class PreventSpamKickListener
         this.core = core;
     }
 
-    @Subscribe(order = Order.EARLY, ignoreCancelled = true)
+    @Listener(order = Order.EARLY, ignoreCancelled = true)
     public void onKick(PlayerKickEvent event)
     {
-        if ("disconnect.spam".equals(Texts.toPlain(event.getMessage())) && event.getUser().hasPermission(core.perms().SPAM.getId()))
+        if ("disconnect.spam".equals(Texts.toPlain(event.getMessage())) && event.getSource().hasPermission(core.perms().SPAM.getId()))
         {
             event.setCancelled(true);
         }

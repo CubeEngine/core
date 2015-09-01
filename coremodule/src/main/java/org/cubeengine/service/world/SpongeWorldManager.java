@@ -38,9 +38,9 @@ import org.jooq.Result;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.world.WorldLoadEvent;
-import org.spongepowered.api.event.world.WorldUnloadEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.world.LoadWorldEvent;
+import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -113,16 +113,16 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
         em.removeListener(module, this);
     }
 
-    @Subscribe(order = Order.FIRST)
-    public void onWorldLoad(WorldLoadEvent event)
+    @Listener(order = Order.FIRST)
+    public void onWorldLoad(LoadWorldEvent event)
     {
-        getWorldEntity(event.getWorld()); // loads from db if not yet loaded
+        getWorldEntity(event.getTargetWorld()); // loads from db if not yet loaded
     }
 
-    @Subscribe(order = Order.POST)
-    public void onWorldUnload(WorldUnloadEvent event)
+    @Listener(order = Order.POST)
+    public void onWorldUnload(UnloadWorldEvent event)
     {
-        World world = event.getWorld();
+        World world = event.getTargetWorld();
         WorldEntity entity = getWorldEntity(world);
         worlds.remove(world.getName());
         worldIds.remove(entity.getValue(TableWorld.TABLE_WORLD.KEY));

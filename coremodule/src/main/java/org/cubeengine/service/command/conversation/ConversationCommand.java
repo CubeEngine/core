@@ -29,8 +29,8 @@ import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerChatEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.living.player.PlayerChatEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 
@@ -65,10 +65,10 @@ public abstract class ConversationCommand extends ContainerCommand
         return usersInMode.contains(user.getUniqueId());
     }
 
-    @Subscribe
+    @Listener
     public void onChatHandler(PlayerChatEvent event)
     {
-        User user = um.getExactUser(event.getUser().getUniqueId());
+        User user = um.getExactUser(event.getSource().getUniqueId());
         if (this.hasUser(user))
         {
             user.sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ", WHITE, event.getMessage()));

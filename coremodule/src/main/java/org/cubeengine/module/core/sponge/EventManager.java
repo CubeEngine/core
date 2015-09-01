@@ -64,7 +64,7 @@ public class EventManager
         }
         listeners.add(listener);
 
-        eventManager.register(plugin, listener);
+        eventManager.registerListeners(plugin, listener);
         return this;
     }
 
@@ -83,7 +83,7 @@ public class EventManager
         Set<Object> listeners = this.listenerMap.get(module);
         if (listeners != null && listeners.remove(listener))
         {
-            eventManager.unregister(listener);
+            eventManager.unregisterListeners(listener);
         }
         return this;
     }
@@ -103,7 +103,7 @@ public class EventManager
         {
             for (Object listener : listeners)
             {
-                eventManager.unregister(listener);
+                eventManager.unregisterListeners(listener);
             }
         }
         return this;
@@ -119,10 +119,7 @@ public class EventManager
         Iterator<Entry<Module, Set<Object>>> it = this.listenerMap.entrySet().iterator();
         while (it.hasNext())
         {
-            for (Object listener : it.next().getValue())
-            {
-                eventManager.unregister(listener);
-            }
+            it.next().getValue().forEach(eventManager::unregisterListeners);
             it.remove();
         }
         return this;

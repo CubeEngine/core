@@ -26,8 +26,8 @@ import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.task.TaskManager;
 import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.event.Subscribe;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.inventory.InventoryCloseEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -122,7 +122,7 @@ public class InventoryGuard
         }
     }
 
-    @Subscribe
+    @Listener
     public void onInventoryClose(InventoryCloseEvent event)
     {
         if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)

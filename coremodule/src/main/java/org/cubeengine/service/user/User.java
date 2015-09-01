@@ -33,7 +33,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.module.core.attachment.AttachmentHolder;
 import org.cubeengine.service.command.sender.BaseCommandSender;
 import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
@@ -49,7 +49,7 @@ public class User extends BaseCommandSender implements AttachmentHolder<UserAtta
 {
     private UserManager um;
     private final UUID uuid;
-    private org.spongepowered.api.entity.player.User player;
+    private org.spongepowered.api.entity.living.player.User player;
     private Map<Class<? extends UserAttachment>, UserAttachment> attachments = new ConcurrentHashMap<>();
 
     private CompletableFuture<UserEntity> future;
@@ -231,9 +231,9 @@ public class User extends BaseCommandSender implements AttachmentHolder<UserAtta
         return Optional.absent();
     }
 
-    public org.spongepowered.api.entity.player.User getUser()
+    public org.spongepowered.api.entity.living.player.User getUser()
     {
-        return getPlayer().transform(p -> (org.spongepowered.api.entity.player.User)p).or(player);
+        return getPlayer().transform(p -> (org.spongepowered.api.entity.living.player.User)p).or(player);
     }
 
     @Override

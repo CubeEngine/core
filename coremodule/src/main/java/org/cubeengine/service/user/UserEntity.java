@@ -37,7 +37,7 @@ public class UserEntity extends AsyncRecord<UserEntity>
     /**
      * Fills in Information for a new User
      */
-    public UserEntity newUser(org.spongepowered.api.entity.player.User player)
+    public UserEntity newUser(org.spongepowered.api.entity.living.player.User player)
     {
         this.setValue(TableUser.TABLE_USER.KEY, UInteger.valueOf(0));
         this.setValue(TableUser.TABLE_USER.LASTNAME, player.getName().toLowerCase());

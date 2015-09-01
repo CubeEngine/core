@@ -56,7 +56,7 @@ import org.cubeengine.service.task.TaskManager;
 import org.jooq.Record1;
 import org.jooq.types.UInteger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.profile.GameProfileResolver;
 import org.spongepowered.api.service.user.UserStorage;
 import org.spongepowered.api.text.format.TextFormat;
@@ -107,7 +107,7 @@ public class SpongeUserManager implements UserManager
 
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new UserConverter(this), User.class);
-        manager.registerConverter(new PlayerConverter(this, game), org.spongepowered.api.entity.player.User.class);
+        manager.registerConverter(new PlayerConverter(this, game), org.spongepowered.api.entity.living.player.User.class);
 
     }
 
@@ -188,7 +188,7 @@ public class SpongeUserManager implements UserManager
         UserEntity userEntity = database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name.toLowerCase())).fetchOne();
         if (userEntity != null)
         {
-            org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
+            org.spongepowered.api.entity.living.player.User offlinePlayer = getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
                 User user = new User(i18n, this, userEntity.getUniqueId());
@@ -200,7 +200,7 @@ public class SpongeUserManager implements UserManager
         }
         if (create)
         {
-            org.spongepowered.api.entity.player.User offlinePlayer = getOfflinePlayer(name);
+            org.spongepowered.api.entity.living.player.User offlinePlayer = getOfflinePlayer(name);
             User user = new User(i18n, this, userEntity.getUniqueId());
             user.getEntity().insertAsync();
             this.cacheUser(user);
@@ -209,7 +209,7 @@ public class SpongeUserManager implements UserManager
         return null;
     }
 
-    private org.spongepowered.api.entity.player.User getOfflinePlayer(String name)
+    private org.spongepowered.api.entity.living.player.User getOfflinePlayer(String name)
     {
         Optional<Player> player = core.getGame().getServer().getPlayer(name);
         return player.orNull();
@@ -570,7 +570,7 @@ public class SpongeUserManager implements UserManager
     }
 
     @Override
-    public org.spongepowered.api.entity.player.User getPlayer(UUID uuid)
+    public org.spongepowered.api.entity.living.player.User getPlayer(UUID uuid)
     {
         Optional<Player> player = core.getGame().getServer().getPlayer(uuid);
         if (player.isPresent())
@@ -579,7 +579,7 @@ public class SpongeUserManager implements UserManager
         }
         UserStorage storage = core.getGame().getServiceManager().provide(UserStorage.class).get();
 
-        org.spongepowered.api.entity.player.User user = storage.get(uuid).orNull();
+        org.spongepowered.api.entity.living.player.User user = storage.get(uuid).orNull();
         if (user != null)
         {
             return user;

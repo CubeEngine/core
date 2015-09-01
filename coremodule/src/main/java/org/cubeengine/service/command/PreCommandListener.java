@@ -25,9 +25,9 @@ import java.util.Set;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
-import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.message.CommandEvent;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
@@ -51,8 +51,8 @@ public class PreCommandListener
         stringMatcher = core.getModularity().provide(StringMatcher.class);
     }
 
-    @Subscribe(order = POST)
-    private void handleCommand(CommandEvent event)
+    @Listener(order = POST)
+    private void handleCommand(SendCommandEvent event)
     {
         event.setCancelled(isCommandMissing(event.getSource(), event.getCommand()));
     }

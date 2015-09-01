@@ -23,7 +23,7 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.User;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorage;
 
 public class PlayerConverter extends SimpleConverter<User>

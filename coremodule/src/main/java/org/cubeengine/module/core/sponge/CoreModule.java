@@ -178,7 +178,7 @@ public final class CoreModule extends Module
 
         if (this.config.preventSpamKick)
         {
-            game.getEventManager().register(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
+            game.getEventManager().registerListeners(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
         }
 
 

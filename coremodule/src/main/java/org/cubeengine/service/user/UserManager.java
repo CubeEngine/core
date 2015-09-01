@@ -196,5 +196,5 @@ public interface UserManager
 
     CompletableFuture<UserEntity> loadEntity(UUID uuid);
 
-    org.spongepowered.api.entity.player.User getPlayer(UUID uuid);
+    org.spongepowered.api.entity.living.player.User getPlayer(UUID uuid);
 }

@@ -24,13 +24,13 @@ import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.service.task.TaskManager;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.living.player.PlayerJoinEvent;
+import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
 
 public class UserListener
 {
-    private SpongeUserManager um;
+    private final SpongeUserManager um;
     private final TaskManager tm;
     private final CoreModule core;
 
@@ -47,10 +47,10 @@ public class UserListener
      *
      * @param event the PlayerQuitEvent
      */
-    @Subscribe(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onQuit(final PlayerQuitEvent event)
     {
-        final User user = um.getExactUser(event.getUser().getUniqueId());
+        final User user = um.getExactUser(event.getSource().getUniqueId());
         tm.runTask(core, () -> {
             synchronized (um)
             {
@@ -77,10 +77,10 @@ public class UserListener
         um.scheduledForRemoval.put(user.getUniqueId(), uid);
     }
 
-    @Subscribe(order = Order.EARLY)
+    @Listener(order = Order.EARLY)
     public void onJoin(final PlayerJoinEvent event)
     {
-        final User user = um.getExactUser(event.getUser().getUniqueId());
+        final User user = um.getExactUser(event.getSource().getUniqueId());
         if (user != null)
         {
             um.onlineUsers.add(user);

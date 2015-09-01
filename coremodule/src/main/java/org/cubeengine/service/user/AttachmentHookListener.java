@@ -17,14 +17,14 @@
  */
 package org.cubeengine.service.user;
 
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.entity.player.PlayerChatEvent;
-import org.spongepowered.api.event.entity.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.player.PlayerKickEvent;
-import org.spongepowered.api.event.entity.player.PlayerQuitEvent;
-import org.spongepowered.api.event.message.CommandEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.entity.living.player.PlayerChatEvent;
+import org.spongepowered.api.event.entity.living.player.PlayerJoinEvent;
+import org.spongepowered.api.event.entity.living.player.PlayerKickEvent;
+import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
 
 public class AttachmentHookListener
 {
@@ -35,44 +35,44 @@ public class AttachmentHookListener
         this.um = um;
     }
 
-    @Subscribe(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onJoin(PlayerJoinEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getUser().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
         {
             attachment.onJoin(event.getMessage());
         }
     }
 
-    @Subscribe(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onQuit(PlayerQuitEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getUser().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
         {
             attachment.onQuit(event.getMessage());
         }
     }
 
-    @Subscribe(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onKick(PlayerKickEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getUser().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
         {
             attachment.onKick(event.getMessage());
         }
     }
 
-    @Subscribe(order = Order.POST)
+    @Listener(order = Order.POST)
     public void onChat(PlayerChatEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getUser().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
         {
             attachment.onChat(event.getUnformattedMessage());
         }
     }
 
-    @Subscribe(order = Order.POST)
-    public void onCommand(CommandEvent event)
+    @Listener(order = Order.POST)
+    public void onCommand(SendCommandEvent event)
     {
         if (event.getSource() instanceof Player)
         {

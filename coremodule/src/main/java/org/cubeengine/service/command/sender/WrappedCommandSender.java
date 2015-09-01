@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.entity.player.Player;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;

@@ -22,7 +22,7 @@ import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.player.User;
+import org.spongepowered.api.entity.living.player.User;
 
 public class OfflinePlayerReader implements ArgumentReader<User>
 {

@@ -26,19 +26,17 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.service.ServiceProvider;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Subscribe;
-import org.spongepowered.api.event.message.CommandEvent;
-import org.spongepowered.api.event.state.InitializationEvent;
-import org.spongepowered.api.event.state.PostInitializationEvent;
-import org.spongepowered.api.event.state.PreInitializationEvent;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.spec.CommandSpec;
@@ -56,8 +54,8 @@ public class CubeEngineSpongePlugin
 
     private final Modularity modularity = newModularity();
 
-    @Subscribe
-    public void preInit(PreInitializationEvent event)
+    @Listener
+    public void preInit(GamePreInitializationEvent event)
     {
         // During this state, the plugin gets ready for initialization.
         // Access to a default logger instance and access to information regarding preferred configuration file locations is available.
@@ -117,15 +115,15 @@ public class CubeEngineSpongePlugin
         }
     }
 
-    @Subscribe
-    public void init(InitializationEvent event)
+    @Listener
+    public void init(GameInitializationEvent event)
     {
         // During this state, the plugin should finish any work needed in order to be functional.
         // Global event handlers and command registration are handled during initialization.
     }
 
-    @Subscribe
-    public void postInit(PostInitializationEvent event)
+    @Listener
+    public void postInit(GamePostInitializationEvent event)
     {
         // By this state, inter-plugin communication should be ready to occur.
         // Plugins providing an API should be ready to accept basic requests.
@@ -147,8 +145,8 @@ public class CubeEngineSpongePlugin
         // TODO register our services in Sponge
     }
 
-    @Subscribe
-    public void onCmd(CommandEvent e)
+    @Listener
+    public void onCmd(SendCommandEvent e)
     {
         String command = e.getCommand();
     }
