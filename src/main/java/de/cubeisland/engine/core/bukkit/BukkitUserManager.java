@@ -91,12 +91,13 @@ public class BukkitUserManager extends AbstractUserManager
         Iterator<User> it = users.iterator();
 
         User user;
+        int i = 0;
         while (it.hasNext())
         {
             user = it.next();
             if (!user.isOnline())
             {
-                core.getLog().warn("Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUniqueId());
+                core.getLog().warn(++i + ". Found an offline player in the online players list: {}({})", user.getDisplayName(), user.getUniqueId());
                 this.onlineUsers.remove(user);
                 it.remove();
             }
@@ -257,13 +258,13 @@ public class BukkitUserManager extends AbstractUserManager
             if (event.getResult() == ALLOWED)
             {
                 User user = getExactUser(event.getPlayer(), true);
-                user.getWorld().getEntities().stream().
-                    filter(entity -> entity instanceof Player).
-                        filter(entity -> entity.getName().equals(user.getName())).
-                        forEach(entity -> {
-                            core.getLog().warn("A Players entity had to be removed manually ");
-                            entity.remove();
-                        });
+//                user.getWorld().getEntities().stream().
+//                    filter(entity -> entity instanceof Player).
+//                        filter(entity -> entity.getName().equals(user.getName())).
+//                        forEach(entity -> {
+//                            core.getLog().warn("A Players entity had to be removed manually ");
+//                            entity.remove();
+//                        });
                 onlineUsers.add(user);
             }
         }
