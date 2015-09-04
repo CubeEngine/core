@@ -258,13 +258,13 @@ public class BukkitUserManager extends AbstractUserManager
             if (event.getResult() == ALLOWED)
             {
                 User user = getExactUser(event.getPlayer(), true);
-//                user.getWorld().getEntities().stream().
-//                    filter(entity -> entity instanceof Player).
-//                        filter(entity -> entity.getName().equals(user.getName())).
-//                        forEach(entity -> {
-//                            core.getLog().warn("A Players entity had to be removed manually ");
-//                            entity.remove();
-//                        });
+                user.getWorld().getEntities().stream().
+                    filter(entity -> entity instanceof Player).
+                        filter(entity -> entity.getName().equals(user.getName())).
+                        forEach(entity -> {
+                            core.getLog().warn("A Players entity had to be removed manually: {}", entity.getUniqueId());
+                            entity.remove();
+                        });
                 onlineUsers.add(user);
             }
         }
