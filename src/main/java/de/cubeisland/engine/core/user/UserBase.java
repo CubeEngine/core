@@ -144,14 +144,15 @@ public class UserBase implements Player
         }
         if (this.dummy == null)
         {
-            CraftServer srv = (CraftServer)this.getServer();
-            WorldServer world = srv.getServer().getWorldServer(0);
-            // LoginListener is doing this
-            // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
-            // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
-            this.dummy = new EntityPlayer(srv.getServer(), world,
-                                          new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()),
-                                          new PlayerInteractManager(world));
+//            CraftServer srv = (CraftServer)this.getServer();
+//            WorldServer world = srv.getServer().getWorldServer(0);
+//            // LoginListener is doing this
+//            // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
+//            // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
+//            this.dummy = new EntityPlayer(srv.getServer(), world,
+//                                          new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()),
+//                                          new PlayerInteractManager(world));
+//            System.out.println("Created dummy!");
         }
         return this.dummy;
     }
@@ -159,6 +160,10 @@ public class UserBase implements Player
     private NBTTagCompound getData()
     {
         EntityPlayer dummy = this.getDummy();
+        if (dummy == null)
+        {
+            return null;
+        }
         WorldNBTStorage storage = (WorldNBTStorage)dummy.playerInteractManager.world.getDataManager();
         return storage.getPlayerData(this.getUniqueId().toString());
     }
@@ -166,6 +171,10 @@ public class UserBase implements Player
     private void saveData0()
     {
         EntityPlayer dummy = this.getDummy();
+        if (dummy == null)
+        {
+            return;
+        }
         WorldNBTStorage storage = (WorldNBTStorage)dummy.playerInteractManager.world.getDataManager();
         storage.save(dummy);
     }
