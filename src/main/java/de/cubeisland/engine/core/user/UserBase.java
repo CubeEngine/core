@@ -15,6 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ * <p>
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.cubeisland.engine.core.user;
 
 import java.net.InetSocketAddress;
@@ -28,14 +45,14 @@ import java.util.UUID;
 import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
-import net.minecraft.server.v1_8_R2.EntityPlayer;
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
-import net.minecraft.server.v1_8_R2.NBTTagDouble;
-import net.minecraft.server.v1_8_R2.NBTTagFloat;
-import net.minecraft.server.v1_8_R2.NBTTagList;
-import net.minecraft.server.v1_8_R2.PlayerInteractManager;
-import net.minecraft.server.v1_8_R2.WorldNBTStorage;
-import net.minecraft.server.v1_8_R2.WorldServer;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagDouble;
+import net.minecraft.server.v1_8_R3.NBTTagFloat;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.PlayerInteractManager;
+import net.minecraft.server.v1_8_R3.WorldNBTStorage;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -54,8 +71,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
@@ -132,7 +149,9 @@ public class UserBase implements Player
             // LoginListener is doing this
             // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
             // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
-            this.dummy = new EntityPlayer(srv.getServer(), world, new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()), new PlayerInteractManager(world));
+            this.dummy = new EntityPlayer(srv.getServer(), world,
+                                          new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()),
+                                          new PlayerInteractManager(world));
         }
         return this.dummy;
     }
@@ -1847,8 +1866,8 @@ public class UserBase implements Player
             NBTTagCompound data = this.getData();
             if (data != null)
             {
-                return this.getServer().getWorld(new UUID(data.getLong("WorldUUIDMost"), data.getLong(
-                    "WorldUUIDLeast")));
+                return this.getServer().getWorld(
+                    new UUID(data.getLong("WorldUUIDMost"), data.getLong("WorldUUIDLeast")));
             }
         }
         return null;
@@ -2841,5 +2860,50 @@ public class UserBase implements Player
             return player.getLastTwoTargetBlocks(set, i);
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public Entity getSpectatorTarget()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            return player.getSpectatorTarget();
+        }
+        return null;
+    }
+
+    @Override
+    public void setSpectatorTarget(Entity entity)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.setSpectatorTarget(entity);
+        }
+    }
+
+    @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public void sendTitle(String s, String s1)
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.sendTitle(s, s1);
+        }
+    }
+
+    @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    public void resetTitle()
+    {
+        final Player player = this.getOfflinePlayer().getPlayer();
+        if (player != null)
+        {
+            player.resetTitle();
+        }
     }
 }

@@ -1,4 +1,5 @@
 /**
+/**
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
  *
@@ -30,8 +31,8 @@ import java.util.TreeMap;
 import de.cubeisland.engine.core.CoreResource;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.util.AliasMapFormat;
-import net.minecraft.server.v1_8_R2.EntityTypes;
-import net.minecraft.server.v1_8_R2.NPC;
+import net.minecraft.server.v1_8_R3.EntityTypes;
+import net.minecraft.server.v1_8_R3.NPC;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
@@ -229,6 +230,7 @@ public class EntityMatcher
     /**
      * Returns if this EntityType can be spawned via SpawnEgg.
      */
+    @SuppressWarnings({"deprecation", "SuspiciousMethodCalls"})
     public boolean canBeSpawnedBySpawnEgg(EntityType entityType)
     {
         return EntityTypes.eggInfo.containsKey(entityType.getTypeId());

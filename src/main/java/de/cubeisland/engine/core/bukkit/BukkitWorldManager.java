@@ -26,7 +26,7 @@ import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.filesystem.FileUtil;
 import de.cubeisland.engine.core.world.AbstractWorldManager;
 import de.cubeisland.engine.core.world.WorldEntity;
-import net.minecraft.server.v1_8_R2.RegionFileCache;
+import net.minecraft.server.v1_8_R3.RegionFileCache;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;

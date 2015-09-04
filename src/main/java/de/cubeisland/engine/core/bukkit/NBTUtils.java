@@ -31,23 +31,23 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.ShortNode;
 import de.cubeisland.engine.converter.node.StringNode;
-import net.minecraft.server.v1_8_R2.BlockPosition;
-import net.minecraft.server.v1_8_R2.NBTBase;
-import net.minecraft.server.v1_8_R2.NBTTagByte;
-import net.minecraft.server.v1_8_R2.NBTTagByteArray;
-import net.minecraft.server.v1_8_R2.NBTTagCompound;
-import net.minecraft.server.v1_8_R2.NBTTagDouble;
-import net.minecraft.server.v1_8_R2.NBTTagEnd;
-import net.minecraft.server.v1_8_R2.NBTTagFloat;
-import net.minecraft.server.v1_8_R2.NBTTagInt;
-import net.minecraft.server.v1_8_R2.NBTTagIntArray;
-import net.minecraft.server.v1_8_R2.NBTTagList;
-import net.minecraft.server.v1_8_R2.NBTTagLong;
-import net.minecraft.server.v1_8_R2.NBTTagShort;
-import net.minecraft.server.v1_8_R2.NBTTagString;
-import net.minecraft.server.v1_8_R2.TileEntity;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.NBTBase;
+import net.minecraft.server.v1_8_R3.NBTTagByte;
+import net.minecraft.server.v1_8_R3.NBTTagByteArray;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagDouble;
+import net.minecraft.server.v1_8_R3.NBTTagEnd;
+import net.minecraft.server.v1_8_R3.NBTTagFloat;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagIntArray;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagLong;
+import net.minecraft.server.v1_8_R3.NBTTagShort;
+import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_8_R3.TileEntity;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
 public class NBTUtils
 {
@@ -165,7 +165,7 @@ public class NBTUtils
         {
             MapNode map = MapNode.emptyMap();
             NBTTagCompound compound = (NBTTagCompound)nbtBase;
-            for (String key : (Set<String>)compound.c())
+            for (String key : compound.c())
             {
                 map.set(key, convertNBTToNode(compound.get(key)));
             }
