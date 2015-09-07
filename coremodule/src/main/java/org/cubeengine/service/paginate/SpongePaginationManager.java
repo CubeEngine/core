@@ -29,7 +29,7 @@ import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.service.command.CommandSender;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 @ServiceImpl(PaginationManager.class)
 @Version(1)
@@ -61,9 +61,9 @@ public class SpongePaginationManager implements PaginationManager
     }
 
     @Listener
-    public void onPlayerQuit(PlayerQuitEvent event)
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event)
     {
-        userCommandMap.remove(um.getExactUser(event.getSource().getUniqueId()));
+        userCommandMap.remove(um.getExactUser(event.getTargetEntity().getUniqueId()));
     }
 
     @Override

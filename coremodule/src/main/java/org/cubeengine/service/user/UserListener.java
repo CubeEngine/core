@@ -25,8 +25,7 @@ import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.service.task.TaskManager;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.living.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class UserListener
 {
@@ -48,9 +47,9 @@ public class UserListener
      * @param event the PlayerQuitEvent
      */
     @Listener(order = Order.POST)
-    public void onQuit(final PlayerQuitEvent event)
+    public void onQuit(final ClientConnectionEvent.Disconnect event)
     {
-        final User user = um.getExactUser(event.getSource().getUniqueId());
+        final User user = um.getExactUser(event.getTargetEntity().getUniqueId());
         tm.runTask(core, () -> {
             synchronized (um)
             {
@@ -78,9 +77,9 @@ public class UserListener
     }
 
     @Listener(order = Order.EARLY)
-    public void onJoin(final PlayerJoinEvent event)
+    public void onJoin(final ClientConnectionEvent.Join event)
     {
-        final User user = um.getExactUser(event.getSource().getUniqueId());
+        final User user = um.getExactUser(event.getTargetEntity().getUniqueId());
         if (user != null)
         {
             um.onlineUsers.add(user);

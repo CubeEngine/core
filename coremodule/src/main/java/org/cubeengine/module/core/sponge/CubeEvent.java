@@ -18,7 +18,7 @@
 package org.cubeengine.module.core.sponge;
 
 import de.cubeisland.engine.modularity.core.Module;
-import org.spongepowered.api.event.AbstractEvent;
+import org.spongepowered.api.event.impl.AbstractEvent;
 
 /**
  * This class is a custom Event containing the core to allow easy access.

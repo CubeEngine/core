@@ -20,6 +20,7 @@ package org.cubeengine.module.core.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.EventManager;
@@ -28,7 +29,7 @@ import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.inventory.InventoryCloseEvent;
+import org.spongepowered.api.event.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -123,11 +124,16 @@ public class InventoryGuard
     }
 
     @Listener
-    public void onInventoryClose(InventoryCloseEvent event)
+    public void onInventoryClose(InteractInventoryEvent.Close event)
     {
-        if ((event.getContainer().equals(this.inventory)) && event.getViewer() instanceof Player)
+        Optional<Player> source = event.getCause().first(Player.class);
+        if (!source.isPresent())
         {
-            User user = um.getExactUser(event.getViewer().getUniqueId());
+            return;
+        }
+        if ((event.getTargetInventory().equals(this.inventory)))
+        {
+            User user = um.getExactUser(source.get().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);

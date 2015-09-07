@@ -17,14 +17,14 @@
  */
 package org.cubeengine.service.user;
 
+import com.google.common.base.Optional;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerChatEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerJoinEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerKickEvent;
-import org.spongepowered.api.event.entity.living.player.PlayerQuitEvent;
+import org.spongepowered.api.event.entity.living.player.KickPlayerEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class AttachmentHookListener
 {
@@ -36,38 +36,43 @@ public class AttachmentHookListener
     }
 
     @Listener(order = Order.POST)
-    public void onJoin(PlayerJoinEvent event)
+    public void onJoin(ClientConnectionEvent.Join event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getTargetEntity().getUniqueId()).getAll())
         {
             attachment.onJoin(event.getMessage());
         }
     }
 
     @Listener(order = Order.POST)
-    public void onQuit(PlayerQuitEvent event)
+    public void onQuit(ClientConnectionEvent.Disconnect event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getTargetEntity().getUniqueId()).getAll())
         {
             attachment.onQuit(event.getMessage());
         }
     }
 
     @Listener(order = Order.POST)
-    public void onKick(PlayerKickEvent event)
+    public void onKick(KickPlayerEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
+        for (UserAttachment attachment : um.getExactUser(event.getTargetEntity().getUniqueId()).getAll())
         {
             attachment.onKick(event.getMessage());
         }
     }
 
     @Listener(order = Order.POST)
-    public void onChat(PlayerChatEvent event)
+    public void onChat(MessageSinkEvent event)
     {
-        for (UserAttachment attachment : um.getExactUser(event.getSource().getUniqueId()).getAll())
+        Optional<Player> source = event.getCause().first(Player.class);
+        if (!source.isPresent())
         {
-            attachment.onChat(event.getUnformattedMessage());
+            return;
+        }
+        for (UserAttachment attachment : um.getExactUser(source.get().getUniqueId()).getAll())
+        {
+            attachment.onChat(event.getOriginalMessage());
         }
     }
 
