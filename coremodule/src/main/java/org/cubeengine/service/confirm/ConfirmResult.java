@@ -21,7 +21,7 @@ import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.result.CommandResult;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandContext;
-import org.cubeengine.service.command.CommandSender;
+import org.spongepowered.api.util.command.CommandSource;
 
 
 /**
@@ -30,7 +30,7 @@ import org.cubeengine.service.command.CommandSender;
 public class ConfirmResult implements CommandResult
 {
     private final Runnable runnable;
-    private final CommandSender sender;
+    private final CommandSource sender;
     private final Module module;
 
     public ConfirmResult(Module module, Runnable runnable, CommandContext context)

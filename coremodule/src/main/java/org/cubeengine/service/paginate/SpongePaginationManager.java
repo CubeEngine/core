@@ -26,10 +26,10 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.service.command.CommandSender;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.util.command.CommandSource;
 
 @ServiceImpl(PaginationManager.class)
 @Version(1)
@@ -42,7 +42,7 @@ public class SpongePaginationManager implements PaginationManager
     public static final String ONE_PAGE_FOOTER = "--------- page {integer}/{integer} ---------";
     public static final int LINES_PER_PAGE = 5;
 
-    private Map<CommandSender, PaginatedResult> userCommandMap = new HashMap<>();
+    private Map<String, PaginatedResult> userCommandMap = new HashMap<>();
     @Inject private UserManager um;
     @Inject private CommandManager cm;
     private CoreModule core;
@@ -63,24 +63,24 @@ public class SpongePaginationManager implements PaginationManager
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect event)
     {
-        userCommandMap.remove(um.getExactUser(event.getTargetEntity().getUniqueId()));
+        userCommandMap.remove(event.getTargetEntity().getIdentifier());
     }
 
     @Override
-    public void registerResult(CommandSender sender, PaginatedResult result)
+    public void registerResult(CommandSource sender, PaginatedResult result)
     {
-        userCommandMap.put(sender, result);
+        userCommandMap.put(sender.getIdentifier(), result);
     }
 
     @Override
-    public PaginatedResult getResult(CommandSender sender)
+    public PaginatedResult getResult(CommandSource sender)
     {
-        return userCommandMap.get(sender);
+        return userCommandMap.get(sender.getIdentifier());
     }
 
     @Override
-    public boolean hasResult(CommandSender sender)
+    public boolean hasResult(CommandSource sender)
     {
-        return userCommandMap.containsKey(sender);
+        return userCommandMap.containsKey(sender.getIdentifier());
     }
 }

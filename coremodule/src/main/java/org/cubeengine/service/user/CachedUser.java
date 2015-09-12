@@ -17,13 +17,39 @@
  */
 package org.cubeengine.service.user;
 
-import de.cubeisland.engine.modularity.core.Module;
+import java.net.InetSocketAddress;
+import org.spongepowered.api.entity.living.player.User;
 
-
-public class UserAuthorizedEvent extends UserEvent
+public class CachedUser
 {
-    public UserAuthorizedEvent(Module module, User user)
+    private UserEntity entity;
+    private User spongeUser;
+
+    public CachedUser(UserEntity entity, User spongeUser)
     {
-        super(module, user);
+        this.entity = entity;
+        this.spongeUser = spongeUser;
+    }
+
+    public User getUser()
+    {
+        return spongeUser;
+    }
+
+    public UserEntity getEntity()
+    {
+        return entity;
+    }
+
+    private InetSocketAddress address = null;
+
+    public void refreshIP()
+    {
+        address = this.getUser().getPlayer().get().getConnection().getAddress();
+    }
+
+    public InetSocketAddress getAddress()
+    {
+        return address;
     }
 }

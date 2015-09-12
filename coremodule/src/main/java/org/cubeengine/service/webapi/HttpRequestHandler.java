@@ -25,9 +25,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.cubeengine.module.authorization.AuthAttachment;
+import com.google.common.base.Optional;
+import de.cubeisland.engine.modularity.core.Maybe;
+import org.cubeengine.module.authorization.AuthManager;
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
 import org.cubeengine.service.webapi.exception.ApiRequestException;
 import de.cubeisland.engine.logscribe.Log;
@@ -40,12 +41,14 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import org.spongepowered.api.entity.living.player.User;
 
 import static io.netty.buffer.Unpooled.EMPTY_BUFFER;
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 import static io.netty.channel.ChannelFutureListener.CLOSE_ON_FAILURE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import static org.cubeengine.service.webapi.RequestStatus.AUTHENTICATION_FAILURE;
 
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 {
@@ -53,15 +56,17 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Log log;
+    private Maybe<AuthManager> am;
     private final ApiServer server;
     private final CommandManager cm;
     private final UserManager um;
     private ObjectMapper objectMapper;
 
-    HttpRequestHandler(CommandManager cm, UserManager um, ApiServer server, ObjectMapper mapper)
+    HttpRequestHandler(CommandManager cm, UserManager um, Maybe<AuthManager> am, ApiServer server, ObjectMapper mapper)
     {
         this.cm = cm;
         this.um = um;
+        this.am = am;
         this.server = server;
         this.objectMapper = mapper;
         this.log = server.getLog();
@@ -98,26 +103,32 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         User authUser = null;
         if (!authorized)
         {
-            //if (!core.getModularity().getServiceManager().isImplemented(Permission.class))
-            //{
-            //    this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
-            //    return;
-            //}
+            if (!am.isAvailable())
+            {
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Authentication deactivated", 200));
+                return;
+            }
             String user = params.get("user", String.class);
             String pass = params.get("pass", String.class);
             if (user == null || pass == null)
             {
-                this.error(ctx, RequestStatus.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
-            User exactUser = um.findExactUser(user);
-            AuthAttachment auth = exactUser.get(AuthAttachment.class);
-            if (!auth.isPasswordSet() || !auth.checkPassword(pass))
+
+            Optional<User> byName = um.getByName(user);
+            if (!byName.isPresent())
             {
-                this.error(ctx, RequestStatus.AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
                 return;
             }
-            authUser = exactUser;
+
+            if (!am.value().isPasswordSet(byName.get().getUniqueId()) || !am.value().checkPassword(byName.get().getUniqueId(), pass))
+            {
+                this.error(ctx, AUTHENTICATION_FAILURE, new ApiRequestException("Could not complete authentication", 200));
+                return;
+            }
+            authUser = byName.get();
         }
         String path = qsDecoder.path().trim();
         if (path.length() == 0 || "/".equals(path))
@@ -177,8 +188,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         }
         final RequestMethod method = RequestMethod.getByName(message.getMethod().name());
 
-        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(), method, params, message.headers(), data,
-                                               authUser);
+
+        ApiRequest apiRequest = new ApiRequest((InetSocketAddress)context.channel().remoteAddress(),
+                                               ((InetSocketAddress)context.channel().localAddress()), method, params, message.headers(), data, authUser);
         try
         {
             this.success(context, handler.execute(apiRequest));

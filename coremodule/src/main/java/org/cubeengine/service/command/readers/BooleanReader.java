@@ -52,7 +52,7 @@ public class BooleanReader implements ArgumentReader<Boolean>
     public Boolean read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        Locale locale = invocation.getLocale();
+        Locale locale = invocation.getContext(Locale.class);
         arg = arg.trim().toLowerCase(locale);
         if (this.yesStrings.contains(arg))
         {

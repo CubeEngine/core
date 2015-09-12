@@ -19,6 +19,7 @@ package org.cubeengine.service.command.readers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
@@ -26,8 +27,9 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static java.util.stream.Collectors.toList;
@@ -35,32 +37,32 @@ import static java.util.stream.Collectors.toList;
 /**
  * Matches exact offline players and online players using * for wildcard
  */
-public class FuzzyUserReader implements ArgumentReader<List<User>>
+public class FuzzyUserReader implements ArgumentReader<List<Player>>
 {
 
-    private final UserManager um;
+    private final Game game;
     private final I18n i18n;
 
-    public FuzzyUserReader(UserManager um, I18n i18n)
+    public FuzzyUserReader(Game game, I18n i18n)
     {
-        this.um = um;
+        this.game = game;
         this.i18n = i18n;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<User> read(Class type, CommandInvocation invocation) throws ReaderException
+    public List<Player> read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        ArrayList<User> users = new ArrayList<>();
+        ArrayList<Player> users = new ArrayList<>();
         if ("*".equals(invocation.currentToken()))
         {
             invocation.consume(1);
-            users.addAll(um.getOnlineUsers());
+            users.addAll(game.getServer().getOnlinePlayers());
             return users;
         }
         if (invocation.currentToken().contains(","))
         {
-            ((List<List<User>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation))
+            ((List<List<Player>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation))
                 .forEach(users::addAll);
             return users;
         }
@@ -68,18 +70,18 @@ public class FuzzyUserReader implements ArgumentReader<List<User>>
         if (token.contains("*"))
         {
             Pattern pattern = Pattern.compile(token.replace("*", ".*"));
-            users.addAll(um.getOnlineUsers().stream()
+            users.addAll(game.getServer().getOnlinePlayers().stream()
                            .filter(user -> pattern.matcher(user.getName()).matches())
                            .collect(toList()));
             if (users.isEmpty())
             {
-                throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Player {user} not found!", token));
+                throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }
         else
         {
-            users.add((User)invocation.getManager().read(User.class, User.class, invocation));
+            users.add((Player)invocation.getManager().read(Player.class, Player.class, invocation));
         }
         return users;
     }

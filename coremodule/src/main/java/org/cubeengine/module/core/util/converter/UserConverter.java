@@ -21,8 +21,8 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.entity.living.player.User;
 
 public class UserConverter extends SimpleConverter<User>
 {

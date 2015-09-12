@@ -43,9 +43,10 @@ import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.filesystem.FileUtil;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.service.user.TableUser;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ban.BanService;
 
 import static org.cubeengine.module.authorization.storage.TableAuth.TABLE_AUTH;
@@ -55,11 +56,11 @@ public class Authorization extends Module
 {
     @Inject private FileManager fm;
     @Inject private Database db;
-    @Inject private UserManager um;
     @Inject private CommandManager cm;
     @Inject private Game game;
     @Inject private BanService bs;
     @Inject private PermissionManager pm;
+    @Inject private AuthManager am; // TODO circular dependency? on providing module
 
     String salt;
     final MessageDigest messageDigest;
@@ -90,8 +91,6 @@ public class Authorization extends Module
         perms = new AuthPerms(this);
         config = fm.loadConfig(this, AuthConfiguration.class);
         cm.addCommands(this, new AuthCommands(this, game, bs));
-
-        um.addDefaultAttachment(AuthAttachment.class, this);
     }
 
 
@@ -99,7 +98,6 @@ public class Authorization extends Module
     public void onDisable()
     {
         cm.removeCommands(this);
-        um.removeDefaultAttachments(this);
         pm.cleanup(this);
     }
 
@@ -133,28 +131,28 @@ public class Authorization extends Module
         FileUtil.setReadOnly(file);
     }
 
-    public Triplet<Long, String, Integer> getFailedLogin(User user)
+    public Triplet<Long, String, Integer> getFailedLogin(Player user)
     {
         return this.failedLogins.get(user.getUniqueId());
     }
 
-    protected void addFailedLogin(User user)
+    protected void addFailedLogin(Player user)
     {
         Triplet<Long, String, Integer> loginFail = this.getFailedLogin(user);
         if (loginFail == null)
         {
-            loginFail = new Triplet<>(System.currentTimeMillis(), user.getAddress().getAddress().getHostAddress(), 1);
+            loginFail = new Triplet<>(System.currentTimeMillis(), user.getConnection().getAddress().getAddress().getHostAddress(), 1);
             this.failedLogins.put(user.getUniqueId(), loginFail);
         }
         else
         {
             loginFail.setFirst(System.currentTimeMillis());
-            loginFail.setSecond(user.getAddress().getAddress().getHostAddress());
+            loginFail.setSecond(user.getConnection().getAddress().getAddress().getHostAddress());
             loginFail.setThird(loginFail.getThird() + 1);
         }
     }
 
-    protected void removeFailedLogins(User user)
+    protected void removeFailedLogins(MultilingualPlayer user)
     {
         this.failedLogins.remove(user.getUniqueId());
     }
@@ -162,10 +160,7 @@ public class Authorization extends Module
     public void resetAllPasswords()
     {
         this.db.getDSL().update(TableUser.TABLE_USER).set(TABLE_AUTH.PASSWD, (byte[])null).execute();
-        for (User user : um.getLoadedUsers())
-        {
-            user.getEntity().refresh();
-        }
+        am.reset();
     }
 
     public AuthPerms perms()
@@ -176,5 +171,10 @@ public class Authorization extends Module
     public AuthConfiguration getConfig()
     {
         return config;
+    }
+
+    public AuthManager getManager()
+    {
+        return am;
     }
 }

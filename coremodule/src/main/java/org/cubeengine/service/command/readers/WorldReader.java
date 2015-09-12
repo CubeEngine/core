@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Locale;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
@@ -26,7 +27,7 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.world.WorldManager;
 import org.spongepowered.api.world.World;
 
@@ -50,7 +51,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
         Optional<World> world = wm.getWorld(name);
         if (!world.isPresent())
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "World {input} not found!", name));
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
         }
         return world.get();
     }
@@ -58,9 +59,9 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     @Override
     public World getDefault(CommandInvocation invocation)
     {
-        if (invocation.getCommandSource() instanceof User)
+        if (invocation.getCommandSource() instanceof MultilingualPlayer)
         {
-            return ((User)invocation.getCommandSource()).asPlayer().getWorld();
+            return ((MultilingualPlayer)invocation.getCommandSource()).original().getWorld();
         }
         throw new TooFewArgumentsException();
     }

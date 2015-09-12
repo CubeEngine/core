@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.SilentException;
@@ -24,13 +25,17 @@ import de.cubeisland.engine.butler.parameter.TooFewArgumentsException;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import org.cubeengine.service.user.User;
-import org.cubeengine.module.core.util.ChatFormat;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.util.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -40,24 +45,26 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
 {
     private GameRegistry registry;
     private EnchantMatcher enchantMatcher;
+    private I18n i18n;
 
-    public EnchantmentReader(EnchantMatcher enchantMatcher, Game game)
+    public EnchantmentReader(EnchantMatcher enchantMatcher, Game game, I18n i18n)
     {
         this.enchantMatcher = enchantMatcher;
+        this.i18n = i18n;
         registry = game.getRegistry();
     }
 
-    public static String getPossibleEnchantments(GameRegistry registry, ItemStack item)
+    public static Text getPossibleEnchantments(GameRegistry registry, ItemStack item)
     {
-        String collect = registry.getAllOf(Enchantment.class).stream()
-                                 .filter(e -> item == null || e.canBeAppliedToStack(item))
-                                 .map(Enchantment::getName)
-                                 .collect(Collectors.joining(ChatFormat.WHITE + ", " + ChatFormat.YELLOW));
-        if (collect.isEmpty())
+        List<Text> enchantments = registry.getAllOf(Enchantment.class).stream()
+                                          .filter(e -> item == null || e.canBeAppliedToStack(item))
+                                          .map(Enchantment::getName).map(n -> Texts.of(TextColors.YELLOW, n))
+                                          .collect(Collectors.toList());
+        if (enchantments.isEmpty())
         {
             return null;
         }
-        return ChatFormat.YELLOW + collect;
+        return Texts.join(Texts.of(TextColors.WHITE, ", "), enchantments.toArray(new Text[enchantments.size()]));
     }
 
     @Override
@@ -67,18 +74,18 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         Enchantment enchantment = enchantMatcher.enchantment(token);
         if (enchantment == null)
         {
-            User sender = (User)invocation.getCommandSource();
-            String possibleEnchs = getPossibleEnchantments(registry, sender.asPlayer().getItemInHand().orNull());
+            CommandSource sender = (CommandSource)invocation.getCommandSource();
+            Text possibleEnchs = getPossibleEnchantments(registry, sender instanceof Player ? ((Player)sender).getItemInHand().orNull() : null);
 
-            sender.sendTranslated(NEGATIVE, "Enchantment {input#enchantment} not found!", token);
+            i18n.sendTranslated(sender, NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)
             {
-                sender.sendTranslated(NEUTRAL, "Try one of those instead:");
+                i18n.sendTranslated(sender, NEUTRAL, "Try one of those instead:");
                 sender.sendMessage(possibleEnchs);
             }
             else
             {
-                sender.sendTranslated(NEGATIVE, "You can not enchant this item!");
+                i18n.sendTranslated(sender, NEGATIVE, "You can not enchant this item!");
             }
             throw new SilentException();
         }
@@ -88,8 +95,9 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     @Override
     public Enchantment getDefault(CommandInvocation invocation)
     {
-        User sender = (User)invocation.getCommandSource();
-        sender.sendTranslated(POSITIVE, "Following Enchantments are availiable:\n{input#enchs}", getPossibleEnchantments(registry, null));
+        CommandSource sender = (CommandSource)invocation.getCommandSource();
+        i18n.sendTranslated(sender, POSITIVE, "Following Enchantments are availiable:");
+        sender.sendMessage(getPossibleEnchantments(registry, null));
         throw new TooFewArgumentsException();
     }
 }

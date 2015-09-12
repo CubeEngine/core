@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.service.user.User;
-import org.cubeengine.service.webapi.sender.ApiCommandSender;
+import org.cubeengine.service.webapi.sender.ApiCommandSource;
 import org.cubeengine.service.webapi.sender.ApiServerSender;
 import org.cubeengine.service.webapi.sender.ApiUser;
+import org.spongepowered.api.entity.living.player.User;
 
 public class CommandController
 {
@@ -47,7 +47,9 @@ public class CommandController
     public ApiResponse command(ApiRequest request, final @Value("cmd") String command)
     {
         User authUser = request.getAuthUser();
-        final ApiCommandSender sender = authUser == null ? new ApiServerSender(i18n, mapper) : new ApiUser(i18n, authUser, mapper);
+        final ApiCommandSource sender = authUser == null
+                                        ? new ApiServerSender(request.getConnection(), mapper, cm.getConsoleSender())
+                                        : new ApiUser(request.getConnection(), mapper, authUser);
 
 
         Future<ApiResponse> future =  tm.callSync(() -> {

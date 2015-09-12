@@ -25,7 +25,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -48,7 +48,7 @@ public class InventoryGuardFactory
     private EventManager em;
     private ThreadLocal<InventoryGuard> currentGuardConfig;
 
-    public InventoryGuardFactory prepareInv(Inventory inventory, User... users)
+    public InventoryGuardFactory prepareInv(Inventory inventory, MultilingualPlayer... users)
     {
         this.currentGuardConfig = new ThreadLocal<>();
         this.currentGuardConfig.set(new InventoryGuard(em, um, tm, inventory, users));

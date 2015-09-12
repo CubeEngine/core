@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
@@ -45,7 +46,7 @@ public class ItemStackReader implements ArgumentReader<ItemStack>
         ItemStack item = materialMatcher.itemStack(arg);
         if (item == null)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

@@ -20,6 +20,7 @@ package org.cubeengine.service.user;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.CubeEvent;
+import org.spongepowered.api.entity.living.player.User;
 
 /**
  * This is a base for user related events.

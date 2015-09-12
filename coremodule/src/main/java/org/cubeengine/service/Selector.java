@@ -19,7 +19,7 @@ package org.cubeengine.service;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.module.core.util.math.shape.Shape;
 import org.spongepowered.api.world.Location;
 
@@ -33,14 +33,14 @@ public interface Selector
      * @param user the user
      * @return the selection or null if nothing is selected
      */
-    Shape getSelection(User user);
+    Shape getSelection(MultilingualPlayer user);
 
     /**
      * Gets a projection of the current shape onto the xz-plane
      *
      * @return the projected selection
      */
-    Shape get2DProjection(User user);
+    Shape get2DProjection(MultilingualPlayer user);
 
     /**
      * Tries to get the current selection of the user as a specific selection
@@ -50,7 +50,7 @@ public interface Selector
      * @param <T>
      * @return the selection or null if the selection is not applicable
      */
-    <T extends Shape> T getSelection(User user, Class<T> shape);
+    <T extends Shape> T getSelection(MultilingualPlayer user, Class<T> shape);
 
     /**
      * Gets the first position
@@ -58,7 +58,7 @@ public interface Selector
      * @param user the user
      * @return the first selected position
      */
-    Location getFirstPoint(User user);
+    Location getFirstPoint(MultilingualPlayer user);
 
     /**
      * Gets the second position
@@ -66,7 +66,7 @@ public interface Selector
      * @param user the user
      * @return the second selected position
      */
-    Location getSecondPoint(User user);
+    Location getSecondPoint(MultilingualPlayer user);
 
     /**
      * Gets the n-th position in the current shape
@@ -75,5 +75,5 @@ public interface Selector
      * @param index the index
      * @return the Location
      */
-    Location getPoint(User user, int index);
+    Location getPoint(MultilingualPlayer user, int index);
 }

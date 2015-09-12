@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.user.User;
 import de.cubeisland.engine.logscribe.Log;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -40,6 +39,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import org.spongepowered.api.entity.living.player.User;
 
 import static io.netty.handler.codec.http.HttpHeaders.EMPTY_HEADERS;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
@@ -161,7 +161,8 @@ public class WebSocketRequestHandler extends SimpleChannelInboundHandler<WebSock
                         break;
                     }
                     Parameters params = new Parameters(qsDecoder.parameters(), cm.getProviderManager());
-                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(), method, params, EMPTY_HEADERS, reqdata, authUser);
+                    ApiRequest request = new ApiRequest((InetSocketAddress)ctx.channel().remoteAddress(),
+                                                        ((InetSocketAddress)ctx.channel().localAddress()), method, params, EMPTY_HEADERS, reqdata, authUser);
                     ApiResponse response = handler.execute(request);
                     if (msgid != null)
                     {

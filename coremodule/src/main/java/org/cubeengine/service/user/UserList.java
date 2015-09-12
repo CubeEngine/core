@@ -18,13 +18,16 @@
 package org.cubeengine.service.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import org.cubeengine.service.command.CommandSender;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -34,13 +37,13 @@ import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
  */
 public class UserList
 {
-    private final List<User> list;
+    private final List<Player> list;
     private final boolean all;
-    private final UserManager um;
+    private final Game game;
 
-    public UserList(List<User> list, UserManager um)
+    public UserList(List<Player> list, Game game)
     {
-        this.um = um;
+        this.game = game;
         if (list == null)
         {
             all = true;
@@ -53,11 +56,11 @@ public class UserList
         }
     }
 
-    public List<User> list()
+    public Collection<Player> list()
     {
         if (all)
         {
-            return new ArrayList<>(um.getOnlineUsers());
+            return game.getServer().getOnlinePlayers();
         }
         return list;
     }
@@ -69,14 +72,14 @@ public class UserList
 
     public static class UserListReader implements ArgumentReader<UserList>, Completer
     {
-        private UserManager um;
+        private Game game;
 
-        public UserListReader(UserManager um)
+        public UserListReader(Game game)
         {
-            this.um = um;
+            this.game = game;
         }
 
-        private static boolean canSee(CommandSender sender, User user)
+        private static boolean canSee(CommandSource sender, Player user)
         {
             // TODO return !(sender instanceof User) || ((User)sender).canSee(user);
             return true;
@@ -89,9 +92,9 @@ public class UserList
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
-                return new UserList(null, um);
+                return new UserList(null, game);
             }
-            return new UserList((List<User>)invocation.getManager().read(List.class, User.class, invocation), um);
+            return new UserList((List<Player>)invocation.getManager().read(List.class, Player.class, invocation), game);
         }
 
         @Override
@@ -103,8 +106,8 @@ public class UserList
                 list.add("*");
             }
 
-            final CommandSender sender = (CommandSender)invocation.getCommandSource();
-            for (User player : um.getOnlineUsers())
+            final CommandSource sender = invocation.getContext(CommandSource.class);
+            for (Player player : game.getServer().getOnlinePlayers())
             {
                 String name = player.getName();
                 if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))

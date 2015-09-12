@@ -76,6 +76,12 @@
             <version>2.0-beta9</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.1</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- InHouse Libraries -->
         <dependency>
             <groupId>de.cubeisland.engine</groupId>
@@ -230,6 +236,7 @@
                             <exclude>org.ow2.asm:*</exclude>
                             <exclude>org.spongepowered:*</exclude>
                             <exclude>javax.persistence:*</exclude>
+                            <exclude>org.scala-lang:*</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>

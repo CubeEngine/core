@@ -25,9 +25,10 @@ import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -39,7 +40,7 @@ public class InventoryGuard
     private UserManager um;
     private TaskManager tm;
     private final Inventory inventory;
-    private final HashSet<User> users;
+    private final HashSet<MultilingualPlayer> users;
     private Module module;
 
     private boolean blockAllIn = false;
@@ -54,7 +55,7 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(EventManager em, UserManager um, TaskManager tm, Inventory inventory, User[] users)
+    public InventoryGuard(EventManager em, UserManager um, TaskManager tm, Inventory inventory, MultilingualPlayer[] users)
     {
         this.em = em;
         this.um = um;
@@ -74,9 +75,9 @@ public class InventoryGuard
         em.registerListener(this.module, this);
         if (openInventory)
         {
-            for (User user : users)
+            for (MultilingualPlayer user : users)
             {
-                user.asPlayer().openInventory(this.inventory);
+                user.original().openInventory(this.inventory);
             }
         }
     }
@@ -133,7 +134,7 @@ public class InventoryGuard
         }
         if ((event.getTargetInventory().equals(this.inventory)))
         {
-            User user = um.getExactUser(source.get().getUniqueId());
+            User user = um.getUser(source.get().getUniqueId());
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);

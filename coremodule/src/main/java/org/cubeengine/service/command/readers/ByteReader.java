@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
@@ -44,7 +45,7 @@ public class ByteReader implements ArgumentReader<Byte>
         }
         catch (NumberFormatException e)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
         }
     }
 }

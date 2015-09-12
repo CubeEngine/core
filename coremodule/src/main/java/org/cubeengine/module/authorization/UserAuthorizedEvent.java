@@ -15,19 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.module.core.attachment;
+package org.cubeengine.module.authorization;
 
-import java.util.Set;
 import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.service.user.UserEvent;
+import org.spongepowered.api.entity.living.player.User;
 
-public interface AttachmentHolder<T extends Attachment>
+
+public class UserAuthorizedEvent extends UserEvent
 {
-    <A extends T> A attach(Class<A> attachment, Module module);
-    <A extends T> A attachOrGet(Class<A> attachment, Module module);
-    <A extends T> A get(Class<A> attachment);
-    <A extends T> boolean has(Class<A> attachment);
-    <A extends T> A detach(Class<A> attachment);
-    Set<T> getAll();
-    void detachAll(Module module);
-    void detachAll();
+    public UserAuthorizedEvent(Module module, User user)
+    {
+        super(module, user);
+    }
 }

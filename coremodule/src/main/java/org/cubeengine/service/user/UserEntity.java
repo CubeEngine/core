@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.persistence.Transient;
 import org.cubeengine.service.database.AsyncRecord;
 import org.jooq.types.UInteger;
+import org.spongepowered.api.entity.living.player.User;
 
 public class UserEntity extends AsyncRecord<UserEntity>
 {
@@ -37,7 +38,7 @@ public class UserEntity extends AsyncRecord<UserEntity>
     /**
      * Fills in Information for a new User
      */
-    public UserEntity newUser(org.spongepowered.api.entity.living.player.User player)
+    public UserEntity newUser(User player)
     {
         this.setValue(TableUser.TABLE_USER.KEY, UInteger.valueOf(0));
         this.setValue(TableUser.TABLE_USER.LASTNAME, player.getName().toLowerCase());

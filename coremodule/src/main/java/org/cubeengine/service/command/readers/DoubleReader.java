@@ -41,7 +41,7 @@ public class DoubleReader implements ArgumentReader<Double>
     public Double read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        Locale locale = invocation.getLocale();
+        Locale locale = invocation.getContext(Locale.class);
         try
         {
             return NumberFormat.getInstance(locale).parse(arg).doubleValue();

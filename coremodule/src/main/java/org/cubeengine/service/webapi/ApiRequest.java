@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.cubeengine.service.user.User;
 import io.netty.handler.codec.http.HttpHeaders;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.network.RemoteConnection;
 
 /**
  * This class contains all the information of the API request. It is only used
@@ -33,6 +34,8 @@ import io.netty.handler.codec.http.HttpHeaders;
 public final class ApiRequest
 {
     private final InetSocketAddress remoteAddress;
+    private final RemoteConnection connection;
+    private InetSocketAddress localAdress;
     private final RequestMethod method;
     private final Parameters urlParams;
     private User authUser;
@@ -42,10 +45,25 @@ public final class ApiRequest
     /**
      * Initializes the ApiRequest with an Server instance
      */
-    public ApiRequest(final InetSocketAddress remoteAddress, RequestMethod method, Parameters params, HttpHeaders headers, JsonNode data,
-                      User authUser)
+    public ApiRequest(final InetSocketAddress remoteAddress, InetSocketAddress localAdress, RequestMethod method,
+                      Parameters params, HttpHeaders headers, JsonNode data, User authUser)
     {
+        this.connection = new RemoteConnection() // TODO inner class?
+        {
+            @Override
+            public InetSocketAddress getAddress()
+            {
+                return remoteAddress;
+            }
+
+            @Override
+            public InetSocketAddress getVirtualHost()
+            {
+                return localAdress;
+            }
+        };
         this.remoteAddress = remoteAddress;
+        this.localAdress = localAdress;
         this.method = method;
         this.urlParams = params;
         this.authUser = authUser;
@@ -92,5 +110,10 @@ public final class ApiRequest
     public User getAuthUser()
     {
         return authUser;
+    }
+
+    public RemoteConnection getConnection()
+    {
+        return this.connection;
     }
 }

@@ -18,15 +18,15 @@
 package org.cubeengine.service.command;
 
 import de.cubeisland.engine.butler.CommandBuilder;
-import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.Dispatcher;
 import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
 import de.cubeisland.engine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.command.sender.ConsoleCommandSender;
 import org.cubeengine.module.core.util.Cleanable;
+import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.source.ConsoleSource;
 
 /**
  * This class manages the registration of commands.
@@ -57,9 +57,9 @@ public interface CommandManager extends Cleanable, Dispatcher
      */
     void removeCommands();
 
-    boolean runCommand(CommandSender sender, String commandLine);
+    boolean runCommand(CommandSource sender, String commandLine);
 
-    ConsoleCommandSender getConsoleSender();
+    ConsoleSource getConsoleSender();
 
     void logExecution(CommandSource sender, boolean ran, String alias, String args);
 

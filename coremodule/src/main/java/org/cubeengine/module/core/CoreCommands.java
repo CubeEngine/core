@@ -30,12 +30,13 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.command.CommandSender;
 import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.command.Multilingual;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.cubeengine.module.core.util.Profiler;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -55,8 +56,9 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
-    public void reload(CommandSender context)
+    public void reload(Multilingual context)
     {
+        // TODO move all of reload to Plugin
         context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
 
@@ -67,7 +69,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Reloads all of the modules!")
-    public void reloadmodules(CommandSender context, @Flag boolean file)
+    public void reloadmodules(Multilingual context, @Flag boolean file)
     {
         context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
@@ -80,7 +82,7 @@ public class CoreCommands extends ContainerCommand
 
 
     @Command(desc = "Shows the online mode")
-    public void onlinemode(CommandSender context)
+    public void onlinemode(Multilingual context)
     {
         if (this.core.getGame().getServer().getOnlineMode())
         {
@@ -102,7 +104,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    public void loglevel(CommandSender context, @Optional LogLevel loglevel)
+    public void loglevel(Multilingual context, @Optional LogLevel loglevel)
     {
         if (loglevel != null)
         {
@@ -139,16 +141,16 @@ public class CoreCommands extends ContainerCommand
         public User read(Class type, CommandInvocation invocation) throws ReaderException
         {
             String name = invocation.consume(1);
-            User found = um.findExactUser(name);
-            if (found == null)
+            com.google.common.base.Optional<User> found = um.getByName(name);
+            if (!found.isPresent())
             {
-                found = um.findUser(name, true);
+                found = com.google.common.base.Optional.fromNullable(um.findUser(name, true));
             }
             if (found == null)
             {
                 throw new ReaderException("No match found for {input}!", name);
             }
-            return found;
+            return found.get();
         }
     }
 }

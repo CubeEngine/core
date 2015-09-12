@@ -28,14 +28,18 @@ import org.cubeengine.service.command.annotation.ParameterPermission;
 import org.cubeengine.service.command.annotation.Unloggable;
 import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
+import org.cubeengine.service.i18n.I18n;
 
 import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
 public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, CubeCommandDescriptor>
 {
-    public ParametricCommandBuilder()
+    private I18n i18n;
+
+    public ParametricCommandBuilder(I18n i18n)
     {
-        super(new CommandUsageGenerator());
+        super(new CommandUsageGenerator(i18n));
+        this.i18n = i18n;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
     protected BasicParametricCommand build(Command annotation, CommandOrigin origin)
     {
         BasicParametricCommand command = super.build(annotation, origin);
-        command.addCommand(new HelpCommand(command));
+        command.addCommand(new HelpCommand(command, i18n));
         return command;
     }
 }

@@ -55,7 +55,7 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
     public Difficulty read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
-        Locale locale = invocation.getLocale();
+        Locale locale = invocation.getContext(Locale.class);
         try
         {
             Difficulty difficulty = difficultyMap.get(Integer.valueOf(token));

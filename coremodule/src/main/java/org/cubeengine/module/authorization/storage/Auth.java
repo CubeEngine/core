@@ -20,7 +20,8 @@ package org.cubeengine.module.authorization.storage;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.cubeengine.service.database.AsyncRecord;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.CachedUser;
+import org.cubeengine.service.user.MultilingualPlayer;
 
 import static org.cubeengine.module.authorization.storage.TableAuth.TABLE_AUTH;
 
@@ -33,7 +34,7 @@ public class Auth extends AsyncRecord<Auth>
         super(TABLE_AUTH);
     }
 
-    public Auth newAuth(User user)
+    public Auth newAuth(CachedUser user)
     {
         this.setValue(TABLE_AUTH.ID, user.getEntity().getId());
         this.setValue(TABLE_AUTH.PASSWD, null);

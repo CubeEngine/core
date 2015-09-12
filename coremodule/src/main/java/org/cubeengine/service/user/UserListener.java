@@ -20,6 +20,7 @@ package org.cubeengine.service.user;
 import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import com.google.common.base.Optional;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.service.task.TaskManager;
@@ -29,11 +30,11 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class UserListener
 {
-    private final SpongeUserManager um;
+    private final UserManager um;
     private final TaskManager tm;
     private final CoreModule core;
 
-    public UserListener(SpongeUserManager um, TaskManager tm, CoreModule core)
+    public UserListener(UserManager um, TaskManager tm, CoreModule core)
     {
         this.um = um;
         this.tm = tm;
@@ -49,48 +50,31 @@ public class UserListener
     @Listener(order = Order.POST)
     public void onQuit(final ClientConnectionEvent.Disconnect event)
     {
-        final User user = um.getExactUser(event.getTargetEntity().getUniqueId());
-        tm.runTask(core, () -> {
-            synchronized (um)
+        UUID uuid = event.getTargetEntity().getUniqueId();
+        CachedUser byUUID = um.getByUUID(uuid);
+        UUID taskId = tm.runTaskDelayed(core, () -> {
+            um.scheduledForRemoval.remove(uuid);
+            byUUID.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+            byUUID.getEntity().updateAsync();
+            if (byUUID.getUser().isOnline())
             {
-                if (!user.getPlayer().isPresent())
-                {
-                    um.onlineUsers.remove(user);
-                }
-            }
-        });
-
-        UUID uid = tm.runTaskDelayed(core, () -> {
-            um.scheduledForRemoval.remove(user.getUniqueId());
-            user.getEntity().setValue(TableUser.TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
-            Profiler.startProfiling("removalTask");
-            user.getEntity().updateAsync();
-            core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling(
-                "removalTask", TimeUnit.MILLISECONDS));
-            if (user.getPlayer().isPresent())
-            {
-                um.removeCachedUser(user);
+                um.removeCached(uuid);
             }
         }, core.getConfiguration().usermanager.keepInMemory);
 
-        um.scheduledForRemoval.put(user.getUniqueId(), uid);
+        um.scheduledForRemoval.put(uuid, taskId);
     }
 
     @Listener(order = Order.EARLY)
     public void onJoin(final ClientConnectionEvent.Join event)
     {
-        final User user = um.getExactUser(event.getTargetEntity().getUniqueId());
-        if (user != null)
+        CachedUser byUUID = um.getByUUID(event.getTargetEntity().getUniqueId());
+        um.updateLastName(byUUID);
+        byUUID.refreshIP();
+        UUID removalTask = um.scheduledForRemoval.get(event.getTargetEntity().getUniqueId());
+        if (removalTask != null)
         {
-            um.onlineUsers.add(user);
-
-            um.updateLastName(user);
-            user.refreshIP();
-            final UUID removalTask = um.scheduledForRemoval.get(user.getUniqueId());
-            if (removalTask != null)
-            {
-                tm.cancelTask(core, removalTask);
-            }
+            tm.cancelTask(core, removalTask);
         }
     }
 }

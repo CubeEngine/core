@@ -22,22 +22,14 @@ import java.util.List;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
-
-import org.cubeengine.service.command.property.RawPermission;
-import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.command.sender.BlockCommandSender;
-import org.cubeengine.service.command.sender.WrappedCommandSender;
 import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.service.user.UserManager;
-import org.spongepowered.api.entity.living.player.Player;
+import org.cubeengine.service.command.property.RawPermission;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.source.CommandBlockSource;
-import org.spongepowered.api.util.command.source.ConsoleSource;
 
 public class ProxyCallable implements CommandCallable
 {
@@ -59,8 +51,7 @@ public class ProxyCallable implements CommandCallable
         {
             long delta = System.currentTimeMillis();
 
-            CommandSender wrapSender = wrapSender(source);
-            boolean ran = manager.execute(newInvocation(wrapSender, arguments.isEmpty() ? alias : alias + " " + arguments));
+            boolean ran = manager.execute(newInvocation(source, arguments.isEmpty() ? alias : alias + " " + arguments));
 
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick
@@ -69,7 +60,7 @@ public class ProxyCallable implements CommandCallable
                                    delta, delta * 100 / (1000 / 20));
             }
 
-            manager.logExecution(wrapSender, ran, alias, arguments);
+            manager.logExecution(source, ran, alias, arguments);
             return CommandResult.success();
         }
         catch (Exception e)
@@ -83,9 +74,8 @@ public class ProxyCallable implements CommandCallable
     @Override
     public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException
     {
-        CommandSender wrapSender = wrapSender(source);
-        List<String> suggestions = manager.getSuggestions(newInvocation(wrapSender, alias + " " + arguments));
-        manager.logTabCompletion(wrapSender, alias, arguments);
+        List<String> suggestions = manager.getSuggestions(newInvocation(source, alias + " " + arguments));
+        manager.logTabCompletion(source, alias, arguments);
 
         if (suggestions == null)
         {
@@ -129,35 +119,10 @@ public class ProxyCallable implements CommandCallable
     @Override
     public Text getUsage(CommandSource source)
     {
-        return Texts.of(getDescriptor().getUsage(newInvocation(wrapSender(source), "")));
+        return Texts.of(getDescriptor().getUsage(newInvocation(source, "")));
     }
 
-    private CommandSender wrapSender(org.spongepowered.api.util.command.CommandSource spongeSender)
-    {
-        I18n i18n = core.getModularity().provide(I18n.class);
-        if (spongeSender instanceof CommandSender)
-        {
-            return (CommandSender)spongeSender;
-        }
-        else if (spongeSender instanceof Player)
-        {
-            return core.getModularity().provide(UserManager.class).getExactUser(spongeSender.getName());
-        }
-        else if (spongeSender instanceof ConsoleSource)
-        {
-            return core.getModularity().provide(CommandManager.class).getConsoleSender();
-        }
-        else if (spongeSender instanceof CommandBlockSource)
-        {
-            return new BlockCommandSender(i18n, (CommandBlockSource)spongeSender);
-        }
-        else
-        {
-            return new WrappedCommandSender(i18n, spongeSender);
-        }
-    }
-
-    private CommandInvocation newInvocation(de.cubeisland.engine.butler.CommandSource source, String commandLine)
+    private CommandInvocation newInvocation(CommandSource source, String commandLine)
     {
         return new CommandInvocation(source, commandLine, manager.getProviderManager());
     }

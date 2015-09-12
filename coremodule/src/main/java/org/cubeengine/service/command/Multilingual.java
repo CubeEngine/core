@@ -17,26 +17,11 @@
  */
 package org.cubeengine.service.command;
 
-import java.util.Locale;
-import java.util.UUID;
-import de.cubeisland.engine.butler.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
 
-public interface CommandSender extends CommandSource
+public interface Multilingual
 {
-    UUID NON_PLAYER_UUID = new UUID(0, 0);
-
-    @Override
-    String getName();
-
-    Text getDisplayName();
-
-    boolean hasPermission(String perm);
-
-    @Override
-    Locale getLocale();
-
     Text getTranslation(TextFormat format, String message, Object... args);
 
     Text getTranslationN(TextFormat format, int n, String singular, String plural, Object... args);
@@ -44,10 +29,4 @@ public interface CommandSender extends CommandSource
     void sendTranslated(TextFormat format, String message, Object... args);
 
     void sendTranslatedN(TextFormat format, int n, String singular, String plural, Object... args);
-
-    @Override
-    UUID getUniqueId();
-
-    void sendMessage(String msg);
-    void sendMessage(Text msg);
 }

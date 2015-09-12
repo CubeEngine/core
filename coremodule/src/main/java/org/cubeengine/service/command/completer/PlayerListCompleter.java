@@ -22,17 +22,19 @@ import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
 
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
 
 public class PlayerListCompleter implements Completer
 {
 
-    private final UserManager um;
+    private final Game game;
 
-    public PlayerListCompleter(UserManager um)
+    public PlayerListCompleter(Game game)
     {
-        this.um = um;
+        this.game = game;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class PlayerListCompleter implements Completer
             firstTokens += "!";
         }
 
-        for (User user : um.getLoadedUsers())
+        for (Player user : game.getServer().getOnlinePlayers())
         {
             if (user.getName().startsWith(lastToken))
             {

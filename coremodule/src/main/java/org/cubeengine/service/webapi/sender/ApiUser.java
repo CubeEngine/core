@@ -17,50 +17,36 @@
  */
 package org.cubeengine.service.webapi.sender;
 
-import java.util.Locale;
-import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.User;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.service.permission.Subject;
 
-public class ApiUser extends ApiCommandSender
+public class ApiUser extends ApiCommandSource
 {
-    private final User user;
+    private User user;
 
-    public ApiUser(I18n i18n, User user, ObjectMapper mapper)
+    public ApiUser(RemoteConnection connection, ObjectMapper mapper, User user)
     {
-        super(i18n, mapper);
+        super(connection, mapper);
         this.user = user;
     }
 
     @Override
-    public Locale getLocale()
+    protected Subject internalSubject()
     {
-        return user.getLocale();
+        return user;
     }
 
     @Override
     public String getName()
     {
-        return "Api:" + user.getName();
+        return user.getName();
     }
 
     @Override
-    public boolean hasPermission(String name)
+    public String getIdentifier()
     {
-        return user.hasPermission(name);
-    }
-
-    @Override
-    public UUID getUniqueId()
-    {
-        return user.getUniqueId();
-    }
-
-    @Override
-    public Text getDisplayName()
-    {
-        return user.getDisplayName();
+        return user.getIdentifier();
     }
 }

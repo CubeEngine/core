@@ -26,35 +26,36 @@ import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.command.CommandSender;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.command.CommandSource;
 
-public class CommandSenderReader implements ArgumentReader<CommandSender>, DefaultValue<CommandSender>, Completer
+public class CommandSourceReader implements ArgumentReader<CommandSource>, DefaultValue<CommandSource>, Completer
 {
     private final CommandManager cm;
 
-    public CommandSenderReader(CommandManager cm)
+    public CommandSourceReader(CommandManager cm)
     {
         this.cm = cm;
     }
 
     @Override
-    public CommandSender read(Class type, CommandInvocation invocation) throws ReaderException
+    public CommandSource read(Class type, CommandInvocation invocation) throws ReaderException
     {
         if ("console".equalsIgnoreCase(invocation.currentToken()))
         {
             invocation.consume(1);
             return cm.getConsoleSender();
         }
-        return (User)invocation.getManager().getReader(User.class).read(type, invocation);
+        return (CommandSource)invocation.getManager().getReader(Player.class).read(type, invocation);
     }
 
     @Override
-    public CommandSender getDefault(CommandInvocation invocation)
+    public CommandSource getDefault(CommandInvocation invocation)
     {
-        if (invocation.getCommandSource() instanceof User)
+        if (invocation.getCommandSource() instanceof Player)
         {
-            return (User)invocation.getCommandSource();
+            return (Player)invocation.getCommandSource();
         }
         throw new ReaderException("You need to provide a player");
     }
@@ -63,7 +64,7 @@ public class CommandSenderReader implements ArgumentReader<CommandSender>, Defau
     public List<String> getSuggestions(CommandInvocation invocation)
     {
         ArrayList<String> list = new ArrayList<>();
-        list.addAll(invocation.getManager().getCompleter(User.class).getSuggestions(invocation));
+        list.addAll(invocation.getManager().getCompleter(MultilingualPlayer.class).getSuggestions(invocation));
         if ("console".startsWith(invocation.currentToken().toLowerCase()))
         {
             list.add("console");

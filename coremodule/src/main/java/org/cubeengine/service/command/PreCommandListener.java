@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import com.google.common.base.Optional;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
@@ -54,7 +55,11 @@ public class PreCommandListener
     @Listener(order = POST)
     private void handleCommand(SendCommandEvent event)
     {
-        event.setCancelled(isCommandMissing(event.getSource(), event.getCommand()));
+        Optional<Player> source = event.getCause().first(Player.class);
+        if (source.isPresent())
+        {
+            event.setCancelled(isCommandMissing(source.get(), event.getCommand()));
+        }
     }
 
     private boolean isCommandMissing(CommandSource sender, String label)

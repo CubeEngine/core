@@ -17,7 +17,7 @@
  */
 package org.cubeengine.module.core.util;
 
-import org.cubeengine.service.command.CommandSender;
+import org.cubeengine.service.command.Multilingual;
 import org.spongepowered.api.text.Text;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
@@ -52,7 +52,7 @@ public enum Direction
         return Direction.NORTH;
     }
 
-    public Text translated(CommandSender sender)
+    public Text translated(Multilingual sender)
     {
         switch (this)
         {

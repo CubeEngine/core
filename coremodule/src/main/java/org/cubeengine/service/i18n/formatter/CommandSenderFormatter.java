@@ -44,12 +44,6 @@ public class CommandSenderFormatter extends ReflectedFormatter
     }
 
     @Format
-    public Component format(de.cubeisland.engine.butler.CommandSource sender, Context context)
-    {
-        return this.format(sender.getName(), context);
-    }
-
-    @Format
     public Component format(Tamer tamer, Context context) // includes OfflinePlayer as it implements AnimalTamer
     {
         return this.format(tamer.getName(), context);

@@ -22,26 +22,33 @@ import de.cubeisland.engine.butler.parametric.context.ParameterizedContext;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.RawPermission;
+import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.util.command.CommandSource;
 
 public class CommandContext extends ParameterizedContext
 {
-    public CommandContext(CommandInvocation invocation)
+    private final CommandSource sender;
+    private I18n i18n;
+
+    public CommandContext(CommandInvocation invocation, I18n i18n)
     {
         super(invocation);
-        if (!(invocation.getCommandSource() instanceof CommandSender))
+        this.i18n = i18n;
+        if (!(invocation.getCommandSource() instanceof CommandSource))
         {
-            throw new IllegalArgumentException("CommandSource is not a CommandSender");
+            throw new IllegalArgumentException("CommandSource is not an accepted CommandSource: " + invocation.getCommandSource().getClass().getName());
         }
+        sender = (CommandSource)invocation.getCommandSource();
     }
 
     @Override
-    public CommandSender getSource()
+    public CommandSource getSource()
     {
-        return (CommandSender)super.getSource();
+        return (CommandSource)super.getSource();
     }
 
     public Module getModule()
@@ -51,17 +58,17 @@ public class CommandContext extends ParameterizedContext
 
     public void sendMessage(String message)
     {
-        ((CommandSender)this.getInvocation().getCommandSource()).sendMessage(message);
+        ((CommandSource)this.getInvocation().getCommandSource()).sendMessage(Texts.of(message));
     }
 
     public void sendTranslated(TextFormat type, String message, Object... args)
     {
-        ((CommandSender)this.getInvocation().getCommandSource()).sendTranslated(type, message, args);
+        i18n.sendTranslated(sender, type, message, args);
     }
 
     public void sendTranslatedN(TextFormat type, int count, String sMessage, String pMessage, Object... args)
     {
-        ((CommandSender)this.getInvocation().getCommandSource()).sendTranslatedN(type, count, sMessage, pMessage, args);
+        i18n.sendTranslatedN(sender, type, count, sMessage, pMessage, args);
     }
 
     public void ensurePermission(PermissionDescription permission) throws PermissionDeniedException

@@ -15,22 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.command.sender;
+package org.cubeengine.service.command;
 
-
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.ContextValue;
 import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.util.command.source.CommandBlockSource;
-import org.spongepowered.api.world.Location;
 
-public class BlockCommandSender extends WrappedCommandSender<CommandBlockSource>
+public class CommandContextValue implements ContextValue
 {
-    public BlockCommandSender(I18n i18n, CommandBlockSource sender)
+    private I18n i18n;
+
+    public CommandContextValue(I18n i18n)
     {
-        super(i18n, sender);
+        this.i18n = i18n;
     }
 
-    public Location getBlock()
+    @Override
+    public Object getContext(CommandInvocation invocation, Class<?> clazz)
     {
-        return getWrappedSender().getLocation();
+        return new CommandContext(invocation, i18n);
     }
 }

@@ -18,15 +18,16 @@
 package org.cubeengine.service.command;
 
 import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.filter.Filter;
 import de.cubeisland.engine.butler.filter.FilterException;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.RawPermission;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.util.command.CommandSource;
 
 /**
- * A Filter checking a CommandSenders Permission.
- * If the CommandSource is not a CommandSender ... what to do what to do
+ * A Filter checking a CommandSource Permission.
+ * If the CommandSource is not a Subject TODO ... what to do what to do
  */
 public class PermissionFilter implements Filter
 {
@@ -40,10 +41,10 @@ public class PermissionFilter implements Filter
     @Override
     public void run(CommandInvocation invocation) throws FilterException
     {
-        CommandSource source = invocation.getCommandSource();
-        if (source instanceof CommandSender)
+        Object source = invocation.getCommandSource();
+        if (source instanceof Subject)
         {
-            if (!((CommandSender)source).hasPermission(permission.getName()))
+            if (!((Subject)source).hasPermission(permission.getName()))
             {
                 throw new PermissionDeniedException(permission);
             }

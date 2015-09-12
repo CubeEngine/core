@@ -17,37 +17,14 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.SimpleCommandDescriptor;
 import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
-import de.cubeisland.engine.butler.parametric.context.BasicCommandContext;
-import de.cubeisland.engine.butler.parametric.context.CommandContextBuilder;
-import de.cubeisland.engine.butler.parametric.context.ContextBuilder;
-import de.cubeisland.engine.butler.parametric.context.SourceContextBuilder;
 
-public class CommandManagerDescriptor extends SimpleCommandDescriptor implements ContextBuilder
+public class CommandManagerDescriptor extends SimpleCommandDescriptor
 {
-    private ContextBuilder srcCtxBuilder = new SourceContextBuilder();
-    private ContextBuilder cmdCtxBuilder = new CommandContextBuilder();
-
     public CommandManagerDescriptor()
     {
         this.setName("Base CommandDispatcher for CubeEngine");
         this.setUsageGenerator(new ParameterUsageGenerator());
-    }
-
-    @Override
-    public Object buildContext(CommandInvocation invocation, Class<?> parameterType)
-    {
-        if (CommandSource.class.isAssignableFrom(parameterType))
-        {
-            return srcCtxBuilder.buildContext(invocation, parameterType);
-        }
-        else if (BasicCommandContext.class.isAssignableFrom(parameterType))
-        {
-            return cmdCtxBuilder.buildContext(invocation, parameterType);
-        }
-        throw new IllegalArgumentException("Unknown Context Type " + parameterType.getName());
     }
 }

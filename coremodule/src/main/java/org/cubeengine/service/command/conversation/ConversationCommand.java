@@ -28,13 +28,15 @@ import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.module.core.sponge.EventManager;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_PURPLE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;
@@ -75,20 +77,20 @@ public abstract class ConversationCommand extends ContainerCommand
         {
             return;
         }
-        User user = um.getExactUser(source.get().getUniqueId());
-        if (this.hasUser(user))
+        if (this.hasUser(source.get()))
         {
-            user.sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ", WHITE, event.getMessage()));
+            source.get().sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
+                                              WHITE, event.getMessage()));
 
             Text message = event.getMessage();
-            CommandInvocation invocation = newInvocation(user, message.toString()); // TODO
+            CommandInvocation invocation = newInvocation(source.get(), message.toString()); // TODO
             this.execute(invocation);
 
             event.setCancelled(true);
         }
     }
 
-    private CommandInvocation newInvocation(User user, String message)
+    private CommandInvocation newInvocation(CommandSource user, String message)
     {
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
@@ -116,7 +118,7 @@ public abstract class ConversationCommand extends ContainerCommand
      *
      * @param user the user to add
      */
-    public boolean addUser(User user)
+    public boolean addUser(MultilingualPlayer user)
     {
         return this.usersInMode.add(user.getUniqueId());
     }
@@ -126,7 +128,7 @@ public abstract class ConversationCommand extends ContainerCommand
      *
      * @param user the user tp remove
      */
-    public void removeUser(User user)
+    public void removeUser(MultilingualPlayer user)
     {
         this.usersInMode.remove(user.getUniqueId());
     }

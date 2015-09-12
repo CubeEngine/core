@@ -19,6 +19,7 @@ package org.cubeengine.service.command.readers;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
@@ -42,7 +43,7 @@ public class FloatReader implements ArgumentReader<Float>
         String consumed = invocation.consume(1);
         try
         {
-            return NumberFormat.getInstance(invocation.getLocale()).parse(consumed).floatValue();
+            return NumberFormat.getInstance(invocation.getContext(Locale.class)).parse(consumed).floatValue();
         }
         catch (ParseException e)
         {
@@ -52,7 +53,7 @@ public class FloatReader implements ArgumentReader<Float>
             }
             catch (ParseException e1)
             {
-                throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
+                throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
                                                          "Could not parse {input} to float!", consumed)); // standardized exception message
             }
         }

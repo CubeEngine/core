@@ -29,10 +29,13 @@ import de.cubeisland.engine.butler.DispatcherCommand;
 import de.cubeisland.engine.butler.SimpleCommandDescriptor;
 import de.cubeisland.engine.butler.alias.AliasCommand;
 import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.util.command.CommandSource;
 
+import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.spongepowered.api.text.format.TextColors.*;
 
 public class HelpCommand implements CommandBase
@@ -44,24 +47,26 @@ public class HelpCommand implements CommandBase
         helpDescriptor.setDescription("Displays Help");
     }
     private Dispatcher helpTarget;
+    private I18n i18n;
 
-    public HelpCommand(Dispatcher target)
+    public HelpCommand(Dispatcher target, I18n i18n)
     {
         this.helpTarget = target;
+        this.i18n = i18n;
     }
 
     @Override
     public boolean execute(CommandInvocation invocation)
     {
-        if (!(invocation.getCommandSource() instanceof CommandSender))
+        if (!(invocation.getCommandSource() instanceof CommandSource))
         {
             return false;
         }
         CommandDescriptor descriptor = helpTarget.getDescriptor();
-        CommandSender sender = (CommandSender)invocation.getCommandSource();
+        CommandSource sender = (CommandSource)invocation.getCommandSource();
 
-        sender.sendTranslated(new TextFormat(GRAY), "Description: {input}", Texts.toPlain(sender.getTranslation(
-            MessageType.NONE, descriptor.getDescription())));
+        TextFormat formatGray = new TextFormat(GRAY);
+        i18n.sendTranslated(sender, formatGray, "Description: {input}", Texts.toPlain(i18n.getTranslation(sender, MessageType.NONE, descriptor.getDescription())));
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -73,8 +78,8 @@ public class HelpCommand implements CommandBase
             labels.remove(labels.size() - 1);
         }
 
-        sender.sendTranslated(new TextFormat(GRAY), "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
-        sender.sendMessage(" ");
+        i18n.sendTranslated(sender, formatGray, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
+        sender.sendMessage(Texts.of());
 
         if (helpTarget instanceof DispatcherCommand)
         {
@@ -82,8 +87,8 @@ public class HelpCommand implements CommandBase
             if (!commands.isEmpty() && (commands.size() != 1
                 || !(commands.iterator().next() instanceof HelpCommand))) // is Empty ignoring HelpCommand
             {
-                sender.sendTranslated(MessageType.NEUTRAL, "The following sub-commands are available:");
-                sender.sendMessage(" ");
+                i18n.sendTranslated(sender, NEUTRAL, "The following sub-commands are available:");
+                sender.sendMessage(Texts.of());
                 for (CommandBase command : commands)
                 {
                     if (command instanceof HelpCommand
@@ -91,14 +96,15 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", sender.getTranslation(new TextFormat(GRAY), command.getDescriptor().getDescription())));
+                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ",
+                        i18n.getTranslation(sender, formatGray, command.getDescriptor().getDescription())));
             }
-                sender.sendMessage(" ");
+                sender.sendMessage(Texts.of());
             }
             else if (helpTarget instanceof ParametricContainerCommand)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "No actions are available");
-                sender.sendMessage(" ");
+                i18n.sendTranslated(sender, MessageType.NEGATIVE, "No actions are available");
+                sender.sendMessage(Texts.of());
             }
         }
 

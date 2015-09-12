@@ -17,15 +17,17 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
 import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.cubeengine.service.i18n.formatter.MessageType;
+import org.spongepowered.api.entity.living.player.User;
 
 /**
  * This argument is used to get users
@@ -48,7 +50,7 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
         User user = um.findUser(arg);
         if (user == null)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), MessageType.NEGATIVE,
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
                                                                                        "Player {user} not found!",
                                                                                        arg));
         }

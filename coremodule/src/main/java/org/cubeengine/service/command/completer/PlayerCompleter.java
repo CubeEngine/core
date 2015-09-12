@@ -21,9 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.completer.Completer;
-import org.cubeengine.service.command.CommandSender;
-import org.cubeengine.service.user.User;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
 
@@ -32,27 +33,29 @@ import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
  */
 public class PlayerCompleter implements Completer
 {
-    private UserManager um;
+    private Game game;
 
-    public PlayerCompleter(UserManager um)
+    public PlayerCompleter(Game game)
     {
-        this.um = um;
+        this.game = game;
     }
 
-    private static boolean canSee(CommandSender sender, User user)
+    private static boolean canSee(CommandSource sender, Player user)
     {
-        return !(sender instanceof User) || ((User)sender).canSee(user.getPlayer().orNull());
+        // TODO can see
+        //return !(sender instanceof User) || ((User)sender).canSee(user.getPlayer().orNull());
+        return true;
     }
 
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
         List<String> playerNames = new ArrayList<>();
-        final CommandSender sender = (CommandSender)invocation.getCommandSource(); // TODO prevent class cast exceptions
-        for (User player : um.getOnlineUsers())
+        final CommandSource sender = (CommandSource)invocation.getCommandSource(); // TODO prevent class cast exceptions
+        for (Player player : game.getServer().getOnlinePlayers())
         {
             String name = player.getName();
-            if (canSee(sender,  player) && startsWithIgnoreCase(name, invocation.currentToken()))
+            if (canSee(sender, player) && startsWithIgnoreCase(name, invocation.currentToken()))
             {
                 playerNames.add(name);
             }

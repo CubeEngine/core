@@ -19,6 +19,7 @@ package org.cubeengine.module.core.module;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Set;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.alias.Alias;
@@ -32,11 +33,11 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.command.Multilingual;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.service.command.CommandSender;
 import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.module.core.util.ChatFormat;
@@ -65,7 +66,7 @@ public class ModuleCommands extends ContainerCommand
         cm.getProviderManager().register(core, new ModuleReader(modularity, i18n));
     }
 
-    public static void showSourceVersion(CommandSender context, String sourceVersion)
+    public static void showSourceVersion(Multilingual context, String sourceVersion)
     {
         if (sourceVersion == null)
         {
@@ -104,7 +105,7 @@ public class ModuleCommands extends ContainerCommand
                     return ((Module)module.getInstance());
                 }
             }
-            throw new TranslatedReaderException(i18n.translate(invocation.getLocale(), NEGATIVE,
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE,
                                                                                  "The given module could not be found!"));        }
     }
 
@@ -177,7 +178,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    public void load(CommandSender context, String filename)
+    public void load(Multilingual context, String filename)
     {
         if (filename.contains(".") || filename.contains("/") || filename.contains("\\"))
         {
@@ -221,7 +222,7 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Get info about a module")
-    public void info(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
+    public void info(Multilingual context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
     {
         ModuleMetadata moduleInfo = module.getInformation();
         context.sendTranslated(POSITIVE, "Name: {input}", moduleInfo.getName());
@@ -229,7 +230,7 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion());
         if (source && moduleInfo.getSourceVersion() != null)
         {
-            showSourceVersion(context.getSource(), moduleInfo.getSourceVersion());
+            showSourceVersion(context, moduleInfo.getSourceVersion());
         }
 
         /* TODO

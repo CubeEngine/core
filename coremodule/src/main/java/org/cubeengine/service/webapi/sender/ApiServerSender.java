@@ -17,51 +17,40 @@
  */
 package org.cubeengine.service.webapi.sender;
 
-import java.util.Locale;
-import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.util.command.source.ConsoleSource;
 
-import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-
-public class ApiServerSender extends ApiCommandSender
+public class ApiServerSender extends ApiCommandSource
 {
-    private I18n i18n;
+    private ConsoleSource source;
 
-    public ApiServerSender(I18n i18n, ObjectMapper mapper)
+    public ApiServerSender(RemoteConnection connection, ObjectMapper mapper, ConsoleSource source)
     {
-        super(i18n, mapper);
-        this.i18n = i18n;
+        super(connection, mapper);
+        this.source = source;
+    }
+
+    @Override
+    protected Subject internalSubject()
+    {
+        if (this.getLoggedIn())
+        {
+            return source;
+        }
+        return  null; // TODO handle sources without valid auth
     }
 
     @Override
     public String getName()
     {
-        return "ApiCommandSender";
+        return "CubeEngine:ApiCommandSource";
     }
 
     @Override
-    public Text getDisplayName()
+    public String getIdentifier()
     {
-        return Texts.of("ApiCommandSender");
-    }
-
-    @Override
-    public Locale getLocale()
-    {
-        return i18n.getDefaultLanguage().getLocale();
-    }
-
-    @Override
-    public boolean hasPermission(String name)
-    {
-        return true;
-    }
-
-    @Override
-    public UUID getUniqueId()
-    {
-        return NON_PLAYER_UUID;
+        return getName();
     }
 }

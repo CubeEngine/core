@@ -15,26 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.user;
+package org.cubeengine.service.command;
 
-import org.cubeengine.module.core.attachment.Attachment;
-import org.spongepowered.api.text.Text;
+import de.cubeisland.engine.butler.CommandInvocation;
+import de.cubeisland.engine.butler.ContextValue;
+import org.cubeengine.service.i18n.I18n;
+import org.spongepowered.api.entity.living.player.Player;
 
-public abstract class UserAttachment extends Attachment<User>
+public class LocaleContextValue implements ContextValue
 {
-    public void onJoin(Text joinMessage)
-    {}
+    private I18n i18n;
 
-    public void onQuit(Text quitMessage)
-    {}
+    public LocaleContextValue(I18n i18n)
+    {
+        this.i18n = i18n;
+    }
 
-    public void onKick(Text kickMessage)
-    {}
-
-    public void onChat(Text message)
-    {}
-
-    public void onCommand(String commandline)
-    {}
-
+    @Override
+    public Object getContext(CommandInvocation invocation, Class<?> clazz)
+    {
+        if (invocation.getCommandSource() instanceof Player)
+        {
+            return ((Player)invocation.getCommandSource()).getLocale();
+        }
+        return i18n.getDefaultLanguage().getLocale();
+    }
 }

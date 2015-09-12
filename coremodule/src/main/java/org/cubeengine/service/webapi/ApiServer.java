@@ -38,10 +38,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.modularity.core.Maybe;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 
+import org.cubeengine.module.authorization.AuthManager;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.logging.LoggingUtil;
@@ -104,6 +106,7 @@ public class ApiServer
     @Inject private TaskManager tm;
     @Inject private UserManager um;
     @Inject private PermissionManager pm;
+    @Inject private Maybe<AuthManager> am;
     private CoreModule module;
 
     @Inject
@@ -201,7 +204,7 @@ public class ApiServer
                 this.eventLoopGroup.set(new NioEventLoopGroup(this.maxThreads.get(), this.module.getProvided(ThreadFactory.class)));
                 serverBootstrap.group(this.eventLoopGroup.get())
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ApiServerInitializer(cm, um, this))
+                    .childHandler(new ApiServerInitializer(cm, um, am, this))
                     .localAddress(this.bindAddress.get(), this.port.get());
 
                 this.bootstrap.set(serverBootstrap);

@@ -19,15 +19,15 @@ package org.cubeengine.service.paginate;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import org.cubeengine.service.command.CommandSender;
+import org.spongepowered.api.util.command.CommandSource;
 
 @Service
 @Version(1)
 public interface PaginationManager
 {
-    void registerResult(CommandSender sender, PaginatedResult result);
+    void registerResult(CommandSource sender, PaginatedResult result);
 
-    PaginatedResult getResult(CommandSender sender);
+    PaginatedResult getResult(CommandSource sender);
 
-    boolean hasResult(CommandSender sender);
+    boolean hasResult(CommandSource sender);
 }

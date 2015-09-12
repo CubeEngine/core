@@ -17,12 +17,12 @@
  */
 package org.cubeengine.module.core.util;
 
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.spongepowered.api.world.Location;
 
 public class LocationUtil
 {
-    public static Location getBlockBehindWall(User user, int maxDistanceToWall, int maxThicknessOfWall)
+    public static Location getBlockBehindWall(MultilingualPlayer user, int maxDistanceToWall, int maxThicknessOfWall)
     {
         // TODO
         return null;

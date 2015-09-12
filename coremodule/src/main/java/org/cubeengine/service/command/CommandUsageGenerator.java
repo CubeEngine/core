@@ -17,24 +17,33 @@
  */
 package org.cubeengine.service.command;
 
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandDescriptor;
 import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.CommandSource;
 import de.cubeisland.engine.butler.parameter.FlagParameter;
 import de.cubeisland.engine.butler.parameter.Parameter;
 import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
-import org.cubeengine.service.user.User;
+import org.cubeengine.service.i18n.I18n;
+import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {
+    private final I18n i18n;
+
+    public CommandUsageGenerator(I18n i18n)
+    {
+        this.i18n = i18n;
+    }
+
     @Override
     public String generateParameterUsage(CommandInvocation invocation, CommandDescriptor parameters)
     {
@@ -51,7 +60,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
         return super.generateFlagUsage(invocation, parameter);
     }
 
-    private void checkPermission(CommandSource source, Parameter parameter)
+    private void checkPermission(Object source, Parameter parameter)
     {
         if (parameter.hasProperty(PermissionProvider.class) && source instanceof Subject)
         {
@@ -76,9 +85,9 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     @Override
     protected String valueLabel(CommandInvocation invocation, String valueLabel)
     {
-        if (invocation != null && invocation.getCommandSource() instanceof CommandSender)
+        if (invocation != null && invocation.getCommandSource() instanceof CommandSource)
         {
-            return Texts.toPlain(((CommandSender)invocation.getCommandSource()).getTranslation(MessageType.NONE, valueLabel));
+            return Texts.toPlain(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NONE, valueLabel));
         }
         return valueLabel;
     }
@@ -86,7 +95,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     @Override
     protected String getPrefix(CommandInvocation invocation)
     {
-        if (invocation != null && invocation.getCommandSource() instanceof User)
+        if (invocation != null && invocation.getCommandSource() instanceof MultilingualPlayer)
         {
             return "/";
         }

@@ -38,32 +38,24 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.command.sender.BaseCommandSender;
+import org.cubeengine.service.command.AbstractCommandSource;
+import org.spongepowered.api.network.RemoteConnection;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.source.RconSource;
 
-public abstract class ApiCommandSender extends BaseCommandSender
+public abstract class ApiCommandSource extends AbstractCommandSource implements RconSource
 {
+    private RemoteConnection connection;
     private ObjectMapper mapper;
     private final List<String> messages = new ArrayList<>();
+    private boolean loggedIn;
 
-    public ApiCommandSender(I18n i18n, ObjectMapper mapper)
+    public ApiCommandSource(RemoteConnection connection, ObjectMapper mapper)
     {
-        super(i18n);
+        this.connection = connection;
         this.mapper = mapper;
-    }
-
-    @Override
-    public void sendMessage(String message)
-    {
-        this.messages.add(message);
-    }
-
-    @Override
-    public void sendMessage(Text msg)
-    {
-        sendMessage(Texts.toPlain(msg));
     }
 
     /**
@@ -74,5 +66,29 @@ public abstract class ApiCommandSender extends BaseCommandSender
         JsonNode jsonNode = mapper.valueToTree(this.messages);
         messages.clear();
         return jsonNode;
+    }
+
+    @Override
+    protected void sendMessage0(Text text)
+    {
+        messages.add(Texts.toPlain(text)); // TODO color support?
+    }
+
+    @Override
+    public boolean getLoggedIn()
+    {
+        return loggedIn;
+    }
+
+    @Override
+    public void setLoggedIn(boolean loggedIn)
+    {
+        this.loggedIn = loggedIn;
+    }
+
+    @Override
+    public RemoteConnection getConnection()
+    {
+        return connection;
     }
 }

@@ -17,184 +17,321 @@
  */
 package org.cubeengine.service.user;
 
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import de.cubeisland.engine.modularity.asm.marker.Service;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import com.google.common.base.Optional;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.command.CommandSender;
+import de.cubeisland.engine.modularity.core.marker.Disable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
+import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.sponge.EventManager;
+import org.cubeengine.module.core.util.converter.UserConverter;
+import org.cubeengine.module.core.util.matcher.StringMatcher;
+import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.database.Database;
+import org.cubeengine.service.i18n.I18n;
+import org.cubeengine.service.task.TaskManager;
+import org.jooq.Record1;
 import org.jooq.types.UInteger;
-import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.profile.GameProfileResolver;
+import org.spongepowered.api.service.user.UserStorage;
 
-@Service
+import static java.lang.System.currentTimeMillis;
+import static org.cubeengine.service.user.TableUser.TABLE_USER;
+
+/**
+ * This Manager provides methods to access the Users and saving/loading from database.
+ */
+@ServiceProvider(UserManager.class)
 @Version(1)
-public interface UserManager
+public class UserManager
 {
-    /**
-     * Removes the user permanently. Data cannot be restored later on
-     *
-     * @param user the User
-     */
-    void removeUser(User user);
+    @Inject private Database database;
+    @Inject private CoreModule core;
+    @Inject private CommandManager cm;
+    @Inject private TaskManager tm;
+    @Inject private EventManager em;
+    @Inject private I18n i18n;
+    @Inject private Reflector reflector;
+    @Inject private Game game;
 
-    /**
-     * Gets a user by CommandSender (creates new user if not found)
-     *
-     * @param name the sender
-     *
-     * @return the User OR null if sender is not a Player
-     */
-    User getExactUser(String name);
+    protected ScheduledExecutorService nativeScheduler;
+    protected Map<UUID, UUID> scheduledForRemoval = new HashMap<>();
 
-    /**
-     * Gets a user by its UUID (creates a new user if not found)
-     *
-     * @param uuid the uuid
-     *
-     * @return the user
-     */
-    User getExactUser(UUID uuid);
+    private Map<UUID, CachedUser> byUUIDs = new ConcurrentHashMap<>();
+    private Map<UInteger, CachedUser> byIds = new ConcurrentHashMap<>();
 
-    /**
-     * Gets a user by his database ID
-     *
-     * @param id the ID to get the user by
-     *
-     * @return the user or null if not found
-     */
-    User getUser(UInteger id);
+    @Enable
+    public void onEnable()
+    {
+        database.registerTable(TableUser.class);
 
-    /**
-     * Gets a user by his name
-     *
-     * @param name the name to get the user by
-     *
-     * @return the user or null if not found
-     */
-    User findExactUser(String name);
+        final long delay = 10; // TODO (long)core.getConfiguration().usermanager.cleanup;
+        this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
+        this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
 
-    /**
-     * Queries the database directly if the user is not loaded to get its name.
-     * <p>Only use with valid key!
-     *
-     * @param key the users key
-     */
-    String getUserName(UInteger key);
+        em.registerListener(core, new UserListener(this, tm, core));
 
-    /**
-     * Returns all the users that are currently online
-     *
-     * @return a unmodifiable List of players
-     */
-    Set<User> getOnlineUsers();
+        ConverterManager manager = reflector.getDefaultConverterManager();
+        manager.registerConverter(new UserConverter(this), User.class);
 
-    Set<User> getLoadedUsers();
+    }
 
-    /**
-     * Finds an User (can create a new User if a found player is online but not
-     * yet added)
-     *
-     * @param name the name
-     *
-     * @return the found User or null
-     */
-    User findUser(String name);
+    public CachedUser getByUUID(UUID uuid)
+    {
+        CachedUser cachedUser = byUUIDs.get(uuid);
+        if (cachedUser != null)
+        {
+            return cachedUser;
+        }
+        UserEntity entity = database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(
+            uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
+        if (entity == null)
+        {
+            User user = getUser(uuid);
+            if (user == null)
+            {
+                throw new IllegalArgumentException("Could not get User with UUID: " + uuid.toString());
+            }
+            entity = database.getDSL().newRecord(TABLE_USER).newUser(user);
+            entity.store();
+        }
+        return cachedUser(entity).get();
+    }
 
-    /**
-     * Finds an User (can also search for matches in the database)
-     *
-     * @param name     the name
-     * @param database matches in the database too if true
-     *
-     * @return the found User or null
-     */
-    User findUser(String name, boolean database);
+    private Optional<CachedUser> cachedUser(UserEntity entity)
+    {
+        if (entity == null)
+        {
+            return Optional.absent();
+        }
+        CachedUser cachedUser = new CachedUser(entity, game.getServiceManager().provideUnchecked(UserStorage.class).get(entity.getUniqueId()).orNull());
+        cacheUser(cachedUser);
+        return Optional.of(cachedUser);
+    }
 
-    /**
-     * Broadcasts a translated message
-     * @param format the format
-     * @param message the message to broadcast
-     * @param perm the permission to check
-     * @param params the parameters
-     */
-    void broadcastTranslatedWithPerm(TextFormat format, String message, String perm, Object... params);
+    public Optional<CachedUser> getById(UInteger id)
+    {
+        CachedUser cachedUser = byIds.get(id);
+        if (cachedUser != null)
+        {
+            return Optional.of(cachedUser);
+        }
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)).fetchOne();
+        return cachedUser(entity);
+    }
 
-    /**
-     * Broadcasts a message (not translated)
-     *
-     * @param message the message to broadcast
-     * @param perm the permission to check
-     * @param params the parameters
-     */
-    void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params);
+    private User getOfflinePlayer(String name)
+    {
+        Optional<Player> player = core.getGame().getServer().getPlayer(name);
+        return player.orNull();
+        // TODO actually get User when offline
+    }
 
-    /**
-     * Broadcasts a translated message
-     *
-     * @param format the format
-     * @param message the message to broadcast
-     * @param params the parameters
-     */
-    void broadcastTranslated(TextFormat format, String message, Object... params);
 
-    /**
-     * Broadcasts a message (not translated)
-     *
-     * @param format the format
-     * @param message the message to broadcast
-     * @param params the parameters
-     */
-    void broadcastMessage(TextFormat format, String message, Object... params);
+    public String getUserName(UInteger key)
+    {
+        Record1<String> record1 = this.database.getDSL().select(TABLE_USER.LASTNAME).from(TABLE_USER)
+                                               .where(TABLE_USER.KEY.eq(key)).fetchOne();
+        return record1 == null ? null : record1.value1();
+    }
 
-    /**
-     * Broadcasts a status message (not translated)
-     *  @param starColor the color of the prepended star
-     * @param message the message
-     * @param sender the sender
-     * @param params the parameters
-     */
-    void broadcastStatus(TextFormat starColor, String message, CommandSender sender, Object... params);
+    protected synchronized void cacheUser(CachedUser user)
+    {
+        byIds.put(user.getEntity().getId(), user);
+        byUUIDs.put(user.getEntity().getUniqueId(), user);
+        updateLastName(user);
+        this.core.getLog().debug("User {} cached!", user.getUser().getName());
+    }
 
-    /**
-     * Broadcasts a translated status message
-     *  @param starColor the color of the prepended star
-     * @param message the message
-     * @param sender the sender
-     * @param params the parameters
-     */
-    void broadcastTranslatedStatus(TextFormat starColor, String message, CommandSender sender, Object... params);
+    protected void updateLastName(CachedUser user)
+    {
+        UserEntity entity = user.getEntity();
+        if (!entity.getValue(TABLE_USER.LASTNAME).equals(user.getUser().getName()))
+        {
+            entity.setValue(TABLE_USER.LASTNAME, user.getUser().getName());
+            entity.updateAsync();
+        }
+    }
 
-    /**
-     * Broadcasts a status message (not translated)
-     *
-     * @param message the message
-     * @param sender the sender
-     * @param params the parameters
-     */
-    void broadcastStatus(String message, CommandSender sender, Object... params);
+    protected synchronized void removeCached(UUID user)
+    {
+        CachedUser removed = byUUIDs.remove(user);
+        if (removed != null)
+        {
+            byIds.remove(removed.getEntity().getId());
+            this.core.getLog().debug("Removed cached user {}!", removed.getUser().getName());
+        }
+    }
 
-    void kickAll(String message);
 
-    void attachToAll(Class<? extends UserAttachment> attachmentClass, Module module);
 
-    void detachFromAll(Class<? extends UserAttachment> attachmentClass);
+    // return database.getDSL().select(TABLE_USER.KEY).from(TABLE_USER).fetch().stream().map(Record1::value1).collect(toSet());
 
-    void detachAllOf(Module module);
 
-    void addDefaultAttachment(Class<? extends UserAttachment> attachmentClass, Module module);
+    public User findUser(String name)
+    {
+        return this.findUser(name, false);
+    }
 
-    void removeDefaultAttachment(Class<? extends UserAttachment> attachmentClass);
+    public Optional<User> getByName(String name)
+    {
+        if (name == null)
+        {
+            return null;
+        }
+        // Direct Match Online Players:
+        Optional<Player> player = game.getServer().getPlayer(name);
+        if (player.isPresent())
+        {
+            return player.transform(p -> (User)p);
+        }
 
-    void removeDefaultAttachments(Module module);
+        // Lookup in saved users
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name)).fetchOne();
+        return cachedUser(entity).transform(CachedUser::getUser);
+    }
 
-    void removeDefaultAttachments();
+    public User findUser(String name, boolean searchDatabase)
+    {
 
-    void cleanup(Module module);
+        if (name == null)
+        {
+            return null;
+        }
+        // Direct Match Online Players:
+        Optional<Player> player = game.getServer().getPlayer(name);
+        if (player.isPresent())
+        {
+            return player.get();
+        }
 
-    UserEntity getEntity(UUID uuid);
+        // Find Online Players with similar name
+        Map<String, Player> onlinePlayerMap = new HashMap<>();
+        for (Player onlineUser : game.getServer().getOnlinePlayers())
+        {
+            onlinePlayerMap.put(onlineUser.getName(), onlineUser);
+        }
+        String foundUser = core.getModularity().provide(StringMatcher.class).matchString(name, onlinePlayerMap.keySet());
+        if (foundUser != null)
+        {
+            return onlinePlayerMap.get(foundUser);
+        }
+        // Lookup in saved users
+        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name)).fetchOne();
+        if (entity == null && searchDatabase)
+        {
+            // Startswith in saved users
+            entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.like(name + "%")).limit(1).fetchOne();
+        }
 
-    CompletableFuture<UserEntity> loadEntity(UUID uuid);
+        Optional<CachedUser> cachedUser = cachedUser(entity);
+        if (cachedUser.isPresent())
+        {
+            return cachedUser.get().getUser();
+        }
+        return null;
+    }
 
-    org.spongepowered.api.entity.living.player.User getPlayer(UUID uuid);
+    @Disable
+    protected void shutdown()
+    {
+        Timestamp time = new Timestamp(currentTimeMillis() - core.getConfiguration().usermanager.garbageCollection.getMillis());
+        this.database.getDSL().delete(TABLE_USER).where(TABLE_USER.LASTSEEN.le(time), TABLE_USER.NOGC.isFalse()).execute();
+
+        this.byIds.clear();
+        this.byUUIDs.clear();
+
+        for (UUID id : this.scheduledForRemoval.values())
+        {
+            tm.cancelTask(core, id);
+        }
+
+        this.scheduledForRemoval.clear();
+        this.scheduledForRemoval = null;
+
+        this.nativeScheduler.shutdown();
+        try
+        {
+            this.nativeScheduler.awaitTermination(5, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException ignored)
+        {
+            Thread.currentThread().interrupt();
+        }
+        finally
+        {
+            this.nativeScheduler.shutdownNow();
+            this.nativeScheduler = null;
+        }
+    }
+
+    public User getUser(UUID uuid)
+    {
+        Optional<Player> player = core.getGame().getServer().getPlayer(uuid);
+        if (player.isPresent())
+        {
+            return player.get();
+        }
+        UserStorage storage = core.getGame().getServiceManager().provide(UserStorage.class).get();
+
+        User user = storage.get(uuid).orNull();
+        if (user != null)
+        {
+            return user;
+        }
+        GameProfileResolver resolver = core.getGame().getServiceManager().provide(GameProfileResolver.class).get();
+        try
+        {
+            return storage.getOrCreate(resolver.get(uuid).get());
+        }
+        catch (InterruptedException | ExecutionException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
+
+
+
+    private class UserCleanupTask implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            byUUIDs.values().stream()
+                   .map(CachedUser::getUser)
+                   .filter(user -> !user.isOnline())
+                   .map(User::getUniqueId)
+                   .filter(scheduledForRemoval::containsKey)
+                   .forEach(UserManager.this::removeCached);
+        }
+    }
+
+
+
+    /*
+public boolean canSee(Player player)
+{
+    // TODO impls of this is missing at other locations
+    return getPlayer().isPresent() && player.get(INVISIBILITY_DATA).transform(
+        p -> p.invisibleToPlayerIds().contains(getUniqueId())).or(false);
+}
+*/
+
+
 }

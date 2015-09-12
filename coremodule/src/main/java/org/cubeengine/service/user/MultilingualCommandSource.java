@@ -15,43 +15,56 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.command.sender;
+package org.cubeengine.service.user;
 
+import org.cubeengine.service.command.Multilingual;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.command.CommandSender;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.util.command.CommandSource;
 
-public abstract class BaseCommandSender implements CommandSender
+public class MultilingualCommandSource<T extends CommandSource> implements Multilingual
 {
-    protected final I18n i18n;
+    private T source;
+    private I18n i18n;
 
-    protected BaseCommandSender(I18n i18n)
+    public MultilingualCommandSource(T source, I18n i18n)
     {
+        this.source = source;
         this.i18n = i18n;
+    }
+
+    protected T getSource()
+    {
+        return source;
     }
 
     @Override
     public Text getTranslation(TextFormat format, String message, Object... args)
     {
-        return i18n.getTranslation(getLocale(), format, message, args);
+        return i18n.getTranslation(getSource(), format, message, args);
     }
 
     @Override
     public Text getTranslationN(TextFormat format, int n, String singular, String plural, Object... args)
     {
-        return i18n.getTranslationN(getLocale(), format, n, singular, plural, args);
+        return i18n.getTranslationN(getSource(), format, n, singular, plural, args);
     }
 
     @Override
     public void sendTranslated(TextFormat format, String message, Object... args)
     {
-        sendMessage(this.getTranslation(format, message, args));
+        i18n.sendTranslated(getSource(), format, message, args);
     }
 
     @Override
     public void sendTranslatedN(TextFormat format, int n, String singular, String plural, Object... args)
     {
-        sendMessage(this.getTranslationN(format, n, singular, plural, args));
+        i18n.sendTranslatedN(getSource(), format, n, singular, plural, args);
+    }
+
+    protected I18n getI18n()
+    {
+        return i18n;
     }
 }

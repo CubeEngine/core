@@ -26,6 +26,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.Unloggable;
 import org.cubeengine.service.command.property.RawPermission;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
@@ -55,7 +56,7 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
         getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 
-        this.addCommand(new HelpCommand(this));
+        this.addCommand(new HelpCommand(this, module.getModularity().provide(I18n.class)));
     }
 
     @Override

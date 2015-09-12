@@ -30,11 +30,16 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandSource;
 
+import static org.cubeengine.service.i18n.formatter.MessageType.CRITICAL;
+import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
+import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.spongepowered.api.text.action.TextActions.*;
 import static org.spongepowered.api.text.format.TextColors.*;
 
@@ -50,7 +55,7 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
     @Override
     public boolean handleException(Throwable t, CommandBase command, CommandInvocation invocation)
     {
-        if (!(invocation.getCommandSource() instanceof CommandSender))
+        if (!(invocation.getCommandSource() instanceof CommandSource))
         {
             core.getLog().info("An unknown CommandSource ({}) caused an exception: {}",
                                invocation.getCommandSource().getClass().getName(), t.getMessage());
@@ -62,7 +67,8 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
             t = t.getCause();
         }
 
-        CommandSender sender = (CommandSender)invocation.getCommandSource();
+        CommandSource sender = (CommandSource)invocation.getCommandSource();
+        I18n i18n = core.getModularity().provide(I18n.class);
         if (t instanceof CommandException)
         {
             core.getLog().debug("Command failed: {}: {}", t.getClass(), t.getMessage());
@@ -71,36 +77,36 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
                 PermissionDeniedException e = (PermissionDeniedException)t;
                 if (e.getMessage() != null)
                 {
-                    sender.sendTranslated(MessageType.NEGATIVE, e.getMessage(), e.getArgs());
+                    i18n.sendTranslated(sender, NEGATIVE, e.getMessage(), e.getArgs());
                 }
                 else
                 {
-                    sender.sendTranslated(MessageType.NEGATIVE, "You're not allowed to do this!");
-                    sender.sendTranslated(MessageType.NEGATIVE, "Contact an administrator if you think this is a mistake!");
+                    i18n.sendTranslated(sender, NEGATIVE, "You're not allowed to do this!");
+                    i18n.sendTranslated(sender, NEGATIVE, "Contact an administrator if you think this is a mistake!");
                 }
-                sender.sendTranslated(MessageType.NEGATIVE, "Missing permission: {name}", e.getPermission().getName());
+                i18n.sendTranslated(sender, NEGATIVE, "Missing permission: {name}", e.getPermission().getName());
             }
             else if (t instanceof TooFewArgumentsException)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "You've given too few arguments.");
-                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
-
+                i18n.sendTranslated(sender, NEGATIVE, "You've given too few arguments.");
+                i18n.sendTranslated(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
             }
             else if (t instanceof TooManyArgumentsException)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "You've given too many arguments.");
-                sender.sendTranslated(MessageType.NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
+                i18n.sendTranslated(sender, NEGATIVE, "You've given too many arguments.");
+                i18n.sendTranslated(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
             }
             else if (t instanceof ReaderException)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, t.getMessage(), ((ReaderException)t).getArgs());
+                i18n.sendTranslated(sender, NEGATIVE, t.getMessage(), ((ReaderException)t).getArgs());
             }
             else if (t instanceof RestrictedSourceException)
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "You cannot execute this command!");
+                // TODO handle Restriction when its not for CommandSource (maybe programming error)
+                i18n.sendTranslated(sender, NEGATIVE, "You cannot execute this command!");
                 if (t.getMessage() != null)
                 {
-                    sender.sendTranslated(MessageType.NEUTRAL, t.getMessage());
+                    i18n.sendTranslated(sender, NEUTRAL, t.getMessage());
                 }
             }
             else if (t instanceof SilentException)
@@ -109,7 +115,7 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
             }
             else
             {
-                sender.sendTranslated(MessageType.NEGATIVE, "Command failure: {input}: {input}", t.getClass().getName(), String.valueOf(t.getMessage()));
+                i18n.sendTranslated(sender, NEGATIVE, "Command failure: {input}: {input}", t.getClass().getName(), String.valueOf(t.getMessage()));
             }
         }
         else
@@ -132,7 +138,7 @@ public class ExceptionHandler implements de.cubeisland.engine.butler.ExceptionHa
                 stackTrace.append(Texts.of(DARK_GRAY, "at ", Texts.of(our ? GOLD : GRAY, parts[0], line), "\n"));
             }
             Text hover = Texts.builder().append(Texts.of(GRAY, t.getClass().getName(), ": ", t.getMessage())).onHover(showText(stackTrace.build())).build();
-            sender.sendMessage(Texts.of(Texts.of(sender.getTranslation(MessageType.CRITICAL, "Unexpected command failure:")), " ", hover));
+            sender.sendMessage(Texts.of(Texts.of(i18n.getTranslation(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
         }
         return true;
     }

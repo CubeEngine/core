@@ -139,7 +139,7 @@ public final class CoreModule extends Module
     @Enable
     public void onEnable()
     {
-        ((I18nLanguageLoader)i18n.getService().getLanguageLoader()).provideLanguages(this);
+        ((I18nLanguageLoader)i18n.getBackend().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
 
         ConverterManager manager = reflector.getDefaultConverterManager();
@@ -176,10 +176,7 @@ public final class CoreModule extends Module
             BukkitUtils.disableCommandLogging();
         }
 
-        if (this.config.preventSpamKick)
-        {
-            game.getEventManager().registerListeners(this, new PreventSpamKickListener(this)); // TODO is this even needed anymore
-        }
+
 
 
         Iterator<Runnable> it = this.initHooks.iterator();
