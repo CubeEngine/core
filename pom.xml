@@ -29,6 +29,7 @@
     <modules>
         <module>coremodule</module>
         <module>bootstrap</module>
+        <module>launcher</module>
     </modules>
 
     <build>
