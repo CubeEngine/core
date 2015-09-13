@@ -1,4 +1,6 @@
-package launcher;import javafx.event.ActionEvent;
+package launcher;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -8,7 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-public class Controller {
+public class Controller
+{
 
 
     @FXML
@@ -24,13 +27,15 @@ public class Controller {
     @FXML
     private TextField filePathInput;
 
-    public void openFilechooser(ActionEvent event) {
-        DirectoryChooser directoryChooser= new DirectoryChooser();
+    public void openFilechooser(ActionEvent event)
+    {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Directory");
         filePathInput.setText(directoryChooser.showDialog(getPrimaryStageFromActionEvent(event)).getAbsolutePath());
     }
 
-    public void continueToFileChooser() {
+    public void continueToFileChooser()
+    {
         openFileChooserButton.setDisable(false);
         backButton.setDisable(false);
         modulesPane.setDisable(true);
@@ -39,7 +44,8 @@ public class Controller {
         nextButton.setOnAction(e -> continueToInstallation());
     }
 
-    public void backToModuleSelection() {
+    public void backToModuleSelection()
+    {
         openFileChooserButton.setDisable(true);
         backButton.setDisable(true);
         modulesPane.setDisable(false);
@@ -48,11 +54,13 @@ public class Controller {
         nextButton.setOnAction(e -> continueToFileChooser());
     }
 
-    public void continueToInstallation() {
+    public void continueToInstallation()
+    {
         System.out.println("Lorem ipsum");
     }
 
-    private Stage getPrimaryStageFromActionEvent(ActionEvent event) {
-        return (Stage) ((Node) event.getSource()).getScene().getWindow();
+    private Stage getPrimaryStageFromActionEvent(ActionEvent event)
+    {
+        return (Stage)((Node)event.getSource()).getScene().getWindow();
     }
 }
