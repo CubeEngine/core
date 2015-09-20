@@ -2,6 +2,7 @@ package launcher;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -23,11 +24,14 @@ public class Main extends Application
         primaryStage.setWidth(600);
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        //TODO replace with data from API
         VBox checkBoxPane = (VBox)primaryStage.getScene().lookup("#checkBoxPane");
         ArrayList<CheckBox> checkBoxes = new ArrayList();
         for (int i = 0; i < 100; i++)
         {
             CheckBox cb = new CheckBox(Integer.toString(i));
+            cb.setPadding(new Insets(5,0,0,0));
             checkBoxes.add(cb);
         }
         checkBoxPane.getChildren().addAll(checkBoxes);
