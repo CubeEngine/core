@@ -34,7 +34,7 @@ public class MultilingualCommandSource<T extends CommandSource> implements Multi
         this.i18n = i18n;
     }
 
-    protected T getSource()
+    public T getSource()
     {
         return source;
     }
@@ -61,6 +61,11 @@ public class MultilingualCommandSource<T extends CommandSource> implements Multi
     public void sendTranslatedN(TextFormat format, int n, String singular, String plural, Object... args)
     {
         i18n.sendTranslatedN(getSource(), format, n, singular, plural, args);
+    }
+
+    public boolean hasPermission(String permission)
+    {
+        return getSource().hasPermission(permission);
     }
 
     protected I18n getI18n()

@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command;
 
+import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parametric.context.ParameterizedContext;
 import de.cubeisland.engine.modularity.core.Module;
@@ -81,5 +82,10 @@ public class CommandContext extends ParameterizedContext
             }
         }
         throw new PermissionDeniedException(new RawPermission(permission.getId(), Texts.toPlain(permission.getDescription()))); // TODO
+    }
+
+    public Locale getLocale()
+    {
+        return getInvocation().getContext(Locale.class);
     }
 }

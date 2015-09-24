@@ -27,10 +27,10 @@ import org.spongepowered.api.world.World;
 public class WorldSetSpawnEvent extends CubeEvent
 {
     private final World world;
-    private final Location location;
+    private final Location<World> location;
     private final Vector3d direction;
 
-    public WorldSetSpawnEvent(Module core, World world, Location location, Vector3d direction)
+    public WorldSetSpawnEvent(Module core, World world, Location<World> location, Vector3d direction)
     {
         super(core);
         this.world = world;

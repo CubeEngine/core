@@ -274,13 +274,13 @@ public class BlockUtil
     }
 */
 
-    public static Location getHighestBlockAt(Location loc)
+    public static Location<World> getHighestBlockAt(Location<World> loc)
     {
-        return getHighestBlockAt((World)loc.getExtent(), loc.getBlockX(), loc.getBlockZ());
+        return getHighestBlockAt(loc.getExtent(), loc.getBlockX(), loc.getBlockZ());
     }
 
     @SuppressWarnings("deprecation")
-    public static Location getHighestBlockAt(World world, final int x, final int z)
+    public static Location<World> getHighestBlockAt(World world, final int x, final int z)
     {
         int y = world.getDimension().getBuildHeight() - 1;
 

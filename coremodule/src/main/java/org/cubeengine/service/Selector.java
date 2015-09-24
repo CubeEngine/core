@@ -21,6 +21,7 @@ import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.module.core.util.math.shape.Shape;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
 
 @Service
@@ -33,24 +34,25 @@ public interface Selector
      * @param user the user
      * @return the selection or null if nothing is selected
      */
-    Shape getSelection(MultilingualPlayer user);
+    Shape getSelection(Player user);
 
     /**
      * Gets a projection of the current shape onto the xz-plane
      *
      * @return the projected selection
+     * @param user
      */
-    Shape get2DProjection(MultilingualPlayer user);
+    Shape get2DProjection(Player user);
 
     /**
      * Tries to get the current selection of the user as a specific selection
      *
+     * @param <T>
      * @param user the user
      * @param shape the shapeType
-     * @param <T>
      * @return the selection or null if the selection is not applicable
      */
-    <T extends Shape> T getSelection(MultilingualPlayer user, Class<T> shape);
+    <T extends Shape> T getSelection(Player user, Class<T> shape);
 
     /**
      * Gets the first position
@@ -58,7 +60,7 @@ public interface Selector
      * @param user the user
      * @return the first selected position
      */
-    Location getFirstPoint(MultilingualPlayer user);
+    Location getFirstPoint(Player user);
 
     /**
      * Gets the second position
@@ -66,7 +68,7 @@ public interface Selector
      * @param user the user
      * @return the second selected position
      */
-    Location getSecondPoint(MultilingualPlayer user);
+    Location getSecondPoint(Player user);
 
     /**
      * Gets the n-th position in the current shape
@@ -75,5 +77,5 @@ public interface Selector
      * @param index the index
      * @return the Location
      */
-    Location getPoint(MultilingualPlayer user, int index);
+    Location getPoint(Player user, int index);
 }

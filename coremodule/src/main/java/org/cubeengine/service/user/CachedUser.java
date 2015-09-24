@@ -18,6 +18,7 @@
 package org.cubeengine.service.user;
 
 import java.net.InetSocketAddress;
+import org.jooq.types.UInteger;
 import org.spongepowered.api.entity.living.player.User;
 
 public class CachedUser
@@ -51,5 +52,10 @@ public class CachedUser
     public InetSocketAddress getAddress()
     {
         return address;
+    }
+
+    public UInteger getEntityId()
+    {
+        return getEntity().getId();
     }
 }
