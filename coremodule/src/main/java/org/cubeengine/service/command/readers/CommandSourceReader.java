@@ -26,7 +26,6 @@ import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.command.CommandSource;
 
@@ -64,7 +63,7 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     public List<String> getSuggestions(CommandInvocation invocation)
     {
         ArrayList<String> list = new ArrayList<>();
-        list.addAll(invocation.getManager().getCompleter(MultilingualPlayer.class).getSuggestions(invocation));
+        list.addAll(invocation.getManager().getCompleter(Player.class).getSuggestions(invocation));
         if ("console".startsWith(invocation.currentToken().toLowerCase()))
         {
             list.add("console");

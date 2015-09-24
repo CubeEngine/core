@@ -21,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.cubeengine.service.database.AsyncRecord;
 import org.cubeengine.service.user.CachedUser;
-import org.cubeengine.service.user.MultilingualPlayer;
 
 import static org.cubeengine.module.authorization.storage.TableAuth.TABLE_AUTH;
 

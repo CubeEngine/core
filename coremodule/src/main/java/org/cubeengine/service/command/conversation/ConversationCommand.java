@@ -28,7 +28,6 @@ import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.module.core.sponge.EventManager;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -118,7 +117,7 @@ public abstract class ConversationCommand extends ContainerCommand
      *
      * @param user the user to add
      */
-    public boolean addUser(MultilingualPlayer user)
+    public boolean addUser(Player user)
     {
         return this.usersInMode.add(user.getUniqueId());
     }
@@ -128,7 +127,7 @@ public abstract class ConversationCommand extends ContainerCommand
      *
      * @param user the user tp remove
      */
-    public void removeUser(MultilingualPlayer user)
+    public void removeUser(Player user)
     {
         this.usersInMode.remove(user.getUniqueId());
     }

@@ -78,7 +78,6 @@ import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.sponge.EventManager;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserList;
 import org.cubeengine.service.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
@@ -90,6 +89,8 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.command.CommandService;
@@ -149,7 +150,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
         providerManager.register(this, new LocaleContextValue(i18n), Locale.class);
-        providerManager.register(this, new MultilingualContextValue(i18n), Multilingual.class, MultilingualPlayer.class);
     }
 
     @Enable
@@ -176,7 +176,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         EntityMatcher entityMatcher = core.getModularity().provide(EntityMatcher.class);
         WorldManager wm = core.getModularity().provide(WorldManager.class);
 
-        providerManager.register(core, new PlayerCompleter(game), MultilingualPlayer.class, org.spongepowered.api.entity.living.player.User.class);
+        providerManager.register(core, new PlayerCompleter(game), org.spongepowered.api.entity.living.player.User.class);
         providerManager.register(core, new WorldCompleter(core.getGame().getServer()), World.class);
         providerManager.register(core, new PlayerListCompleter(game), PlayerListCompleter.class);
 
@@ -190,7 +190,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
         providerManager.register(core, new EnchantmentReader(enchantMatcher, core.getGame(), i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(core, new UserReader(um, i18n), MultilingualPlayer.class);
+        providerManager.register(core, new UserReader(um, i18n), User.class);
         providerManager.register(core, new CommandSourceReader(cm), CommandSource.class);
         providerManager.register(core, new WorldReader(wm, i18n), World.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
@@ -332,16 +332,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     public boolean runCommand(CommandSource sender, String commandLine)
     {
         expect(isMainThread(), "Commands may only be called synchronously!");
-        org.spongepowered.api.util.command.CommandSource source = null;
-        if (sender instanceof MultilingualPlayer)
-        {
-            source = ((MultilingualPlayer)sender).original();
-        }
-        if (source == null)
+        if (sender == null)
         {
             return execute(new CommandInvocation(sender, commandLine, providerManager));
         }
-        return baseDispatcher.process(source, commandLine).getSuccessCount().isPresent();
+        return baseDispatcher.process(sender, commandLine).getSuccessCount().isPresent();
     }
 
     @Override

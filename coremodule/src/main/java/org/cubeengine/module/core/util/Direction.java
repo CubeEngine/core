@@ -17,7 +17,8 @@
  */
 package org.cubeengine.module.core.util;
 
-import org.cubeengine.service.command.Multilingual;
+import org.cubeengine.service.i18n.I18n;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
@@ -52,26 +53,26 @@ public enum Direction
         return Direction.NORTH;
     }
 
-    public Text translated(Multilingual sender)
+    public Text translated(Player sender, I18n i18n)
     {
         switch (this)
         {
             case NORTH:
-                return sender.getTranslation(NONE, "north");
+                return i18n.getTranslation(sender, NONE, "north");
             case NORTH_EAST:
-                return sender.getTranslation(NONE, "north-east");
+                return i18n.getTranslation(sender, NONE, "north-east");
             case EAST:
-                return sender.getTranslation(NONE, "east");
+                return i18n.getTranslation(sender, NONE, "east");
             case SOUTH_EAST:
-                return sender.getTranslation(NONE, "south-east");
+                return i18n.getTranslation(sender, NONE, "south-east");
             case SOUTH:
-                return sender.getTranslation(NONE, "south");
+                return i18n.getTranslation(sender, NONE, "south");
             case SOUTH_WEST:
-                return sender.getTranslation(NONE, "south-west");
+                return i18n.getTranslation(sender, NONE, "south-west");
             case WEST:
-                return sender.getTranslation(NONE, "west");
+                return i18n.getTranslation(sender, NONE, "west");
             case NORTH_WEST:
-                return sender.getTranslation(NONE, "north-west");
+                return i18n.getTranslation(sender, NONE, "north-west");
             default:
                 throw new IllegalStateException();
         }

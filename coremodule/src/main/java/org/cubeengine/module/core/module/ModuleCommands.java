@@ -33,7 +33,6 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.command.Multilingual;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
@@ -42,6 +41,7 @@ import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.*;
 
@@ -53,6 +53,7 @@ public class ModuleCommands extends ContainerCommand
     private final Modularity modularity;
     private final PluginManager pm;
     private FileManager fm;
+    private I18n i18n;
     private final Path modulesFolder;
 
     public ModuleCommands(CoreModule core, Modularity modularity, PluginManager pm, CommandManager cm, FileManager fm, I18n i18n)
@@ -62,11 +63,12 @@ public class ModuleCommands extends ContainerCommand
         this.modularity = modularity;
         this.pm = pm;
         this.fm = fm;
+        this.i18n = i18n;
         this.modulesFolder = core.getProvided(Path.class).getParent();
         cm.getProviderManager().register(core, new ModuleReader(modularity, i18n));
     }
 
-    public static void showSourceVersion(Multilingual context, String sourceVersion)
+    public void showSourceVersion(CommandSource context, String sourceVersion)
     {
         if (sourceVersion == null)
         {
@@ -76,11 +78,11 @@ public class ModuleCommands extends ContainerCommand
         {
             final String commit = sourceVersion.substring(sourceVersion.lastIndexOf('-') + 1,
                                                           sourceVersion.length() - 32);
-            context.sendTranslated(POSITIVE, "Source Version: {input}", sourceVersion);
-            context.sendTranslated(POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
+            i18n.sendTranslated(context, POSITIVE, "Source Version: {input}", sourceVersion);
+            i18n.sendTranslated(context, POSITIVE, "Source link: {input}", SOURCE_LINK + commit);
             return;
         }
-        context.sendTranslated(POSITIVE, "Source Version: unknown");
+        i18n.sendTranslated(context, POSITIVE, "Source Version: unknown");
     }
 
     public static class ModuleReader implements ArgumentReader<Module>
@@ -178,22 +180,22 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Loads a module from the modules directory.")
-    public void load(Multilingual context, String filename)
+    public void load(CommandSource context, String filename)
     {
         if (filename.contains(".") || filename.contains("/") || filename.contains("\\"))
         {
-            context.sendTranslated(NEGATIVE, "The given file name is invalid!");
+            i18n.sendTranslated(context, NEGATIVE, "The given file name is invalid!");
             return;
         }
         Path modulePath = modulesFolder.resolve(filename + ".jar");
         if (!Files.exists(modulePath))
         {
-            context.sendTranslated(NEGATIVE, "The given module file was not found! The name might be case sensitive.");
+            i18n.sendTranslated(context, NEGATIVE, "The given module file was not found! The name might be case sensitive.");
             return;
         }
         if (!Files.isReadable(modulePath))
         {
-            context.sendTranslated(NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
+            i18n.sendTranslated(context, NEGATIVE, "The module exists, but cannot be read! Check the file permissions.");
             return;
         }
         // TODO check if already loaded
@@ -222,12 +224,12 @@ public class ModuleCommands extends ContainerCommand
     }
 
     @Command(desc = "Get info about a module")
-    public void info(Multilingual context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
+    public void info(CommandSource context, @Reader(ModuleReader.class) Module module, @Flag boolean source)
     {
         ModuleMetadata moduleInfo = module.getInformation();
-        context.sendTranslated(POSITIVE, "Name: {input}", moduleInfo.getName());
-        context.sendTranslated(POSITIVE, "Description: {input}", moduleInfo.getDescription());
-        context.sendTranslated(POSITIVE, "Version: {input}", moduleInfo.getVersion());
+        i18n.sendTranslated(context, POSITIVE, "Name: {input}", moduleInfo.getName());
+        i18n.sendTranslated(context, POSITIVE, "Description: {input}", moduleInfo.getDescription());
+        i18n.sendTranslated(context, POSITIVE, "Version: {input}", moduleInfo.getVersion());
         if (source && moduleInfo.getSourceVersion() != null)
         {
             showSourceVersion(context, moduleInfo.getSourceVersion());

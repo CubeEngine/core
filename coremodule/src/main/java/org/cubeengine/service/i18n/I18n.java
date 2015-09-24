@@ -52,9 +52,10 @@ import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.util.matcher.StringMatcher;
 import de.cubeisland.engine.reflect.Reflector;
-import org.cubeengine.service.command.Multilingual;
+import org.cubeengine.dirigent.builder.BuilderDirigent;
+import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
+import org.cubeengine.module.core.util.matcher.StringMatcher;
 import org.cubeengine.service.filesystem.FileExtensionFilter;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.formatter.BiomeFormatter;
@@ -66,18 +67,13 @@ import org.cubeengine.service.i18n.formatter.StringFormatter;
 import org.cubeengine.service.i18n.formatter.TextMacro;
 import org.cubeengine.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.service.i18n.formatter.WorldFormatter;
-import org.cubeengine.dirigent.builder.BuilderDirigent;
-import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.user.UserStorage;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.source.RconSource;
 
 import static java.util.stream.Collectors.toList;
 
@@ -348,15 +344,5 @@ public class I18n
         // TODO locale of connections settings maybe one day in the far far future?
         // eventually (tm)
         return getBackend().getDefaultLocale();
-    }
-
-    public MultilingualPlayer getMultilingual(Player player)
-    {
-        return new MultilingualPlayer(this, player);
-    }
-
-    public Optional<MultilingualPlayer> getMultilingualPlayer(UUID uuid)
-    {
-        return game.getServer().getPlayer(uuid).transform(p -> new MultilingualPlayer(I18n.this, p));
     }
 }

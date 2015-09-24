@@ -27,8 +27,8 @@ import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.i18n.formatter.MessageType;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
@@ -95,7 +95,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     @Override
     protected String getPrefix(CommandInvocation invocation)
     {
-        if (invocation != null && invocation.getCommandSource() instanceof MultilingualPlayer)
+        if (invocation != null && invocation.getCommandSource() instanceof Player)
         {
             return "/";
         }

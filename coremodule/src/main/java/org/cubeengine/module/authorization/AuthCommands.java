@@ -29,7 +29,7 @@ import de.cubeisland.engine.butler.parametric.Optional;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.Unloggable;
-import org.cubeengine.service.user.MultilingualPlayer;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.user.UserList;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
@@ -48,19 +48,21 @@ public class AuthCommands
     private final Authorization module;
     private final Game game;
     private final BanService bs;
+    private I18n i18n;
 
     private final ConcurrentHashMap<UUID, Long> fails = new ConcurrentHashMap<>();
 
-    public AuthCommands(Authorization module, Game game, BanService bs)
+    public AuthCommands(Authorization module, Game game, BanService bs, I18n i18n)
     {
         this.module = module;
         this.game = game;
         this.bs = bs;
+        this.i18n = i18n;
     }
 
     @Unloggable
     @Command(alias = "setpw", desc = "Sets your password.")
-    public void setPassword(CommandContext context, String password, @Default MultilingualPlayer player)
+    public void setPassword(CommandContext context, String password, @Default Player player)
     {
         if ((context.getSource().equals(player)))
         {
@@ -106,21 +108,21 @@ public class AuthCommands
     @Unloggable
     @Command(desc = "Logs you in with your password!")
     @CommandPermission(checkPermission = false) // TODO assign by default
-    @Restricted(value = MultilingualPlayer.class, msg = "Only players can log in!")
-    public void login(MultilingualPlayer context, String password)
+    @Restricted(value = Player.class, msg = "Only players can log in!")
+    public void login(Player context, String password)
     {
         if (module.getManager().isLoggedIn(context.getUniqueId()))
         {
-            context.sendTranslated(POSITIVE, "You are already logged in!");
+            i18n.sendTranslated(context, POSITIVE, "You are already logged in!");
             return;
         }
         boolean isLoggedIn = module.getManager().login(context.getUniqueId(), password);
         if (isLoggedIn)
         {
-            context.sendTranslated(POSITIVE, "You logged in successfully!");
+            i18n.sendTranslated(context, POSITIVE, "You logged in successfully!");
             return;
         }
-        context.sendTranslated(NEGATIVE, "Wrong password!");
+        i18n.sendTranslated(context, NEGATIVE, "Wrong password!");
         AuthConfiguration config = this.module.getConfig();
         if (config.fail2ban)
         {
@@ -128,15 +130,17 @@ public class AuthCommands
             {
                 if (fails.get(context.getUniqueId()) + SECONDS.toMillis(10) > currentTimeMillis())
                 {
-                    Literal msg = Texts.of(context.getTranslation(NEGATIVE, "Too many wrong passwords!") + "\n"
-                                    + context.getTranslation(NEUTRAL, "For your security you were banned 10 seconds."));
+                    Literal msg = Texts.of(i18n.getTranslation(context, NEGATIVE, "Too many wrong passwords!") + "\n"
+                                    + i18n.getTranslation(context, NEUTRAL, "For your security you were banned 10 seconds."));
                     Date expires = new Date(currentTimeMillis() + SECONDS.toMillis(config.banDuration));
-                    this.bs.ban(Bans.builder().user(context.original()).reason(msg).expirationDate(expires).source(context.original()).build());
+                    this.bs.ban(Bans.builder().user(context).reason(msg).expirationDate(expires).source(
+                        context).build());
                     if (!game.getServer().getOnlineMode())
                     {
-                        this.bs.ban(Bans.builder().address(context.original().getConnection().getAddress().getAddress()).reason(msg).expirationDate(expires).source(context.original()).build());
+                        this.bs.ban(Bans.builder().address(context.getConnection().getAddress().getAddress()).reason(
+                            msg).expirationDate(expires).source(context).build());
                     }
-                    context.original().kick(msg);
+                    context.kick(msg);
                 }
             }
             fails.put(context.getUniqueId(), currentTimeMillis());
@@ -144,15 +148,15 @@ public class AuthCommands
     }
 
     @Command(desc = "Logs you out!")
-    @Restricted(value = MultilingualPlayer.class, msg = "You might use /stop for this.")
-    public void logout(MultilingualPlayer context)
+    @Restricted(value = Player.class, msg = "You might use /stop for this.")
+    public void logout(Player context)
     {
         if (module.getManager().isLoggedIn(context.getUniqueId()))
         {
             module.getManager().logout(context.getUniqueId());
-            context.sendTranslated(POSITIVE, "You're now logged out.");
+            i18n.sendTranslated(context, POSITIVE, "You're now logged out.");
             return;
         }
-        context.sendTranslated(NEUTRAL, "You're not logged in!");
+        i18n.sendTranslated(context, NEUTRAL, "You're not logged in!");
     }
 }

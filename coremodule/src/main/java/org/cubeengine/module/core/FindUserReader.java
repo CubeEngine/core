@@ -15,54 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.command.readers;
+package org.cubeengine.module.core;
 
-import java.util.Locale;
 import de.cubeisland.engine.butler.CommandInvocation;
 import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
 import de.cubeisland.engine.butler.parameter.reader.ReaderException;
-import org.cubeengine.service.command.TranslatedReaderException;
-import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.user.UserManager;
-import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.entity.living.player.User;
 
-/**
- * This argument is used to get users
- */
-public class UserReader implements ArgumentReader<User>, DefaultValue<User>
+public class FindUserReader implements ArgumentReader<User>
 {
     private final UserManager um;
-    private final I18n i18n;
 
-    public UserReader(UserManager um, I18n i18n)
+    public FindUserReader(UserManager um)
     {
         this.um = um;
-        this.i18n = i18n;
     }
 
     @Override
     public User read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        String arg = invocation.consume(1);
-        User user = um.findUser(arg);
-        if (user == null)
+        String name = invocation.consume(1);
+        com.google.common.base.Optional<User> found = um.getByName(name);
+        if (!found.isPresent())
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
-                                                                                       "Player {user} not found!",
-                                                                                       arg));
+            found = com.google.common.base.Optional.fromNullable(um.findUser(name, true));
         }
-        return user;
-    }
-
-    @Override
-    public User getDefault(CommandInvocation invocation)
-    {
-        if (invocation.getCommandSource() instanceof User)
+        if (found == null)
         {
-            return (User)invocation.getCommandSource();
+            throw new ReaderException("No match found for {input}!", name);
         }
-        throw new ReaderException("You need to provide a player");
+        return found.get();
     }
 }

@@ -41,10 +41,9 @@ import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.database.Database;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.filesystem.FileUtil;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.service.user.TableUser;
-import org.cubeengine.service.user.MultilingualPlayer;
-import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.ban.BanService;
@@ -60,6 +59,7 @@ public class Authorization extends Module
     @Inject private Game game;
     @Inject private BanService bs;
     @Inject private PermissionManager pm;
+    @Inject private I18n i18n;
     @Inject private AuthManager am; // TODO circular dependency? on providing module
 
     String salt;
@@ -90,7 +90,7 @@ public class Authorization extends Module
 
         perms = new AuthPerms(this);
         config = fm.loadConfig(this, AuthConfiguration.class);
-        cm.addCommands(this, new AuthCommands(this, game, bs));
+        cm.addCommands(this, new AuthCommands(this, game, bs, i18n));
     }
 
 
@@ -152,7 +152,7 @@ public class Authorization extends Module
         }
     }
 
-    protected void removeFailedLogins(MultilingualPlayer user)
+    protected void removeFailedLogins(Player user)
     {
         this.failedLogins.remove(user.getUniqueId());
     }

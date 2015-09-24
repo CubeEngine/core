@@ -19,7 +19,6 @@ package org.cubeengine.service;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.module.core.util.math.shape.Shape;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;

@@ -202,7 +202,7 @@ public final class CoreModule extends Module
 
         // depends on: server, module manager, ban manager
         cm.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager(), cm, fm, i18n));
-        cm.addCommand(new CoreCommands(this, cm, um));
+        cm.addCommand(new CoreCommands(this, cm, um, i18n));
     }
 
     @Disable

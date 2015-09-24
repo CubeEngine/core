@@ -19,14 +19,15 @@ package org.cubeengine.module.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -48,10 +49,10 @@ public class InventoryGuardFactory
     private EventManager em;
     private ThreadLocal<InventoryGuard> currentGuardConfig;
 
-    public InventoryGuardFactory prepareInv(Inventory inventory, MultilingualPlayer... users)
+    public InventoryGuardFactory prepareInv(Inventory inventory, Game game, UUID... users)
     {
         this.currentGuardConfig = new ThreadLocal<>();
-        this.currentGuardConfig.set(new InventoryGuard(em, um, tm, inventory, users));
+        this.currentGuardConfig.set(new InventoryGuard(em, um, tm, inventory, users, game));
         return this;
     }
 

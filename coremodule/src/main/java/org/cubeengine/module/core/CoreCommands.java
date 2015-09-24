@@ -18,9 +18,6 @@
 package org.cubeengine.module.core;
 
 import java.util.concurrent.TimeUnit;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.butler.parametric.Command;
 import de.cubeisland.engine.butler.parametric.Desc;
 import de.cubeisland.engine.butler.parametric.Flag;
@@ -32,12 +29,12 @@ import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.service.command.Multilingual;
-import org.cubeengine.service.user.MultilingualPlayer;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.user.UserManager;
 import org.cubeengine.module.core.util.Profiler;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
+import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.cubeengine.service.i18n.formatter.MessageType.POSITIVE;
@@ -47,49 +44,51 @@ import static org.cubeengine.service.i18n.formatter.MessageType.POSITIVE;
 public class CoreCommands extends ContainerCommand
 {
     private final CoreModule core;
+    private I18n i18n;
 
-    public CoreCommands(CoreModule core, CommandManager cm, UserManager um)
+    public CoreCommands(CoreModule core, CommandManager cm, UserManager um, I18n i18n)
     {
         super(core);
         this.core = core;
+        this.i18n = i18n;
         cm.getProviderManager().register(core, new FindUserReader(um));
     }
 
     @Command(desc = "Reloads the whole CubeEngine")
-    public void reload(Multilingual context)
+    public void reload(CommandSource context)
     {
         // TODO move all of reload to Plugin
-        context.sendTranslated(POSITIVE, "Reloading CubeEngine! This may take some time...");
+        i18n.sendTranslated(context, POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
 
         PluginManager pm = core.getGame().getPluginManager();
 
-        context.sendTranslated(POSITIVE, "CubeEngine Reload completed in {integer#time}ms!",
+        i18n.sendTranslated(context, POSITIVE, "CubeEngine Reload completed in {integer#time}ms!",
                                System.currentTimeMillis() - startTime);
     }
 
     @Command(desc = "Reloads all of the modules!")
-    public void reloadmodules(Multilingual context, @Flag boolean file)
+    public void reloadmodules(CommandSource context, @Flag boolean file)
     {
-        context.sendTranslated(POSITIVE, "Reloading all modules! This may take some time...");
+        i18n.sendTranslated(context, POSITIVE, "Reloading all modules! This may take some time...");
         Profiler.startProfiling("modulesReload");
         Modularity modulatiry = core.getModularity();
         modulatiry.getGraph().getRoot();
         long time = Profiler.endProfiling("modulesReload", TimeUnit.SECONDS);
-        context.sendTranslated(POSITIVE, "Modules Reload completed in {integer#time}s!", time);
+        i18n.sendTranslated(context, POSITIVE, "Modules Reload completed in {integer#time}s!", time);
     }
 
 
 
     @Command(desc = "Shows the online mode")
-    public void onlinemode(Multilingual context)
+    public void onlinemode(CommandSource context)
     {
         if (this.core.getGame().getServer().getOnlineMode())
         {
-            context.sendTranslated(POSITIVE, "The Server is running in online mode");
+            i18n.sendTranslated(context, POSITIVE, "The Server is running in online mode");
             return;
         }
-        context.sendTranslated(POSITIVE, "The Server is running in offline mode");
+        i18n.sendTranslated(context, POSITIVE, "The Server is running in offline mode");
         /* Changing online mode is no longer supported on a running server
         BukkitUtils.setOnlineMode(newState);
         if (newState)
@@ -104,15 +103,15 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(desc = "Changes or displays the log level of the server.")
-    public void loglevel(Multilingual context, @Optional LogLevel loglevel)
+    public void loglevel(CommandSource context, @Optional LogLevel loglevel)
     {
         if (loglevel != null)
         {
             core.getLog().setLevel(loglevel);
-            context.sendTranslated(POSITIVE, "New log level successfully set!");
+            i18n.sendTranslated(context, POSITIVE, "New log level successfully set!");
             return;
         }
-        context.sendTranslated(NEUTRAL, "The current log level is: {input#loglevel}",
+        i18n.sendTranslated(context, NEUTRAL, "The current log level is: {input#loglevel}",
                                core.getLog().getLevel().getName());
     }
 
@@ -126,31 +125,5 @@ public class CoreCommands extends ContainerCommand
             return;
         }
         context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", name);
-    }
-
-    public static class FindUserReader implements ArgumentReader<User>
-    {
-        private final UserManager um;
-
-        public FindUserReader(UserManager um)
-        {
-            this.um = um;
-        }
-
-        @Override
-        public User read(Class type, CommandInvocation invocation) throws ReaderException
-        {
-            String name = invocation.consume(1);
-            com.google.common.base.Optional<User> found = um.getByName(name);
-            if (!found.isPresent())
-            {
-                found = com.google.common.base.Optional.fromNullable(um.findUser(name, true));
-            }
-            if (found == null)
-            {
-                throw new ReaderException("No match found for {input}!", name);
-            }
-            return found.get();
-        }
     }
 }

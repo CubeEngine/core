@@ -27,8 +27,8 @@ import de.cubeisland.engine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.world.WorldManager;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
@@ -59,9 +59,9 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     @Override
     public World getDefault(CommandInvocation invocation)
     {
-        if (invocation.getCommandSource() instanceof MultilingualPlayer)
+        if (invocation.getCommandSource() instanceof Player)
         {
-            return ((MultilingualPlayer)invocation.getCommandSource()).original().getWorld();
+            return ((Player)invocation.getCommandSource()).getWorld();
         }
         throw new TooFewArgumentsException();
     }

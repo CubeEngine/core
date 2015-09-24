@@ -20,13 +20,14 @@ package org.cubeengine.module.core.util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.service.user.MultilingualPlayer;
 import org.cubeengine.service.user.UserManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -40,7 +41,8 @@ public class InventoryGuard
     private UserManager um;
     private TaskManager tm;
     private final Inventory inventory;
-    private final HashSet<MultilingualPlayer> users;
+    private Game game;
+    private final HashSet<UUID> users;
     private Module module;
 
     private boolean blockAllIn = false;
@@ -55,12 +57,13 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(EventManager em, UserManager um, TaskManager tm, Inventory inventory, MultilingualPlayer[] users)
+    public InventoryGuard(EventManager em, UserManager um, TaskManager tm, Inventory inventory, UUID[] users, Game game)
     {
         this.em = em;
         this.um = um;
         this.tm = tm;
         this.inventory = inventory;
+        this.game = game;
         this.users = new HashSet<>(Arrays.asList(users));
     }
 
@@ -75,9 +78,13 @@ public class InventoryGuard
         em.registerListener(this.module, this);
         if (openInventory)
         {
-            for (MultilingualPlayer user : users)
+            for (UUID user : users)
             {
-                user.original().openInventory(this.inventory);
+                Optional<Player> player = game.getServer().getPlayer(user);
+                if (player.isPresent())
+                {
+                    player.get().openInventory(this.inventory);
+                }
             }
         }
     }
