@@ -53,7 +53,7 @@ public class WorldLocation
         this.rz = rotation.getZ();
     }
 
-    public final Location getLocationIn(World world)
+    public final Location<World> getLocationIn(World world)
     {
         return new Location(world, x,y,z);
     }
