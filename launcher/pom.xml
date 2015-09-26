@@ -69,6 +69,12 @@
             <artifactId>modularity-asm</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!-- ReflecT -->
+        <dependency>
+            <groupId>de.cubeisland.engine</groupId>
+            <artifactId>reflect</artifactId>
+            <version>${reflectVersion}</version>
+        </dependency>
     </dependencies>
 
     <build>
