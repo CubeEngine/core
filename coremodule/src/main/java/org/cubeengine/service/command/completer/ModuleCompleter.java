@@ -18,8 +18,8 @@
 package org.cubeengine.service.command.completer;
 
 import java.util.List;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.completer.Completer;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.completer.Completer;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 

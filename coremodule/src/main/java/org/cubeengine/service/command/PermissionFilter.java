@@ -17,13 +17,12 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.filter.Filter;
-import de.cubeisland.engine.butler.filter.FilterException;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.filter.Filter;
+import org.cubeengine.butler.filter.FilterException;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.RawPermission;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.util.command.CommandSource;
 
 /**
  * A Filter checking a CommandSource Permission.

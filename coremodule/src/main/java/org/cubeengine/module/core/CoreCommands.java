@@ -18,11 +18,11 @@
 package org.cubeengine.module.core;
 
 import java.util.concurrent.TimeUnit;
-import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.parametric.Desc;
-import de.cubeisland.engine.butler.parametric.Flag;
-import de.cubeisland.engine.butler.parametric.Optional;
-import de.cubeisland.engine.butler.parametric.Reader;
+import org.cubeengine.butler.parametric.Command;
+import org.cubeengine.butler.parametric.Desc;
+import org.cubeengine.butler.parametric.Flag;
+import org.cubeengine.butler.parametric.Optional;
+import org.cubeengine.butler.parametric.Reader;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.service.command.CommandContext;

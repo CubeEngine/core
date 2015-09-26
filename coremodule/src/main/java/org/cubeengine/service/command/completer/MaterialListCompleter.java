@@ -19,8 +19,8 @@ package org.cubeengine.service.command.completer;
 
 import java.util.Arrays;
 import java.util.List;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.completer.Completer;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.module.core.util.StringUtils;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;

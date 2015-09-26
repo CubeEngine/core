@@ -26,17 +26,17 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import com.google.common.base.Optional;
-import de.cubeisland.engine.butler.CommandBase;
-import de.cubeisland.engine.butler.CommandBuilder;
-import de.cubeisland.engine.butler.CommandDescriptor;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.Dispatcher;
-import de.cubeisland.engine.butler.DispatcherCommand;
-import de.cubeisland.engine.butler.ProviderManager;
-import de.cubeisland.engine.butler.alias.AliasCommand;
-import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
-import de.cubeisland.engine.butler.parametric.CompositeCommandBuilder;
-import de.cubeisland.engine.butler.parametric.ParametricBuilder;
+import org.cubeengine.butler.CommandBase;
+import org.cubeengine.butler.CommandBuilder;
+import org.cubeengine.butler.CommandDescriptor;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.Dispatcher;
+import org.cubeengine.butler.DispatcherCommand;
+import org.cubeengine.butler.ProviderManager;
+import org.cubeengine.butler.alias.AliasCommand;
+import org.cubeengine.butler.parametric.BasicParametricCommand;
+import org.cubeengine.butler.parametric.CompositeCommandBuilder;
+import org.cubeengine.butler.parametric.ParametricBuilder;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.core.marker.Disable;
@@ -89,7 +89,6 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -379,7 +378,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     /**
-     * Creates {@link de.cubeisland.engine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
+     * Creates {@link org.cubeengine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to

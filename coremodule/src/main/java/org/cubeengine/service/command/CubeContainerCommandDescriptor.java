@@ -17,7 +17,7 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.parametric.ContainerCommandDescriptor;
+import org.cubeengine.butler.parametric.ContainerCommandDescriptor;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;

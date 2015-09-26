@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.paginate;
 
-import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.parametric.Label;
+import org.cubeengine.butler.parametric.Command;
+import org.cubeengine.butler.parametric.Label;
 import org.cubeengine.service.command.CommandContext;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

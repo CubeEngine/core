@@ -17,10 +17,10 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.CommandBuilder;
-import de.cubeisland.engine.butler.Dispatcher;
-import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
-import de.cubeisland.engine.butler.ProviderManager;
+import org.cubeengine.butler.CommandBuilder;
+import org.cubeengine.butler.Dispatcher;
+import org.cubeengine.butler.parametric.BasicParametricCommand;
+import org.cubeengine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -69,7 +69,7 @@ public interface CommandManager extends Cleanable, Dispatcher
 
 
     /**
-     * Creates {@link de.cubeisland.engine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
+     * Creates {@link org.cubeengine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to

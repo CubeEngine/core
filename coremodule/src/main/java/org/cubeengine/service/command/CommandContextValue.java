@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.ContextValue;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.ContextValue;
 import org.cubeengine.service.i18n.I18n;
 
 public class CommandContextValue implements ContextValue

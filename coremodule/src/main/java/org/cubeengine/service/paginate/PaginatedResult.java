@@ -18,8 +18,8 @@
 package org.cubeengine.service.paginate;
 
 import java.util.List;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.result.CommandResult;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.result.CommandResult;
 import org.cubeengine.service.command.CommandContext;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

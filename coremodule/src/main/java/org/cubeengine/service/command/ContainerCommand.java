@@ -18,10 +18,10 @@
 package org.cubeengine.service.command;
 
 import java.lang.reflect.Method;
-import de.cubeisland.engine.butler.CommandBase;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.alias.AliasCommand;
-import de.cubeisland.engine.butler.parametric.ParametricContainerCommand;
+import org.cubeengine.butler.CommandBase;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.alias.AliasCommand;
+import org.cubeengine.butler.parametric.ParametricContainerCommand;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.Unloggable;

@@ -21,13 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.reader.ArgumentReader;
+import org.cubeengine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 

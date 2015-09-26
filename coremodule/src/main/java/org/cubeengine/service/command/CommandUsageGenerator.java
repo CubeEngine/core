@@ -18,11 +18,11 @@
 package org.cubeengine.service.command;
 
 import java.util.Locale;
-import de.cubeisland.engine.butler.CommandDescriptor;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.FlagParameter;
-import de.cubeisland.engine.butler.parameter.Parameter;
-import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
+import org.cubeengine.butler.CommandDescriptor;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.FlagParameter;
+import org.cubeengine.butler.parameter.Parameter;
+import org.cubeengine.butler.parameter.ParameterUsageGenerator;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
@@ -33,7 +33,7 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandSource;
 
-import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
+import static org.cubeengine.butler.parameter.property.Requirement.isRequired;
 
 public class CommandUsageGenerator extends ParameterUsageGenerator
 {

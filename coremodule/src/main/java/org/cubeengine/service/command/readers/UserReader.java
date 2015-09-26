@@ -18,10 +18,10 @@
 package org.cubeengine.service.command.readers;
 
 import java.util.Locale;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.DefaultValue;
-import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.reader.ArgumentReader;
+import org.cubeengine.butler.parameter.reader.DefaultValue;
+import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.user.UserManager;

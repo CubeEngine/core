@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.SimpleCommandDescriptor;
-import de.cubeisland.engine.butler.parameter.ParameterUsageGenerator;
+import org.cubeengine.butler.SimpleCommandDescriptor;
+import org.cubeengine.butler.parameter.ParameterUsageGenerator;
 
 public class CommandManagerDescriptor extends SimpleCommandDescriptor
 {

@@ -17,9 +17,9 @@
  */
 package org.cubeengine.service.command.readers;
 
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parameter.reader.ArgumentReader;
-import de.cubeisland.engine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.reader.ArgumentReader;
+import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.module.core.util.matcher.EntityMatcher;
 import org.spongepowered.api.entity.EntityType;
 

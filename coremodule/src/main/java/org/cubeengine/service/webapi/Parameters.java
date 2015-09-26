@@ -19,8 +19,8 @@ package org.cubeengine.service.webapi;
 
 import java.util.List;
 import java.util.Map;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.ProviderManager;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.ProviderManager;
 
 import static org.cubeengine.module.core.contract.Contract.expectNotNull;
 

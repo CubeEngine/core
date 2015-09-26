@@ -17,9 +17,9 @@
  */
 package org.cubeengine.service.command;
 
-import de.cubeisland.engine.butler.parameter.Parameter;
-import de.cubeisland.engine.butler.parameter.ParameterGroup;
-import de.cubeisland.engine.butler.parametric.ParametricCommandDescriptor;
+import org.cubeengine.butler.parameter.Parameter;
+import org.cubeengine.butler.parameter.ParameterGroup;
+import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;

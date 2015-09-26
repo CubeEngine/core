@@ -18,7 +18,7 @@
 package org.cubeengine.service.command;
 
 import java.lang.reflect.Method;
-import de.cubeisland.engine.butler.parametric.InvokableMethod;
+import org.cubeengine.butler.parametric.InvokableMethod;
 import de.cubeisland.engine.modularity.core.Module;
 
 /**

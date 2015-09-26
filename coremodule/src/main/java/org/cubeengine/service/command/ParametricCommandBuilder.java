@@ -18,11 +18,11 @@
 package org.cubeengine.service.command;
 
 import java.lang.annotation.Annotation;
-import de.cubeisland.engine.butler.filter.Filters;
-import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.parametric.BasicParametricCommand;
-import de.cubeisland.engine.butler.parametric.ParametricBuilder;
-import de.cubeisland.engine.butler.parameter.Parameter;
+import org.cubeengine.butler.filter.Filters;
+import org.cubeengine.butler.parametric.Command;
+import org.cubeengine.butler.parametric.BasicParametricCommand;
+import org.cubeengine.butler.parametric.ParametricBuilder;
+import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.ParameterPermission;
 import org.cubeengine.service.command.annotation.Unloggable;
@@ -30,7 +30,7 @@ import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
 
-import static de.cubeisland.engine.butler.parameter.property.Requirement.isRequired;
+import static org.cubeengine.butler.parameter.property.Requirement.isRequired;
 
 public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, CubeCommandDescriptor>
 {

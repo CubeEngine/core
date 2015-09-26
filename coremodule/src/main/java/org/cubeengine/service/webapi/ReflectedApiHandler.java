@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.ProviderManager;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandManager;
 

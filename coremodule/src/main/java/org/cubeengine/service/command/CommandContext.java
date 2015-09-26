@@ -18,8 +18,8 @@
 package org.cubeengine.service.command;
 
 import java.util.Locale;
-import de.cubeisland.engine.butler.CommandInvocation;
-import de.cubeisland.engine.butler.parametric.context.ParameterizedContext;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parametric.context.ParameterizedContext;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.RawPermission;

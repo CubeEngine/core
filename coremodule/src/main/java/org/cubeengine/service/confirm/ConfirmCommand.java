@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.confirm;
 
-import de.cubeisland.engine.butler.parametric.Command;
-import de.cubeisland.engine.butler.result.CommandResult;
+import org.cubeengine.butler.parametric.Command;
+import org.cubeengine.butler.result.CommandResult;
 import org.cubeengine.service.command.CommandContext;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

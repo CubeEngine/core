@@ -17,7 +17,7 @@
  */
 package org.cubeengine.service.command.property;
 
-import de.cubeisland.engine.butler.util.property.Property;
+import org.cubeengine.butler.property.Property;
 
 public class PermissionProvider implements Property<RawPermission>
 {
