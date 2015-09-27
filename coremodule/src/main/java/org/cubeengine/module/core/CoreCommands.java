@@ -46,12 +46,11 @@ public class CoreCommands extends ContainerCommand
     private final CoreModule core;
     private I18n i18n;
 
-    public CoreCommands(CoreModule core, CommandManager cm, UserManager um, I18n i18n)
+    public CoreCommands(CoreModule core, I18n i18n)
     {
         super(core);
         this.core = core;
         this.i18n = i18n;
-        cm.getProviderManager().register(core, new FindUserReader(um));
     }
 
     @Command(desc = "Reloads the whole CubeEngine")

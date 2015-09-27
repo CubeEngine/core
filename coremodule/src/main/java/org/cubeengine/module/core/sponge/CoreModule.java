@@ -110,7 +110,6 @@ public final class CoreModule extends Module
     @Inject private LogFactory logFactory;
     @Inject private I18n i18n;
     @Inject private CommandManager cm;
-    @Inject private UserManager um;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -202,7 +201,7 @@ public final class CoreModule extends Module
 
         // depends on: server, module manager, ban manager
         cm.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager(), cm, fm, i18n));
-        cm.addCommand(new CoreCommands(this, cm, um, i18n));
+        cm.addCommand(new CoreCommands(this, i18n));
     }
 
     @Disable

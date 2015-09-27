@@ -35,6 +35,7 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.module.core.FindUserReader;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.module.core.util.converter.UserConverter;
@@ -90,6 +91,7 @@ public class UserManager
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new UserConverter(this), User.class);
 
+        cm.getProviderManager().register(core, new FindUserReader(this));
     }
 
     public CachedUser getByUUID(UUID uuid)
