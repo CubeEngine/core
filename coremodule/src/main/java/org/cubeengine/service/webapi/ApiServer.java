@@ -43,7 +43,7 @@ import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
 
-import org.cubeengine.module.authorization.AuthManager;
+import org.cubeengine.module.authorization.Authorization;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.logging.LoggingUtil;
@@ -106,7 +106,7 @@ public class ApiServer
     @Inject private TaskManager tm;
     @Inject private UserManager um;
     @Inject private PermissionManager pm;
-    @Inject private Maybe<AuthManager> am;
+    @Inject private Maybe<Authorization> am;
     private CoreModule module;
 
     @Inject

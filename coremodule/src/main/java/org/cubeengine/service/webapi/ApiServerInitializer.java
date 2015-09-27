@@ -20,7 +20,7 @@ package org.cubeengine.service.webapi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.cubeisland.engine.modularity.core.Maybe;
-import org.cubeengine.module.authorization.AuthManager;
+import org.cubeengine.module.authorization.Authorization;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.user.UserManager;
 import io.netty.channel.ChannelInitializer;
@@ -34,11 +34,11 @@ public class ApiServerInitializer extends ChannelInitializer<SocketChannel>
 {
     private CommandManager cm;
     private UserManager um;
-    private Maybe<AuthManager> am;
+    private Maybe<Authorization> am;
     private final ApiServer server;
     private final ObjectMapper objectMapper;
 
-    ApiServerInitializer(CommandManager cm, UserManager um, Maybe<AuthManager> am, ApiServer server)
+    ApiServerInitializer(CommandManager cm, UserManager um, Maybe<Authorization> am, ApiServer server)
     {
         this.cm = cm;
         this.um = um;

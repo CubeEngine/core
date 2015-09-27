@@ -17,15 +17,20 @@
  */
 package org.cubeengine.module.authorization;
 
-import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.user.UserEvent;
-import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.impl.AbstractEvent;
 
-
-public class UserAuthorizedEvent extends UserEvent
+public class PlayerAuthEvent extends AbstractEvent
 {
-    public UserAuthorizedEvent(Module module, User user)
+    private Player player;
+
+    public PlayerAuthEvent(Player player)
     {
-        super(module, user);
+        this.player = player;
+    }
+
+    public Player getPlayer()
+    {
+        return player;
     }
 }

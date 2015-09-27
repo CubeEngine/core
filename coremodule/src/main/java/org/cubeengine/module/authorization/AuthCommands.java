@@ -66,12 +66,12 @@ public class AuthCommands
     {
         if ((context.getSource().equals(player)))
         {
-            module.getManager().setPassword(player.getUniqueId(), password);
+            module.setPassword(player.getUniqueId(), password);
             context.sendTranslated(POSITIVE, "Your password has been set!");
             return;
         }
         context.ensurePermission(module.perms().COMMAND_SETPASSWORD_OTHER);
-        module.getManager().setPassword(player.getUniqueId(), password);
+        module.setPassword(player.getUniqueId(), password);
         context.sendTranslated(POSITIVE, "{user}'s password has been set!", player);
     }
 
@@ -86,7 +86,7 @@ public class AuthCommands
             {
                 throw new TooFewArgumentsException();
             }
-            module.getManager().resetPassword(((Player)sender).getUniqueId());
+            module.resetPassword(((Player)sender).getUniqueId());
             context.sendTranslated(POSITIVE, "Your password has been reset!");
             return;
         }
@@ -100,7 +100,7 @@ public class AuthCommands
         context.ensurePermission(module.perms().COMMAND_CLEARPASSWORD_OTHER);
         for (Player user : players.list())
         {
-            module.getManager().resetPassword(user.getUniqueId());
+            module.resetPassword(user.getUniqueId());
             context.sendTranslated(POSITIVE, "{user}'s password has been reset!", user.getName());
         }
     }
@@ -111,12 +111,12 @@ public class AuthCommands
     @Restricted(value = Player.class, msg = "Only players can log in!")
     public void login(Player context, String password)
     {
-        if (module.getManager().isLoggedIn(context.getUniqueId()))
+        if (module.isLoggedIn(context.getUniqueId()))
         {
             i18n.sendTranslated(context, POSITIVE, "You are already logged in!");
             return;
         }
-        boolean isLoggedIn = module.getManager().login(context.getUniqueId(), password);
+        boolean isLoggedIn = module.login(context, password);
         if (isLoggedIn)
         {
             i18n.sendTranslated(context, POSITIVE, "You logged in successfully!");
@@ -151,9 +151,9 @@ public class AuthCommands
     @Restricted(value = Player.class, msg = "You might use /stop for this.")
     public void logout(Player context)
     {
-        if (module.getManager().isLoggedIn(context.getUniqueId()))
+        if (module.isLoggedIn(context.getUniqueId()))
         {
-            module.getManager().logout(context.getUniqueId());
+            module.logout(context.getUniqueId());
             i18n.sendTranslated(context, POSITIVE, "You're now logged out.");
             return;
         }

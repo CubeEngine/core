@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.common.base.Optional;
 import de.cubeisland.engine.modularity.core.Maybe;
-import org.cubeengine.module.authorization.AuthManager;
+import org.cubeengine.module.authorization.Authorization;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.user.UserManager;
 import org.cubeengine.service.webapi.exception.ApiRequestException;
@@ -56,13 +56,13 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private final Charset UTF8 = Charset.forName("UTF-8");
     private final String WEBSOCKET_ROUTE = "websocket";
     private final Log log;
-    private Maybe<AuthManager> am;
+    private Maybe<Authorization> am;
     private final ApiServer server;
     private final CommandManager cm;
     private final UserManager um;
     private ObjectMapper objectMapper;
 
-    HttpRequestHandler(CommandManager cm, UserManager um, Maybe<AuthManager> am, ApiServer server, ObjectMapper mapper)
+    HttpRequestHandler(CommandManager cm, UserManager um, Maybe<Authorization> am, ApiServer server, ObjectMapper mapper)
     {
         this.cm = cm;
         this.um = um;
