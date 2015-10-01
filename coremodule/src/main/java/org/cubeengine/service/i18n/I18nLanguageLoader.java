@@ -20,11 +20,16 @@ package org.cubeengine.service.i18n;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,6 +37,7 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.language.LanguageLoader;
+import de.cubeisland.engine.modularity.core.ModularityClassLoader;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.module.core.sponge.CoreModule;
 import de.cubeisland.engine.reflect.Reflector;
@@ -42,13 +48,11 @@ public class I18nLanguageLoader extends LanguageLoader
 {
     private final Map<Locale, LocaleConfiguration> configurations = new HashMap<>();
     private final Reflector reflector;
-    private final FileManager fm;
     private Log log;
 
     public I18nLanguageLoader(Reflector reflector, FileManager fm, Log log)
     {
         this.reflector = reflector;
-        this.fm = fm;
         this.log = log;
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(fm.getLanguagePath(), YAML))
         {
@@ -71,6 +75,7 @@ public class I18nLanguageLoader extends LanguageLoader
         {
             log.error(ex, "Failed to load language configurations!");
         }
+
     }
 
     public void provideLanguages(CoreModule core)
@@ -78,32 +83,43 @@ public class I18nLanguageLoader extends LanguageLoader
         try
         {
             // Search provided Languages in CoreModule.jar
-            for (URL url : I18n.getFilesFromJar("languages/", ".yml", core))
+            ModularityClassLoader classLoader = core.getInformation().getClassLoader();
+            if (classLoader == null)
             {
-                try (Reader reader = new InputStreamReader(url.openStream()))
-                {
-                    LocaleConfiguration config = reflector.load(LocaleConfiguration.class, reader);
-                    if (!this.configurations.containsKey(config.getLocale()))
-                    {
-                        this.configurations.put(config.getLocale(), config);
-                    }
-                    Locale[] clones = config.getClones();
-                    if (clones != null)
-                    {
-                        for (Locale clone : clones)
-                        {
-                            if (!this.configurations.containsKey(clone))
-                            {
-                                this.configurations.put(clone, config);
-                            }
-                        }
-                    }
-                }
+                core.getLog().warn("ModularityClassLoader for CoreModule not set!");
+                return; // No classLoader => Core was injected into classpath
             }
+            loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, classLoader.getSourceURL()));
         }
         catch (IOException ex)
         {
             log.error(ex, "Failed to load language configurations!");
+        }
+    }
+
+    protected void loadLanguages(List<URL> languageFiles) throws IOException
+    {
+        for (URL url : languageFiles)
+        {
+            try (Reader reader = new InputStreamReader(url.openStream()))
+            {
+                LocaleConfiguration config = reflector.load(LocaleConfiguration.class, reader);
+                if (!this.configurations.containsKey(config.getLocale()))
+                {
+                    this.configurations.put(config.getLocale(), config);
+                }
+                Locale[] clones = config.getClones();
+                if (clones != null)
+                {
+                    for (Locale clone : clones)
+                    {
+                        if (!this.configurations.containsKey(clone))
+                        {
+                            this.configurations.put(clone, config);
+                        }
+                    }
+                }
+            }
         }
     }
 

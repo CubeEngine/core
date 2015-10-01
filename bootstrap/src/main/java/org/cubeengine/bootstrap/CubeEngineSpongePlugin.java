@@ -100,6 +100,7 @@ public class CubeEngineSpongePlugin
 
         long delta = System.currentTimeMillis();
         pluginLogger.info("Load Modules");
+        modularity.loadFromClassPath("de/cubeisland/engine", "org/cubeengine");
         modularity.load(loadPath.toFile(), "de/cubeisland/engine", "org/cubeengine");
         pluginLogger.info("done in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         delta = System.currentTimeMillis();

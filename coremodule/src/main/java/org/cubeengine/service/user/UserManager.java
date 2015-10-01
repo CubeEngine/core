@@ -41,6 +41,7 @@ import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.module.core.util.converter.UserConverter;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
 import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.command.readers.UserReader;
 import org.cubeengine.service.database.Database;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.task.TaskManager;
@@ -92,6 +93,8 @@ public class UserManager
         manager.registerConverter(new UserConverter(this), User.class);
 
         cm.getProviderManager().register(core, new FindUserReader(this));
+        cm.getProviderManager().register(core, new UserReader(this, i18n), User.class);
+
     }
 
     public CachedUser getByUUID(UUID uuid)

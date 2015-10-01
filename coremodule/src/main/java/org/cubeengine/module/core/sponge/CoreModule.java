@@ -71,7 +71,6 @@ import org.cubeengine.module.core.util.matcher.MaterialMatcher;
 import org.cubeengine.module.core.util.math.BlockVector3;
 import org.cubeengine.service.task.TaskManager;
 import de.cubeisland.engine.reflect.Reflector;
-import org.cubeengine.service.user.UserManager;
 import org.cubeengine.module.core.contract.Contract;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
@@ -80,7 +79,6 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.world.World;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
 import static org.cubeengine.service.logging.LoggingUtil.getCycler;
 import static org.cubeengine.service.logging.LoggingUtil.getFileFormat;
 import static org.cubeengine.service.logging.LoggingUtil.getLogFile;

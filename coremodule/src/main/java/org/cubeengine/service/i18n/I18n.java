@@ -19,8 +19,10 @@ package org.cubeengine.service.i18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -36,11 +38,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.inject.Inject;
-import com.google.common.base.Optional;
+
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
@@ -51,6 +52,7 @@ import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.ModularityClassLoader;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
@@ -98,7 +100,38 @@ public class I18n
         this.addPoFilesFromDirectory(fm.getTranslationPath());
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
-        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, new I18nLanguageLoader(reflector, fm, log), getDefaultLocale());
+        I18nLanguageLoader languageLoader = new I18nLanguageLoader(reflector, fm, log);
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, languageLoader, getDefaultLocale());
+
+        // Search for languages on classPath
+        ClassLoader classLoader = getClass().getClassLoader();
+        if (!(classLoader instanceof ModularityClassLoader))
+        {
+            try
+            {
+                for (URL url : ((URLClassLoader) classLoader).getURLs())
+                {
+                    try
+                    {
+                        URI uri = url.toURI();
+                        if (uri.getScheme().equals("file"))
+                        {
+                            languageLoader.loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, url));
+                            this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, url));
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        log.error(ex, "Failed to load language configurations!");
+                    }
+                }
+            }
+            catch (URISyntaxException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
+
         this.compositor = new BuilderDirigent<>(new TextMessageBuilder());
 
         compositor.registerFormatter(new WorldFormatter());
@@ -142,14 +175,18 @@ public class I18n
     {
         Path translations = module.getProvided(Path.class).resolve("translations");
         this.addPoFilesFromDirectory(translations);
-        this.poFiles.addAll(getFilesFromJar("translations/", ".po", module));
+        ModularityClassLoader classLoader = module.getInformation().getClassLoader();
+        if (classLoader == null)
+        {
+            return; // => Loaded from ClassPath
+        }
+        this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, classLoader.getSourceURL()));
     }
 
-    public static List<URL> getFilesFromJar(String path, String fileEnding, Module module)
+    public static List<URL> getFilesFromURL(String path, String fileEnding, ClassLoader classLoader, URL sourceURL)
     {
         try
         {
-            URL sourceURL = module.getProvided(URL.class);
             List<URL> urls = new ArrayList<>();
             Path directory = Paths.get(sourceURL.toURI()).resolve(path);
             if (Files.isDirectory(directory))
@@ -161,7 +198,12 @@ public class I18n
                 return urls;
             }
             Set<String> files = new LinkedHashSet<>();
-            JarFile jarFile = new JarFile(new File(sourceURL.toURI()));
+            File fileJar = new File(sourceURL.toURI());
+            if (fileJar.isDirectory())
+            {
+                return urls;
+            }
+            JarFile jarFile = new JarFile(fileJar);
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements())
             {
@@ -172,7 +214,7 @@ public class I18n
                 }
             }
 
-            urls.addAll(files.stream().map(file -> module.getClass().getResource("/" + file)).collect(toList()));
+            urls.addAll(files.stream().map(file -> classLoader.getResource("/" + file)).collect(toList()));
             return urls;
         }
         catch (IOException | URISyntaxException e)

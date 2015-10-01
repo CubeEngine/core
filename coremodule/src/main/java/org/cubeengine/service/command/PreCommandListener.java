@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -41,15 +42,15 @@ public class PreCommandListener
 {
     private final CoreModule core;
     private final StringMatcher stringMatcher;
-
+    private Game game;
     private I18n i18n;
 
-
-    public PreCommandListener(CoreModule core)
+    public PreCommandListener(CoreModule core, I18n i18n, StringMatcher stringMatcher, Game game)
     {
         this.core = core;
-        i18n = core.getModularity().provide(I18n.class);
-        stringMatcher = core.getModularity().provide(StringMatcher.class);
+        this.i18n = i18n;
+        this.stringMatcher = stringMatcher;
+        this.game = game;
     }
 
     @Listener(order = POST)
@@ -70,7 +71,7 @@ public class PreCommandListener
             return false;
         }
         //String label = explode(" ", label)[0].toLowerCase(Locale.ENGLISH);
-        Set<String> aliases = core.getGame().getCommandDispatcher().getAliases();
+        Set<String> aliases = game.getCommandDispatcher().getAliases();
         if (!aliases.contains(label))
         {
             final Locale language = sender instanceof Player ? ((Player)sender).getLocale() : Locale.getDefault();
