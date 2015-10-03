@@ -26,6 +26,7 @@ import de.cubeisland.engine.core.util.ChatFormat;
 import de.cubeisland.engine.core.util.Cleanable;
 import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
+import org.bukkit.OfflinePlayer;
 import org.jooq.types.UInteger;
 
 public interface UserManager extends Cleanable
@@ -210,4 +211,8 @@ public interface UserManager extends Cleanable
     Set<Long> getAllIds();
 
     void cleanup(Module module);
+
+    UserEntity getEntity(UUID uuid);
+
+    User createUser(OfflinePlayer offlinePlayer);
 }

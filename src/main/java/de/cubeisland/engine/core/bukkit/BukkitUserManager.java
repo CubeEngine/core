@@ -57,7 +57,6 @@ public class BukkitUserManager extends AbstractUserManager
 {
     private final BukkitCore core;
     protected ScheduledExecutorService nativeScheduler;
-    protected Map<UUID, Integer> scheduledForRemoval;
 
     public BukkitUserManager(final BukkitCore core)
     {
@@ -66,8 +65,6 @@ public class BukkitUserManager extends AbstractUserManager
 
         final long delay = (long)core.getConfiguration().usermanager.cleanup;
         this.nativeScheduler = Executors.newSingleThreadScheduledExecutor(core.getTaskManager().getThreadFactory());
-        this.nativeScheduler.scheduleAtFixedRate(new UserCleanupTask(), delay, delay, TimeUnit.MINUTES);
-        this.scheduledForRemoval = new HashMap<>();
 
         this.core.addInitHook(new Runnable() {
             @Override
@@ -111,14 +108,6 @@ public class BukkitUserManager extends AbstractUserManager
     {
         super.shutdown();
 
-        for (Integer id : this.scheduledForRemoval.values())
-        {
-            core.getServer().getScheduler().cancelTask(id);
-        }
-
-        this.scheduledForRemoval.clear();
-        this.scheduledForRemoval = null;
-
         this.nativeScheduler.shutdown();
         try
         {
@@ -152,9 +141,7 @@ public class BukkitUserManager extends AbstractUserManager
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
             if (offlinePlayer.getUniqueId().equals(userEntity.getUniqueId()))
             {
-                User user = new User(userEntity);
-                this.cacheUser(user);
-                return user;
+                return new User(this.core, userEntity.getUniqueId());
             }
             userEntity.setValue(TABLE_USER.LASTNAME, this.core.getConfiguration().nameConflict.replace("{name}", userEntity.getValue(TABLE_USER.LASTNAME)));
             userEntity.updateAsync();
@@ -162,9 +149,8 @@ public class BukkitUserManager extends AbstractUserManager
         if (create)
         {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
-            User user = new User(core, offlinePlayer);
+            User user = createUser(offlinePlayer);
             user.getEntity().insertAsync();
-            this.cacheUser(user);
             return user;
         }
         return null;
@@ -172,31 +158,11 @@ public class BukkitUserManager extends AbstractUserManager
 
     private User getExactUser(OfflinePlayer player, boolean login)
     {
-        CompletableFuture<Integer> future = null;
-        User user = this.cachedUserByUUID.get(player.getUniqueId());
-        if (user == null)
-        {
-            user = this.loadUserFromDatabase(player.getUniqueId());
-            if (user == null)
-            {
-                user = new User(core, player);
-                future = user.getEntity().insertAsync();
-            }
-            this.cacheUser(user);
-        }
+        final User user = new User(this.core, player.getUniqueId());
         if (login)
         {
             UserLoadedEvent event = new UserLoadedEvent(core, user);
-            if (future != null)
-            {
-                future.thenAccept(cnt ->
-                    core.getServer().getScheduler().runTask(core, () ->
-                        core.getEventManager().fireEvent(event)));
-            }
-            else
-            {
-                core.getEventManager().fireEvent(event);
-            }
+            core.getEventManager().fireEvent(event);
         }
         return user;
     }
@@ -229,27 +195,8 @@ public class BukkitUserManager extends AbstractUserManager
                     }
                 }
             });
-
-            final BukkitTask task = scheduler.runTaskLater(core, () -> {
-                scheduledForRemoval.remove(user.getUniqueId());
-                user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
-                Profiler.startProfiling("removalTask");
-                user.getEntity().updateAsync();
-                core.getLog().debug("BukkitUserManager:UserListener#onQuit:RemovalTask {}ms", Profiler.endProfiling("removalTask", TimeUnit.MILLISECONDS));
-                if (user.isOnline())
-                {
-                    removeCachedUser(user);
-                }
-            }, core.getConfiguration().usermanager.keepInMemory);
-
-            if (task == null || task.getTaskId() == -1)
-            {
-                core.getLog().warn("The delayed removed of player '{}' could not be scheduled... removing them now.");
-                removeCachedUser(user);
-                return;
-            }
-
-            scheduledForRemoval.put(user.getUniqueId(), task.getTaskId());
+            user.getEntity().setValue(TABLE_USER.LASTSEEN, new Timestamp(System.currentTimeMillis()));
+            user.getEntity().updateAsync();
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -275,28 +222,8 @@ public class BukkitUserManager extends AbstractUserManager
             final User user = getExactUser(event.getPlayer());
             if (user != null)
             {
-                updateLastName(user);
+                updateLastName(user.getEntity());
                 user.refreshIP();
-                final Integer removalTask = scheduledForRemoval.get(user.getUniqueId());
-                if (removalTask != null)
-                {
-                    user.getServer().getScheduler().cancelTask(removalTask);
-                }
-            }
-        }
-    }
-
-    private class UserCleanupTask implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            for (User user : cachedUserByUUID.values())
-            {
-                if (!user.isOnline() && scheduledForRemoval.get(user.getUniqueId()) > -1) // Do not delete users that will be deleted anyway
-                {
-                    removeCachedUser(user);
-                }
             }
         }
     }

@@ -31,6 +31,39 @@
  * <p>
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ * <p>
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ * <p>
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ * <p>
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.cubeisland.engine.core.user;
 
@@ -42,7 +75,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import com.mojang.authlib.GameProfile;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.bukkit.BukkitUtils;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -50,9 +82,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagFloat;
 import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.PlayerInteractManager;
 import net.minecraft.server.v1_8_R3.WorldNBTStorage;
-import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -71,7 +101,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
@@ -110,30 +139,25 @@ public class UserBase implements Player
     private static final int NBT_ID_DOUBLE = 6;
     private static final int NBT_ID_FLOAT = 5;
     private final UUID uuid;
-    private OfflinePlayer cachedOfflinePlayer = null;
-    private EntityPlayer dummy = null;
 
     public UserBase(UUID uuid)
     {
         this.uuid = uuid;
     }
 
+    public UUID getUuid()
+    {
+        return uuid;
+    }
+
     public OfflinePlayer getOfflinePlayer()
     {
-        if (this.cachedOfflinePlayer == null)
+        Player online = Bukkit.getPlayer(uuid);
+        if (online != null)
         {
-            this.cachedOfflinePlayer = Bukkit.getPlayer(uuid);
-            if (cachedOfflinePlayer == null)
-            {
-                this.cachedOfflinePlayer = Bukkit.getOfflinePlayer(uuid);
-                CubeEngine.getLog().debug("Caching Offline Player");
-            }
-            else
-            {
-                CubeEngine.getLog().debug("Caching Online Player");
-            }
+            return online;
         }
-        return cachedOfflinePlayer;
+        return Bukkit.getOfflinePlayer(uuid);
     }
 
     private EntityPlayer getDummy()
@@ -142,19 +166,7 @@ public class UserBase implements Player
         {
             return ((CraftPlayer)getPlayer()).getHandle();
         }
-        if (this.dummy == null)
-        {
-//            CraftServer srv = (CraftServer)this.getServer();
-//            WorldServer world = srv.getServer().getWorldServer(0);
-//            // LoginListener is doing this
-//            // UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
-//            // this.i = new GameProfile(uuid.toString().replaceAll("-", ""), this.i.getName());
-//            this.dummy = new EntityPlayer(srv.getServer(), world,
-//                                          new GameProfile(this.getOfflinePlayer().getUniqueId(), this.getName()),
-//                                          new PlayerInteractManager(world));
-//            System.out.println("Created dummy!");
-        }
-        return this.dummy;
+        return null;
     }
 
     private NBTTagCompound getData()

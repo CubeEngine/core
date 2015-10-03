@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.command.CommandSender;
 import de.cubeisland.engine.core.command.sender.ConsoleCommandSender;
@@ -50,12 +51,16 @@ import de.cubeisland.engine.core.util.Triplet;
 import de.cubeisland.engine.core.util.formatter.MessageType;
 import de.cubeisland.engine.core.util.matcher.Match;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jooq.Record1;
+import org.jooq.SelectConditionStep;
 import org.jooq.types.UInteger;
 
 import static de.cubeisland.engine.core.user.TableUser.TABLE_USER;
 import static de.cubeisland.engine.core.util.ChatFormat.WHITE;
 import static de.cubeisland.engine.core.util.formatter.MessageType.NONE;
+import static org.bukkit.Bukkit.getOnlinePlayers;
 
 /**
  * This Manager provides methods to access the Users and saving/loading from
@@ -65,8 +70,8 @@ public abstract class AbstractUserManager implements UserManager
 {
     private final Core core;
     protected List<User> onlineUsers;
-    protected ConcurrentHashMap<UUID, User> cachedUserByUUID = new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<UInteger, User> cachedUserByDbId = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<UUID, UserEntity> cachedEntityByUUID = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<UInteger, UserEntity> cachedEntityByDbId = new ConcurrentHashMap<>();
     protected Set<DefaultAttachment> defaultAttachments;
     protected String salt;
     protected final MessageDigest messageDigest;
@@ -151,8 +156,10 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public void removeUser(final User user)
     {
+        final UserEntity entity = user.getEntity();
+        this.cachedEntityByDbId.remove(entity.getKey());
+        this.cachedEntityByUUID.remove(entity.getUniqueId());
         user.getEntity().deleteAsync();
-        this.removeCachedUser(user);
     }
 
     @Override
@@ -161,45 +168,75 @@ public abstract class AbstractUserManager implements UserManager
         return this.getUser(name, true);
     }
 
+    public User createUser(OfflinePlayer player)
+    {
+        createEntity(player);
+        return new User(this.core, player.getUniqueId());
+    }
+
+    private UserEntity createEntity(OfflinePlayer player)
+    {
+        UserEntity entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
+        cache(entity);
+        entity.insertAsync();
+        return entity;
+    }
+
     @Override
     public User getExactUser(UUID uuid)
     {
-        User user = this.cachedUserByUUID.get(uuid);
-        if (user == null)
+        UserEntity entity = getEntity(uuid);
+        if (entity == null)
         {
-            user = this.loadUserFromDatabase(uuid);
-            if (user == null)
-            {
-                user = new User(core, Bukkit.getOfflinePlayer(uuid));
-                user.getEntity().insertAsync();
-            }
-            this.cacheUser(user);
+            return createUser(Bukkit.getOfflinePlayer(uuid));
         }
-        return user;
+        return new User(this.core, uuid);
     }
 
-    protected User loadUserFromDatabase(UUID uuid)
+    private void cache(UserEntity entity)
     {
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))).fetchOne();
-        return entity == null ? null : new User(entity);
+        this.cachedEntityByDbId.put(entity.getKey(), entity);
+        this.cachedEntityByUUID.put(entity.getUniqueId(), entity);
+        attachDefaults(new User(this.core, entity.getUniqueId()));
+        updateLastName(entity);
+    }
+
+    private UserEntity cache(SelectConditionStep<UserEntity> where)
+    {
+        final UserEntity entity = where.fetchOne();
+        cache(entity);
+        return entity;
+    }
+
+    private UserEntity getOrFetch(UUID uuid)
+    {
+        UserEntity entity = this.cachedEntityByUUID.get(uuid);
+        if (entity != null)
+        {
+            return entity;
+        }
+        return cache(this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))));
+    }
+
+    private UserEntity getOrFetch(UInteger id)
+    {
+        UserEntity entity = this.cachedEntityByDbId.get(id);
+        if (entity != null)
+        {
+            return entity;
+        }
+        return cache(this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)));
     }
 
     @Override
     public synchronized User getUser(UInteger id)
     {
-        User user = this.cachedUserByDbId.get(id);
-        if (user != null)
-        {
-            return user;
-        }
-        UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)).fetchOne();
+        UserEntity entity = getOrFetch(id);
         if (entity == null)
         {
             return null;
         }
-        user = new User(entity);
-        this.cacheUser(user);
-        return user;
+        return new User(core, entity.getUniqueId());
     }
 
     @Override
@@ -234,30 +271,14 @@ public abstract class AbstractUserManager implements UserManager
         }
     }
 
-    protected synchronized void cacheUser(User user)
+    protected void updateLastName(UserEntity entity)
     {
-        updateLastName(user);
-        this.cachedUserByUUID.put(user.getUniqueId(), user);
-        this.cachedUserByDbId.put(user.getEntity().getKey(), user);
-        this.core.getLog().debug("User {} cached!", user.getName());
-        this.attachDefaults(user);
-    }
-
-    protected void updateLastName(User user)
-    {
-        if (!user.getName().equalsIgnoreCase(user.getEntity().getValue(TABLE_USER.LASTNAME)))
+        final OfflinePlayer user = Bukkit.getOfflinePlayer(entity.getUniqueId());
+        if (!user.getName().equalsIgnoreCase(entity.getValue(TABLE_USER.LASTNAME)))
         {
-            user.getEntity().setValue(TABLE_USER.LASTNAME, user.getName());
-            user.getEntity().updateAsync();
+            entity.setValue(TABLE_USER.LASTNAME, user.getName());
+            entity.updateAsync();
         }
-    }
-
-    protected synchronized void removeCachedUser(User user)
-    {
-        this.cachedUserByUUID.remove(user.getUniqueId());
-        this.cachedUserByDbId.remove(user.getEntity().getKey());
-        this.core.getLog().debug("Removed cached user {}!", user.getName());
-        user.detachAll();
     }
 
     @Override
@@ -269,7 +290,7 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public synchronized Set<User> getLoadedUsers()
     {
-        return new HashSet<>(this.cachedUserByUUID.values());
+        return getOnlinePlayers().stream().map((p) -> new User(this.core, p.getUniqueId())).collect(Collectors.toSet());
     }
 
     @Override
@@ -407,17 +428,18 @@ public abstract class AbstractUserManager implements UserManager
     @Override
     public synchronized void kickAll(String message)
     {
-        for (User user : this.cachedUserByUUID.values())
+        for (final Player player : getOnlinePlayers())
         {
-            user.kickPlayer(message);
+            player.kickPlayer(message);
         }
     }
 
     @Override
     public synchronized void kickAll(String message, Object... params)
     {
-        for (User user : this.cachedUserByUUID.values())
+        for (final Player player : getOnlinePlayers())
         {
+            User user = new User(this.core, player.getUniqueId());
             user.kickPlayer(user.getTranslation(NONE, message, params));
         }
     }
@@ -554,13 +576,7 @@ public abstract class AbstractUserManager implements UserManager
         }
         if (entity != null)
         {
-            User user = this.cachedUserByDbId.get(entity.getKey());
-            if (user == null)
-            {
-                user = new User(entity);
-                this.cacheUser(user);
-            }
-            return user;
+            return new User(this.core, entity.getUniqueId());
         }
         return null;
     }
@@ -573,11 +589,11 @@ public abstract class AbstractUserManager implements UserManager
         this.onlineUsers.clear();
         this.onlineUsers = null;
 
-        this.cachedUserByUUID.clear();
-        this.cachedUserByUUID = null;
+        this.cachedEntityByUUID.clear();
+        this.cachedEntityByUUID = null;
 
-        this.cachedUserByDbId.clear();
-        this.cachedUserByDbId = null;
+        this.cachedEntityByDbId.clear();
+        this.cachedEntityByDbId = null;
 
         this.removeDefaultAttachments();
         this.defaultAttachments.clear();
@@ -610,5 +626,16 @@ public abstract class AbstractUserManager implements UserManager
         {
             user.attach(this.type, this.module);
         }
+    }
+
+    @Override
+    public UserEntity getEntity(UUID uuid)
+    {
+        UserEntity entity = getOrFetch(uuid);
+        if (entity == null)
+        {
+            entity = createEntity(Bukkit.getOfflinePlayer(uuid));
+        }
+        return entity;
     }
 }

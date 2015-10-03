@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import de.cubeisland.engine.core.Core;
 import de.cubeisland.engine.core.CubeEngine;
 import de.cubeisland.engine.core.attachment.AttachmentHolder;
@@ -76,37 +77,13 @@ import static org.bukkit.block.BlockFace.UP;
  */
 public class User extends UserBase implements CommandSender, AttachmentHolder<UserAttachment>
 {
-    private final UserEntity entity;
-
     boolean loggedInState = false;
-    private final Map<Class<? extends UserAttachment>, UserAttachment> attachments;
     private final Core core;
 
-    /**
-     * Do not instantiate outside of {@link UserManager} implementations
-     *
-     * @param core
-     * @param player
-     */
-    public User(Core core, OfflinePlayer player)
+    public User(Core core, UUID uuid)
     {
-        super(player.getUniqueId());
-        this.entity = core.getDB().getDSL().newRecord(TABLE_USER).newUser(player);
-        this.attachments = new HashMap<>();
+        super(uuid);
         this.core = core;
-    }
-
-    /**
-     * Do not instantiate outside of {@link UserManager} implementations
-     *
-     * @param entity
-     */
-    public User(UserEntity entity)
-    {
-        super(entity.getUniqueId());
-        this.core = CubeEngine.getCore();
-        this.entity = entity;
-        this.attachments = new HashMap<>();
     }
 
     @Override
@@ -123,7 +100,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
             A attachment = type.newInstance();
             attachment.attachTo(module, this);
             @SuppressWarnings("unchecked")
-            A oldAttachment = (A) this.attachments.put(type, attachment);
+            A oldAttachment = (A) getAttachments().put(type, attachment);
             if (oldAttachment != null)
             {
                 oldAttachment.onDetach();
@@ -134,6 +111,11 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             throw new IllegalArgumentException("The given attachment could not be created!", e);
         }
+    }
+
+    private Map<Class<? extends UserAttachment>, UserAttachment> getAttachments()
+    {
+        return this.getEntity().attachments;
     }
 
     @Override
@@ -151,26 +133,26 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @SuppressWarnings("unchecked")
     public synchronized <A extends UserAttachment> A get(Class<A> type)
     {
-        return (A)this.attachments.get(type);
+        return (A)getAttachments().get(type);
     }
 
     @Override
     public synchronized Set<UserAttachment> getAll()
     {
-        return new HashSet<>(this.attachments.values());
+        return new HashSet<>(getAttachments().values());
     }
 
     @Override
     public synchronized <A extends UserAttachment> boolean has(Class<A> type)
     {
-        return this.attachments.containsKey(type);
+        return getAttachments().containsKey(type);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public synchronized <A extends UserAttachment> A detach(Class<A> type)
     {
-        A attachment = (A)this.attachments.remove(type);
+        A attachment = (A)getAttachments().remove(type);
         if (attachment != null)
         {
             attachment.onDetach();
@@ -181,7 +163,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public synchronized void detachAll(Module module)
     {
-        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = this.attachments.entrySet().iterator();
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = getAttachments().entrySet().iterator();
         UserAttachment attachment;
         while (it.hasNext())
         {
@@ -197,7 +179,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public synchronized void detachAll()
     {
-        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = this.attachments.entrySet().iterator();
+        final Iterator<Entry<Class<? extends UserAttachment>, UserAttachment>> it = getAttachments().entrySet().iterator();
         while (it.hasNext())
         {
             it.next().getValue().onDetach();
@@ -207,7 +189,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public Long getId()
     {
-        return this.entity.getKey().longValue();
+        return getEntity().getKey().longValue();
     }
 
     @Override
@@ -274,9 +256,10 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
     @Override
     public Locale getLocale()
     {
-        if (this.entity.getLocale() != null)
+        final UserEntity entity = getEntity();
+        if (entity.getLocale() != null)
         {
-            return this.entity.getLocale();
+            return entity.getLocale();
         }
         Locale locale = null;
         Player onlinePlayer = this.getOfflinePlayer().getPlayer();
@@ -297,7 +280,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             throw new NullPointerException();
         }
-        this.entity.setLocale(locale);
+        getEntity().setLocale(locale);
     }
 
     public int getPing()
@@ -320,7 +303,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         {
             return 0;
         }
-        return this.entity.getValue(TABLE_USER.LASTSEEN).getTime();
+        return getEntity().getValue(TABLE_USER.LASTSEEN).getTime();
     }
 
     public boolean safeTeleport(Location location, TeleportCause cause, boolean keepDirection)
@@ -426,7 +409,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public boolean isPasswordSet()
     {
-        byte[] value = this.entity.getValue(TABLE_USER.PASSWD);
+        byte[] value = getEntity().getValue(TABLE_USER.PASSWD);
         return value != null && value.length > 0;
     }
 
@@ -687,7 +670,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
 
     public UserEntity getEntity()
     {
-        return entity;
+        return core.getUserManager().getEntity(getUuid());
     }
 
     public Iterator<Block> getLineOfSight(int maxDistance)
@@ -733,7 +716,7 @@ public class User extends UserBase implements CommandSender, AttachmentHolder<Us
         String name = super.getName();
         if (name == null)
         {
-            return this.entity.getValue(TABLE_USER.LASTNAME);
+            return getEntity().getValue(TABLE_USER.LASTNAME);
         }
         return name;
     }

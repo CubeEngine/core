@@ -18,7 +18,9 @@
 package de.cubeisland.engine.core.user;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import javax.persistence.Transient;
 import de.cubeisland.engine.core.storage.database.AsyncRecord;
@@ -33,6 +35,9 @@ public class UserEntity extends AsyncRecord<UserEntity>
     private UUID uid = null;
     @Transient
     private Locale locale;
+
+    @Transient
+    protected final Map<Class<? extends UserAttachment>, UserAttachment> attachments = new HashMap<>();
 
     public UserEntity()
     {
