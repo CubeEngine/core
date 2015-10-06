@@ -19,7 +19,7 @@ package org.cubeengine.service.command;
 
 import java.util.List;
 import java.util.Set;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;

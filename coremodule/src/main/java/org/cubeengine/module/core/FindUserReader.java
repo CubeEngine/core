@@ -23,6 +23,8 @@ import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.User;
 
+import java.util.Optional;
+
 public class FindUserReader implements ArgumentReader<User>
 {
     private final UserManager um;
@@ -36,10 +38,10 @@ public class FindUserReader implements ArgumentReader<User>
     public User read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
-        com.google.common.base.Optional<User> found = um.getByName(name);
+        Optional<User> found = um.getByName(name);
         if (!found.isPresent())
         {
-            found = com.google.common.base.Optional.fromNullable(um.findUser(name, true));
+            found = Optional.ofNullable(um.findUser(name, true));
         }
         if (found == null)
         {

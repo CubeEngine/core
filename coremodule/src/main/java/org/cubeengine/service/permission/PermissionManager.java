@@ -17,7 +17,7 @@
  */
 package org.cubeengine.service.permission;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;

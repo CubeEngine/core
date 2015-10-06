@@ -18,7 +18,7 @@
 package org.cubeengine.module.core.util.converter;
 
 import java.util.UUID;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
@@ -47,7 +47,7 @@ public class WorldConverter extends SimpleConverter<World>
         if (node instanceof StringNode)
         {
             String string = ((StringNode)node).getValue();
-            Optional<World> world = Optional.absent();
+            Optional<World> world = Optional.empty();
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));

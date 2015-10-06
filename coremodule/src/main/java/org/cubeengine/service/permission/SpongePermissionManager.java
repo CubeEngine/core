@@ -78,7 +78,7 @@ public class SpongePermissionManager implements PermissionManager
             registered = true;
             ServiceReference<PermissionService> service = game.getServiceManager().potentiallyProvide(PermissionService.class);
             service.executeWhenPresent(input -> {
-                Builder builder = input.newDescriptionBuilder(plugin).orNull();
+                Builder builder = input.newDescriptionBuilder(plugin).orElse(null);
                 if (builder == null)
                 {
                     return false;
@@ -127,14 +127,14 @@ public class SpongePermissionManager implements PermissionManager
 
         perms.add(permission);
 
-        return permissionService.newDescriptionBuilder(plugin).transform(builder -> {
+        return permissionService.newDescriptionBuilder(plugin).map(builder -> {
             builder.id(permission);
             if (description != null)
             {
                 builder.description(Texts.of(description));
             }
             return builder;
-        }).transform(b -> assignAndRegister(b, toAssign)).orNull();
+        }).map(b -> assignAndRegister(b, toAssign)).orElse(null);
     }
 
 
@@ -161,7 +161,7 @@ public class SpongePermissionManager implements PermissionManager
         PermissionDescription perm = modulePermissions.get(module);
         if (perm == null)
         {
-            Builder builder = permissionService.newDescriptionBuilder(plugin).orNull();
+            Builder builder = permissionService.newDescriptionBuilder(plugin).orElse(null);
             if (builder == null)
             {
                 return null;

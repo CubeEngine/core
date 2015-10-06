@@ -20,7 +20,7 @@ package org.cubeengine.service.user;
 import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.service.task.TaskManager;

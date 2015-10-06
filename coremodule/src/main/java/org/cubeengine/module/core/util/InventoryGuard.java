@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.EventManager;

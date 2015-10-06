@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.module.core.util.Cleanable;

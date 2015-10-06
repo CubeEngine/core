@@ -19,7 +19,7 @@ package org.cubeengine.service.command;
 
 import java.util.Collections;
 import java.util.List;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.module.core.sponge.CoreModule;
@@ -113,7 +113,7 @@ public class ProxyCallable implements CommandCallable
     @Override
     public Optional<Text> getHelp(CommandSource source)
     {
-        return Optional.absent(); // TODO
+        return Optional.empty(); // TODO
     }
 
     @Override

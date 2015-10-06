@@ -28,6 +28,8 @@ import org.cubeengine.service.user.UserManager;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.entity.living.player.User;
 
+import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
+
 /**
  * This argument is used to get users
  */
@@ -49,9 +51,7 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
         User user = um.findUser(arg);
         if (user == null)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
-                                                                                       "Player {user} not found!",
-                                                                                       arg));
+            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
         return user;
     }

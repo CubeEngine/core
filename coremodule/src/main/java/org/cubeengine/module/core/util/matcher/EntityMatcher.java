@@ -66,7 +66,7 @@ public class EntityMatcher
         {
             return null;
         }
-        EntityType type = game.getRegistry().getType(EntityType.class, name).orNull();
+        EntityType type = game.getRegistry().getType(EntityType.class, name).orElse(null);
         if (type != null)
         {
             return type;

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.cubeengine.service.database.Database;
 import org.jooq.DSLContext;
 import org.jooq.types.UInteger;

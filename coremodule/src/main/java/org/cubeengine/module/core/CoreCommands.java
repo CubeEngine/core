@@ -113,8 +113,7 @@ public class CoreCommands extends ContainerCommand
     }
 
     @Command(alias = "finduser", desc = "Searches for a user in the database")
-    public void searchuser(CommandContext context,
-                           @Reader(FindUserReader.class) @Desc("The name to search for") User name)
+    public void searchuser(CommandContext context, @Reader(FindUserReader.class) @Desc("The name to search for") User name)
     {
         if (name.getName().equalsIgnoreCase(context.getString(0)))
         {

@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.mutable.block.AttachedData;
 import org.spongepowered.api.data.manipulator.mutable.block.PortionData;

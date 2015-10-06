@@ -227,7 +227,7 @@ public class MaterialMatcher
 
     public BlockType block(String name)
     {
-        return game.getRegistry().getType(BlockType.class, name).orNull();
+        return game.getRegistry().getType(BlockType.class, name).orElse(null);
     }
 
     /**

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;

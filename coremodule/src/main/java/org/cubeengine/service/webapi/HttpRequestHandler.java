@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.modularity.core.Maybe;
 import org.cubeengine.module.authorization.Authorization;
 import org.cubeengine.service.command.CommandManager;

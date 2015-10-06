@@ -20,7 +20,7 @@ package org.cubeengine.service.command.conversation;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandManager;

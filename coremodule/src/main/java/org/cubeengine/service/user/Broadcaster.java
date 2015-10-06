@@ -29,6 +29,8 @@ import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.sink.MessageSinks;
 import org.spongepowered.api.util.command.CommandSource;
 
+import javax.inject.Inject;
+
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;
 
@@ -36,14 +38,8 @@ import static org.spongepowered.api.text.format.TextColors.WHITE;
 @Version(1)
 public class Broadcaster
 {
-    private Game game;
-    private I18n i18n;
-
-    public Broadcaster(Game game, I18n i18n)
-    {
-        this.game = game;
-        this.i18n = i18n;
-    }
+    @Inject private Game game;
+    @Inject private I18n i18n;
 
     private Iterable<CommandSource> getAll()
     {

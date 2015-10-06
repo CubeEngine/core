@@ -93,7 +93,7 @@ public class CubeEngineSpongePlugin
         modularity.register(Logger.class, pluginLogger);
         modularity.register(File.class, dataFolder);
         modularity.register(PermissionService.class, new ServiceProvider<>(PermissionService.class, () -> {
-            return game.getServiceManager().provide(PermissionService.class).orNull();
+            return game.getServiceManager().provide(PermissionService.class).orElse(null);
         }));
 
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));

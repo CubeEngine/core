@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
@@ -123,9 +123,9 @@ public class UserManager
     {
         if (entity == null)
         {
-            return Optional.absent();
+            return Optional.empty();
         }
-        CachedUser cachedUser = new CachedUser(entity, game.getServiceManager().provideUnchecked(UserStorage.class).get(entity.getUniqueId()).orNull());
+        CachedUser cachedUser = new CachedUser(entity, game.getServiceManager().provideUnchecked(UserStorage.class).get(entity.getUniqueId()).orElse(null));
         cacheUser(cachedUser);
         return Optional.of(cachedUser);
     }
@@ -140,14 +140,6 @@ public class UserManager
         UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)).fetchOne();
         return cachedUser(entity);
     }
-
-    private User getOfflinePlayer(String name)
-    {
-        Optional<Player> player = core.getGame().getServer().getPlayer(name);
-        return player.orNull();
-        // TODO actually get User when offline
-    }
-
 
     public String getUserName(UInteger key)
     {
@@ -204,12 +196,12 @@ public class UserManager
         Optional<Player> player = game.getServer().getPlayer(name);
         if (player.isPresent())
         {
-            return player.transform(p -> (User)p);
+            return player.map(User.class::cast);
         }
 
         // Lookup in saved users
         UserEntity entity = this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LASTNAME.eq(name)).fetchOne();
-        return cachedUser(entity).transform(CachedUser::getUser);
+        return cachedUser(entity).map(CachedUser::getUser);
     }
 
     public User findUser(String name, boolean searchDatabase)
@@ -295,7 +287,7 @@ public class UserManager
         }
         UserStorage storage = core.getGame().getServiceManager().provide(UserStorage.class).get();
 
-        User user = storage.get(uuid).orNull();
+        User user = storage.get(uuid).orElse(null);
         if (user != null)
         {
             return user;

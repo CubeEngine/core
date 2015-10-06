@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.matcher.StringMatcher;

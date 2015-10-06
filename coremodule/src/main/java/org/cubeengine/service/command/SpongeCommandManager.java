@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
-import com.google.common.base.Optional;
+import java.util.Optional;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandBuilder;
@@ -86,6 +86,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -173,7 +174,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
         providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(core, new CommandSourceReader(cm), CommandSource.class);
+        providerManager.register(core, new CommandSourceReader(cm), CommandSource.class, Player.class);
         providerManager.register(core, new WorldReader(wm, i18n), World.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
 
