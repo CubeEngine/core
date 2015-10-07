@@ -201,9 +201,13 @@ public abstract class AbstractUserManager implements UserManager
         updateLastName(entity);
     }
 
-    private UserEntity cache(SelectConditionStep<UserEntity> where)
+    private UserEntity cache(OfflinePlayer player, SelectConditionStep<UserEntity> where)
     {
-        final UserEntity entity = where.fetchOne();
+        UserEntity entity = where.fetchOne();
+        if (entity == null && player != null)
+        {
+            entity = createEntity(player);
+        }
         cache(entity);
         return entity;
     }
@@ -215,7 +219,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return entity;
         }
-        return cache(this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))));
+        return cache(Bukkit.getOfflinePlayer(uuid), this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.LEAST.eq(uuid.getLeastSignificantBits()).and(TABLE_USER.MOST.eq(uuid.getMostSignificantBits()))));
     }
 
     private UserEntity getOrFetch(UInteger id)
@@ -225,7 +229,7 @@ public abstract class AbstractUserManager implements UserManager
         {
             return entity;
         }
-        return cache(this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)));
+        return cache(null, this.database.getDSL().selectFrom(TABLE_USER).where(TABLE_USER.KEY.eq(id)));
     }
 
     @Override
