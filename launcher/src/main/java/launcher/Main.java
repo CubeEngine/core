@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jsonprosessing.RefelctImport;
 
 import java.util.ArrayList;
 
@@ -31,10 +32,14 @@ public class Main extends Application
         for (int i = 0; i < 100; i++)
         {
             CheckBox cb = new CheckBox(Integer.toString(i));
-            cb.setPadding(new Insets(5,0,0,0));
+            cb.setPadding(new Insets(5, 0, 0, 0));
             checkBoxes.add(cb);
         }
         checkBoxPane.getChildren().addAll(checkBoxes);
+
+        RefelctImport ri = new RefelctImport();
+        ri.load();
+        return;
     }
 
 
