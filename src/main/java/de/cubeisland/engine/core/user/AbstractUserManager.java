@@ -201,12 +201,13 @@ public abstract class AbstractUserManager implements UserManager
         updateLastName(entity);
     }
 
-    private UserEntity cache(OfflinePlayer player, SelectConditionStep<UserEntity> where)
+    private UserEntity cache(OfflinePlayer offline, SelectConditionStep<UserEntity> where)
     {
         UserEntity entity = where.fetchOne();
-        if (entity == null && player != null)
+        if (entity == null && offline != null)
         {
-            entity = createEntity(player);
+            final Player online = offline.getPlayer();
+            entity = createEntity(online == null ? offline : online);
         }
         cache(entity);
         return entity;
