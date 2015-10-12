@@ -50,7 +50,7 @@ public interface PermissionManager extends Cleanable
     void cleanup(Module module);
 
     /**
-     * Returns the permission node with given name or {@link Optional#absent()} if not found
+     * Returns the permission node with given name or {@link Optional#empty()} ()} if not found
      * @param permission the permissions name
      * @return the permission if found
      */

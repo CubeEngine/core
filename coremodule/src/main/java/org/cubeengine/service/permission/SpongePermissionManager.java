@@ -53,7 +53,6 @@ public class SpongePermissionManager implements PermissionManager
     private final Map<Module, PermissionDescription> modulePermissions = new HashMap<>();
     private final Map<String, PermissionDescription> permissions = new HashMap<>();
 
-    private final Log logger;
     private final Object plugin;
     private Game game;
 
@@ -62,12 +61,10 @@ public class SpongePermissionManager implements PermissionManager
     @Inject private PermissionService permissionService;
 
     @Inject
-    public SpongePermissionManager(Game game, LogFactory factory, ThreadFactory threadFactory, FileManager fm)
+    public SpongePermissionManager(Game game)
     {
         this.game = game;
-        this.logger = factory.getLog(CoreModule.class, "Permissions");
-        this.logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Permissions"), LoggingUtil.getFileFormat(
-            false, false), false, LoggingUtil.getCycler(), threadFactory));
+
         plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
     }
 
