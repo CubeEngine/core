@@ -3,12 +3,12 @@
         {
             "name": "example",
             "id": "123",
-            "from": "www.sourceAddress.com",
+            "from": "www.sourceAddress.com"
         },
         {
             "name": "example",
             "id": "123",
-            "from": "www.sourceAddress.com",
+            "from": "www.sourceAddress.com"
         }
     ]
 }

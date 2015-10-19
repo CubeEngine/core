@@ -8,7 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jsonprosessing.RefelctImport;
+import jsonprosessing.DisplayedModule;
+import jsonprosessing.Modules;
 
 import java.util.ArrayList;
 
@@ -26,20 +27,17 @@ public class Main extends Application
         primaryStage.setResizable(false);
         primaryStage.show();
 
+        Modules modules = new Modules();
+        ArrayList<DisplayedModule> displayedModules = modules.load();
+
         //TODO replace with data from API
         VBox checkBoxPane = (VBox)primaryStage.getScene().lookup("#checkBoxPane");
         ArrayList<CheckBox> checkBoxes = new ArrayList();
-        for (int i = 0; i < 100; i++)
+        for (DisplayedModule mod : displayedModules)
         {
-            CheckBox cb = new CheckBox(Integer.toString(i));
-            cb.setPadding(new Insets(5, 0, 0, 0));
-            checkBoxes.add(cb);
+            checkBoxes.add(mod.getCheckBox());
         }
         checkBoxPane.getChildren().addAll(checkBoxes);
-
-        RefelctImport ri = new RefelctImport();
-        ri.load();
-        return;
     }
 
 
