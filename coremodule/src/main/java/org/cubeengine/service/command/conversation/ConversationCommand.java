@@ -69,7 +69,7 @@ public abstract class ConversationCommand extends ContainerCommand
     }
 
     @Listener
-    public void onChatHandler(MessageSinkEvent event)
+    public void onChatHandler(MessageSinkEvent.Chat event)
     {
         Optional<Player> source = event.getCause().first(Player.class);
         if (!source.isPresent())
