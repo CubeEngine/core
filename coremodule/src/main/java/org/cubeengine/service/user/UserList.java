@@ -26,6 +26,7 @@ import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.data.manipulator.catalog.CatalogEntityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.command.CommandSource;
 
@@ -81,7 +82,10 @@ public class UserList
 
         private static boolean canSee(CommandSource sender, Player user)
         {
-            // TODO return !(sender instanceof User) || ((User)sender).canSee(user);
+            if (sender instanceof Player)
+            {
+                return ((Player) sender).get(CatalogEntityData.INVISIBILITY_DATA).map(p -> p.invisibleToPlayerIds().contains(user.getUniqueId())).orElse(false);
+            }
             return true;
         }
 

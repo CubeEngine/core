@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Optional;
+
+import org.spongepowered.api.Game;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.mutable.block.AttachedData;
 import org.spongepowered.api.data.manipulator.mutable.block.PortionData;
@@ -32,6 +34,7 @@ import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.ChunkLayout;
 
 import static org.spongepowered.api.block.BlockTypes.*;
 import static org.spongepowered.api.util.Direction.*;
@@ -58,9 +61,9 @@ public class BlockUtil
      *
      * @return the attached blocks
      */
-    public static Collection<Location> getAttachedBlocks(Location block)
+    public static Collection<Location<World>> getAttachedBlocks(Location<World> block)
     {
-        Collection<Location> blocks = new HashSet<>();
+        Collection<Location<World>> blocks = new HashSet<>();
         for (org.spongepowered.api.util.Direction bf : BLOCK_FACES)
         {
             Optional<AttachedData> attached = block.getRelative(bf).get(AttachedData.class);
@@ -105,14 +108,14 @@ public class BlockUtil
         return DETACHABLE_FROM_BELOW.contains(mat);
     }
 
-    public static Collection<Location> getDetachableBlocksOnTop(Location block)
+    public static Collection<Location<World>> getDetachableBlocksOnTop(Location<World> block)
     {
-        Collection<Location> blocks = new HashSet<>();
-        Location onTop = block.getRelative(UP);
+        Collection<Location<World>> blocks = new HashSet<>();
+        Location<World> onTop = block.getRelative(UP);
         while (isDetachableFromBelow(onTop.getBlockType()))
         {
             blocks.add(onTop);
-            for (Location attachedBlock : getAttachedBlocks(onTop))
+            for (Location<World> attachedBlock : getAttachedBlocks(onTop))
             {
                 blocks.add(attachedBlock);
                 blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
@@ -122,11 +125,11 @@ public class BlockUtil
         return blocks;
     }
 
-    public static Collection<Location> getDetachableBlocks(Location<World> block)
+    public static Collection<Location<World>> getDetachableBlocks(Location<World> block)
     {
-        Collection<Location> blocks = new HashSet<>();
+        Collection<Location<World>> blocks = new HashSet<>();
 
-        for (Location attachedBlock : getAttachedBlocks(block))
+        for (Location<World> attachedBlock : getAttachedBlocks(block))
         {
             blocks.add(attachedBlock);
             blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
@@ -292,9 +295,10 @@ public class BlockUtil
         return world.getLocation(x, y, z);
     }
 
-    public static Chunk getChunk(Location block)
+    public static Optional<Chunk> getChunk(Location<World> block, Game game)
     {
-        return ((World)block.getExtent()).getChunk(block.getBlockPosition()).get();
+        ChunkLayout cl = game.getServer().getChunkLayout();
+        return block.getExtent().getChunk(cl.toChunk(block.getBlockPosition()).get());
     }
 
     public static Direction getOtherDoorDirection(Direction direction, Hinge hinge)

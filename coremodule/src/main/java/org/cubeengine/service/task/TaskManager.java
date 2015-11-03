@@ -95,15 +95,6 @@ public interface TaskManager
     UUID runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
 
     /**
-     * Schedules a method for execution on the main server thread
-     *
-     * @param <T>      the return type of the method
-     * @param callable the method to call
-     * @return a future object
-     */
-    <T> Future<T> callSync(Callable<T> callable);
-
-    /**
      * Cancels a task of a module
      *
      * @param module the module

@@ -19,6 +19,8 @@ package org.cubeengine.service.command.readers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
@@ -26,16 +28,20 @@ import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.CommandManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.command.CommandSource;
 
 public class CommandSourceReader implements ArgumentReader<CommandSource>, DefaultValue<CommandSource>, Completer
 {
     private final CommandManager cm;
+    private Game game;
 
-    public CommandSourceReader(CommandManager cm)
+    public CommandSourceReader(CommandManager cm, Game game)
     {
         this.cm = cm;
+        this.game = game;
     }
 
     @Override
@@ -46,7 +52,7 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
             invocation.consume(1);
             return cm.getConsoleSender();
         }
-        return (CommandSource)invocation.getManager().getReader(Player.class).read(type, invocation);
+        return game.getServer().getPlayer(invocation.consume(1)).get();
     }
 
     @Override
@@ -63,8 +69,9 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     public List<String> getSuggestions(CommandInvocation invocation)
     {
         ArrayList<String> list = new ArrayList<>();
-        list.addAll(invocation.getManager().getCompleter(Player.class).getSuggestions(invocation));
-        if ("console".startsWith(invocation.currentToken().toLowerCase()))
+        String token = invocation.currentToken().toLowerCase();
+        list.addAll(game.getServer().getOnlinePlayers().stream().map(Player::getName).filter(p -> p.startsWith(token)).collect(Collectors.toList()));
+        if ("console".startsWith(token))
         {
             list.add("console");
         }

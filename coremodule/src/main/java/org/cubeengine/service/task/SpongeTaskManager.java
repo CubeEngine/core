@@ -43,6 +43,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.function.Consumer;
+
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -96,7 +98,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, scheduler.createTaskBuilder().delay(delay).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().delayTicks(delay).execute(runnable).submit(plugin));
     }
 
     @Override
@@ -105,7 +107,7 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(module, "The module must not be null!");
         expectNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(module, scheduler.createTaskBuilder().delay(delay).interval(interval).execute(runnable).submit(plugin));
+        return addTaskId(module, scheduler.createTaskBuilder().delayTicks(delay).intervalTicks(interval).execute(runnable).submit(plugin));
     }
 
     @Override
@@ -136,14 +138,6 @@ public class SpongeTaskManager implements TaskManager
         expectNotNull(runnable, "The runnable must not be null!");
 
         return addTaskId(module, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
-    }
-
-    @Override
-    public <T> Future<T> callSync(Callable<T> callable)
-    {
-        expectNotNull(callable, "The callable must not be null!");
-        // TODO return this.syncScheduler.runTask(corePlugin, callable);
-        return null;
     }
 
     @Override

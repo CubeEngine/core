@@ -51,25 +51,11 @@ public class CommandController
                                         ? new ApiServerSender(request.getConnection(), mapper, cm.getConsoleSender())
                                         : new ApiUser(request.getConnection(), mapper, authUser);
 
+        cm.runCommand(sender, command);
 
-        Future<ApiResponse> future =  tm.callSync(() -> {
-            cm.runCommand(sender, command);
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setContent(sender.flush());
-            return apiResponse;
-        });
-        try
-        {
-            return future.get();
-        }
-        catch (InterruptedException e)
-        {
-            Thread.currentThread().interrupt();
-            return null;
-        }
-        catch (ExecutionException e)
-        {
-            return new ApiResponse();
-        }
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setContent(sender.flush());
+
+        return apiResponse;
     }
 }

@@ -318,17 +318,4 @@ public class UserManager
                    .forEach(UserManager.this::removeCached);
         }
     }
-
-
-
-    /*
-public boolean canSee(Player player)
-{
-    // TODO impls of this is missing at other locations
-    return getPlayer().isPresent() && player.get(INVISIBILITY_DATA).transform(
-        p -> p.invisibleToPlayerIds().contains(getUniqueId())).or(false);
-}
-*/
-
-
 }

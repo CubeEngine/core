@@ -70,8 +70,10 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         {
             buildClick(((ClickComponent)component), builder);
         }
-
-        // TODO
+        else
+        {
+            throw new IllegalArgumentException("Unknown Component:" + component.toString());
+        }
     }
 
     private void buildClick(ClickComponent click, TextBuilder builder)

@@ -33,9 +33,7 @@ import org.spongepowered.api.network.RemoteConnection;
  */
 public final class ApiRequest
 {
-    private final InetSocketAddress remoteAddress;
     private final RemoteConnection connection;
-    private InetSocketAddress localAdress;
     private final RequestMethod method;
     private final Parameters urlParams;
     private User authUser;
@@ -48,22 +46,7 @@ public final class ApiRequest
     public ApiRequest(final InetSocketAddress remoteAddress, InetSocketAddress localAdress, RequestMethod method,
                       Parameters params, HttpHeaders headers, JsonNode data, User authUser)
     {
-        this.connection = new RemoteConnection() // TODO inner class?
-        {
-            @Override
-            public InetSocketAddress getAddress()
-            {
-                return remoteAddress;
-            }
-
-            @Override
-            public InetSocketAddress getVirtualHost()
-            {
-                return localAdress;
-            }
-        };
-        this.remoteAddress = remoteAddress;
-        this.localAdress = localAdress;
+        this.connection = new ApiRemoteConnection(remoteAddress, localAdress);
         this.method = method;
         this.urlParams = params;
         this.authUser = authUser;
@@ -84,7 +67,7 @@ public final class ApiRequest
 
     public InetSocketAddress getRemoteAddress()
     {
-        return this.remoteAddress;
+        return this.connection.getAddress();
     }
 
     public RequestMethod getMethod()
@@ -115,5 +98,29 @@ public final class ApiRequest
     public RemoteConnection getConnection()
     {
         return this.connection;
+    }
+
+    private static class ApiRemoteConnection implements RemoteConnection
+    {
+        private final InetSocketAddress remoteAddress;
+        private final InetSocketAddress localAdress;
+
+        public ApiRemoteConnection(InetSocketAddress remoteAddress, InetSocketAddress localAdress)
+        {
+            this.remoteAddress = remoteAddress;
+            this.localAdress = localAdress;
+        }
+
+        @Override
+        public InetSocketAddress getAddress()
+        {
+            return remoteAddress;
+        }
+
+        @Override
+        public InetSocketAddress getVirtualHost()
+        {
+            return localAdress;
+        }
     }
 }

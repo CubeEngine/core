@@ -93,7 +93,7 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
         if (perm != null)
         {
             permName = perm.value().isEmpty() ? permName : perm.value();
-            permDesc = perm.desc().isEmpty() ? null : perm.desc();
+            permDesc = perm.desc().isEmpty() ? "Allows using the command " + descriptor.getName() : perm.desc();
             checkPerm = perm.checkPermission();
             group = perm.group();
         }

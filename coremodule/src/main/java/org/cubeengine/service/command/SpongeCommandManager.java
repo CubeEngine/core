@@ -47,10 +47,7 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.util.matcher.*;
-import org.cubeengine.service.command.completer.ModuleCompleter;
-import org.cubeengine.service.command.completer.PlayerCompleter;
-import org.cubeengine.service.command.completer.PlayerListCompleter;
-import org.cubeengine.service.command.completer.WorldCompleter;
+import org.cubeengine.service.command.completer.*;
 import org.cubeengine.service.command.readers.BooleanReader;
 import org.cubeengine.service.command.readers.ByteReader;
 import org.cubeengine.service.command.readers.CommandSourceReader;
@@ -174,7 +171,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
         providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(core, new CommandSourceReader(cm), CommandSource.class, Player.class);
+        providerManager.register(core, new CommandSourceReader(cm, game), CommandSource.class, Player.class);
         providerManager.register(core, new WorldReader(wm, i18n), World.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
 
@@ -190,7 +187,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         providerManager.register(core, userListReader, UserList.class);
 
-        providerManager.register(this, new ModuleCompleter(modularity), Module.class);
+        providerManager.register(core, new ModuleCompleter(modularity), Module.class);
 
         em.registerListener(core, new PreCommandListener(core, i18n, stringMatcher, game)); // TODO register later?
     }
@@ -271,8 +268,8 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
             module = descriptor.getModule();
 
-            PermissionDescription modulePerm = pm.getModulePermission(module);
-            pm.register(module, "command." + descriptor.getPermission().getName() , "Allows using the command " + command.getDescriptor().getName(), modulePerm);
+            PermissionDescription parent = pm.register(module, "command", "Allows using all commands of " + module.getInformation().getName(), null);
+            descriptor.getPermission().registerPermission(module, pm, parent);
         }
         else if (command instanceof AliasCommand)
         {

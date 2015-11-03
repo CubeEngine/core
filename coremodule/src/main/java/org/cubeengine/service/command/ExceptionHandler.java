@@ -119,7 +119,8 @@ public class ExceptionHandler implements org.cubeengine.butler.ExceptionHandler
         }
         else
         {
-            core.getLog().error(t, "Unexpected Command Exception: " + t.getMessage());
+            core.getLog().error(t, "Unexpected Command Exception: " + t.getMessage()
+                    + " - " + invocation.getCommandLine());
 
             TextBuilder stackTrace = Texts.builder();
             for (StackTraceElement element : t.getStackTrace())
