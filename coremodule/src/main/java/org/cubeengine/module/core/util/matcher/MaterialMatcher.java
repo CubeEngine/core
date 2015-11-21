@@ -36,7 +36,6 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackBuilder;
 
 import static org.spongepowered.api.item.ItemTypes.*;
 
@@ -50,7 +49,7 @@ public class MaterialMatcher
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
     private final Map<String, ItemType> ids = new HashMap<>();
 
-    private final ItemStackBuilder builder;
+    private final ItemStack.Builder builder;
 
     private final Set<ItemType> repairableMaterials = Collections.synchronizedSet(new HashSet<>(Arrays.asList(
                                                                                       IRON_SHOVEL, IRON_PICKAXE,
@@ -87,7 +86,7 @@ public class MaterialMatcher
     public MaterialMatcher( Game game)
     {
         this.game = game;
-        this.builder = game.getRegistry().createBuilder(ItemStackBuilder.class);
+        this.builder = game.getRegistry().createBuilder(ItemStack.Builder.class);
 
         // Read names from GameDirectory
         for (Entry<String, Set<ItemType>> entry : game.getGameDictionary().getAllItems().entrySet())
@@ -147,7 +146,7 @@ public class MaterialMatcher
         String[] parts = name.toLowerCase(Locale.ENGLISH).split(":");
         ItemType type = material(parts[0]);
 
-        ItemStackBuilder builder = this.builder.itemType(type).quantity(1);
+        ItemStack.Builder builder = this.builder.itemType(type).quantity(1);
         if (parts.length > 1)
         {
             for (int i = 1; i < parts.length; i++)

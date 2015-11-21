@@ -18,6 +18,7 @@
 package org.cubeengine.service.permission;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
@@ -74,13 +75,12 @@ public class PermissionManager
                 PermissionDescription.Builder builder = input.newDescriptionBuilder(plugin).orElse(null);
                 if (builder == null)
                 {
-                    return false;
+                    return;
                 }
                 builder.id("cubeengine");
                 builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
                 builder.assign("permission:*", true);
                 builder.register();
-                return true;
             });
         }
     }
