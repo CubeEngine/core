@@ -40,7 +40,13 @@ public abstract class AbstractCommandSource implements CommandSource
     }
 
     @Override
-    public void sendMessage(Text... messages)
+    public void sendMessage(Text message)
+    {
+        sendMessage0(message);
+    }
+
+    @Override
+    public void sendMessages(Text... messages)
     {
         for (Text message : messages)
         {
@@ -49,7 +55,7 @@ public abstract class AbstractCommandSource implements CommandSource
     }
 
     @Override
-    public void sendMessage(Iterable<Text> messages)
+    public void sendMessages(Iterable<Text> messages)
     {
         messages.forEach(this::sendMessage0);
     }

@@ -51,12 +51,23 @@ public class ProxyCallable implements CommandCallable
         {
             long delta = System.currentTimeMillis();
 
-            boolean ran = manager.execute(newInvocation(source, arguments.isEmpty() ? alias : alias + " " + arguments));
+            CommandInvocation invocation = newInvocation(source, arguments.isEmpty() ? alias : alias + " " + arguments);
 
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick
             {
-                core.getLog().warn("The following command used more than third a tick:\n   {} | {}ms ({}%)", arguments,
+                core.getLog().warn("Command Invocation Timing: {} | {}ms ({}%)", arguments,
+                        delta, delta * 100 / (1000 / 20));
+            }
+
+            delta = System.currentTimeMillis();
+
+            boolean ran = manager.execute(invocation);
+
+            delta = System.currentTimeMillis() - delta;
+            if (delta > 1000 / 20 / 3) // third of a tick
+            {
+                core.getLog().warn("Command Execute Timing: {} | {}ms ({}%)", arguments,
                                    delta, delta * 100 / (1000 / 20));
             }
 
