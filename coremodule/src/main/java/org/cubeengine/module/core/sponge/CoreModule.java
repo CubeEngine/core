@@ -48,6 +48,7 @@ import org.cubeengine.module.core.CoreCommands;
 import org.cubeengine.module.core.CorePerms;
 import org.cubeengine.module.core.CoreResource;
 import org.cubeengine.module.core.module.ModuleCommands;
+import org.cubeengine.module.core.util.converter.*;
 import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
@@ -57,26 +58,20 @@ import org.cubeengine.module.core.util.FreezeDetection;
 import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.module.core.util.Version;
 import org.cubeengine.module.core.util.WorldLocation;
-import org.cubeengine.module.core.util.converter.BlockVector3Converter;
-import org.cubeengine.module.core.util.converter.DurationConverter;
-import org.cubeengine.module.core.util.converter.EnchantmentConverter;
-import org.cubeengine.module.core.util.converter.ItemStackConverter;
-import org.cubeengine.module.core.util.converter.LevelConverter;
-import org.cubeengine.module.core.util.converter.MaterialConverter;
-import org.cubeengine.module.core.util.converter.VersionConverter;
-import org.cubeengine.module.core.util.converter.WorldConverter;
-import org.cubeengine.module.core.util.converter.WorldLocationConverter;
 import org.cubeengine.module.core.util.matcher.EnchantMatcher;
 import org.cubeengine.module.core.util.matcher.MaterialMatcher;
 import org.cubeengine.module.core.util.math.BlockVector3;
 import org.cubeengine.service.task.TaskManager;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.module.core.contract.Contract;
+import org.cubeengine.service.world.ConfigWorld;
+import org.cubeengine.service.world.ConfigWorldConverter;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import static org.cubeengine.service.logging.LoggingUtil.getCycler;
@@ -143,6 +138,9 @@ public final class CoreModule extends Module
         manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
         manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
         manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
+        manager.registerConverter(new ConfigWorldConverter(game), ConfigWorld.class);
+        manager.registerConverter(new LocationConverter(game), Location.class);
+
 
         fm.dropResources(CoreResource.values());
 

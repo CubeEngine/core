@@ -28,6 +28,7 @@ import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.world.WorldManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
@@ -35,12 +36,12 @@ import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 
 public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
 {
-    private final WorldManager wm;
+    private final Game game;
     private final I18n i18n;
 
-    public WorldReader(WorldManager wm, I18n i18n)
+    public WorldReader(Game game, I18n i18n)
     {
-        this.wm = wm;
+        this.game = game;
         this.i18n = i18n;
     }
 
@@ -48,7 +49,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
     public World read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
-        Optional<World> world = wm.getWorld(name);
+        Optional<World> world = game.getServer().getWorld(name);
         if (!world.isPresent())
         {
             throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));

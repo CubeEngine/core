@@ -27,16 +27,17 @@ import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 
 import org.cubeengine.service.world.WorldManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 public class LocationConverter extends SingleClassConverter<Location>
 {
-    private final WorldManager wm;
+    private final Game game;
 
-    public LocationConverter(WorldManager wm)
+    public LocationConverter(Game game)
     {
-        this.wm = wm;
+        this.game = game;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class LocationConverter extends SingleClassConverter<Location>
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getValue();
-            World world = wm.getWorld(((StringNode)input.get("world")).getValue()).get();
+            World world = game.getServer().getWorld(((StringNode)input.get("world")).getValue()).get();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);

@@ -65,7 +65,6 @@ import org.cubeengine.service.command.readers.LongReader;
 import org.cubeengine.service.command.readers.OfflinePlayerReader;
 import org.cubeengine.service.command.readers.ProfessionReader;
 import org.cubeengine.service.command.readers.ShortReader;
-import org.cubeengine.service.command.readers.UserReader;
 import org.cubeengine.service.command.readers.WorldReader;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
@@ -77,14 +76,11 @@ import org.cubeengine.service.user.UserList;
 import org.cubeengine.service.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
-import org.cubeengine.service.user.UserManager;
 import org.cubeengine.service.world.WorldManager;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.command.CommandService;
@@ -119,7 +115,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private PermissionManager pm;
     @Inject private EventManager em;
     @Inject private ThreadFactory tf;
-    @Inject private Game game;
+    @Inject private org.spongepowered.api.Game game;
 
     @Inject private MaterialDataMatcher materialDataMatcher;
     @Inject private EnchantMatcher enchantMatcher;
@@ -131,7 +127,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private StringMatcher stringMatcher;
 
     @Inject
-    public SpongeCommandManager(CoreModule core, Game game, LogFactory logFactory, I18n i18n, FileManager fm)
+    public SpongeCommandManager(CoreModule core, org.spongepowered.api.Game game, LogFactory logFactory, I18n i18n, FileManager fm)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
@@ -172,7 +168,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
         providerManager.register(core, new CommandSourceReader(cm, game), CommandSource.class, Player.class);
-        providerManager.register(core, new WorldReader(wm, i18n), World.class);
+        providerManager.register(core, new WorldReader(game, i18n), World.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
 
         providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);

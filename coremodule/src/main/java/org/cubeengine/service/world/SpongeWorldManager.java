@@ -18,20 +18,16 @@
 package org.cubeengine.service.world;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
 import java.util.Optional;
-import de.cubeisland.engine.converter.ConverterManager;
+
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.module.core.sponge.EventManager;
 import org.cubeengine.service.database.Database;
-import org.cubeengine.module.core.util.converter.LocationConverter;
 import de.cubeisland.engine.reflect.Reflector;
 import org.jooq.DSLContext;
 import org.jooq.Result;
@@ -41,13 +37,10 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.storage.WorldProperties;
 
 import static org.cubeengine.module.core.contract.Contract.expect;
 import static org.cubeengine.module.core.contract.Contract.expectNotNull;
-import static org.cubeengine.module.core.sponge.CoreModule.isMainThread;
 
 @ServiceImpl(WorldManager.class)
 @Version(1)
@@ -63,10 +56,6 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
         super(database);
 
         this.server = game.getServer();
-
-        ConverterManager convManager = reflector.getDefaultConverterManager();
-        convManager.registerConverter(new ConfigWorldConverter(this), ConfigWorld.class);
-        convManager.registerConverter(new LocationConverter(this), Location.class);
     }
 
     @Enable
@@ -130,45 +119,13 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
     }
 
     @Override
-    public World createWorld(WorldProperties properties)
-    {
-        expect(isMainThread(), "Must be executed from main thread!");
-        return this.server.loadWorld(properties).get();
-    }
-
-    @Override
-    public Optional<World> getWorld(String name)
-    {
-        expect(isMainThread() , "Must be executed from main thread!");
-        expectNotNull(name, "The world name must not be null!");
-
-        return this.server.getWorld(name);
-    }
-
-    @Override
-    public Optional<World> getWorld(UUID uid)
-    {
-        expect(isMainThread() , "Must be executed from main thread!");
-        expectNotNull(uid, "The world UUID must not be null!");
-
-        return this.server.getWorld(uid);
-    }
-
-    @Override
-    public boolean unloadWorld(World world)
-    {
-        expect(isMainThread() , "Must be executed from main thread!");
-        return this.server.unloadWorld(world);
-    }
-
-    @Override
     public boolean deleteWorld(World world) throws IOException
     {
         if (world == null)
         {
             return false;
         }
-        if (!this.unloadWorld(world))
+        if (!server.unloadWorld(world))
         {
             return false;
         }
@@ -177,10 +134,8 @@ public class SpongeWorldManager extends AbstractWorldManager implements WorldMan
     }
 
     @Override
-    public List<World> getWorlds()
+    protected Optional<World> getWorld(String name)
     {
-        expect(isMainThread() , "Must be executed from main thread!");
-
-        return new ArrayList<>(this.server.getWorlds());
+        return server.getWorld(name);
     }
 }

@@ -17,11 +17,9 @@
  */
 package org.cubeengine.service.world;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -32,7 +30,6 @@ import org.jooq.types.UInteger;
 import org.spongepowered.api.world.World;
 
 import static org.cubeengine.service.world.TableWorld.TABLE_WORLD;
-import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractWorldManager implements WorldManager
 {
@@ -91,7 +88,7 @@ public abstract class AbstractWorldManager implements WorldManager
         WorldEntity entity = this.worlds.get(name);
         if (entity == null)
         {
-            Optional<World> world = this.getWorld(name);
+            Optional<World> world = getWorld(name);
             if (!world.isPresent())
             {
                 return null;
@@ -100,6 +97,8 @@ public abstract class AbstractWorldManager implements WorldManager
         }
         return entity.getValue(TABLE_WORLD.KEY);
     }
+
+    protected abstract Optional<World> getWorld(String name);
 
     @Override
     public synchronized Set<UInteger> getAllWorldIds()
@@ -120,28 +119,10 @@ public abstract class AbstractWorldManager implements WorldManager
     }
 
     @Override
-    public boolean unloadWorld(String worldName)
-    {
-        return this.unloadWorld(this.getWorld(worldName).get());
-    }
-
-    @Override
-    public boolean deleteWorld(String worldName) throws IOException
-    {
-        return this.deleteWorld(this.getWorld(worldName).get());
-    }
-
-    @Override
     public synchronized void clean()
     {
         this.worlds.clear();
         this.worldIds.clear();
         this.worldUUIDs.clear();
-    }
-
-    @Override
-    public List<String> getWorldNames()
-    {
-        return this.getWorlds().stream().map(World::getName).collect(toList());
     }
 }

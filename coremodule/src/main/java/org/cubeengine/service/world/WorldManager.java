@@ -33,22 +33,13 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @Version(1)
 public interface WorldManager extends Cleanable
 {
-    World createWorld(WorldProperties creator);
     UInteger getWorldId(World world);
     UInteger getWorldId(String name);
     Set<UInteger> getAllWorldIds();
     World getWorld(UInteger id);
-    Optional<World> getWorld(String name);
-    Optional<World> getWorld(UUID uid);
-    boolean unloadWorld(String worldName);
-    boolean unloadWorld(World world);
-    boolean deleteWorld(String worldName) throws IOException;
     boolean deleteWorld(World world) throws IOException;
-    List<World> getWorlds();
 
     WorldEntity getWorldEntity(World world);
-
-    List<String> getWorldNames();
 
     Set<UUID> getAllWorldUUIDs();
 }

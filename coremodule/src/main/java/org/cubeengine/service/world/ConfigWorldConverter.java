@@ -21,14 +21,15 @@ import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
+import org.spongepowered.api.Game;
 
 public class ConfigWorldConverter extends SimpleConverter<ConfigWorld>
 {
-    private final WorldManager wm;
+    private final Game game;
 
-    public ConfigWorldConverter(WorldManager wm)
+    public ConfigWorldConverter(Game game)
     {
-        this.wm = wm;
+        this.game = game;
     }
 
     @Override
@@ -45,6 +46,6 @@ public class ConfigWorldConverter extends SimpleConverter<ConfigWorld>
         {
             name = name.substring(0, name.indexOf("{"));
         }
-        return new ConfigWorld(this.wm, name);
+        return new ConfigWorld(game, name);
     }
 }

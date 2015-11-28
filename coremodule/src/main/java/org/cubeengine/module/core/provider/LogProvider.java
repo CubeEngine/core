@@ -51,9 +51,9 @@ public class LogProvider implements ValueProvider<Log>
         {
             return logger;
         }
-        if (lifeCycle instanceof ModuleMetadata)
+        if (lifeCycle.getInformation() instanceof ModuleMetadata)
         {
-            String name = ((ModuleMetadata)lifeCycle).getName();
+            String name = ((ModuleMetadata)lifeCycle.getInformation()).getName();
 
             logger = logFactory.getLog(CoreModule.class, name);
 

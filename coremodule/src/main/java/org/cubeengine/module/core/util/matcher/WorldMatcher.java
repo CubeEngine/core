@@ -19,26 +19,29 @@ package org.cubeengine.module.core.util.matcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.module.core.util.StringUtils;
-import org.cubeengine.service.world.WorldManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.world.World;
+
+import static java.util.stream.Collectors.toList;
 
 @ServiceProvider(WorldMatcher.class)
 public class WorldMatcher
 {
-    @Inject private WorldManager wm;
+    @Inject private Game game;
     @Inject private StringMatcher stringMatcher;
 
     public World matchWorld(String name)
     {
-        String match = stringMatcher.matchString(name, wm.getWorldNames());
+        String match = stringMatcher.matchString(name, game.getServer().getWorlds().stream().map(World::getName).collect(toList()));
         if (match == null)
         {
             return null;
         }
-        return wm.getWorld(match).get();
+        return game.getServer().getWorld(match).get();
     }
 
     /**
