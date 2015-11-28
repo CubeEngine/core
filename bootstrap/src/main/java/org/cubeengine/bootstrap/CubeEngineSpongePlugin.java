@@ -31,6 +31,7 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.config.ConfigDir;
@@ -144,6 +145,12 @@ public class CubeEngineSpongePlugin
         }).build(), "reload");
 
         // TODO register our services in Sponge
+    }
+
+    @Listener
+    public void onServerStop(GameStoppingServerEvent event)
+    {
+        modularity.disableModules();
     }
 
     @Listener
