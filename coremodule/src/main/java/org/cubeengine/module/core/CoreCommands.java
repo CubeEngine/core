@@ -54,7 +54,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Reloads the whole CubeEngine")
     public void reload(CommandSource context)
     {
-        // TODO move all of reload to Plugin
+        // TODO move all of reload to Plugin instead of coremodule
         i18n.sendTranslated(context, POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
 
