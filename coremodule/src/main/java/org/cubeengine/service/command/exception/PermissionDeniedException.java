@@ -17,7 +17,7 @@
  */
 package org.cubeengine.service.command.exception;
 
-import org.cubeengine.butler.CommandException;
+import org.cubeengine.butler.exception.CommandException;
 import org.cubeengine.service.command.property.RawPermission;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.text.Texts;

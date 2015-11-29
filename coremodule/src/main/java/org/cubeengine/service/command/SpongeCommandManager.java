@@ -48,6 +48,9 @@ import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.util.matcher.*;
 import org.cubeengine.service.command.completer.*;
+import org.cubeengine.service.command.exception.CommandExceptionHandler;
+import org.cubeengine.service.command.exception.UnknownExceptionHandler;
+import org.cubeengine.service.command.exception.UnknownSourceExceptionHandler;
 import org.cubeengine.service.command.readers.BooleanReader;
 import org.cubeengine.service.command.readers.ByteReader;
 import org.cubeengine.service.command.readers.CommandSourceReader;
@@ -144,7 +147,9 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
 
         this.providerManager = new ProviderManager();
-        providerManager.getExceptionHandler().addHandler(new ExceptionHandler(core));
+        providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(core.getLog()));
+        providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(core.getLog(), i18n));
+        providerManager.getExceptionHandler().addHandler(new UnknownExceptionHandler(core.getLog(), i18n));
 
         providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
         providerManager.register(this, new LocaleContextValue(i18n), Locale.class);

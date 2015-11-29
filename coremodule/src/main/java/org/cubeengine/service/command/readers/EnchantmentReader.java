@@ -20,7 +20,7 @@ package org.cubeengine.service.command.readers;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.SilentException;
+import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
