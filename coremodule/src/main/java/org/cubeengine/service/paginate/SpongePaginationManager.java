@@ -29,7 +29,7 @@ import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 @ServiceImpl(PaginationManager.class)
 @Version(1)

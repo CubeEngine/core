@@ -34,33 +34,26 @@
  */
 package org.cubeengine.service.task;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import javax.inject.Inject;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.service.scheduler.SchedulerService;
-import org.spongepowered.api.service.scheduler.Task;
+import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.scheduler.Task;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.cubeengine.module.core.contract.Contract.expectNotNull;
 
 @ServiceImpl(TaskManager.class)
 @Version(1)
 public class SpongeTaskManager implements TaskManager
 {
     private final Object plugin;
-    private SchedulerService scheduler;
+    private Scheduler scheduler;
     private final Map<Module, Set<UUID>> moduleTasks;
 
     @Inject

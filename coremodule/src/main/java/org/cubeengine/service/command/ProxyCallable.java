@@ -24,12 +24,12 @@ import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.service.command.property.RawPermission;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
 
 public class ProxyCallable implements CommandCallable
 {

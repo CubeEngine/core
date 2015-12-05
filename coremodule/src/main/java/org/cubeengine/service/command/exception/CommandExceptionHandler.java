@@ -27,7 +27,7 @@ import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.TooManyArgumentsException;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;

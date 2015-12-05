@@ -28,7 +28,7 @@ import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 public class CommandContext extends ParameterizedContext
 {

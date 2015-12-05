@@ -41,7 +41,7 @@ import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.*;
 

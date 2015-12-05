@@ -24,7 +24,7 @@ import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.spongepowered.api.entity.Tamer;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;
 

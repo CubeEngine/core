@@ -80,17 +80,16 @@ import org.cubeengine.service.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import org.cubeengine.service.world.WorldManager;
+import org.spongepowered.api.command.CommandMapping;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.service.permission.PermissionDescription;
-import org.spongepowered.api.util.command.CommandMapping;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.source.ConsoleSource;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
@@ -106,7 +105,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     private final Log commandLogger;
     private final ProviderManager providerManager;
     private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
-    private final CommandService baseDispatcher;
+    private final org.spongepowered.api.command.CommandManager baseDispatcher;
 
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
     private final Object plugin;
@@ -137,7 +136,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         this.i18n = i18n;
         this.fm = fm;
         this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
-        this.baseDispatcher = game.getCommandDispatcher();
+        this.baseDispatcher = game.getCommandManager();
 
         this.consoleSender = game.getServer().getConsole();
 

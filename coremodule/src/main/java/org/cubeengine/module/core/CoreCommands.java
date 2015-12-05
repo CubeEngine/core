@@ -32,7 +32,7 @@ import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.util.Profiler;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.cubeengine.service.i18n.formatter.MessageType.POSITIVE;

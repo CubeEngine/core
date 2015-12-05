@@ -33,7 +33,7 @@ import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.spongepowered.api.text.format.TextColors.*;

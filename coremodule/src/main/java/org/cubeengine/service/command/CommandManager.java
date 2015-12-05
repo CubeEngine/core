@@ -25,11 +25,11 @@ import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.module.core.util.Cleanable;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.source.ConsoleSource;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 
 /**
- * This class manages the registration of commands.
+ * This class manages the reg>istration of commands.
  */
 @Service
 @Version(1)

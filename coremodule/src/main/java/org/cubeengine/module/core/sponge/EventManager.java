@@ -37,7 +37,7 @@ import org.spongepowered.api.event.Event;
 public class EventManager
 {
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
-    private final org.spongepowered.api.service.event.EventManager eventManager;
+    private final org.spongepowered.api.event.EventManager eventManager;
     private final Object plugin;
 
     @Inject

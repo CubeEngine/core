@@ -26,9 +26,9 @@ import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.manipulator.catalog.CatalogEntityData;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.util.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
 

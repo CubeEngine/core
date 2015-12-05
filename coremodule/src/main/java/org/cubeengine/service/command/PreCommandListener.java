@@ -31,7 +31,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.implode;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
@@ -71,7 +71,7 @@ public class PreCommandListener
             return false;
         }
         //String label = explode(" ", label)[0].toLowerCase(Locale.ENGLISH);
-        Set<String> aliases = game.getCommandDispatcher().getAliases();
+        Set<String> aliases = game.getCommandManager().getAliases();
         if (!aliases.contains(label))
         {
             final Locale language = sender instanceof Player ? ((Player)sender).getLocale() : Locale.getDefault();

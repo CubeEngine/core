@@ -26,6 +26,9 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.service.ServiceProvider;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -34,13 +37,10 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -137,7 +137,7 @@ public class CubeEngineSpongePlugin
 
         game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
-        game.getCommandDispatcher().register(this, CommandSpec.builder().description(Texts.of(
+        game.getCommandManager().register(this, CommandSpec.builder().description(Texts.of(
             "Reloads the CubeEngine")).executor((commandSource, commandContext) -> {
             modularity.disableModules();
             modularity.enableModules();

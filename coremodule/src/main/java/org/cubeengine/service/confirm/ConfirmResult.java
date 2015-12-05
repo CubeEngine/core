@@ -21,7 +21,7 @@ import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.result.CommandResult;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandContext;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 
 /**

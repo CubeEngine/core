@@ -34,7 +34,7 @@ import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.task.TaskManager;
 import org.cubeengine.module.core.util.Pair;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 

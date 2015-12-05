@@ -19,7 +19,7 @@ package org.cubeengine.service.paginate;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 @Service
 @Version(1)

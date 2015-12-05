@@ -50,8 +50,8 @@ import org.jooq.types.UInteger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.profile.GameProfileResolver;
-import org.spongepowered.api.service.user.UserStorage;
+import org.spongepowered.api.profile.GameProfileManager;
+import org.spongepowered.api.service.user.UserStorageService;
 
 import static java.lang.System.currentTimeMillis;
 import static org.cubeengine.service.user.TableUser.TABLE_USER;
@@ -125,7 +125,7 @@ public class UserManager
         {
             return Optional.empty();
         }
-        CachedUser cachedUser = new CachedUser(entity, game.getServiceManager().provideUnchecked(UserStorage.class).get(entity.getUniqueId()).orElse(null));
+        CachedUser cachedUser = new CachedUser(entity, game.getServiceManager().provideUnchecked(UserStorageService.class).get(entity.getUniqueId()).orElse(null));
         cacheUser(cachedUser);
         return Optional.of(cachedUser);
     }
@@ -285,14 +285,14 @@ public class UserManager
         {
             return player.get();
         }
-        UserStorage storage = core.getGame().getServiceManager().provide(UserStorage.class).get();
+        UserStorageService storage = core.getGame().getServiceManager().provide(UserStorageService.class).get();
 
         User user = storage.get(uuid).orElse(null);
         if (user != null)
         {
             return user;
         }
-        GameProfileResolver resolver = core.getGame().getServiceManager().provide(GameProfileResolver.class).get();
+        GameProfileManager resolver = core.getGame().getServiceManager().provide(GameProfileManager.class).get();
         try
         {
             return storage.getOrCreate(resolver.get(uuid).get());

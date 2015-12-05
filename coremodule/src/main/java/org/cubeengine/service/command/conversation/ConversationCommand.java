@@ -35,7 +35,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_PURPLE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;

@@ -8,7 +8,7 @@ import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;

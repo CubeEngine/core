@@ -27,7 +27,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.sink.MessageSinks;
-import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.command.CommandSource;
 
 import javax.inject.Inject;
 
