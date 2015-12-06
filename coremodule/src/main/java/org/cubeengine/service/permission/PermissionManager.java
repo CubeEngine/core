@@ -62,7 +62,7 @@ public class PermissionManager
     public PermissionManager(Game game)
     {
         this.game = game;
-        plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
+        plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
     }
 
     private void registerBasePermission()

@@ -45,7 +45,7 @@ public class EventManager
     {
         this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance();
+        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
     }
 
     /**

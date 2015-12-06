@@ -38,6 +38,6 @@ public class LocaleContextValue implements ContextValue
         {
             return ((Player)invocation.getCommandSource()).getLocale();
         }
-        return i18n.getDefaultLanguage().getLocale();
+        return i18n.getBackend().getDefaultLocale();
     }
 }

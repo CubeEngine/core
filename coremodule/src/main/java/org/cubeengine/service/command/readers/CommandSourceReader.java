@@ -52,6 +52,7 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
             invocation.consume(1);
             return cm.getConsoleSender();
         }
+
         return game.getServer().getPlayer(invocation.consume(1)).get();
     }
 
