@@ -62,7 +62,7 @@ public class RawPermission
                 groups[i] = modulePerm + "." + groups[i];
             }
 
-            this.register = pm.registerS(module, name, description, parent, groups);
+            this.register = pm.registerS(module, name, description == null ? "" : description, parent, groups);
             name = register.getId();
             registered = true;
         }
