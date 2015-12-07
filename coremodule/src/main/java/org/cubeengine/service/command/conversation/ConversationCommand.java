@@ -33,6 +33,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.MessageSinkEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.command.CommandSource;
@@ -69,20 +70,15 @@ public abstract class ConversationCommand extends ContainerCommand
     }
 
     @Listener
-    public void onChatHandler(MessageSinkEvent.Chat event)
+    public void onChatHandler(MessageSinkEvent.Chat event, @First Player player)
     {
-        Optional<Player> source = event.getCause().first(Player.class);
-        if (!source.isPresent())
+        if (this.hasUser(player))
         {
-            return;
-        }
-        if (this.hasUser(source.get()))
-        {
-            source.get().sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
+            player.sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
                                               WHITE, event.getMessage()));
 
             Text message = event.getMessage();
-            CommandInvocation invocation = newInvocation(source.get(), message.toString()); // TODO
+            CommandInvocation invocation = newInvocation(player, message.toString()); // TODO
             this.execute(invocation);
 
             event.setCancelled(true);

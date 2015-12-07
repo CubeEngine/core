@@ -31,6 +31,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -132,16 +133,11 @@ public class InventoryGuard
     }
 
     @Listener
-    public void onInventoryClose(InteractInventoryEvent.Close event)
+    public void onInventoryClose(InteractInventoryEvent.Close event, @First Player player)
     {
-        Optional<Player> source = event.getCause().first(Player.class);
-        if (!source.isPresent())
-        {
-            return;
-        }
         if ((event.getTargetInventory().equals(this.inventory)))
         {
-            User user = um.getUser(source.get().getUniqueId());
+            User user = player; // TODO check if this is working
             if (user != null && this.users.contains(user))
             {
                 this.users.remove(user);

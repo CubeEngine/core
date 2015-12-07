@@ -30,6 +30,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.command.CommandSource;
 
@@ -54,13 +55,9 @@ public class PreCommandListener
     }
 
     @Listener(order = POST)
-    private void handleCommand(SendCommandEvent event)
+    private void handleCommand(SendCommandEvent event, @First Player player)
     {
-        Optional<Player> source = event.getCause().first(Player.class);
-        if (source.isPresent())
-        {
-            event.setCancelled(isCommandMissing(source.get(), event.getCommand()));
-        }
+        event.setCancelled(isCommandMissing(player, event.getCommand()));
     }
 
     private boolean isCommandMissing(CommandSource sender, String label)

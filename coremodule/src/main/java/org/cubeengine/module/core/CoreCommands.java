@@ -17,6 +17,8 @@
  */
 package org.cubeengine.module.core;
 
+import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Desc;
