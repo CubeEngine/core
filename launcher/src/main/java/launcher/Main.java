@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jsonprosessing.DisplayedModule;
@@ -13,8 +14,10 @@ import jsonprosessing.Modules;
 
 import java.util.ArrayList;
 
+
 public class Main extends Application
 {
+    private static final int CHECKBOXES_PER_ROW = 3;
 
     @Override
     public void start(Stage primaryStage) throws Exception
@@ -31,13 +34,15 @@ public class Main extends Application
         ArrayList<DisplayedModule> displayedModules = modules.load();
 
         //TODO replace with data from API
-        VBox checkBoxPane = (VBox)primaryStage.getScene().lookup("#checkBoxPane");
+        GridPane checkBoxPane = (GridPane)primaryStage.getScene().lookup("#checkBoxPane");
+
         ArrayList<CheckBox> checkBoxes = new ArrayList();
-        for (DisplayedModule mod : displayedModules)
+        for (int i = 0; i < displayedModules.size(); i++)
         {
-            checkBoxes.add(mod.getCheckBox());
+            //TODO have grid with wit to max content length --> check if "hardcoded" or nicer way (auto grow)
+            displayedModules.get(i).getCheckBox().setPadding(new Insets(5,0,0,0));
+            checkBoxPane.add(displayedModules.get(i).getCheckBox(), i % CHECKBOXES_PER_ROW, i / CHECKBOXES_PER_ROW);
         }
-        checkBoxPane.getChildren().addAll(checkBoxes);
     }
 
 
