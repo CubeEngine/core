@@ -27,6 +27,7 @@ public class Controller
     @FXML
     private TextField filePathInput;
 
+    //might be displayed as unused, but it used in the launcher.fxml
     public void openFilechooser(ActionEvent event)
     {
         DirectoryChooser directoryChooser = new DirectoryChooser();
