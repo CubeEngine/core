@@ -63,9 +63,9 @@
          <content>
             <AnchorPane>
                <children>
-                  <GridPane fx:id="checkBoxPane" prefHeight="0.0" prefWidth="373.0">
+                  <GridPane fx:id="checkBoxPane" prefHeight="25.0" prefWidth="557.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>

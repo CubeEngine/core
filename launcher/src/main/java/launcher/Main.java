@@ -33,13 +33,12 @@ public class Main extends Application
         Modules modules = new Modules();
         ArrayList<DisplayedModule> displayedModules = modules.load();
 
-        //TODO replace with data from API
         GridPane checkBoxPane = (GridPane)primaryStage.getScene().lookup("#checkBoxPane");
 
         ArrayList<CheckBox> checkBoxes = new ArrayList();
         for (int i = 0; i < displayedModules.size(); i++)
         {
-            //TODO have grid with wit to max content length --> check if "hardcoded" or nicer way (auto grow)
+            //TODO check if all Module names will fit;
             displayedModules.get(i).getCheckBox().setPadding(new Insets(5,0,0,0));
             checkBoxPane.add(displayedModules.get(i).getCheckBox(), i % CHECKBOXES_PER_ROW, i / CHECKBOXES_PER_ROW);
         }
