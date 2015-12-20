@@ -21,6 +21,8 @@ import com.flowpowered.math.vector.Vector3d;
 import de.cubeisland.engine.modularity.core.Module;
 
 import org.cubeengine.module.core.sponge.CubeEvent;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -29,13 +31,15 @@ public class WorldSetSpawnEvent extends CubeEvent
     private final World world;
     private final Location<World> location;
     private final Vector3d direction;
+    private final Cause cause;
 
-    public WorldSetSpawnEvent(Module core, World world, Location<World> location, Vector3d direction)
+    public WorldSetSpawnEvent(Module core, World world, Location<World> location, Vector3d direction, CommandSource context)
     {
         super(core);
         this.world = world;
         this.location = location;
         this.direction = direction;
+        this.cause = Cause.of(context);
     }
 
     public World getWorld()
@@ -51,5 +55,11 @@ public class WorldSetSpawnEvent extends CubeEvent
     public Vector3d getRotation()
     {
         return direction;
+    }
+
+    @Override
+    public Cause getCause()
+    {
+        return cause;
     }
 }
