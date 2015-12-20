@@ -45,7 +45,6 @@ import javax.inject.Inject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
-import com.zaxxer.hikari.pool.PoolElf;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
@@ -95,7 +94,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database
     {
         // Disable HikariPool Debug ConsoleSpam
         ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
-        ((Logger)LogManager.getLogger(PoolElf.class)).setLevel(Level.INFO);
+        ((Logger)LogManager.getLogger("com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.INFO); // really? now pkg-private
         ((Logger)LogManager.getLogger(HikariConfig.class)).setLevel(Level.INFO);
 
         // Setting up Logger...
