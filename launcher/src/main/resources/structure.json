@@ -1,0 +1,74 @@
+{
+    "modules": [
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "reallyLongExampleName",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        },
+        {
+            "name": "example",
+            "id": "123",
+            "from": "www.sourceAddress.com"
+        }
+    ]
+}
