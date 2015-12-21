@@ -21,18 +21,27 @@ package org.cubeengine.service.i18n.formatter;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.formatter.reflected.Format;
+import org.cubeengine.dirigent.formatter.reflected.Names;
+import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.Text;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
+import org.spongepowered.api.text.translation.Translation;
 
-public class StringFormatter extends AbstractFormatter<String>
+import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;
+
+@Names({"name","input","message"})
+public class StringFormatter extends ReflectedFormatter
 {
-    public StringFormatter()
+    @Format
+    public Component format(String string, Context context)
     {
-        super("name","input","message");
+        return new Text(string);
     }
 
-    @Override
-    public Component format(String object, Context context)
+    @Format
+    public Component format(Translation translation, Context context)
     {
-        return new Text(object);
+        return new Text(translation.get(context.getLocale()));
     }
 }
