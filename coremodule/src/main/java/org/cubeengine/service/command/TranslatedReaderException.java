@@ -19,6 +19,7 @@ package org.cubeengine.service.command;
 
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Texts;
 
 public class TranslatedReaderException extends ReaderException
 {
@@ -26,6 +27,7 @@ public class TranslatedReaderException extends ReaderException
 
     public TranslatedReaderException(Text text)
     {
+        super(Texts.toPlain(text));
         this.text = text;
     }
 

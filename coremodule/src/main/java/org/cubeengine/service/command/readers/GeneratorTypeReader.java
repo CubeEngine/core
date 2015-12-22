@@ -17,13 +17,13 @@
  */
 package org.cubeengine.service.command.readers;
 
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.GeneratorTypes;
 
-public class DimensionTypeReader extends DefaultedCatalogTypeReader<DimensionType>
+public class GeneratorTypeReader extends DefaultedCatalogTypeReader<GeneratorType>
 {
-    public DimensionTypeReader()
+    public GeneratorTypeReader()
     {
-        super(DimensionType.class, DimensionTypes.OVERWORLD);
+        super(GeneratorType.class, GeneratorTypes.DEFAULT);
     }
 }

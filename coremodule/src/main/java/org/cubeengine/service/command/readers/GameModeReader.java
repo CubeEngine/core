@@ -17,13 +17,13 @@
  */
 package org.cubeengine.service.command.readers;
 
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
-public class DimensionTypeReader extends DefaultedCatalogTypeReader<DimensionType>
+public class GameModeReader extends DefaultedCatalogTypeReader<GameMode>
 {
-    public DimensionTypeReader()
+    public GameModeReader()
     {
-        super(DimensionType.class, DimensionTypes.OVERWORLD);
+        super(GameMode.class, GameModes.SURVIVAL);
     }
 }

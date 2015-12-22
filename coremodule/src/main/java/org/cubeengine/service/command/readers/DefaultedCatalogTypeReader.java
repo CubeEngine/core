@@ -17,13 +17,23 @@
  */
 package org.cubeengine.service.command.readers;
 
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.reader.DefaultValue;
+import org.spongepowered.api.CatalogType;
 
-public class DimensionTypeReader extends DefaultedCatalogTypeReader<DimensionType>
+public class DefaultedCatalogTypeReader<T extends CatalogType> extends CatalogTypeReader<T> implements DefaultValue<T>
 {
-    public DimensionTypeReader()
+    private T defaultValue;
+
+    public DefaultedCatalogTypeReader(Class<T> type, T defaultValue)
     {
-        super(DimensionType.class, DimensionTypes.OVERWORLD);
+        super(type);
+        this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public T getDefault(CommandInvocation commandInvocation)
+    {
+        return defaultValue;
     }
 }

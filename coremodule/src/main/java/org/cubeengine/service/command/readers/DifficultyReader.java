@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Map;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
+import org.cubeengine.butler.parameter.reader.DefaultProvider;
+import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
@@ -31,9 +33,8 @@ import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
-public class DifficultyReader implements ArgumentReader<Difficulty>
+public class DifficultyReader extends DefaultedCatalogTypeReader<Difficulty>
 {
-    private GameRegistry registry;
     private Map<Integer, Difficulty> difficultyMap = new HashMap<Integer, Difficulty>()
     {
         {
@@ -45,16 +46,16 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
     };
     private final I18n i18n;
 
-    public DifficultyReader(I18n i18n, Game game)
+    public DifficultyReader(I18n i18n)
     {
+        super(Difficulty.class, Difficulties.NORMAL);
         this.i18n = i18n;
-        registry = game.getRegistry();
     }
 
     @Override
     public Difficulty read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        String token = invocation.consume(1);
+        String token = invocation.currentToken();
         Locale locale = invocation.getContext(Locale.class);
         try
         {
@@ -63,18 +64,12 @@ public class DifficultyReader implements ArgumentReader<Difficulty>
             {
                 throw new TranslatedReaderException(i18n.translate(locale, MessageType.NEGATIVE, "The given difficulty level is unknown!"));
             }
+            invocation.consume(1);
             return difficulty;
         }
         catch (NumberFormatException e)
         {
-            for (Difficulty difficulty : registry.getAllOf(Difficulty.class))
-            {
-                if (difficulty.getName().equalsIgnoreCase(token))
-                {
-                    return difficulty;
-                }
-            }
-            throw new TranslatedReaderException(i18n.translate(locale, MessageType.NEGATIVE, "{input} is not a known difficulty!", token));
+            return super.read(type, invocation);
         }
     }
 }
