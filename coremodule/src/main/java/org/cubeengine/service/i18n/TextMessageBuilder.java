@@ -24,6 +24,7 @@ import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.builder.MessageBuilder;
 import org.cubeengine.dirigent.parser.component.ErrorComponent;
+import org.cubeengine.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.Text;
@@ -69,6 +70,10 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         else if (component instanceof ClickComponent)
         {
             buildClick(((ClickComponent)component), builder);
+        }
+        else if (component instanceof TextComponent)
+        {
+            builder.append(((TextComponent) component).getText());
         }
         else
         {

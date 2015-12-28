@@ -60,15 +60,7 @@ import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
 import org.cubeengine.service.filesystem.FileExtensionFilter;
 import org.cubeengine.service.filesystem.FileManager;
-import org.cubeengine.service.i18n.formatter.BiomeFormatter;
-import org.cubeengine.service.i18n.formatter.BooleanFormatter;
-import org.cubeengine.service.i18n.formatter.ColorPostProcessor;
-import org.cubeengine.service.i18n.formatter.CommandSenderFormatter;
-import org.cubeengine.service.i18n.formatter.IntegerFormatter;
-import org.cubeengine.service.i18n.formatter.StringFormatter;
-import org.cubeengine.service.i18n.formatter.TextMacro;
-import org.cubeengine.service.i18n.formatter.VectorFormatter;
-import org.cubeengine.service.i18n.formatter.WorldFormatter;
+import org.cubeengine.service.i18n.formatter.*;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -136,6 +128,7 @@ public class I18n
 
         compositor.registerFormatter(new WorldFormatter());
         compositor.registerFormatter(new StringFormatter());
+        compositor.registerFormatter(new TextFormatter());
         compositor.registerFormatter(new BooleanFormatter());
         compositor.registerFormatter(new IntegerFormatter());
         compositor.registerFormatter(new CommandSenderFormatter());
