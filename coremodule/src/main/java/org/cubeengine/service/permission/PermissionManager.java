@@ -17,23 +17,19 @@
  */
 package org.cubeengine.service.permission;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.util.Cleanable;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.service.ServiceReference;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static org.cubeengine.module.core.contract.Contract.expectNotNull;
 
@@ -78,7 +74,7 @@ public class PermissionManager
                     return;
                 }
                 builder.id("cubeengine");
-                builder.description(Texts.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
+                builder.description(Text.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
                 builder.assign("permission:*", true);
                 builder.register();
             });
@@ -128,7 +124,7 @@ public class PermissionManager
             builder.id(permission);
             if (description != null)
             {
-                builder.description(Texts.of(description));
+                builder.description(Text.of(description));
             }
             return builder;
         }).map(b -> assignAndRegister(b, toAssign)).orElse(null);
@@ -163,7 +159,7 @@ public class PermissionManager
             }
             String moduleName = module.getInformation().getName();
             builder.id("cubeengine." + moduleName.toLowerCase());
-            builder.description(Texts.of(String.format("Base Permission for the %s Module", moduleName))); // TODO TRANSLATABLE
+            builder.description(Text.of(String.format("Base Permission for the %s Module", moduleName))); // TODO TRANSLATABLE
             perm = builder.register();
             modulePermissions.put(module, perm);
         }

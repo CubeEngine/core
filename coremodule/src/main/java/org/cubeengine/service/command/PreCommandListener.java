@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.Optional;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
 import org.cubeengine.module.core.util.matcher.StringMatcher;
@@ -31,7 +30,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.implode;
@@ -77,23 +76,22 @@ public class PreCommandListener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(Texts.of(i18n.translate(language, NEGATIVE,
-                                                               "Couldn't find {input#command}. Did you mean {input#command}?",
-                                                               label, matches.iterator().next())));
+                    sender.sendMessage(Text.of(i18n.translate(language, NEGATIVE,
+                           "Couldn't find {input#command}. Did you mean {input#command}?",
+                           label, matches.iterator().next())));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(Texts.of(i18n.translate(language, NEUTRAL,
-                                                               "Did you mean one of these: {input#command}?", implode(
-                            ", /", matches))));
+                    sender.sendMessage(Text.of(i18n.translate(language, NEUTRAL,
+                            "Did you mean one of these: {input#command}?", implode(", /", matches))));
                 }
             }
             else
             {
-                sender.sendMessage(Texts.of(i18n.translate(language, NEGATIVE,
-                                                           "I couldn't find any command for {input#command} ...",
-                                                           label)));
+                sender.sendMessage(Text.of(i18n.translate(language, NEGATIVE,
+                        "I couldn't find any command for {input#command} ...",
+                        label)));
             }
             return true;
         }

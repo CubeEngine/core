@@ -64,8 +64,6 @@ import org.cubeengine.service.i18n.formatter.*;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.command.CommandSource;
 
@@ -77,7 +75,7 @@ public class I18n
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
-    private BuilderDirigent<Text, TextBuilder> compositor;
+    private BuilderDirigent<Text, Text.Builder> compositor;
 
     @Inject private Log log;
     @Inject private Game game;
@@ -140,7 +138,7 @@ public class I18n
         compositor.addPostProcessor(new ColorPostProcessor());
     }
 
-    public BuilderDirigent<Text, TextBuilder> getCompositor()
+    public BuilderDirigent<Text, Text.Builder> getCompositor()
     {
         return compositor;
     }
@@ -229,14 +227,14 @@ public class I18n
         }
         if (message == null)
         {
-            return Texts.of("null");
+            return Text.of("null");
         }
         return composeMessage(locale, format, this.translate(locale, message), args);
     }
 
     public Text composeMessage(Locale locale, TextFormat format, String message, Object... args)
     {
-        return compositor.compose(locale, message, args).builder().format(format).build();
+        return compositor.compose(locale, message, args).toBuilder().format(format).build();
     }
 
     public Text translateN(TextFormat format, int n, String singular, String plural, Object... args)

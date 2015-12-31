@@ -21,7 +21,7 @@ import org.cubeengine.service.task.TaskManager;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.api.data.property.item.BurningFuelProperty;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -102,7 +102,7 @@ public class BukkitUtils
                     {
                         core.getLog().info("Shutting down the server now!");
                         core.getModularity().provide(TaskManager.class).runTask(core, () -> {
-                            core.getGame().getServer().shutdown(Texts.of()); // tODO default message?
+                            core.getGame().getServer().shutdown(Text.of()); // tODO default message?
                             lastReceived = -1;
                         });
                     }

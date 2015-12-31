@@ -23,8 +23,6 @@ import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.PriorityExceptionHandler;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.command.CommandSource;
 
 import java.lang.reflect.InvocationTargetException;
@@ -58,23 +56,23 @@ public class UnknownExceptionHandler implements PriorityExceptionHandler
 
         logger.error(r, "Unexpected Command Exception: " + r.getMessage()
                 + " - " + invocation.getCommandLine());
-        TextBuilder stackTrace = Texts.builder();
+        Text.Builder stackTrace = Text.builder();
         for (StackTraceElement element : r.getStackTrace())
         {
             String[] parts = element.toString().split("\\(");
             parts[1] = parts[1].replace(")", "");
             boolean our = parts[0].startsWith("de.cubeisland") || parts[0].startsWith("org.cubeengine");
             String[] lineParts = parts[1].split(":");
-            TextBuilder lineBuilder = Texts.builder().append(Texts.of(our ? GOLD : GRAY, lineParts[0]));
+            Text.Builder lineBuilder = Text.builder().append(Text.of(our ? GOLD : GRAY, lineParts[0]));
             if (lineParts.length == 2)
             {
-                lineBuilder.append(Texts.of(WHITE, ":", AQUA, lineParts[1]));
+                lineBuilder.append(Text.of(WHITE, ":", AQUA, lineParts[1]));
             }
-            Text line = Texts.of(YELLOW, "(", lineBuilder.build(), YELLOW, ")");
-            stackTrace.append(Texts.of(DARK_GRAY, "at ", Texts.of(our ? GOLD : GRAY, parts[0], line), "\n"));
+            Text line = Text.of(YELLOW, "(", lineBuilder.build(), YELLOW, ")");
+            stackTrace.append(Text.of(DARK_GRAY, "at ", Text.of(our ? GOLD : GRAY, parts[0], line), "\n"));
         }
-        Text hover = Texts.builder().append(Texts.of(GRAY, r.getClass().getName(), ": ", r.getMessage())).onHover(showText(stackTrace.build())).build();
-        sender.sendMessage(Texts.of(Texts.of(i18n.getTranslation(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
+        Text hover = Text.builder().append(Text.of(GRAY, r.getClass().getName(), ": ", r.getMessage())).onHover(showText(stackTrace.build())).build();
+        sender.sendMessage(Text.of(Text.of(i18n.getTranslation(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
         return true;
     }
 

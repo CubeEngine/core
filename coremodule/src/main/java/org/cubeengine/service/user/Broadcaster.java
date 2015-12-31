@@ -107,7 +107,7 @@ public class Broadcaster
 
     public void broadcastStatus(String message, CommandSource sender, Object... params)
     {
-        this.broadcastStatus(new TextFormat(WHITE), message, sender, params);
+        this.broadcastStatus(NONE.color(WHITE), message, sender, params);
     }
 
     public synchronized void kickAll(String message)

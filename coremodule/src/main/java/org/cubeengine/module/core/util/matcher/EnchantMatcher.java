@@ -44,7 +44,8 @@ public class EnchantMatcher
         this.spongeNames = new HashMap<>();
         for (Enchantment enchantment : game.getRegistry().getAllOf(Enchantment.class))
         {
-            this.spongeNames.put(enchantment.getName(), enchantment);
+            // TODO wait for impl
+            // this.spongeNames.put(enchantment.getName(), enchantment);
         }
     }
 

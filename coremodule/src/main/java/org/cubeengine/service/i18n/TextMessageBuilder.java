@@ -28,36 +28,34 @@ import org.cubeengine.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.HoverAction.ShowEntity;
 
 import static org.spongepowered.api.text.action.TextActions.*;
 import static org.spongepowered.api.text.format.TextColors.DARK_RED;
 
-public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
+public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
 {
 
     @Override
-    public TextBuilder newBuilder()
+    public Text.Builder newBuilder()
     {
-        return Texts.builder();
+        return Text.builder();
     }
 
     @Override
-    public Text finalize(TextBuilder textBuilder)
+    public Text finalize(Text.Builder textBuilder)
     {
         return textBuilder.build();
     }
 
     @Override
-    public void build(org.cubeengine.dirigent.parser.component.Text component, TextBuilder builder)
+    public void build(org.cubeengine.dirigent.parser.component.Text component, Text.Builder builder)
     {
-        builder.append(Texts.of(component.getString()));
+        builder.append(Text.of(component.getString()));
     }
 
     @Override
-    public void buildOther(Component component, TextBuilder builder)
+    public void buildOther(Component component, Text.Builder builder)
     {
         if (component instanceof StyledComponent)
         {
@@ -81,9 +79,9 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         }
     }
 
-    private void buildClick(ClickComponent click, TextBuilder builder)
+    private void buildClick(ClickComponent click, Text.Builder builder)
     {
-        TextBuilder b = Texts.builder();
+        Text.Builder b = Text.builder();
         buildAny(click.getComponent(), b);
 
         Object toClick = click.getClick();
@@ -99,9 +97,9 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         builder.append(b.build());
     }
 
-    private void buildHover(HoverComponent hover, TextBuilder builder)
+    private void buildHover(HoverComponent hover, Text.Builder builder)
     {
-        TextBuilder b = Texts.builder();
+        Text.Builder b = Text.builder();
         buildAny(hover.getComponent(), b);
 
         Object toHover = hover.getHover();
@@ -124,26 +122,26 @@ public class TextMessageBuilder extends MessageBuilder<Text, TextBuilder>
         builder.append(b.build());
     }
 
-    private void buildStyled(StyledComponent styled, TextBuilder builder)
+    private void buildStyled(StyledComponent styled, Text.Builder builder)
     {
-        TextBuilder b = Texts.builder();
+        Text.Builder b = Text.builder();
         buildAny(styled.getComponent(), b);
         b.format(styled.getFormat());
         builder.append(b.build());
     }
 
     @Override
-    public void build(ErrorComponent component, TextBuilder builder)
+    public void build(ErrorComponent component, Text.Builder builder)
     {
-        TextBuilder b = Texts.builder();
+        Text.Builder b = Text.builder();
         if (component instanceof org.cubeengine.dirigent.parser.component.Text)
         {
-            b.append(Texts.of(DARK_RED, ((org.cubeengine.dirigent.parser.component.Text)component).getString()));
+            b.append(Text.of(DARK_RED, ((org.cubeengine.dirigent.parser.component.Text)component).getString()));
         }
         else
         {
-            b.append(Texts.of(DARK_RED, "ERROR"));
+            b.append(Text.of(DARK_RED, "ERROR"));
         }
-        b.onHover(showText(Texts.of(component.getError())));
+        b.onHover(showText(Text.of(component.getError())));
     }
 }

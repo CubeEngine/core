@@ -30,7 +30,6 @@ import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.butler.parameter.property.Requirement.isRequired;
@@ -87,7 +86,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     {
         if (invocation != null && invocation.getCommandSource() instanceof CommandSource)
         {
-            return Texts.toPlain(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NONE, valueLabel));
+            return i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NONE, valueLabel).toPlain();
         }
         return valueLabel;
     }

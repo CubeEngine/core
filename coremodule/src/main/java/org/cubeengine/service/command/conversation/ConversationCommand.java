@@ -35,7 +35,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.command.CommandSource;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_PURPLE;
@@ -74,7 +73,7 @@ public abstract class ConversationCommand extends ContainerCommand
     {
         if (this.hasUser(player))
         {
-            player.sendMessage(Texts.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
+            player.sendMessage(Text.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
                                               WHITE, event.getMessage()));
 
             Text message = event.getMessage();

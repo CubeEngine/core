@@ -33,7 +33,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.command.CommandSource;
 
@@ -58,13 +57,13 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     {
         List<Text> enchantments = registry.getAllOf(Enchantment.class).stream()
                                           .filter(e -> item == null || e.canBeAppliedToStack(item))
-                                          .map(Enchantment::getName).map(n -> Texts.of(TextColors.YELLOW, n))
+                                          .map(Enchantment::getName).map(n -> Text.of(TextColors.YELLOW, n))
                                           .collect(Collectors.toList());
         if (enchantments.isEmpty())
         {
             return null;
         }
-        return Texts.join(Texts.of(TextColors.WHITE, ", "), enchantments.toArray(new Text[enchantments.size()]));
+        return Text.joinWith(Text.of(TextColors.WHITE, ", "), enchantments.toArray(new Text[enchantments.size()]));
     }
 
     @Override

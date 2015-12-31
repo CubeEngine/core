@@ -36,13 +36,13 @@ public class StyledComponent implements Component
 
     public StyledComponent(TextColor format, Component component)
     {
-        this.format = new TextFormat(format);
+        this.format = TextFormat.NONE.color(format);
         this.component = component;
     }
 
     public StyledComponent(TextStyle format, Component component)
     {
-        this.format = new TextFormat(format);
+        this.format = TextFormat.NONE.style(format);
         this.component = component;
     }
 
@@ -53,13 +53,13 @@ public class StyledComponent implements Component
 
     public StyledComponent(TextColor format, String text)
     {
-        this.format = new TextFormat(format);
+        this.format = TextFormat.NONE.color(format);
         this.component = new Text(text);
     }
 
     public StyledComponent(TextStyle format, String text)
     {
-        this.format = new TextFormat(format);
+        this.format = TextFormat.NONE.style(format);
         this.component = new Text(text);
     }
 
@@ -76,21 +76,21 @@ public class StyledComponent implements Component
 
     public static Component colored(TextColor color, Component component)
     {
-        return new StyledComponent(new TextFormat(color), component);
+        return new StyledComponent(color, component);
     }
 
     public static Component styled(TextStyle style, Component component)
     {
-        return new StyledComponent(new TextFormat(style), component);
+        return new StyledComponent(style, component);
     }
 
     public static Component colored(TextColor color, String text)
     {
-        return new StyledComponent(new TextFormat(color), text);
+        return new StyledComponent(color, text);
     }
 
     public static Component styled(TextStyle style, String text)
     {
-        return new StyledComponent(new TextFormat(style), text);
+        return new StyledComponent(style, text);
     }
 }

@@ -64,6 +64,6 @@ public class ColorPostProcessor implements PostProcessor
         {
             return component;
         }
-        return new StyledComponent(new TextFormat(color.getColor()), component);
+        return new StyledComponent(color.getColor(), component);
     }
 }

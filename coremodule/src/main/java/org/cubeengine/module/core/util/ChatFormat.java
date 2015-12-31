@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
@@ -97,7 +95,7 @@ public enum ChatFormat
     public static Text fromLegacy(String string, Map<String, Text> replacements, char formatChar)
     {
         String[] parts = string.split(SPLIT_COLOR_KEEP.replace('&', formatChar));
-        TextBuilder builder = Texts.builder();
+        Text.Builder builder = Text.builder();
         TextColor nextColor = null;
         TextStyle nextStyle = null;
         for (String part : parts)
@@ -121,7 +119,7 @@ public enum ChatFormat
                 continue;
             }
 
-            TextBuilder partBuilder = Texts.builder();
+            Text.Builder partBuilder = Text.builder();
             String[] toReplace = part.split(SPLIT_PARAM_KEEP.replace('&', formatChar));
             for (String r : toReplace)
             {
@@ -132,7 +130,7 @@ public enum ChatFormat
                 }
                 else// if (!r.matches("\\{.+\\}"))
                 {
-                    partBuilder.append(Texts.of(r));
+                    partBuilder.append(Text.of(r));
                 }
             }
             if (nextColor != null)

@@ -31,11 +31,12 @@ import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.parametric.ParametricContainerCommand;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
+import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.*;
 
 public class HelpCommand implements CommandBase
@@ -65,8 +66,8 @@ public class HelpCommand implements CommandBase
         CommandDescriptor descriptor = helpTarget.getDescriptor();
         CommandSource sender = (CommandSource)invocation.getCommandSource();
 
-        TextFormat formatGray = new TextFormat(GRAY);
-        i18n.sendTranslated(sender, formatGray, "Description: {input}", Texts.toPlain(i18n.getTranslation(sender, MessageType.NONE, descriptor.getDescription())));
+        TextFormat formatGray = NONE.color(GRAY);
+        i18n.sendTranslated(sender, formatGray, "Description: {input}", i18n.getTranslation(sender, MessageType.NONE, descriptor.getDescription()).toPlain());
 
         List<String> labels = new ArrayList<>(invocation.getLabels());
         if (labels.isEmpty())
@@ -79,7 +80,7 @@ public class HelpCommand implements CommandBase
         }
 
         i18n.sendTranslated(sender, formatGray, "Usage: {input}", descriptor.getUsage(invocation, labels.toArray(new String[labels.size()])));
-        sender.sendMessage(Texts.of());
+        sender.sendMessage(Text.of());
 
         if (helpTarget instanceof DispatcherCommand)
         {
@@ -88,7 +89,7 @@ public class HelpCommand implements CommandBase
                 || !(commands.iterator().next() instanceof HelpCommand))) // is Empty ignoring HelpCommand
             {
                 i18n.sendTranslated(sender, NEUTRAL, "The following sub-commands are available:");
-                sender.sendMessage(Texts.of());
+                sender.sendMessage(Text.of());
                 for (CommandBase command : commands)
                 {
                     if (command instanceof HelpCommand
@@ -96,15 +97,15 @@ public class HelpCommand implements CommandBase
                     {
                         continue;
                     }
-                    sender.sendMessage(Texts.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ",
+                    sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ",
                         i18n.getTranslation(sender, formatGray, command.getDescriptor().getDescription())));
             }
-                sender.sendMessage(Texts.of());
+                sender.sendMessage(Text.of());
             }
             else if (helpTarget instanceof ParametricContainerCommand)
             {
                 i18n.sendTranslated(sender, MessageType.NEGATIVE, "No actions are available");
-                sender.sendMessage(Texts.of());
+                sender.sendMessage(Text.of());
             }
         }
 

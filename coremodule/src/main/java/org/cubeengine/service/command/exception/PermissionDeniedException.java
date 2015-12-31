@@ -20,7 +20,6 @@ package org.cubeengine.service.command.exception;
 import org.cubeengine.butler.exception.CommandException;
 import org.cubeengine.service.command.property.RawPermission;
 import org.spongepowered.api.service.permission.PermissionDescription;
-import org.spongepowered.api.text.Texts;
 
 /**
  * This exception is thrown when a CommandSource is not allowed to perform an action.
@@ -51,7 +50,7 @@ public class PermissionDeniedException extends CommandException
 
     public PermissionDeniedException(PermissionDescription description)
     {
-        this(new RawPermission(description.getId(), Texts.toPlain(description.getDescription())));
+        this(new RawPermission(description.getId(), description.getDescription().toPlain()));
     }
 
     /**

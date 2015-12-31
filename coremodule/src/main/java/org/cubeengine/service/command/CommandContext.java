@@ -26,9 +26,11 @@ import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.serializer.TextSerializer;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -59,7 +61,7 @@ public class CommandContext extends ParameterizedContext
 
     public void sendMessage(String message)
     {
-        ((CommandSource)this.getInvocation().getCommandSource()).sendMessage(Texts.of(message));
+        ((CommandSource)this.getInvocation().getCommandSource()).sendMessage(Text.of(message));
     }
 
     public void sendTranslated(TextFormat type, String message, Object... args)
@@ -81,7 +83,7 @@ public class CommandContext extends ParameterizedContext
                 return;
             }
         }
-        throw new PermissionDeniedException(new RawPermission(permission.getId(), Texts.toPlain(permission.getDescription()))); // TODO
+        throw new PermissionDeniedException(new RawPermission(permission.getId(), permission.getDescription().toPlain())); // TODO
     }
 
     public Locale getLocale()

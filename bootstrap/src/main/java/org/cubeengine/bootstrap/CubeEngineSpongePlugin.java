@@ -38,7 +38,7 @@ import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.permission.PermissionService;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
@@ -122,6 +122,11 @@ public class CubeEngineSpongePlugin
     {
         // During this state, the plugin should finish any work needed in order to be functional.
         // Global event handlers and command registration are handled during initialization.
+
+        pluginLogger.info("Enable Modules");
+        long delta = System.currentTimeMillis();
+        modularity.enableModules();
+        pluginLogger.info("Finished enabling Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
     }
 
     @Listener
@@ -129,20 +134,16 @@ public class CubeEngineSpongePlugin
     {
         // By this state, inter-plugin communication should be ready to occur.
         // Plugins providing an API should be ready to accept basic requests.
+        game.getServer().getConsole().sendMessage(Text.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
 
-        pluginLogger.info("Enable Modules");
-        long delta = System.currentTimeMillis();
-        modularity.enableModules();
-        pluginLogger.info("Finished enabling Modules in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
-
-        game.getServer().getConsole().sendMessage(Texts.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
-
-        game.getCommandManager().register(this, CommandSpec.builder().description(Texts.of(
-            "Reloads the CubeEngine")).executor((commandSource, commandContext) -> {
-            modularity.disableModules();
-            modularity.enableModules();
-            return CommandResult.success();
-        }).build(), "reload");
+        game.getCommandManager().register(this, CommandSpec.builder()
+                .description(Text.of("Reloads the CubeEngine"))
+                .executor((commandSource, commandContext) -> {
+                        modularity.disableModules();
+                        modularity.enableModules();
+                        return CommandResult.success();
+                    })
+                .build(), "reload");
 
         // TODO register our services in Sponge
     }

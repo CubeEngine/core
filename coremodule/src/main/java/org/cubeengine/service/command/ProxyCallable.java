@@ -29,7 +29,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 
 public class ProxyCallable implements CommandCallable
 {
@@ -118,7 +117,7 @@ public class ProxyCallable implements CommandCallable
     @Override
     public Optional<Text> getShortDescription(CommandSource source)
     {
-        return Optional.of(Texts.of(getDescriptor().getDescription()));
+        return Optional.of(Text.of(getDescriptor().getDescription()));
     }
 
     @Override
@@ -130,7 +129,7 @@ public class ProxyCallable implements CommandCallable
     @Override
     public Text getUsage(CommandSource source)
     {
-        return Texts.of(getDescriptor().getUsage(newInvocation(source, "")));
+        return Text.of(getDescriptor().getUsage(newInvocation(source, "")));
     }
 
     private CommandInvocation newInvocation(CommandSource source, String commandLine)

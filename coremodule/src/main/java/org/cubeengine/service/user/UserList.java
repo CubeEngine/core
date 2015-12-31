@@ -27,10 +27,13 @@ import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.catalog.CatalogEntityData;
+import org.spongepowered.api.data.manipulator.mutable.entity.InvisibilityData;
 import org.spongepowered.api.entity.living.player.Player;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
+import static org.spongepowered.api.data.manipulator.catalog.CatalogEntityData.INVISIBILITY_DATA;
 
 /**
  * Represents a list of users.
@@ -84,7 +87,8 @@ public class UserList
         {
             if (sender instanceof Player)
             {
-                return ((Player) sender).get(CatalogEntityData.INVISIBILITY_DATA).map(p -> p.invisibleToPlayerIds().contains(user.getUniqueId())).orElse(false);
+                // TODO can see other???
+                return ((Player) sender).get(Keys.INVISIBLE).orElse(false);
             }
             return true;
         }

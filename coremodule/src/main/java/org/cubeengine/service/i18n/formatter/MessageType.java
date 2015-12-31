@@ -22,9 +22,9 @@ import org.spongepowered.api.text.format.TextFormat;
 
 public class MessageType
 {
-    public final static TextFormat POSITIVE = new TextFormat(TextColors.GREEN);
-    public final static TextFormat NEUTRAL = new TextFormat(TextColors.YELLOW);
-    public final static TextFormat NEGATIVE = new TextFormat(TextColors.RED);
-    public final static TextFormat CRITICAL = new TextFormat(TextColors.DARK_RED);
-    public final static TextFormat NONE = new TextFormat(TextColors.RESET);
+    public final static TextFormat POSITIVE = TextFormat.NONE.color(TextColors.GREEN);
+    public final static TextFormat NEUTRAL = TextFormat.NONE.color(TextColors.YELLOW);
+    public final static TextFormat NEGATIVE = TextFormat.NONE.color(TextColors.RED);
+    public final static TextFormat CRITICAL = TextFormat.NONE.color(TextColors.DARK_RED);
+    public final static TextFormat NONE = TextFormat.NONE.color(TextColors.RESET);
 }
