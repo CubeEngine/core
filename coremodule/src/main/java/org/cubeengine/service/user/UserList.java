@@ -39,6 +39,7 @@ import static org.spongepowered.api.data.manipulator.catalog.CatalogEntityData.I
  * Represents a list of users.
  * If it is all users the list is the currently online users
  */
+// TODO use User instead of Player
 public class UserList
 {
     private final List<Player> list;
