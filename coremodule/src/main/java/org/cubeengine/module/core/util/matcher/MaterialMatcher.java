@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.GameDictionary;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -89,9 +90,9 @@ public class MaterialMatcher
         this.builder = game.getRegistry().createBuilder(ItemStack.Builder.class);
 
         // Read names from GameDirectory
-        for (Entry<String, Set<ItemType>> entry : game.getGameDictionary().getAllItems().entrySet())
+        for (Entry<String, GameDictionary.Entry> entry : game.getGameDictionary().getAll().entries())
         {
-            names.put(entry.getKey(), entry.getValue().iterator().next());
+            names.put(entry.getKey(), entry.getValue().getType());
         }
 
         for (ItemType itemType : game.getRegistry().getAllOf(ItemType.class))

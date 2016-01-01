@@ -20,7 +20,6 @@ package org.cubeengine.service.command.conversation;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandManager;
@@ -32,8 +31,8 @@ import org.cubeengine.service.user.UserManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.command.MessageSinkEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.command.CommandSource;
 
@@ -69,14 +68,14 @@ public abstract class ConversationCommand extends ContainerCommand
     }
 
     @Listener
-    public void onChatHandler(MessageSinkEvent.Chat event, @First Player player)
+    public void onChatHandler(MessageChannelEvent.Chat event, @First Player player)
     {
         if (this.hasUser(player))
         {
             player.sendMessage(Text.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
                                               WHITE, event.getMessage()));
 
-            Text message = event.getMessage();
+            Text message = event.getRawMessage();
             CommandInvocation invocation = newInvocation(player, message.toString()); // TODO
             this.execute(invocation);
 

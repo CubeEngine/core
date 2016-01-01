@@ -17,19 +17,18 @@
  */
 package org.cubeengine.service.user;
 
-import java.util.Collection;
-import java.util.Locale;
-import java.util.stream.StreamSupport;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.text.sink.MessageSinks;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.text.format.TextFormat;
 
 import javax.inject.Inject;
+import java.util.Collection;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;
@@ -41,9 +40,9 @@ public class Broadcaster
     @Inject private Game game;
     @Inject private I18n i18n;
 
-    private Iterable<CommandSource> getAll()
+    private Collection<MessageReceiver> getAll()
     {
-        return MessageSinks.toAll().getRecipients();
+        return MessageChannel.TO_ALL.getMembers();
     }
 
     private Collection<Player> getOnlinePlayers()
@@ -58,9 +57,8 @@ public class Broadcaster
         {
             return;
         }
-        StreamSupport.stream(getAll().spliterator(), false)
-            .filter(s -> perm == null || s.hasPermission(perm))
-            .forEach(s -> i18n.sendTranslated(s, format, message, params));
+        MessageChannel.permission(perm).getMembers().stream()
+                .forEach(s -> i18n.sendTranslated(s, format, message, params));
     }
 
     public void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params)
@@ -69,12 +67,8 @@ public class Broadcaster
         {
             return;
         }
-        StreamSupport.stream(getAll().spliterator(), false)
-                     .filter(s -> perm == null || s.hasPermission(perm))
-                     .forEach(s -> {
-                         Locale locale = s instanceof Player ? ((Player)s).getLocale() : i18n.getDefaultLanguage().getLocale();
-                         s.sendMessage(i18n.composeMessage(locale, format, message, params));
-                     });
+        MessageChannel.permission(perm).getMembers().stream()
+                .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
     }
 
     public void broadcastTranslated(TextFormat format, String message, Object... params)

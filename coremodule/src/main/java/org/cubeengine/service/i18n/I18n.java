@@ -64,6 +64,7 @@ import org.cubeengine.service.i18n.formatter.*;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.command.CommandSource;
 
@@ -348,31 +349,31 @@ public class I18n
         return service;
     }
 
-    public Text getTranslation(CommandSource source, TextFormat format, String message, Object... args)
+    public Text getTranslation(MessageReceiver source, TextFormat format, String message, Object... args)
     {
         return getTranslation(getLocale(source), format, message, args);
     }
 
-    public Text getTranslationN(CommandSource source, TextFormat format, int n, String singular, String plural, Object... args)
+    public Text getTranslationN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
     {
         return getTranslationN(getLocale(source), format, n, singular, plural, args);
     }
 
-    public void sendTranslated(CommandSource source, TextFormat format, String message, Object... args)
+    public void sendTranslated(MessageReceiver source, TextFormat format, String message, Object... args)
     {
         source.sendMessage(this.getTranslation(source, format, message, args));
     }
 
-    public void sendTranslatedN(CommandSource source, TextFormat format, int n, String singular, String plural, Object... args)
+    public void sendTranslatedN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
     {
         source.sendMessage(this.getTranslationN(source, format, n, singular, plural, args));
     }
 
-    private Locale getLocale(CommandSource source)
+    public Locale getLocale(MessageReceiver source)
     {
-        if (source instanceof Player)
+        if (source instanceof CommandSource)
         {
-            return ((Player)source).getLocale();
+            return ((CommandSource)source).getLocale();
         }
         // TODO locale of connections settings maybe one day in the far far future?
         // eventually (tm)

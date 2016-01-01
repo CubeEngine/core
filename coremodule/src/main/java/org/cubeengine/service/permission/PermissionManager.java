@@ -22,7 +22,8 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.service.ServiceReference;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
@@ -59,26 +60,27 @@ public class PermissionManager
     {
         this.game = game;
         plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
+        game.getEventManager().registerListeners(plugin, this);
     }
 
-    private void registerBasePermission()
+     private void registerBasePermission()
     {
-        if (!registered)
+        if (registered)
         {
-            registered = true;
-            ServiceReference<PermissionService> service = game.getServiceManager().potentiallyProvide(PermissionService.class);
-            service.executeWhenPresent(input -> {
-                PermissionDescription.Builder builder = input.newDescriptionBuilder(plugin).orElse(null);
-                if (builder == null)
-                {
-                    return;
-                }
-                builder.id("cubeengine");
-                builder.description(Text.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
-                builder.assign("permission:*", true);
-                builder.register();
-            });
+            return;
         }
+
+        registered = true;
+
+        PermissionDescription.Builder builder = this.permissionService.newDescriptionBuilder(plugin).orElse(null);
+        if (builder == null)
+        {
+            return;
+        }
+        builder.id("cubeengine");
+        builder.description(Text.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
+        builder.assign("permission:*", true);
+        builder.register();
     }
 
     private Set<String> getPermissions(Module module)

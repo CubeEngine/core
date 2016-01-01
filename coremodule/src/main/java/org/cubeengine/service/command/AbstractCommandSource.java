@@ -26,18 +26,17 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.sink.MessageSink;
-import org.spongepowered.api.text.sink.MessageSinks;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.command.CommandSource;
 
 public abstract class AbstractCommandSource implements CommandSource
 {
-    private MessageSink sink;
+    private MessageChannel channel;
 
     public AbstractCommandSource()
     {
-        this.sink = MessageSinks.toAll();
+        this.channel = MessageChannel.TO_ALL;
     }
 
     @Override
@@ -64,15 +63,15 @@ public abstract class AbstractCommandSource implements CommandSource
     protected abstract void sendMessage0(Text text);
 
     @Override
-    public MessageSink getMessageSink()
+    public MessageChannel getMessageChannel()
     {
-        return sink;
+        return channel;
     }
 
     @Override
-    public void setMessageSink(MessageSink sink)
+    public void setMessageChannel(MessageChannel channel)
     {
-        this.sink = sink;
+        this.channel = channel;
     }
 
     @Override
