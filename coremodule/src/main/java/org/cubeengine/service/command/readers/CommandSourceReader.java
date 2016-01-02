@@ -19,6 +19,7 @@ package org.cubeengine.service.command.readers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.cubeengine.butler.CommandInvocation;
@@ -28,6 +29,7 @@ import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 
 import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.command.TranslatedReaderException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -47,13 +49,20 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     @Override
     public CommandSource read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        if ("console".equalsIgnoreCase(invocation.currentToken()))
+        String token = invocation.currentToken();
+        if ("console".equalsIgnoreCase(token))
         {
             invocation.consume(1);
             return cm.getConsoleSender();
         }
 
-        return game.getServer().getPlayer(invocation.consume(1)).get();
+        Optional<Player> player = game.getServer().getPlayer(token);
+        if (!player.isPresent())
+        {
+            throw new ReaderException("Player {} not found", token);
+        }
+        invocation.consume(1);
+        return player.get();
     }
 
     @Override
