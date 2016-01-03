@@ -25,6 +25,7 @@ import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.spongepowered.api.entity.Tamer;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.User;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;
 
@@ -44,9 +45,14 @@ public class CommandSenderFormatter extends ReflectedFormatter
     }
 
     @Format
-    public Component format(Tamer tamer, Context context) // includes OfflinePlayer as it implements AnimalTamer
+    public Component format(Tamer tamer, Context context)
     {
         return this.format(tamer.getName(), context);
     }
 
+    @Format
+    public Component format(User user, Context context)
+    {
+        return this.format(user.getName(), context);
+    }
 }
