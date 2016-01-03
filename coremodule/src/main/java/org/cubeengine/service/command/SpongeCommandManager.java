@@ -169,10 +169,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new GeneratorTypeReader(), GeneratorType.class);
         providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);
 
-        UserListReader userListReader = new UserListReader(game);
-        providerManager.register(core, userListReader, UserList.class);
-
-        providerManager.register(core, userListReader, UserList.class);
+        providerManager.register(core, new UserListReader(game), UserList.class);
 
         providerManager.register(core, new ModuleCompleter(modularity), Module.class);
 

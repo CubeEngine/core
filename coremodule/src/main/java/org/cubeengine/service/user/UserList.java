@@ -31,6 +31,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.catalog.CatalogEntityData;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvisibilityData;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
 import static org.spongepowered.api.data.manipulator.catalog.CatalogEntityData.INVISIBILITY_DATA;
@@ -89,7 +90,7 @@ public class UserList
             if (sender instanceof Player)
             {
                 // TODO can see other???
-                return ((Player) sender).get(Keys.INVISIBLE).orElse(false);
+                return !((Player) sender).get(Keys.INVISIBLE).orElse(false);
             }
             return true;
         }
@@ -103,17 +104,13 @@ public class UserList
                 invocation.consume(1);
                 return new UserList(null, game);
             }
-            return new UserList((List<Player>)invocation.getManager().read(List.class, Player.class, invocation), game);
+            return new UserList((List<Player>)invocation.getManager().read(List.class, User.class, invocation), game);
         }
 
         @Override
         public List<String> getSuggestions(CommandInvocation invocation)
         {
             List<String> list = new ArrayList<>();
-            if (invocation.currentToken().isEmpty())
-            {
-                list.add("*");
-            }
 
             final CommandSource sender = invocation.getContext(CommandSource.class);
             for (Player player : game.getServer().getOnlinePlayers())
@@ -124,6 +121,12 @@ public class UserList
                     list.add(name);
                 }
             }
+
+            if (invocation.currentToken().isEmpty())
+            {
+                list.add("*");
+            }
+
             list.remove(sender.getName());
             // TODO complete actual lists
             return list;
