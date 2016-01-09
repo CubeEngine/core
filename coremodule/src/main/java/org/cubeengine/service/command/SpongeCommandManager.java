@@ -143,7 +143,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     public void onEnable()
     {
         providerManager.register(core, new PlayerCompleter(game), org.spongepowered.api.entity.living.player.User.class);
-        providerManager.register(core, new WorldCompleter(game.getServer()), World.class);
         providerManager.register(core, new PlayerListCompleter(game), PlayerListCompleter.class);
 
         providerManager.register(core, new ByteReader(i18n), Byte.class, byte.class);
@@ -170,8 +169,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);
 
         providerManager.register(core, new UserListReader(game), UserList.class);
-
-        providerManager.register(core, new ModuleCompleter(modularity), Module.class);
 
         em.registerListener(core, new PreCommandListener(core, i18n, stringMatcher, game)); // TODO register later?
     }

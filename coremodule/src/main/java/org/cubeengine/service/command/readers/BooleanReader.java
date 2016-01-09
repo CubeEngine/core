@@ -17,16 +17,17 @@
  */
 package org.cubeengine.service.command.readers;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
+
 import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
+import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.i18n.I18n;
 
 
-public class BooleanReader implements ArgumentReader<Boolean>
+public class BooleanReader implements ArgumentReader<Boolean>, Completer, DefaultValue<Boolean>
 {
     private final Set<String> yesStrings;
     private final Set<String> noStrings;
@@ -76,5 +77,27 @@ public class BooleanReader implements ArgumentReader<Boolean>
             }
         }
         return Boolean.parseBoolean(arg);
+    }
+
+    @Override
+    public List<String> getSuggestions(CommandInvocation invocation)
+    {
+        List<String> list = new ArrayList<>();
+        String token = invocation.currentToken();
+        if ("true".startsWith(token))
+        {
+            list.add("true");
+        }
+        if ("false".startsWith(token))
+        {
+            list.add("false");
+        }
+        return list;
+    }
+
+    @Override
+    public Boolean getDefault(CommandInvocation invocation)
+    {
+        return false;
     }
 }

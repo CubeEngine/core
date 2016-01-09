@@ -17,9 +17,12 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
@@ -32,9 +35,10 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
+import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 
-public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
+public class WorldReader implements ArgumentReader<World>, DefaultValue<World>, Completer
 {
     private final Game game;
     private final I18n i18n;
@@ -65,5 +69,20 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>
             return ((Player)invocation.getCommandSource()).getWorld();
         }
         throw new TooFewArgumentsException();
+    }
+
+    @Override
+    public List<String> getSuggestions(CommandInvocation invocation)
+    {
+        List<String> offers = new ArrayList<>();
+        for (World world : game.getServer().getWorlds())
+        {
+            final String name = world.getName();
+            if (startsWithIgnoreCase(name, invocation.currentToken()))
+            {
+                offers.add(name);
+            }
+        }
+        return offers;
     }
 }

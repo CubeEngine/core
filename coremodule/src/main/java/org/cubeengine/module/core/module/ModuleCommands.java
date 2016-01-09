@@ -19,21 +19,18 @@ package org.cubeengine.module.core.module;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 import java.util.Set;
-import org.cubeengine.butler.CommandInvocation;
+
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Flag;
 import org.cubeengine.butler.parametric.Reader;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
 import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.service.command.TranslatedReaderException;
+import org.cubeengine.service.command.readers.ModuleReader;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.sponge.CoreModule;
@@ -83,32 +80,6 @@ public class ModuleCommands extends ContainerCommand
             return;
         }
         i18n.sendTranslated(context, POSITIVE, "Source Version: unknown");
-    }
-
-    public static class ModuleReader implements ArgumentReader<Module>
-    {
-        private Modularity mm;
-        private I18n i18n;
-
-        public ModuleReader(Modularity mm, I18n i18n)
-        {
-            this.mm = mm;
-            this.i18n = i18n;
-        }
-
-        @Override
-        public Module read(Class type, CommandInvocation invocation) throws ReaderException
-        {
-            String name = invocation.consume(1);
-            for (LifeCycle module : this.mm.getModules())
-            {
-                if (((ModuleMetadata)module.getInformation()).getName().equals(name))
-                {
-                    return ((Module)module.getInstance());
-                }
-            }
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE,
-                                                                                 "The given module could not be found!"));        }
     }
 
     @Alias(value = "modules")

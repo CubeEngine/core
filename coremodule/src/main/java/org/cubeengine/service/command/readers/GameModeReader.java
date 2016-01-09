@@ -20,10 +20,20 @@ package org.cubeengine.service.command.readers;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
+import java.util.Collection;
+
 public class GameModeReader extends DefaultedCatalogTypeReader<GameMode>
 {
     public GameModeReader()
     {
         super(GameMode.class, GameModes.SURVIVAL);
+    }
+
+    @Override
+    protected Collection<GameMode> getAllOf()
+    {
+        Collection<GameMode> allOf = super.getAllOf();
+        allOf.remove(GameModes.NOT_SET);
+        return allOf;
     }
 }
