@@ -125,7 +125,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         this.consoleSender = game.getServer().getConsole();
 
-        this.builder = new CompositeCommandBuilder<>(new ParametricCommandBuilder(i18n));
+        this.builder = new CompositeCommandBuilder(new ParametricCommandBuilder(i18n));
 
         this.commandLogger = logFactory.getLog(CoreModule.class, "Commands");
 

@@ -18,10 +18,10 @@
 package org.cubeengine.service.command;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import org.cubeengine.butler.filter.Filters;
-import org.cubeengine.butler.parametric.Command;
-import org.cubeengine.butler.parametric.BasicParametricCommand;
-import org.cubeengine.butler.parametric.ParametricBuilder;
+import org.cubeengine.butler.parametric.*;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.ParameterPermission;
@@ -32,7 +32,7 @@ import org.cubeengine.service.i18n.I18n;
 
 import static org.cubeengine.butler.parameter.property.Requirement.isRequired;
 
-public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, CubeCommandDescriptor>
+public class ParametricCommandBuilder extends ParametricBuilder
 {
     private I18n i18n;
 
@@ -43,10 +43,9 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
     }
 
     @Override
-    protected Parameter createParameter(CubeCommandDescriptor descriptor, Class<?> clazz, Annotation[] annotations,
-                                        CommandOrigin origin, Object javaParameter)
+    protected Parameter createParameter(Type clazz, Annotation[] annotations, ParametricBuilder.LabelProvider javaParameter)
     {
-        Parameter parameter = super.createParameter(descriptor, clazz, annotations, origin, javaParameter);
+        Parameter parameter = super.createParameter(clazz, annotations, javaParameter);
 
         for (Annotation annotation : annotations)
         {
@@ -80,8 +79,8 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
     }
 
     @Override
-    protected CubeCommandDescriptor fillDescriptor(CubeCommandDescriptor descriptor, Command annotation,
-                                                   CommandOrigin origin)
+    protected ParametricCommandDescriptor fillDescriptor(ParametricCommandDescriptor descriptor, Command annotation,
+                                                   InvokableMethod origin)
     {
         super.fillDescriptor(descriptor, annotation, origin);
 
@@ -98,21 +97,23 @@ public class ParametricCommandBuilder extends ParametricBuilder<CommandOrigin, C
             group = perm.group();
         }
 
-        descriptor.setPermission(new RawPermission(permName + ".use", permDesc).assign(group), checkPerm);
+        CubeCommandDescriptor cDescriptor = (CubeCommandDescriptor) descriptor;
+
+        cDescriptor.setPermission(new RawPermission(permName + ".use", permDesc).assign(group), checkPerm);
 
         if (checkPerm)
         {
-            descriptor.addFilter(new PermissionFilter(descriptor.getPermission()));
+            descriptor.addFilter(new PermissionFilter(cDescriptor.getPermission()));
         }
 
-        descriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
+        cDescriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
 
-        descriptor.setModule(origin.getModule());
+        cDescriptor.setModule(((CommandOrigin) origin).getModule());
         return descriptor;
     }
 
     @Override
-    protected BasicParametricCommand build(Command annotation, CommandOrigin origin)
+    protected BasicParametricCommand build(Command annotation, InvokableMethod origin)
     {
         BasicParametricCommand command = super.build(annotation, origin);
         command.addCommand(new HelpCommand(command, i18n));
