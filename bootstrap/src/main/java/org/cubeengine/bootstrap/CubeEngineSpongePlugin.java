@@ -42,6 +42,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import javax.inject.Provider;
+
 import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -90,7 +92,6 @@ public class CubeEngineSpongePlugin
         {}
 
         modularity.register(Game.class, game);
-        // TODO wait for impl modularity.register(BanService.class, game.getServiceManager().provideUnchecked(BanService.class));
         modularity.register(Logger.class, pluginLogger);
         modularity.register(File.class, dataFolder);
         modularity.register(PermissionService.class, new ServiceProvider<>(PermissionService.class, () -> {
