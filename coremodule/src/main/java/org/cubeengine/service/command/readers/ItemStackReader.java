@@ -23,7 +23,7 @@ import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.module.core.util.matcher.MaterialMatcher;
+import org.cubeengine.service.matcher.MaterialMatcher;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

@@ -17,7 +17,7 @@
  */
 package org.cubeengine.service.task.worker;
 
-import org.cubeengine.module.core.contract.NotNull;
+import org.cubeengine.module.core.util.contract.NotNull;
 
 /**
  * This interface is used for queuing tasks.

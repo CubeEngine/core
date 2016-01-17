@@ -29,12 +29,10 @@ import java.util.StringTokenizer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
 
-import org.cubeengine.module.core.contract.Contract;
-
-import static org.cubeengine.module.core.contract.Contract.expect;
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
-
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class contains some utillities to work with Strings.
@@ -443,7 +441,7 @@ public final class StringUtils
 
     public static String randomString(Random random, int length, String charset)
     {
-        Contract.expect(length > 0, "The length must be greater than zero!");
+        checkArgument(length > 0, "The length must be greater than zero!");
 
         int upperLimit = charset.length();
         StringBuilder sb = new StringBuilder();
@@ -458,7 +456,7 @@ public final class StringUtils
 
     public static boolean isNumeric(String string)
     {
-        Contract.expectNotNull(string, "The string must not be null!");
+        checkNotNull(string, "The string must not be null!");
         final int len = string.length();
         if (len == 0)
         {

@@ -35,9 +35,10 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.cubeengine.module.core.sponge.CoreModule;
+import com.google.common.base.Preconditions;
+import org.cubeengine.module.core.CoreModule;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.file.attribute.PosixFilePermissions.fromString;
 
 
@@ -58,7 +59,7 @@ public class FileUtil
      */
     public static List<String> readStringList(Path file) throws IOException
     {
-        expectNotNull(file, "The file must not be null!");
+        checkNotNull(file, "The file must not be null!");
         try (BufferedReader reader = Files.newBufferedReader(file, CoreModule.CHARSET))
         {
             return readStringList(reader);
@@ -73,7 +74,7 @@ public class FileUtil
      */
     public static List<String> readStringList(InputStream stream) throws IOException
     {
-        expectNotNull(stream, "The stream may not be null!");
+        checkNotNull(stream, "The stream may not be null!");
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream)))
         {

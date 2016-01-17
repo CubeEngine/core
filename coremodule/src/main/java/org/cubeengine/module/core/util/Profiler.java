@@ -20,10 +20,9 @@ package org.cubeengine.module.core.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.google.common.base.Preconditions;
 
-import org.cubeengine.module.core.contract.Contract;
-
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class helps profiling code
@@ -48,7 +47,7 @@ public class Profiler
     public static long getCurrentDelta(String id)
     {
         final long nanos = System.nanoTime();
-        Contract.expectNotNull(id, "The ID must not be null!");
+        checkNotNull(id, "The ID must not be null!");
         synchronized (startTimes)
         {
             if (!startTimes.containsKey(id))
@@ -67,7 +66,7 @@ public class Profiler
     public static long endProfiling(String id)
     {
         final long delta = System.nanoTime();
-        Contract.expectNotNull(id, "The ID must not be null!");
+        checkNotNull(id, "The ID must not be null!");
         synchronized (startTimes)
         {
             return delta - startTimes.remove(id);

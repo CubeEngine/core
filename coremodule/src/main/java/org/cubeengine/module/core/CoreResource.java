@@ -33,25 +33,13 @@ public enum CoreResource implements Resource
 //    GERMAN_MESSAGES(
 //        "resources/language/messages/de_DE.json",
 //        "language/de_DE/core.json"),
-    ENCHANTMENTS(
-        "resources/enchantments.txt",
-        "data/enchantments.txt"),
-    ITEMS(
-        "resources/items.txt",
-        "data/items.txt"),
-    DATAVALUES(
-        "resources/datavalues.txt",
-        "data/datavalues.txt"),
-    ENTITIES(
-        "resources/entities.txt",
-        "data/entities.txt"),
     TIMES(
         "resources/times.txt",
         "data/times.txt");
     private final String target;
     private final String source;
 
-    private CoreResource(String source, String target)
+    CoreResource(String source, String target)
     {
         this.source = source;
         this.target = target;

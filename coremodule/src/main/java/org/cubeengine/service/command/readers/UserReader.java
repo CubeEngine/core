@@ -18,14 +18,14 @@
 package org.cubeengine.service.command.readers;
 
 import java.util.Locale;
+import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.user.UserManager;
-import org.cubeengine.service.i18n.formatter.MessageType;
+import org.cubeengine.service.matcher.UserMatcher;
 import org.spongepowered.api.entity.living.player.User;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
@@ -35,25 +35,25 @@ import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
  */
 public class UserReader implements ArgumentReader<User>, DefaultValue<User>
 {
-    private final UserManager um;
     private final I18n i18n;
+    private UserMatcher um;
 
-    public UserReader(UserManager um, I18n i18n)
+    public UserReader(I18n i18n, UserMatcher um)
     {
-        this.um = um;
         this.i18n = i18n;
+        this.um = um;
     }
 
     @Override
     public User read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        User user = um.findUser(arg);
-        if (user == null)
+        Optional<User> user = um.match(arg, false);
+        if (user.isPresent())
         {
             throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
-        return user;
+        return user.get();
     }
 
     @Override

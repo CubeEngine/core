@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import java.util.Optional;
+import com.google.common.base.Preconditions;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandBuilder;
@@ -46,7 +47,7 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 
-import org.cubeengine.module.core.util.matcher.*;
+import org.cubeengine.service.matcher.*;
 import org.cubeengine.service.command.completer.*;
 import org.cubeengine.service.command.exception.CommandExceptionHandler;
 import org.cubeengine.service.command.exception.UnknownExceptionHandler;
@@ -56,13 +57,12 @@ import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.service.permission.PermissionManager;
-import org.cubeengine.module.core.sponge.CoreModule;
-import org.cubeengine.module.core.sponge.EventManager;
+import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.user.UserList;
 import org.cubeengine.service.user.UserList.UserListReader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
-import org.cubeengine.service.world.WorldManager;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -70,6 +70,7 @@ import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -79,8 +80,8 @@ import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
-import static org.cubeengine.module.core.contract.Contract.expect;
-import static org.cubeengine.module.core.sponge.CoreModule.isMainThread;
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.cubeengine.module.core.CoreModule.isMainThread;
 
 @ServiceImpl(CommandManager.class)
 @Version(1)
@@ -109,9 +110,9 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private MaterialMatcher materialMatcher;
     @Inject private ProfessionMatcher professionMatcher;
     @Inject private EntityMatcher entityMatcher;
-    @Inject private WorldManager wm;
     @Inject private Modularity modularity;
     @Inject private StringMatcher stringMatcher;
+    @Inject private UserMatcher um;
 
     @Inject
     public SpongeCommandManager(CoreModule core, org.spongepowered.api.Game game, LogFactory logFactory, I18n i18n, FileManager fm)
@@ -142,7 +143,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Enable
     public void onEnable()
     {
-        providerManager.register(core, new PlayerCompleter(game), org.spongepowered.api.entity.living.player.User.class);
+        providerManager.register(core, new PlayerCompleter(game), User.class);
         providerManager.register(core, new PlayerListCompleter(game), PlayerListCompleter.class);
 
         providerManager.register(core, new ByteReader(i18n), Byte.class, byte.class);
@@ -161,7 +162,8 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);
         providerManager.register(core, new ProfessionReader(professionMatcher), Profession.class);
-        providerManager.register(core, new OfflinePlayerReader(game), org.spongepowered.api.entity.living.player.User.class);
+        providerManager.register(core, new UserReader(i18n, um), User.class);
+        providerManager.register(core, new FindUserReader(i18n, um));
         providerManager.register(core, new DimensionTypeReader(), DimensionType.class);
         providerManager.register(core, new GameModeReader(), GameMode.class);
         providerManager.register(core, new DifficultyReader(i18n), Difficulty.class);
@@ -234,13 +236,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    @Disable
-    public void clean() // TODO shutdown service
-    {
-        removeCommands();
-    }
-
-    @Override
     public boolean addCommand(CommandBase command)
     {
         Module module = core;
@@ -298,7 +293,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public boolean runCommand(CommandSource sender, String commandLine)
     {
-        expect(isMainThread(), "Commands may only be called synchronously!");
+        checkArgument(isMainThread(), "Commands may only be called synchronously!");
         if (sender == null)
         {
             return execute(new CommandInvocation(sender, commandLine, providerManager));

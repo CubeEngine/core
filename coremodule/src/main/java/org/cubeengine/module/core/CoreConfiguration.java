@@ -95,9 +95,10 @@ public class CoreConfiguration extends ReflectedYaml
 
         @Comment("Whether to log commands executed by players.")
         public boolean logCommands = false;
-
-        public boolean logDatabaseQueries = false;
     }
+
+    @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
+    public boolean catchSystemSignals = true;
 
     @Override
     public String[] head()

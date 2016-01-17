@@ -18,6 +18,7 @@
 package org.cubeengine.service.command.conversation;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.cubeengine.butler.CommandInvocation;
@@ -26,11 +27,11 @@ import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;
-import org.cubeengine.module.core.sponge.EventManager;
-import org.cubeengine.service.user.UserManager;
+import org.cubeengine.service.event.EventManager;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.command.TabCompleteEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
@@ -43,14 +44,12 @@ public abstract class ConversationCommand extends ContainerCommand
 {
     private final Set<UUID> usersInMode = new HashSet<>();
     private final CommandManager cm;
-    private final UserManager um;
 
     protected ConversationCommand(Module module)
     {
         super(module);
         module.getModularity().provide(EventManager.class).registerListener(module, this);
         cm = getModule().getModularity().provide(CommandManager.class);
-        um = getModule().getModularity().provide(UserManager.class);
         getDescriptor().setDispatcher(cm); // needed for exceptionhandler
         RawPermission permission = getDescriptor().getPermission();
         permission.registerPermission(module, module.getModularity().provide(PermissionManager.class), null);
@@ -88,23 +87,20 @@ public abstract class ConversationCommand extends ContainerCommand
         return new CommandInvocation(user, message, cm.getProviderManager());
     }
 
-    /* TODO Chat Tabcompletion Events
-    @Subscribe
-    public void onTabComplete(PlayerChatTabCompleteEvent event)
+    @Listener
+    public void onTabComplete(TabCompleteEvent.Chat event, @First Player player)
     {
-        User user = this.getModule().getCore().getUserManager().getExactUser(event.getPlayer().getUniqueId());
-        if (this.hasUser(user))
+        if (this.hasUser(player))
         {
             event.getTabCompletions().clear();
-            String message = event.getChatMessage();
-            List<String> suggestions = this.getSuggestions(newInvocation(user, message));
+            String message = event.getRawMessage();
+            List<String> suggestions = this.getSuggestions(newInvocation(player, message));
             if (suggestions != null)
             {
                 event.getTabCompletions().addAll(suggestions);
             }
         }
     }
-    */
 
     /**
      * Adds a user to this chat-commands internal list

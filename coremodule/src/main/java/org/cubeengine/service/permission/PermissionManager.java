@@ -17,13 +17,12 @@
  */
 package org.cubeengine.service.permission;
 
+import com.google.common.base.Preconditions;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
@@ -32,7 +31,7 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Registers permissions to the server.
@@ -175,7 +174,7 @@ public class PermissionManager
      */
     public void cleanup(Module module)
     {
-        expectNotNull(module, "The module must not be null!");
+        checkNotNull(module, "The module must not be null!");
         this.modulePermissionMap.remove(module);
     }
 

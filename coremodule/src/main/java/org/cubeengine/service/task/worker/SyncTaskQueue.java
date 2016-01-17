@@ -21,10 +21,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
-import org.cubeengine.module.core.sponge.CoreModule;
+import com.google.common.base.Preconditions;
+import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.task.TaskManager;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This TaskQueue will execute one task every serverTick.
@@ -69,7 +70,7 @@ public class SyncTaskQueue implements TaskQueue
         {
             return;
         }
-        expectNotNull(runnable, "The runnable must not be null!");
+        checkNotNull(runnable, "The runnable must not be null!");
 
         this.taskQueue.offer(runnable);
         this.start();

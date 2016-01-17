@@ -55,7 +55,7 @@ import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.logging.LoggingUtil;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.module.core.util.Version;
 import org.cubeengine.service.database.AbstractDatabase;
 import org.cubeengine.service.database.Database;
@@ -87,7 +87,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database
     private final Settings settings;
     private final MappedSchema mappedSchema;
     private Log logger;
-    private final JooqLogger jooqLogger = new JooqLogger(this); // TODO DB-Queries LogLevel target.setLevel(this.core.getConfiguration().logging.logDatabaseQueries ? LogLevel.ALL : LogLevel.NONE);
+    private final JooqLogger jooqLogger = new JooqLogger(this);
 
     @Inject
     public MySQLDatabase(Reflector reflector, File pluginFolder, Log logger, FileManager fm, LogFactory logFactory)
@@ -112,7 +112,6 @@ public class MySQLDatabase extends AbstractDatabase implements Database
         // Now go connect to the database:
         this.logger.info("Connecting to the database...");
         this.config = reflector.load(MySQLDatabaseConfiguration.class, new File(pluginFolder, "database.yml"));
-
 
         HikariConfig dsConf = new HikariDataSource();
         dsConf.setPoolName("CubeEngine");

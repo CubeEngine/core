@@ -33,8 +33,7 @@ import org.jooq.Result;
 import org.jooq.ResultQuery;
 import org.jooq.exception.DataAccessException;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Abstract Database implementing most of the database methods.
  * Extend this class and complement it to use the database.
@@ -165,7 +164,7 @@ public abstract class AbstractDatabase implements Database
     @Override
     public PreparedStatement prepareStatement(Connection connection, String statement) throws SQLException
     {
-        expectNotNull(statement, "The statement must not be null!");
+        checkNotNull(statement, "The statement must not be null!");
         return connection.prepareStatement(statement, PreparedStatement.RETURN_GENERATED_KEYS);
     }
 }

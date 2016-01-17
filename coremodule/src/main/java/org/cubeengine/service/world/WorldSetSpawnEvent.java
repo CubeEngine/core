@@ -20,7 +20,7 @@ package org.cubeengine.service.world;
 import com.flowpowered.math.vector.Vector3d;
 import de.cubeisland.engine.modularity.core.Module;
 
-import org.cubeengine.module.core.sponge.CubeEvent;
+import org.cubeengine.service.event.CubeEvent;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.Location;

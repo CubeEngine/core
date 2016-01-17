@@ -34,6 +34,13 @@
  */
 package org.cubeengine.service.task;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
@@ -41,12 +48,8 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
 
-import javax.inject.Inject;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
 
 @ServiceImpl(TaskManager.class)
 @Version(1)
@@ -88,8 +91,8 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public UUID runTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(runnable, "The runnable must not be null!");
+        checkNotNull(module, "The module must not be null!");
+        checkNotNull(runnable, "The runnable must not be null!");
 
         return addTaskId(module, scheduler.createTaskBuilder().delayTicks(delay).execute(runnable).submit(plugin));
     }
@@ -97,8 +100,8 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public UUID runTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(runnable, "The runnable must not be null!");
+        checkNotNull(module, "The module must not be null!");
+        checkNotNull(runnable, "The runnable must not be null!");
 
         return addTaskId(module, scheduler.createTaskBuilder().delayTicks(delay).intervalTicks(interval).execute(runnable).submit(plugin));
     }
@@ -112,8 +115,8 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public UUID runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay)
     {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(runnable, "The runnable must not be null!");
+        checkNotNull(module, "The module must not be null!");
+        checkNotNull(runnable, "The runnable must not be null!");
         return addTaskId(module, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }
 
@@ -127,8 +130,8 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public UUID runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval)
     {
-        expectNotNull(module, "The module must not be null!");
-        expectNotNull(runnable, "The runnable must not be null!");
+        checkNotNull(module, "The module must not be null!");
+        checkNotNull(runnable, "The runnable must not be null!");
 
         return addTaskId(module, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
     }

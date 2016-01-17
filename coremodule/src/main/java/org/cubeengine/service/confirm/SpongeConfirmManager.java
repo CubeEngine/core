@@ -23,14 +23,13 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import javax.inject.Inject;
+import com.google.common.base.Preconditions;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.CommandManager;
-import org.cubeengine.module.core.contract.Contract;
-import org.cubeengine.module.core.contract.NotNull;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.task.TaskManager;
 import org.cubeengine.module.core.util.Pair;
@@ -102,9 +101,9 @@ public class SpongeConfirmManager implements ConfirmManager
      * @return
      */
     @Override
-    public synchronized int countPendingConfirmations(@NotNull CommandSource sender)
+    public synchronized int countPendingConfirmations(CommandSource sender)
     {
-        Contract.expectNotNull(sender);
+        Preconditions.checkNotNull(sender);
         Queue<ConfirmResult> pendingConfirmations = this.pendingConfirmations.get(sender.getIdentifier());
         if (pendingConfirmations == null)
         {

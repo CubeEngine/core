@@ -20,7 +20,7 @@ package org.cubeengine.service.task.thread;
 import de.cubeisland.engine.logscribe.Log;
 
 import de.cubeisland.engine.logscribe.LogLevel;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.CoreModule;
 
 public class CoreThreadFactory extends BaseThreadFactory
 {

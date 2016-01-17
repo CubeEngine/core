@@ -20,7 +20,6 @@ package org.cubeengine.service.confirm;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.contract.NotNull;
 import org.spongepowered.api.command.CommandSource;
 
 @Service
@@ -29,7 +28,7 @@ public interface ConfirmManager
 {
     void registerConfirmation(ConfirmResult confirmResult, Module module, CommandSource sender);
 
-    int countPendingConfirmations(@NotNull CommandSource sender);
+    int countPendingConfirmations(CommandSource sender);
 
     ConfirmResult getLastPendingConfirmation(CommandSource sender);
 }

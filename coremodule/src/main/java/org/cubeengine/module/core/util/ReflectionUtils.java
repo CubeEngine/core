@@ -20,9 +20,7 @@ package org.cubeengine.module.core.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import org.cubeengine.module.core.contract.Contract;
-
-import static org.cubeengine.module.core.contract.Contract.expect;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class ReflectionUtils
 {
@@ -92,8 +90,7 @@ public class ReflectionUtils
 
     public static Field findFirstField(Class holder, Class<?> type, int superLevels)
     {
-        Contract.expect(superLevels >= 0, "The super levels must be positive!");
-
+        checkArgument(superLevels >= 0, "The super levels must be positive!");
         do
         {
             for (Field field : holder.getDeclaredFields())

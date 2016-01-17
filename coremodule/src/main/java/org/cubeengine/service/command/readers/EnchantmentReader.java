@@ -26,7 +26,7 @@ import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.module.core.util.matcher.EnchantMatcher;
+import org.cubeengine.service.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.entity.living.player.Player;

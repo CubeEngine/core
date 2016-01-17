@@ -20,7 +20,7 @@ package org.cubeengine.service.command.readers;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.module.core.util.matcher.ProfessionMatcher;
+import org.cubeengine.service.matcher.ProfessionMatcher;
 import org.spongepowered.api.data.type.Profession;
 
 public class ProfessionReader implements ArgumentReader<Profession>

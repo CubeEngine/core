@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.command.property.RawPermission;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;

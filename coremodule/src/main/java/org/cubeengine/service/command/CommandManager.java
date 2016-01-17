@@ -24,7 +24,6 @@ import org.cubeengine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.util.Cleanable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 
@@ -33,7 +32,7 @@ import org.spongepowered.api.command.source.ConsoleSource;
  */
 @Service
 @Version(1)
-public interface CommandManager extends Cleanable, Dispatcher
+public interface CommandManager extends Dispatcher
 {
     ProviderManager getProviderManager();
 

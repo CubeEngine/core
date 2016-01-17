@@ -22,8 +22,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.base.Preconditions;
 
-import static org.cubeengine.module.core.contract.Contract.expectNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This TaskQueue will execute all tasks in an async thread.
@@ -56,7 +57,7 @@ public class AsyncTaskQueue implements TaskQueue
         {
             return;
         }
-        expectNotNull(runnable, "The task must not be null!");
+        checkNotNull(runnable, "The task must not be null!");
 
         this.taskQueue.offer(runnable);
         this.start();

@@ -37,11 +37,11 @@ import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.contract.Contract;
 import de.cubeisland.engine.reflect.ReflectedFile;
 import de.cubeisland.engine.reflect.Reflector;
 import org.slf4j.Logger;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.file.Files.createSymbolicLink;
 
 
@@ -181,7 +181,7 @@ public class FileManager
      */
     public Path getResourceFile(Resource resource)
     {
-        Contract.expectNotNull(resource, "The resource must not be null!");
+        checkNotNull(resource, "The resource must not be null!");
 
         try
         {
@@ -203,7 +203,7 @@ public class FileManager
      */
     public void dropResources(Resource[] resources)
     {
-        Contract.expectNotNull(resources, "The resources must not be null!");
+        checkNotNull(resources, "The resources must not be null!");
 
         for (Resource resource : resources)
         {
@@ -223,9 +223,9 @@ public class FileManager
      */
     public Path dropResource(Class clazz, String resPath, Path file, boolean overwrite) throws IOException
     {
-        Contract.expectNotNull(clazz, "The class must not be null!");
-        Contract.expectNotNull(resPath, "The resource path must not be null!");
-        Contract.expectNotNull(file, "The file must not be null!");
+        checkNotNull(clazz, "The class must not be null!");
+        checkNotNull(resPath, "The resource path must not be null!");
+        checkNotNull(file, "The file must not be null!");
         if (Files.exists(file) && !Files.isRegularFile(file))
         {
             throw new IOException("The given file exists, but is no file!");

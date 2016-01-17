@@ -35,7 +35,10 @@ public class JooqLogger extends DefaultExecuteListener implements ExecuteListene
     @Override
     public void renderEnd(ExecuteContext ctx)
     {
-        database.getLog().debug(ctx.query().getSQL());
+        if (database.getDatabaseConfig().logDatabaseQueries)
+        {
+            database.getLog().debug(ctx.query().getSQL());
+        }
     }
 
     @Override

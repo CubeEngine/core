@@ -25,5 +25,5 @@ import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 @SuppressWarnings("all")
 public abstract class DatabaseConfiguration extends ReflectedYaml
 {
-
+    public boolean logDatabaseQueries = false;
 }

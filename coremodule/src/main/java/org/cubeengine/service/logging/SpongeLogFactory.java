@@ -25,7 +25,7 @@ import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.module.core.CoreModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 
@@ -52,15 +52,6 @@ public class SpongeLogFactory extends DefaultLogFactory
         exceptionAppender.start();
         ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender);
         baseTarget.getHandle().addAppender(exceptionAppender);
-    }
-
-    public void shutdown(Module module)
-    {
-        // TODO
-        Log log = null;
-        this.remove(log);
-        log.shutdown();
-
     }
 
     // TODO log-cycling on shutdown ?

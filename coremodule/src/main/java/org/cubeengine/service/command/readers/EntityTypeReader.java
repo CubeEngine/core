@@ -20,7 +20,7 @@ package org.cubeengine.service.command.readers;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.module.core.util.matcher.EntityMatcher;
+import org.cubeengine.service.matcher.EntityMatcher;
 import org.spongepowered.api.entity.EntityType;
 
 public class EntityTypeReader implements ArgumentReader<EntityType>

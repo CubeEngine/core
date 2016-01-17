@@ -17,8 +17,6 @@
  */
 package org.cubeengine.module.core;
 
-import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Desc;
@@ -29,9 +27,10 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.service.command.ContainerCommand;
-import org.cubeengine.module.core.sponge.CoreModule;
+import org.cubeengine.service.command.readers.FindUserReader;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.util.Profiler;
+
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.command.CommandSource;

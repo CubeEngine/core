@@ -57,12 +57,11 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
-import org.cubeengine.module.core.util.matcher.StringMatcher;
+import org.cubeengine.service.matcher.StringMatcher;
 import org.cubeengine.service.filesystem.FileExtensionFilter;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.formatter.*;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextFormat;
@@ -206,7 +205,7 @@ public class I18n
                 }
             }
 
-            urls.addAll(files.stream().map(file -> classLoader.getResource("/" + file)).collect(toList()));
+            urls.addAll(files.stream().map(file -> classLoader.getResource(file)).collect(toList()));
             return urls;
         }
         catch (IOException | URISyntaxException e)
