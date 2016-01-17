@@ -17,8 +17,6 @@
  */
 package org.cubeengine.service.task.worker;
 
-import org.cubeengine.module.core.util.contract.NotNull;
-
 /**
  * This interface is used for queuing tasks.
  */
@@ -30,7 +28,7 @@ public interface TaskQueue
      *
      * @param runnable the runnable to enqueue
      */
-    void addTask(@NotNull Runnable runnable);
+    void addTask(Runnable runnable);
 
     /**
      * Starts to execute the queued tasks.

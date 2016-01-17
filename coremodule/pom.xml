@@ -17,7 +17,6 @@
     <properties>
         <projectBase>${project.basedir}</projectBase>
         <minecraftVersion>1.8.3</minecraftVersion>
-        <bukkitVersion>${minecraftVersion}-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
 
     <repositories>
@@ -81,7 +80,7 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.11.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <!-- InHouse Libraries -->
         <dependency>
@@ -186,6 +185,14 @@
         <resources>
             <resource>
                 <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/java/</directory>
+                <includes>
+                    <include>**/CoreModule.java</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
                 <directory>${basedir}/src/main/resources/</directory>
                 <filtering>false</filtering>
             </resource>
@@ -245,28 +252,19 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
             <plugin>
-                <groupId>org.cubeengine.maven.plugins</groupId>
-                <artifactId>modulizer-maven-plugin</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
-                <configuration>
-                    <mainClass>org.cubeengine.module.core.CoreModule</mainClass>
-                    <annotationType>de.cubeisland.engine.modularity.asm.marker.SourceVersion</annotationType>
-                    <annotationValues>
-                        <value>"${project.version}"</value>
-                        <sourceVersion>"${sourceVersion}"</sourceVersion>
-                    </annotationValues>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
+                        <id>filter-src</id>
                         <goals>
-                            <goal>modulize</goal>
+                            <goal>filter-sources</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            -->
         </plugins>
     </build>
 </project>
