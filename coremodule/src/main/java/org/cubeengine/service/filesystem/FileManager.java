@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -36,7 +37,9 @@ import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.ModuleHandler;
 import de.cubeisland.engine.reflect.ReflectedFile;
 import de.cubeisland.engine.reflect.Reflector;
 import org.slf4j.Logger;
@@ -44,12 +47,11 @@ import org.slf4j.Logger;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.file.Files.createSymbolicLink;
 
-
 /**
  * Manages all the configurations of the CubeEngine.
  */
 @ServiceProvider(FileManager.class)
-public class FileManager
+public class FileManager implements ModuleHandler
 {
     @Inject private Logger logger;
     @Inject private Reflector reflector;
@@ -64,7 +66,7 @@ public class FileManager
     private FileAttribute<?>[] folderCreateAttributes;
 
     @Inject
-    public FileManager(File dataFolder)
+    public FileManager(File dataFolder, Modularity modularity)
     {
         this.dataFolder = dataFolder;
         try
@@ -103,6 +105,8 @@ public class FileManager
         {
             logger.info("Hiding the temp folder failed! This can be ignored!");
         }
+
+        modularity.registerHandler(this);
     }
 
     /**
@@ -275,7 +279,7 @@ public class FileManager
         return this.getResourceStream(this.fileSources.get(file));
     }
 
-    public  <T extends ReflectedFile<?, ?, ?>> T  loadConfig(Module module, Class<T> clazz)
+    public  <T extends ReflectedFile<?, ?, ?>> T loadConfig(Module module, Class<T> clazz)
     {
         T config = reflector.create(clazz);
         config.setFile(module.getProvided(Path.class).resolve("config." + config.getCodec().getExtension()).toFile());
@@ -297,5 +301,32 @@ public class FileManager
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void onEnable(Module module)
+    {
+        for (Field field : module.getClass().getDeclaredFields())
+        {
+            if (field.isAnnotationPresent(ModuleConfig.class))
+            {
+                ReflectedFile loaded = loadConfig(module, (Class<? extends ReflectedFile>)field.getType());
+                field.setAccessible(true);
+                try
+                {
+                    field.set(module, loaded);
+                }
+                catch (IllegalAccessException e)
+                {
+                    throw new IllegalStateException("Could not set configuration for " + module.getInformation().getName(), e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDisable(Module module)
+    {
+        // do nothing
     }
 }

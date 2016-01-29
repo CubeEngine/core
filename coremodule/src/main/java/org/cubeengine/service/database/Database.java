@@ -104,11 +104,11 @@ public interface Database
 
     CompletableFuture<DatabaseMetaData> getMetaData();
 
-    public void registerTable(TableCreator<?> table);
+    void registerTable(TableCreator<?> table);
 
-    public void registerTable(Class<? extends Table<?>> table);
+    void registerTable(Class<? extends Table<?>> table);
 
-    public DatabaseConfiguration getDatabaseConfig();
+    DatabaseConfiguration getDatabaseConfig();
 
     DSLContext getDSL();
 

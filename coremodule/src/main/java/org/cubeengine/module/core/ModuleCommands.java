@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
+import de.cubeisland.engine.modularity.core.LifeCycle.State;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Flag;
@@ -39,6 +40,8 @@ import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.module.core.util.ChatFormat;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.*;
 
@@ -96,8 +99,14 @@ public class ModuleCommands extends ContainerCommand
         context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
         for (LifeCycle module : modules)
         {
-            context.sendMessage(" + " + ChatFormat.BRIGHT_GREEN + ((ModuleMetadata)module.getInformation()).getName());
-            // TODO not enabled modules?
+            if (module.isIn(State.ENABLED))
+            {
+                context.getSource().sendMessage(Text.of(" + ", TextColors.GREEN, ((ModuleMetadata)module.getInformation()).getName()));
+            }
+            else
+            {
+                context.getSource().sendMessage(Text.of(" - ", TextColors.RED, ((ModuleMetadata)module.getInformation()).getName()));
+            }
         }
     }
 

@@ -51,8 +51,12 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.LogTarget;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.ModuleHandler;
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import org.cubeengine.service.database.ModuleTables;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.module.core.CoreModule;
@@ -79,7 +83,7 @@ import org.jooq.impl.DefaultConfiguration;
 
 @ServiceImpl(Database.class)
 @de.cubeisland.engine.modularity.asm.marker.Version(1)
-public class MySQLDatabase extends AbstractDatabase implements Database
+public class MySQLDatabase extends AbstractDatabase implements Database, ModuleHandler
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
@@ -90,7 +94,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database
     private final JooqLogger jooqLogger = new JooqLogger(this);
 
     @Inject
-    public MySQLDatabase(Reflector reflector, File pluginFolder, Log logger, FileManager fm, LogFactory logFactory)
+    public MySQLDatabase(Reflector reflector, File pluginFolder, Log logger, FileManager fm, LogFactory logFactory, Modularity modularity)
     {
         // Disable HikariPool Debug ConsoleSpam
         ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
@@ -162,6 +166,8 @@ public class MySQLDatabase extends AbstractDatabase implements Database
         this.settings.setExecuteLogging(false);
 
         this.logger.info("connected!");
+
+        modularity.registerHandler(this);
     }
 
     private boolean updateTableStructure(TableUpdateCreator updater)
@@ -303,5 +309,24 @@ public class MySQLDatabase extends AbstractDatabase implements Database
     public Log getLog()
     {
         return logger;
+    }
+
+    @Override
+    public void onEnable(Module module)
+    {
+        ModuleTables annotation = module.getClass().getAnnotation(ModuleTables.class);
+        if (annotation != null)
+        {
+            for (Class<? extends Table<?>> tableClass : annotation.value())
+            {
+                registerTable(tableClass);
+            }
+        }
+    }
+
+    @Override
+    public void onDisable(Module module)
+    {
+        // nothing here
     }
 }

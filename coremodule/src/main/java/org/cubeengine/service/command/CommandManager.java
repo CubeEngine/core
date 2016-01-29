@@ -44,18 +44,6 @@ public interface CommandManager extends Dispatcher
      */
     void removeCommand(String name, boolean completely);
 
-    /**
-     * Removes all commands of a module
-     *
-     * @param module the module
-     */
-    void removeCommands(Module module);
-
-    /**
-     * Removes all commands of the CubeEngine
-     */
-    void removeCommands();
-
     boolean runCommand(CommandSource sender, String commandLine);
 
     ConsoleSource getConsoleSender();

@@ -26,7 +26,9 @@ import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
 import com.google.common.base.Preconditions;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.ModuleHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Event;
 
@@ -36,18 +38,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This class manages all Event-(Un-)Registration and fires Events.
  */
 @ServiceProvider(EventManager.class)
-public class EventManager
+public class EventManager implements ModuleHandler
 {
     private final ConcurrentMap<Module, Set<Object>> listenerMap;
     private final org.spongepowered.api.event.EventManager eventManager;
     private final Object plugin;
 
     @Inject
-    public EventManager(Game game)
+    public EventManager(Game game, Modularity modularity)
     {
         this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
         this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
+
+        modularity.registerHandler(this);
     }
 
     /**
@@ -94,21 +98,14 @@ public class EventManager
      * Removes all listeners of the given module
      *
      * @param module te module
-     * @return fluent interface
      */
-    public EventManager removeListeners(Module module)
+    private void removeListeners(Module module)
     {
-        checkNotNull(module, "The module must not be null!");
-
         Set<Object> listeners = this.listenerMap.remove(module);
         if (listeners != null)
         {
-            for (Object listener : listeners)
-            {
-                eventManager.unregisterListeners(listener);
-            }
+            listeners.forEach(eventManager::unregisterListeners);
         }
-        return this;
     }
 
     /**
@@ -138,5 +135,17 @@ public class EventManager
     {
         this.eventManager.post(event);
         return event;
+    }
+
+    @Override
+    public void onEnable(Module module)
+    {
+        // TODO maybe register all Listener automagically?
+    }
+
+    @Override
+    public void onDisable(Module module)
+    {
+        removeListeners(module);
     }
 }

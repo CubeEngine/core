@@ -22,12 +22,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
-import java.util.Optional;
-import com.google.common.base.Preconditions;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
+import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandBuilder;
 import org.cubeengine.butler.CommandDescriptor;
@@ -39,30 +47,47 @@ import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.parametric.BasicParametricCommand;
 import org.cubeengine.butler.parametric.CompositeCommandBuilder;
 import org.cubeengine.butler.parametric.ParametricBuilder;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.core.marker.Disable;
-import de.cubeisland.engine.modularity.core.marker.Enable;
-import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
-
-import org.cubeengine.service.matcher.*;
-import org.cubeengine.service.command.completer.*;
+import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.command.completer.PlayerCompleter;
+import org.cubeengine.service.command.completer.PlayerListCompleter;
 import org.cubeengine.service.command.exception.CommandExceptionHandler;
 import org.cubeengine.service.command.exception.UnknownExceptionHandler;
 import org.cubeengine.service.command.exception.UnknownSourceExceptionHandler;
-import org.cubeengine.service.command.readers.*;
+import org.cubeengine.service.command.readers.BooleanReader;
+import org.cubeengine.service.command.readers.ByteReader;
+import org.cubeengine.service.command.readers.CommandSourceReader;
+import org.cubeengine.service.command.readers.DifficultyReader;
+import org.cubeengine.service.command.readers.DimensionTypeReader;
+import org.cubeengine.service.command.readers.DoubleReader;
+import org.cubeengine.service.command.readers.DyeColorReader;
+import org.cubeengine.service.command.readers.EnchantmentReader;
+import org.cubeengine.service.command.readers.EntityTypeReader;
+import org.cubeengine.service.command.readers.FindUserReader;
+import org.cubeengine.service.command.readers.FloatReader;
+import org.cubeengine.service.command.readers.GameModeReader;
+import org.cubeengine.service.command.readers.GeneratorTypeReader;
+import org.cubeengine.service.command.readers.IntReader;
+import org.cubeengine.service.command.readers.ItemStackReader;
+import org.cubeengine.service.command.readers.LogLevelReader;
+import org.cubeengine.service.command.readers.LongReader;
+import org.cubeengine.service.command.readers.ProfessionReader;
+import org.cubeengine.service.command.readers.ShortReader;
+import org.cubeengine.service.command.readers.UserReader;
+import org.cubeengine.service.command.readers.WorldReader;
+import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.logging.LoggingUtil;
+import org.cubeengine.service.matcher.EnchantMatcher;
+import org.cubeengine.service.matcher.EntityMatcher;
+import org.cubeengine.service.matcher.MaterialDataMatcher;
+import org.cubeengine.service.matcher.MaterialMatcher;
+import org.cubeengine.service.matcher.ProfessionMatcher;
+import org.cubeengine.service.matcher.StringMatcher;
+import org.cubeengine.service.matcher.UserMatcher;
 import org.cubeengine.service.permission.PermissionManager;
-import org.cubeengine.module.core.CoreModule;
-import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.user.UserList;
 import org.cubeengine.service.user.UserList.UserListReader;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogLevel;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -85,7 +110,7 @@ import static org.cubeengine.module.core.CoreModule.isMainThread;
 
 @ServiceImpl(CommandManager.class)
 @Version(1)
-public class SpongeCommandManager extends DispatcherCommand implements CommandManager
+public class SpongeCommandManager extends DispatcherCommand implements CommandManager, ModuleHandler
 {
     private final ConsoleSource consoleSender;
     private final Log commandLogger;
@@ -110,12 +135,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private MaterialMatcher materialMatcher;
     @Inject private ProfessionMatcher professionMatcher;
     @Inject private EntityMatcher entityMatcher;
-    @Inject private Modularity modularity;
     @Inject private StringMatcher stringMatcher;
     @Inject private UserMatcher um;
 
     @Inject
-    public SpongeCommandManager(CoreModule core, org.spongepowered.api.Game game, LogFactory logFactory, I18n i18n, FileManager fm)
+    public SpongeCommandManager(CoreModule core, org.spongepowered.api.Game game, LogFactory logFactory, I18n i18n, FileManager fm, Modularity modularity)
     {
         super(new CommandManagerDescriptor());
         this.core = core;
@@ -138,10 +162,12 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
         providerManager.register(this, new LocaleContextValue(i18n), Locale.class);
+
+        modularity.registerHandler(this);
     }
 
     @Enable
-    public void onEnable()
+    public void enable()
     {
         providerManager.register(core, new PlayerCompleter(game), User.class);
         providerManager.register(core, new PlayerListCompleter(game), PlayerListCompleter.class);
@@ -219,20 +245,13 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         return this.builder;
     }
 
-    @Override
-    public void removeCommands(Module module)
+    private void removeCommands(Module module)
     {
         Set<CommandMapping> byModule = mappings.get(module);
         if (byModule != null)
         {
             byModule.forEach(baseDispatcher::removeMapping);
         }
-    }
-
-    @Override
-    public void removeCommands()
-    {
-        // TODO remove all registered commands by us
     }
 
     @Override
@@ -366,5 +385,18 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     public void addCommands(Module module, Object commandHolder)
     {
         this.addCommands(this, module, commandHolder);
+    }
+
+
+    @Override
+    public void onEnable(Module module)
+    {
+        // TODO automagically register commands?
+    }
+
+    @Override
+    public void onDisable(Module module)
+    {
+        removeCommands(module);
     }
 }

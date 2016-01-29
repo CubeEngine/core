@@ -17,49 +17,50 @@
  */
 package org.cubeengine.service.permission;
 
-import com.google.common.base.Preconditions;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.i18n.I18n;
+import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.reflect.ReflectedFile;
+import org.cubeengine.service.filesystem.ModuleConfig;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
-
-import javax.inject.Inject;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Registers permissions to the server.
  */
 @ServiceProvider(PermissionManager.class)
 @Version(1)
-public class PermissionManager
+public class PermissionManager implements ModuleHandler
 {
-    // TODO Modularity Events e.g. to react on shutdown of modules
-
     private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
     private final Map<Module, PermissionDescription> modulePermissions = new HashMap<>();
     private final Map<String, PermissionDescription> permissions = new HashMap<>();
 
     private final Object plugin;
-    private Game game;
 
     private boolean registered = false;
 
     @Inject private PermissionService permissionService;
-    @Inject private I18n i18n;
 
     @Inject
-    public PermissionManager(Game game)
+    public PermissionManager(Game game, Modularity modularity)
     {
-        this.game = game;
         plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
-        game.getEventManager().registerListeners(plugin, this);
+        modularity.registerHandler(this);
     }
 
      private void registerBasePermission()
@@ -168,17 +169,6 @@ public class PermissionManager
     }
 
     /**
-     * Removes all the permissions of the given module
-     *
-     * @param module the module
-     */
-    public void cleanup(Module module)
-    {
-        checkNotNull(module, "The module must not be null!");
-        this.modulePermissionMap.remove(module);
-    }
-
-    /**
      * Returns the permission node with given name or {@link Optional#empty()} ()} if not found
      * @param permission the permissions name
      * @return the permission if found
@@ -186,5 +176,34 @@ public class PermissionManager
     public PermissionDescription getPermission(String permission)
     {
         return permissions.get(permission);
+    }
+
+
+    @Override
+    public void onEnable(Module module)
+    {
+        for (Field field : module.getClass().getDeclaredFields())
+        {
+            if (field.isAnnotationPresent(ModulePermissions.class))
+            {
+                try
+                {
+                    Object container = field.getType().getConstructors()[0].newInstance(module);
+                    field.setAccessible(true);
+                    field.set(module, container);
+                }
+                catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
+                {
+                    throw new IllegalStateException("Could not set configuration for " + module.getInformation().getName(), e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDisable(Module module)
+    {
+        this.modulePermissionMap.remove(module);
+        // It is not possible to remove registered PermissionDescriptions from Sponge
     }
 }
