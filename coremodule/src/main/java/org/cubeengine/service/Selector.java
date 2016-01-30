@@ -22,6 +22,7 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.module.core.util.math.shape.Shape;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 @Service
 @Version(1)
@@ -59,7 +60,7 @@ public interface Selector
      * @param user the user
      * @return the first selected position
      */
-    Location getFirstPoint(Player user);
+    Location<World> getFirstPoint(Player user);
 
     /**
      * Gets the second position
@@ -67,7 +68,7 @@ public interface Selector
      * @param user the user
      * @return the second selected position
      */
-    Location getSecondPoint(Player user);
+    Location<World> getSecondPoint(Player user);
 
     /**
      * Gets the n-th position in the current shape
@@ -76,5 +77,5 @@ public interface Selector
      * @param index the index
      * @return the Location
      */
-    Location getPoint(Player user, int index);
+    Location<World> getPoint(Player user, int index);
 }
