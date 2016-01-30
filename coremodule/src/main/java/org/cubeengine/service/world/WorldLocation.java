@@ -43,7 +43,7 @@ public class WorldLocation
         this.rz = rz;
     }
 
-    public WorldLocation(Location location, Vector3d rotation)
+    public WorldLocation(Location<World> location, Vector3d rotation)
     {
         this.x = location.getX();
         this.y = location.getY();

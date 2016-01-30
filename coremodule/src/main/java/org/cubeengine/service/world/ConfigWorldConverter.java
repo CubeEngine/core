@@ -46,6 +46,6 @@ public class ConfigWorldConverter extends SimpleConverter<ConfigWorld>
         {
             name = name.substring(0, name.indexOf("{"));
         }
-        return new ConfigWorld(game, name);
+        return new ConfigWorld(name);
     }
 }

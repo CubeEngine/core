@@ -17,24 +17,21 @@
  */
 package org.cubeengine.service.world;
 
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 
 public class ConfigWorld
 {
-    private final org.spongepowered.api.Game game;
     private World world;
     private String name;
 
-    public ConfigWorld(Game game, String world)
+    public ConfigWorld(String world)
     {
-        this.game = game;
         this.name = world;
     }
 
-    public ConfigWorld(Game game, World world)
+    public ConfigWorld(World world)
     {
-        this.game = game;
         this.name = world.getName();
         this.world = world;
     }
@@ -48,7 +45,7 @@ public class ConfigWorld
     {
         if (this.world == null || !this.world.getName().equals(this.name))
         {
-            this.world = this.game.getServer().getWorld(name).get();
+            this.world = Sponge.getServer().getWorld(name).get();
         }
         return this.world;
     }
