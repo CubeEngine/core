@@ -129,6 +129,11 @@ public class CoreModule extends Module
         manager.registerConverter(new LevelConverter(), LogLevel.class);
         manager.registerConverter(new WorldConverter(game.getServer()), World.class);
         manager.registerConverter(new UserConverter(um), User.class);
+        manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
+        manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
+        manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
+        manager.registerConverter(new ConfigWorldConverter(), ConfigWorld.class);
+        manager.registerConverter(new LocationConverter(), Location.class);
     }
 
     @Enable
@@ -136,14 +141,6 @@ public class CoreModule extends Module
     {
         ((I18nLanguageLoader)i18n.getBackend().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
-
-        ConverterManager manager = reflector.getDefaultConverterManager();
-        manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
-        manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
-        manager.registerConverter(new EnchantmentConverter(getModularity().provide(EnchantMatcher.class)), Enchantment.class);
-        manager.registerConverter(new ConfigWorldConverter(game), ConfigWorld.class);
-        manager.registerConverter(new LocationConverter(game), Location.class);
-
 
         fm.dropResources(CoreResource.values());
 
