@@ -25,13 +25,6 @@ import org.spongepowered.api.Game;
 
 public class ConfigWorldConverter extends SimpleConverter<ConfigWorld>
 {
-    private final Game game;
-
-    public ConfigWorldConverter(Game game)
-    {
-        this.game = game;
-    }
-
     @Override
     public Node toNode(ConfigWorld configWorld) throws ConversionException
     {
