@@ -27,6 +27,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.task.TaskManager;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -40,7 +41,6 @@ public class InventoryGuard
     private EventManager em;
     private TaskManager tm;
     private final Inventory inventory;
-    private Game game;
     private final HashSet<UUID> users;
     private Module module;
 
@@ -56,12 +56,11 @@ public class InventoryGuard
 
     private boolean ignoreRepaircost = true;
 
-    public InventoryGuard(EventManager em, TaskManager tm, Inventory inventory, UUID[] users, Game game)
+    public InventoryGuard(EventManager em, TaskManager tm, Inventory inventory, UUID[] users)
     {
         this.em = em;
         this.tm = tm;
         this.inventory = inventory;
-        this.game = game;
         this.users = new HashSet<>(Arrays.asList(users));
     }
 
@@ -78,7 +77,7 @@ public class InventoryGuard
         {
             for (UUID user : users)
             {
-                Optional<Player> player = game.getServer().getPlayer(user);
+                Optional<Player> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
                     player.get().openInventory(this.inventory);
