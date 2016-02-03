@@ -206,4 +206,14 @@ public class PermissionManager implements ModuleHandler
         this.modulePermissionMap.remove(module);
         // It is not possible to remove registered PermissionDescriptions from Sponge
     }
+
+    public PermissionDescription getPermission(Module module, String permission)
+    {
+        PermissionDescription perm = getPermission(getModulePermission(module).getId() + "." + permission);
+        if (perm == null)
+        {
+            throw new IllegalArgumentException("Permission does not exists in this module or is not yet registered");
+        }
+        return perm;
+    }
 }

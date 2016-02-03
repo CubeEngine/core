@@ -17,8 +17,12 @@
  */
 package org.cubeengine.service.matcher;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.module.core.util.StringUtils;
 
@@ -28,11 +32,40 @@ import org.cubeengine.module.core.util.StringUtils;
 @ServiceProvider(TimeMatcher.class)
 public class TimeMatcher
 {
-    /**
-     * Parse time
-     * @param time
-     * @return
-     */
+    private Map<String, Long> times = new HashMap<>();
+
+    @Inject private StringMatcher sm;
+
+    public TimeMatcher()
+    {
+        times.put("day", 6000L);
+        times.put("night", 18000L);
+        /*
+        0:
+        sunrise
+        morning
+        3000:
+        forenoon
+        6000:
+        day
+        noon
+        9000:
+        afternoon
+        13000:
+        dusk
+        moonrise
+        15000:
+        evening
+        even
+        sunset
+        18000:
+        night
+        midnight
+        22500:
+        dawn
+        */
+    }
+
     public Long parseTime(String time)
     {
         if (time == null)
@@ -131,4 +164,32 @@ public class TimeMatcher
     public final int LIGHT_SHIFT = HALF_DAY / 2;
     public final double TICKS_TO_MINUTES = (double)TICKS_PER_DAY / 1440D;
     private static final Pattern PARSE_TIME_PATTERN = Pattern.compile("^([012]?\\d)(?::(\\d{2}))?(pm|am)?$", Pattern.CASE_INSENSITIVE);
+
+    public Long matchTimeValue(String time)
+    {
+        time = sm.matchString(time, times.keySet());
+        if (time == null)
+        {
+            return null;
+        }
+        return times.get(time);
+    }
+
+    public String matchTimeName(Long time)
+    {
+        Entry<String, Long> match = null;
+        time = time % 24000;
+        for (Entry<String, Long> entry : times.entrySet())
+        {
+            if (match == null)
+            {
+                match = entry;
+            }
+            else if (Math.abs(match.getValue() - time) > Math.abs(entry.getValue() - time))
+            {
+                match = entry;
+            }
+        }
+        return match.getKey();
+    }
 }
