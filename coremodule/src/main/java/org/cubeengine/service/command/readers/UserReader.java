@@ -49,7 +49,7 @@ public class UserReader implements ArgumentReader<User>, DefaultValue<User>
     {
         String arg = invocation.consume(1);
         Optional<User> user = um.match(arg, false);
-        if (user.isPresent())
+        if (!user.isPresent())
         {
             throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
