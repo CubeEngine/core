@@ -40,7 +40,6 @@ import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.SourceVersion;
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
@@ -79,7 +78,6 @@ import static org.cubeengine.service.logging.LoggingUtil.getCycler;
 import static org.cubeengine.service.logging.LoggingUtil.getFileFormat;
 import static org.cubeengine.service.logging.LoggingUtil.getLogFile;
 
-@SourceVersion(value = "${project.version}", sourceVersion = "${sourceVersion}")
 @ModuleInfo(name = "CoreModule", description = "The core module of CubeEngine")
 public class CoreModule extends Module
 {
