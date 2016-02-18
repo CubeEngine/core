@@ -67,6 +67,7 @@ import org.cubeengine.service.world.ConfigWorld;
 import org.cubeengine.service.world.ConfigWorldConverter;
 import org.joda.time.Duration;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.ItemType;
@@ -83,26 +84,15 @@ public class CoreModule extends Module
 {
     public static final Charset CHARSET = Charset.forName("UTF-8");
 
-    //region Core fields
     private CoreConfiguration config;
-    //endregion
 
-    private List<Runnable> initHooks = Collections.synchronizedList(new LinkedList<>());
     private FreezeDetection freezeDetection;
 
-    @Inject private Game game;
     @Inject private Path moduleFolder;
-    @Inject private File pluginFolder;
-    @Inject private org.slf4j.Logger pluginLogger;
-    @Inject private TaskManager tm;
-    @Inject private FileManager fm;
+    //@Inject private File pluginFolder;
+    //@Inject private org.slf4j.Logger pluginLogger;
     @Inject private Reflector reflector;
     @Inject private Log logger;
-    @Inject private ThreadFactory tf;
-    @Inject private LogFactory logFactory;
-    @Inject private I18n i18n;
-    @Inject private CommandManager cm;
-    @Inject private UserMatcher um;
 
     private static Thread mainThread = Thread.currentThread();
 
@@ -116,8 +106,9 @@ public class CoreModule extends Module
         return mainThread;
     }
 
+    @Inject
     @Setup
-    public void onSetup()
+    public void onSetup(UserMatcher um)
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
@@ -125,7 +116,7 @@ public class CoreModule extends Module
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new WorldConverter(game.getServer()), World.class);
+        manager.registerConverter(new WorldConverter(Sponge.getServer()), World.class);
         manager.registerConverter(new UserConverter(um), User.class);
         manager.registerConverter(new ItemStackConverter(getModularity().provide(MaterialMatcher.class)), ItemStack.class);
         manager.registerConverter(new MaterialConverter(getModularity().provide(MaterialMatcher.class)), ItemType.class);
@@ -134,8 +125,9 @@ public class CoreModule extends Module
         manager.registerConverter(new LocationConverter(), Location.class);
     }
 
+    @Inject
     @Enable
-    public void onEnable()
+    public void onEnable(CommandManager cm, TaskManager tm, FileManager fm, ThreadFactory tf, LogFactory logFactory, I18n i18n)
     {
         ((I18nLanguageLoader)i18n.getBackend().getLanguageLoader()).provideLanguages(this);
         i18n.registerModule(this);
@@ -166,20 +158,6 @@ public class CoreModule extends Module
             CommandLogging.disable();
         }
 
-        Iterator<Runnable> it = this.initHooks.iterator();
-        while (it.hasNext())
-        {
-            try
-            {
-                it.next().run();
-            }
-            catch (Exception ex)
-            {
-                this.getLog().error(ex, "An error occurred during startup!");
-            }
-            it.remove();
-        }
-
         this.freezeDetection = new FreezeDetection(this, tm, 20);
         this.freezeDetection.addListener(this::dumpThreads);
         this.freezeDetection.start();
@@ -187,7 +165,7 @@ public class CoreModule extends Module
         cm.logCommands(getConfiguration().logging.logCommands);
 
         // depends on: server, module manager, ban manager
-        cm.addCommand(new ModuleCommands(this, getModularity(), game.getPluginManager(), cm, fm, i18n));
+        cm.addCommand(new ModuleCommands(this, getModularity(), Sponge.getPluginManager(), cm, fm, i18n));
         cm.addCommand(new CoreCommands(this, i18n));
     }
 
@@ -204,13 +182,6 @@ public class CoreModule extends Module
         }
 
         Profiler.clean();
-    }
-
-    public void addInitHook(Runnable runnable)
-    {
-        Preconditions.checkNotNull(runnable, "The runnble must not be null!");
-
-        this.initHooks.add(runnable);
     }
 
     public void dumpThreads()
@@ -265,7 +236,6 @@ public class CoreModule extends Module
         writer.write("\n\n\n");
     }
 
-    //region Core getters
     public String getVersion()
     {
         return this.getInformation().getVersion();
@@ -278,6 +248,10 @@ public class CoreModule extends Module
 
     public Log getLog()
     {
+        if (logger == null)
+        {
+            throw new IllegalStateException();
+        }
         return this.logger;
     }
 
@@ -286,11 +260,4 @@ public class CoreModule extends Module
     {
         return this.config;
     }
-
-    public Game getGame()
-    {
-        return game;
-    }
-
-    //endregion
 }

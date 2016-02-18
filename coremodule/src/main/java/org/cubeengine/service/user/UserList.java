@@ -26,15 +26,13 @@ import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.catalog.CatalogEntityData;
-import org.spongepowered.api.data.manipulator.mutable.entity.InvisibilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 
 import static org.cubeengine.module.core.util.StringUtils.startsWithIgnoreCase;
-import static org.spongepowered.api.data.manipulator.catalog.CatalogEntityData.INVISIBILITY_DATA;
 
 /**
  * Represents a list of users.
@@ -45,11 +43,9 @@ public class UserList
 {
     private final List<Player> list;
     private final boolean all;
-    private final Game game;
 
-    public UserList(List<Player> list, Game game)
+    public UserList(List<Player> list)
     {
-        this.game = game;
         if (list == null)
         {
             all = true;
@@ -66,7 +62,7 @@ public class UserList
     {
         if (all)
         {
-            return game.getServer().getOnlinePlayers();
+            return Sponge.getServer().getOnlinePlayers();
         }
         return list;
     }
@@ -102,9 +98,9 @@ public class UserList
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
-                return new UserList(null, game);
+                return new UserList(null);
             }
-            return new UserList((List<Player>)invocation.getManager().read(List.class, User.class, invocation), game);
+            return new UserList((List<Player>)invocation.getManager().read(List.class, User.class, invocation));
         }
 
         @Override

@@ -157,7 +157,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         this.providerManager = new ProviderManager();
 
-        // TODO logger is not present!!!
         providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(core.getLog()));
         providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(core.getLog(), i18n));
         providerManager.getExceptionHandler().addHandler(new UnknownExceptionHandler(core.getLog(), i18n));

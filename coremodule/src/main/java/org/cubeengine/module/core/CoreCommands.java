@@ -31,6 +31,7 @@ import org.cubeengine.service.command.readers.FindUserReader;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.util.Profiler;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.command.CommandSource;
@@ -59,7 +60,7 @@ public class CoreCommands extends ContainerCommand
         i18n.sendTranslated(context, POSITIVE, "Reloading CubeEngine! This may take some time...");
         final long startTime = System.currentTimeMillis();
 
-        PluginManager pm = core.getGame().getPluginManager();
+        PluginManager pm = Sponge.getPluginManager();
 
         i18n.sendTranslated(context, POSITIVE, "CubeEngine Reload completed in {integer#time}ms!",
                                System.currentTimeMillis() - startTime);
@@ -81,7 +82,7 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Shows the online mode")
     public void onlinemode(CommandSource context)
     {
-        if (this.core.getGame().getServer().getOnlineMode())
+        if (Sponge.getServer().getOnlineMode())
         {
             i18n.sendTranslated(context, POSITIVE, "The Server is running in online mode");
             return;
