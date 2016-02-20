@@ -32,8 +32,6 @@ import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.ModuleHandler;
-import de.cubeisland.engine.reflect.ReflectedFile;
-import org.cubeengine.service.filesystem.ModuleConfig;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;

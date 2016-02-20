@@ -36,7 +36,8 @@ import org.spongepowered.api.entity.projectile.Projectile;
 @ServiceProvider(EntityMatcher.class)
 public class EntityMatcher
 {
-    private final Map<String, EntityType> nameMap = new HashMap<>();
+    private final Map<String, EntityType> ids = new HashMap<>();
+    private final Map<String, EntityType> translations = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
     private Game game;
     private StringMatcher stringMatcher;
@@ -46,11 +47,11 @@ public class EntityMatcher
     {
         this.game = game;
         this.stringMatcher = stringMatcher;
-        for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
+        for (EntityType type :  game.getRegistry().getAllOf(EntityType.class))
         {
-            nameMap.put(type.getName(), type);
+            ids.put(type.getName().toLowerCase(), type);
+            translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
         }
-        // TODO read entity names
     }
 
     /**
@@ -60,29 +61,51 @@ public class EntityMatcher
      *
      * @return the found EntityType
      */
-    public EntityType any(String name)
+    public EntityType any(String name, Locale locale)
     {
         if (name == null)
         {
             return null;
         }
-        EntityType type = game.getRegistry().getType(EntityType.class, name).orElse(null);
-        if (type != null)
+        EntityType entity = game.getRegistry().getType(EntityType.class, name).orElse(null);
+        if (entity != null)
         {
-            return type;
+            return entity;
         }
-        Map<String, EntityType> entities = this.nameMap;
-        String s = name.toLowerCase(Locale.ENGLISH);
-        EntityType entity = entities.get(s);
+
+        try
+        {
+            return legacyIds.get(Short.parseShort(name));
+        }
+        catch (NumberFormatException ignored)
+        {
+        }
+
+        name = name.toLowerCase();
+
+        entity = anyFromMap(name, this.ids); // Minecraft IDs
         if (entity == null)
         {
-            try
+            entity = anyFromMap(name, this.translations); // Use default language translation
+        }
+        if (entity == null && locale != null)
+        {
+            Map<String, EntityType> translations = new HashMap<>();
+            for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
             {
-                return legacyIds.get(Short.parseShort(s));
+                translations.put(type.getTranslation().get(locale, type), type);
             }
-            catch (NumberFormatException ignored)
-            {
-            }
+            entity = anyFromMap(name, translations); // Use Language Translations
+        }
+
+        return entity;
+    }
+
+    private EntityType anyFromMap(String name, Map<String, EntityType> entities)
+    {
+        EntityType entity = entities.get(name);
+        if (entity == null)
+        {
             String t_key = stringMatcher.matchString(name, entities.keySet());
             if (t_key != null)
             {
@@ -99,9 +122,9 @@ public class EntityMatcher
      *
      * @return the found Mob
      */
-    public EntityType mob(String s)
+    public EntityType mob(String s, Locale locale)
     {
-        EntityType type = this.any(s);
+        EntityType type = this.any(s, locale);
         if (type != null && Living.class.isAssignableFrom(type.getEntityClass()))
         {
             return type;
@@ -116,9 +139,9 @@ public class EntityMatcher
      *
      * @return the found Mob
      */
-    public EntityType spawnEggMob(String s)
+    public EntityType spawnEggMob(String s, Locale locale)
     {
-        EntityType type = this.mob(s);
+        EntityType type = this.mob(s, locale);
         if (type != null && this.canBeSpawnedBySpawnEgg(type))
         {
             return type;
@@ -133,9 +156,9 @@ public class EntityMatcher
      *
      * @return the found Monster
      */
-    public EntityType monster(String s)
+    public EntityType monster(String s, Locale locale)
     {
-        EntityType type = this.any(s);
+        EntityType type = this.any(s, locale);
         if (type != null && this.isMonster(type))
         {
             return type;
@@ -150,9 +173,9 @@ public class EntityMatcher
      *
      * @return the found friendly Mob
      */
-    public EntityType friendlyMob(String s)
+    public EntityType friendlyMob(String s, Locale locale)
     {
-        EntityType type = this.any(s);
+        EntityType type = this.any(s, locale);
         if (type != null && this.isFriendly(type))
         {
             return type;
@@ -167,9 +190,9 @@ public class EntityMatcher
      *
      * @return the found Projectile
      */
-    public EntityType projectile(String s)
+    public EntityType projectile(String s, Locale locale)
     {
-        EntityType type = this.any(s);
+        EntityType type = this.any(s, locale);
         if (type != null && this.isProjectile(type))
         {
             return type;

@@ -17,13 +17,12 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
-import org.cubeengine.module.core.util.ChatFormat;
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.PostProcessor;
 import org.cubeengine.dirigent.parser.component.FoundFormatter;
-import org.spongepowered.api.text.format.TextFormat;
+import org.cubeengine.module.core.util.ChatFormat;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 
 import static org.cubeengine.module.core.util.ChatFormat.GOLD;
 

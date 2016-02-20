@@ -17,6 +17,10 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
@@ -24,11 +28,6 @@ import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.translation.Translatable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
 
 public abstract class CatalogTypeReader<T extends CatalogType> implements ArgumentReader<T>, Completer
 {

@@ -24,15 +24,15 @@ import java.util.Queue;
 import java.util.UUID;
 import javax.inject.Inject;
 import com.google.common.base.Preconditions;
-import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.command.CommandManager;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.module.core.util.Pair;
+import org.cubeengine.service.command.CommandManager;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.task.TaskManager;
-import org.cubeengine.module.core.util.Pair;
 import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
@@ -61,7 +61,7 @@ public class SpongeConfirmManager implements ConfirmManager
     @Enable
     public void onEnable()
     {
-        cm.addCommands(core, new ConfirmCommand(this));
+        cm.addCommands(core, new ConfirmCommand(this, i18n));
     }
 
 

@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.inject.Inject;
-
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
@@ -57,15 +56,24 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
-import org.cubeengine.service.matcher.StringMatcher;
 import org.cubeengine.service.filesystem.FileExtensionFilter;
 import org.cubeengine.service.filesystem.FileManager;
-import org.cubeengine.service.i18n.formatter.*;
+import org.cubeengine.service.i18n.formatter.BiomeFormatter;
+import org.cubeengine.service.i18n.formatter.BooleanFormatter;
+import org.cubeengine.service.i18n.formatter.ColorPostProcessor;
+import org.cubeengine.service.i18n.formatter.CommandSenderFormatter;
+import org.cubeengine.service.i18n.formatter.IntegerFormatter;
+import org.cubeengine.service.i18n.formatter.StringFormatter;
+import org.cubeengine.service.i18n.formatter.TextFormatter;
+import org.cubeengine.service.i18n.formatter.TextMacro;
+import org.cubeengine.service.i18n.formatter.VectorFormatter;
+import org.cubeengine.service.i18n.formatter.WorldFormatter;
+import org.cubeengine.service.matcher.StringMatcher;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.command.CommandSource;
 
 import static java.util.stream.Collectors.toList;
 

@@ -15,36 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.converter;
+package org.cubeengine.service.config;
 
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-import org.cubeengine.service.matcher.EnchantMatcher;
-import org.spongepowered.api.item.Enchantment;
+import org.cubeengine.module.core.util.Version;
 
-public class EnchantmentConverter extends SimpleConverter<Enchantment>
+public class VersionConverter extends SimpleConverter<Version>
 {
-    private EnchantMatcher enchantMatcher;
-
-    public EnchantmentConverter(EnchantMatcher enchantMatcher)
+    @Override
+    public Node toNode(Version version) throws ConversionException
     {
-        this.enchantMatcher = enchantMatcher;
+        return new StringNode(version.toString());
     }
 
     @Override
-    public Node toNode(Enchantment object) throws ConversionException
-    {
-        return StringNode.of(object.getName());
-    }
-
-    @Override
-    public Enchantment fromNode(Node node) throws ConversionException
+    public Version fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            return enchantMatcher.enchantment(((StringNode)node).getValue());
+            return Version.fromString(((StringNode)node).getValue());
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

@@ -20,26 +20,22 @@ package org.cubeengine.module.core;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
-
+import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.LifeCycle.State;
+import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Flag;
 import org.cubeengine.butler.parametric.Reader;
-import de.cubeisland.engine.modularity.core.LifeCycle;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.readers.ModuleReader;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.module.core.CoreModule;
-import org.cubeengine.service.command.ContainerCommand;
-import org.cubeengine.service.command.CommandContext;
-import org.cubeengine.module.core.util.ChatFormat;
-import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.plugin.PluginManager;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -87,74 +83,74 @@ public class ModuleCommands extends ContainerCommand
 
     @Alias(value = "modules")
     @Command(alias = "show", desc = "Lists all the loaded modules")
-    public void list(CommandContext context)
+    public void list(CommandSource context)
     {
         Set<LifeCycle> modules = this.modularity.getModules();
         if (modules.isEmpty())
         {
-            context.sendTranslated(NEUTRAL, "There are no modules loaded!");
+            i18n.sendTranslated(context, NEUTRAL, "There are no modules loaded!");
             return;
         }
-        context.sendTranslated(NEUTRAL, "These are the loaded modules.");
-        context.sendTranslated(NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
+        i18n.sendTranslated(context, NEUTRAL, "These are the loaded modules.");
+        i18n.sendTranslated(context, NEUTRAL, "{text:Green (+):color=BRIGHT_GREEN} stands for enabled, {text:red (-):color=RED} for disabled.");
         for (LifeCycle module : modules)
         {
             if (module.isIn(State.ENABLED))
             {
-                context.getSource().sendMessage(Text.of(" + ", TextColors.GREEN, ((ModuleMetadata)module.getInformation()).getName()));
+                context.sendMessage(Text.of(" + ", TextColors.GREEN, ((ModuleMetadata)module.getInformation()).getName()));
             }
             else
             {
-                context.getSource().sendMessage(Text.of(" - ", TextColors.RED, ((ModuleMetadata)module.getInformation()).getName()));
+                context.sendMessage(Text.of(" - ", TextColors.RED, ((ModuleMetadata)module.getInformation()).getName()));
             }
         }
     }
 
     @Command(desc = "Enables a module")
-    public void enable(CommandContext context, @Reader(ModuleReader.class) Module module)
+    public void enable(CommandSource context, @Reader(ModuleReader.class) Module module)
     {
         /* TODO if (this.modularity.enableModule(module))
         {
-            context.sendTranslated(POSITIVE, "The given module was successfully enabled!");
+            i18n.sendTranslated(context, POSITIVE, "The given module was successfully enabled!");
             return;
         }
-        context.sendTranslated(CRITICAL, "An error occurred while enabling the module!");
+        i18n.sendTranslated(context, CRITICAL, "An error occurred while enabling the module!");
         */
     }
 
     @Command(desc = "Disables a module")
-    public void disable(CommandContext context, @Reader(ModuleReader.class) Module module)
+    public void disable(CommandSource context, @Reader(ModuleReader.class) Module module)
     {
 // TODO        this.modularity.disableModule(module);
-        context.sendTranslated(POSITIVE, "The module {name#module} was successfully disabled!", module.getInformation().getName());
+        i18n.sendTranslated(context, POSITIVE, "The module {name#module} was successfully disabled!", module.getInformation().getName());
     }
 
     @Command(desc = "Unloaded a module and all the modules that depend on it")
-    public void unload(CommandContext context, @Reader(ModuleReader.class) Module module)
+    public void unload(CommandSource context, @Reader(ModuleReader.class) Module module)
     {
         // TODO  this.modularity.unloadModule(module);
-        context.sendTranslated(POSITIVE, "The module {name#module} was successfully unloaded!", module.getInformation().getName());
+        i18n.sendTranslated(context, POSITIVE, "The module {name#module} was successfully unloaded!", module.getInformation().getName());
     }
 
     @Command(desc = "Reloads a module")
-    public void reload(CommandContext context, @Reader(ModuleReader.class) Module module, @Flag boolean file)
+    public void reload(CommandSource context, @Reader(ModuleReader.class) Module module, @Flag boolean file)
     {
         // TODO try
         {
             // TODO this.modularity.reloadModule(module, file);
             if (file)
             {
-                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getInformation().getName());
+                i18n.sendTranslated(context, POSITIVE, "The module {name#module} was successfully reloaded from file!", module.getInformation().getName());
             }
             else
             {
-                context.sendTranslated(POSITIVE, "The module {name#module} was successfully reloaded!", module.getInformation().getName());
+                i18n.sendTranslated(context, POSITIVE, "The module {name#module} was successfully reloaded!", module.getInformation().getName());
             }
         }
         // TODO  catch (ModuleException ex)
         {
-            context.sendTranslated(NEGATIVE, "Failed to reload the module!");
-            context.sendTranslated(NEUTRAL, "Check the server log for info.");
+            i18n.sendTranslated(context, NEGATIVE, "Failed to reload the module!");
+            i18n.sendTranslated(context, NEUTRAL, "Check the server log for info.");
             // TODO core.getLog().error(ex, "Failed to reload the module {}!", module.getInformation().getName());
         }
     }
@@ -179,7 +175,7 @@ public class ModuleCommands extends ContainerCommand
             return;
         }
         // TODO check if already loaded
-//        context.sendTranslated(NEUTRAL, "This module is already loaded, try reloading it.");
+//        i18n.sendTranslated(context, NEUTRAL, "This module is already loaded, try reloading it.");
         fm.copyModule(modulePath);
       /*
         modularity.load(modulePath.toFile()).stream()
@@ -188,7 +184,7 @@ public class ModuleCommands extends ContainerCommand
                       try
                       {
                           modularity.provide(node);
-                          context.sendTranslated(POSITIVE,
+                          i18n.sendTranslated(context, POSITIVE,
                                                  "The module {name#module} has been successfully loaded and enabled!",
                                                  ((ModuleMetadata)node.getInformation()).getName());
                       }
@@ -197,7 +193,7 @@ public class ModuleCommands extends ContainerCommand
                           modularity.getProvider(Log.class).get(node.getInformation(), modularity).error(e,
                                                                                                          "Failed to load a module from file {}!",
                                                                                                          modulePath.getFileName().toString());
-                          context.sendTranslated(NEGATIVE, "The module failed to load! Check the server log for info.");
+                          i18n.sendTranslated(context, NEGATIVE, "The module failed to load! Check the server log for info.");
                       }
                   });
                   */
@@ -227,7 +223,7 @@ public class ModuleCommands extends ContainerCommand
         String red = "   " + ChatFormat.RED + "- ";
         if (!providedServices.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Provided services:");
+            i18n.sendTranslated(context, POSITIVE, "Provided services:");
             for (String service : providedServices)
             {
                 context.sendMessage(green + service);
@@ -235,7 +231,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!dependencies.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Module dependencies:");
+            i18n.sendTranslated(context, POSITIVE, "Module dependencies:");
             for (String dependency : dependencies.keySet())
             {
                 Module dep = this.modularity.getModule(dependency);
@@ -251,7 +247,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!softDependencies.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Module soft-dependencies:");
+            i18n.sendTranslated(context, POSITIVE, "Module soft-dependencies:");
             for (String dependency : softDependencies.keySet())
             {
                 Module dep = this.modularity.getModule(dependency);
@@ -268,7 +264,7 @@ public class ModuleCommands extends ContainerCommand
 
         if (!pluginDependencies.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Plugin dependencies:");
+            i18n.sendTranslated(context, POSITIVE, "Plugin dependencies:");
             for (String dependency : pluginDependencies)
             {
                 if (pm.isLoaded(dependency))
@@ -283,7 +279,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!services.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Service dependencies:");
+            i18n.sendTranslated(context, POSITIVE, "Service dependencies:");
             for (String service : services)
             {
                 context.sendMessage(green + service); // TODO colors to show if service is found OR NOT
@@ -291,7 +287,7 @@ public class ModuleCommands extends ContainerCommand
         }
         if (!softServices.isEmpty())
         {
-            context.sendTranslated(POSITIVE, "Service soft dependencies");
+            i18n.sendTranslated(context, POSITIVE, "Service soft dependencies");
             for (String service : softServices)
             {
                 context.sendMessage(green + service); // TODO colors to show if service is found OR NOT

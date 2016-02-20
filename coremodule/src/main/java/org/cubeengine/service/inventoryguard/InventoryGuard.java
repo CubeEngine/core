@@ -20,13 +20,11 @@ package org.cubeengine.service.inventoryguard;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 import de.cubeisland.engine.modularity.core.Module;
-
 import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.task.TaskManager;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;

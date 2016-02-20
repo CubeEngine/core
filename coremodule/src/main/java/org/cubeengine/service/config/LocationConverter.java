@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.converter;
+package org.cubeengine.service.config;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,19 +25,17 @@ import de.cubeisland.engine.converter.converter.SingleClassConverter;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
-
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-public class LocationConverter extends SingleClassConverter<Location>
+public class LocationConverter extends SingleClassConverter<Location<World>>
 {
     @Override
-    public Node toNode(Location location, ConverterManager manager) throws ConversionException
+    public Node toNode(Location<World> location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("world", ((World)location.getExtent()).getName()); // TODO dont assume its world
+        loc.put("world", location.getExtent().getName());
         loc.put("x", location.getX());
         loc.put("y", location.getY());
         loc.put("z", location.getZ());
@@ -48,7 +46,7 @@ public class LocationConverter extends SingleClassConverter<Location>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Location fromNode(Node node, ConverterManager manager) throws ConversionException
+    public Location<World> fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {

@@ -24,14 +24,13 @@ import java.util.regex.Pattern;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 
-import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static java.util.stream.Collectors.toList;
+import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 
 /**
  * Matches exact offline players and online players using * for wildcard

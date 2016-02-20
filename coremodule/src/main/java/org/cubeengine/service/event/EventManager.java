@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
-import com.google.common.base.Preconditions;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;

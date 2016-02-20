@@ -17,12 +17,12 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.text.format.TextColors;
 
 @Names({"amount", "integer", "long", "short"})

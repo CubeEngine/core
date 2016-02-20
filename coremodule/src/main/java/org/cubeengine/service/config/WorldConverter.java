@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.converter;
+package org.cubeengine.service.config;
 
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;

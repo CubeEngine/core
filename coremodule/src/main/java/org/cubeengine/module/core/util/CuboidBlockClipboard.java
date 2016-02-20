@@ -28,9 +28,8 @@ import de.cubeisland.engine.converter.node.ListNode;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.NullNode;
-import org.cubeengine.module.core.util.math.BlockVector3;
 import de.cubeisland.engine.reflect.Reflector;
-
+import org.cubeengine.module.core.util.math.BlockVector3;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.world.Location;

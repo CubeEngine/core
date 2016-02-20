@@ -19,7 +19,8 @@ package org.cubeengine.service.confirm;
 
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.result.CommandResult;
-import org.cubeengine.service.command.CommandContext;
+import org.cubeengine.service.i18n.I18n;
+import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -27,26 +28,28 @@ import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 public class ConfirmCommand
 {
     private final SpongeConfirmManager confirmManager;
+    private I18n i18n;
 
-    public ConfirmCommand(SpongeConfirmManager confirmManager)
+    public ConfirmCommand(SpongeConfirmManager confirmManager, I18n i18n)
     {
         this.confirmManager = confirmManager;
+        this.i18n = i18n;
     }
 
     @Command(desc = "Confirm a command")
-    public CommandResult confirm(CommandContext context)
+    public CommandResult confirm(CommandSource context)
     {
-        int pendingConfirmations = confirmManager.countPendingConfirmations(context.getSource());
+        int pendingConfirmations = confirmManager.countPendingConfirmations(context);
         if (pendingConfirmations < 1)
         {
-            context.sendTranslated(NEGATIVE, "You don't have any pending confirmations!");
+            i18n.sendTranslated(context, NEGATIVE, "You don't have any pending confirmations!");
             return null;
         }
-        confirmManager.getLastPendingConfirmation(context.getSource()).run();
-        pendingConfirmations = confirmManager.countPendingConfirmations(context.getSource());
+        confirmManager.getLastPendingConfirmation(context).run();
+        pendingConfirmations = confirmManager.countPendingConfirmations(context);
         if (pendingConfirmations > 0)
         {
-            context.sendTranslated(NEUTRAL, "You have {amount} pending confirmations", pendingConfirmations);
+            i18n.sendTranslated(context, NEUTRAL, "You have {amount} pending confirmations", pendingConfirmations);
         }
         return null;
     }

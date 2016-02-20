@@ -229,7 +229,7 @@ public class MaterialMatcher
      */
     public String getNameFor(ItemStack item)
     {
-        return item.getItem().getTranslation().get(); // TODO get Humanreadablename
+        return item.getItem().getTranslation().get();
     }
 
     private static class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>

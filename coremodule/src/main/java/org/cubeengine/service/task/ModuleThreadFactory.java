@@ -19,10 +19,10 @@ package org.cubeengine.service.task;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogLevel;
 import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.task.thread.BaseThreadFactory;
 import org.cubeengine.service.task.thread.LoggingThread;
-import de.cubeisland.engine.logscribe.LogLevel;
 
 public class ModuleThreadFactory extends BaseThreadFactory
 {

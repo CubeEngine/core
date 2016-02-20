@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.database;
 
-import org.cubeengine.service.database.mysql.Keys;
 import org.cubeengine.module.core.util.Version;
+import org.cubeengine.service.database.mysql.Keys;
 import org.jooq.Identity;
 import org.jooq.Record;
 import org.jooq.TableField;

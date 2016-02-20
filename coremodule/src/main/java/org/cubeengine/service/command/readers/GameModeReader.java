@@ -17,10 +17,9 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Collection;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
-
-import java.util.Collection;
 
 public class GameModeReader extends DefaultedCatalogTypeReader<GameMode>
 {

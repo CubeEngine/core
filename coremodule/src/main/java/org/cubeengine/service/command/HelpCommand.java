@@ -31,9 +31,9 @@ import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.parametric.ParametricContainerCommand;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;

@@ -28,9 +28,9 @@ import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.butler.parameter.property.Requirement.isRequired;
 

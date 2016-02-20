@@ -17,13 +17,13 @@
  */
 package org.cubeengine.service.command;
 
-import org.cubeengine.butler.CommandBuilder;
-import org.cubeengine.butler.Dispatcher;
-import org.cubeengine.butler.parametric.BasicParametricCommand;
-import org.cubeengine.butler.ProviderManager;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.CommandBuilder;
+import org.cubeengine.butler.Dispatcher;
+import org.cubeengine.butler.ProviderManager;
+import org.cubeengine.butler.parametric.BasicParametricCommand;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 

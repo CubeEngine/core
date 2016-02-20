@@ -17,21 +17,19 @@
  */
 package org.cubeengine.service.command.exception;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
 import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.PriorityExceptionHandler;
 import org.cubeengine.service.i18n.I18n;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.command.CommandSource;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ExecutionException;
+import org.spongepowered.api.text.Text;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.CRITICAL;
 import static org.spongepowered.api.text.action.TextActions.showText;
 import static org.spongepowered.api.text.format.TextColors.*;
-import static org.spongepowered.api.text.format.TextColors.GRAY;
 
 public class UnknownExceptionHandler implements PriorityExceptionHandler
 {

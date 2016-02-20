@@ -20,8 +20,6 @@ package org.cubeengine.service.task.worker;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
-
-import com.google.common.base.Preconditions;
 import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.task.TaskManager;
 

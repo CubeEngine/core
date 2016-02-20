@@ -15,42 +15,52 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.converter;
+package org.cubeengine.service.config;
 
 import java.util.Optional;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
+import de.cubeisland.engine.converter.node.NullNode;
 import de.cubeisland.engine.converter.node.StringNode;
-import org.cubeengine.service.matcher.UserMatcher;
-import org.spongepowered.api.entity.living.player.User;
+import org.cubeengine.service.matcher.MaterialMatcher;
+import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
+import org.spongepowered.api.item.inventory.ItemStack;
 
-public class UserConverter extends SimpleConverter<User>
+public class ItemStackConverter extends SimpleConverter<ItemStack>
 {
-    private UserMatcher um;
+    private MaterialMatcher materialMatcher;
 
-    public UserConverter(UserMatcher um)
+    public ItemStackConverter(MaterialMatcher materialMatcher)
     {
-        this.um = um;
+        this.materialMatcher = materialMatcher;
     }
 
     @Override
-    public Node toNode(User user) throws ConversionException
+    public Node toNode(ItemStack object) throws ConversionException
     {
-        return StringNode.of(user.getName());
+        if (object == null)
+        {
+            return NullNode.emptyNode();
+        }
+        Optional<DurabilityData> dura = object.get(DurabilityData.class);
+        if (dura.isPresent())
+        {
+            return StringNode.of(object.getItem().getName() + ":" + dura.get().durability());
+        }
+        return StringNode.of(object.getItem().getName());
     }
 
     @Override
-    public User fromNode(Node node) throws ConversionException
+    public ItemStack fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
-            Optional<User> user = um.match(((StringNode)node).getValue(), false);
-            if (user.isPresent())
-            {
-                return user.get();
-            }
-            throw ConversionException.of(this, node, "User does not exist!");
+            return materialMatcher.itemStack(((StringNode)node).getValue());
+        }
+        if (node instanceof NullNode)
+        {
+            return null;
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

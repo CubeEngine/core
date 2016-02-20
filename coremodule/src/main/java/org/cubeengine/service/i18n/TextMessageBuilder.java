@@ -18,12 +18,12 @@
 package org.cubeengine.service.i18n;
 
 import java.net.URL;
-import org.cubeengine.service.i18n.formatter.component.ClickComponent;
-import org.cubeengine.service.i18n.formatter.component.HoverComponent;
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.builder.MessageBuilder;
 import org.cubeengine.dirigent.parser.component.ErrorComponent;
+import org.cubeengine.service.i18n.formatter.component.ClickComponent;
+import org.cubeengine.service.i18n.formatter.component.HoverComponent;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;

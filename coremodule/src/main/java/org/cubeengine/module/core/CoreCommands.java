@@ -18,23 +18,22 @@
 package org.cubeengine.module.core;
 
 import java.util.concurrent.TimeUnit;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Desc;
 import org.cubeengine.butler.parametric.Flag;
 import org.cubeengine.butler.parametric.Optional;
 import org.cubeengine.butler.parametric.Reader;
-import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.modularity.core.Modularity;
+import org.cubeengine.module.core.util.Profiler;
 import org.cubeengine.service.command.CommandContext;
 import org.cubeengine.service.command.ContainerCommand;
 import org.cubeengine.service.command.readers.FindUserReader;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.module.core.util.Profiler;
-
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.plugin.PluginManager;
-import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
 import static org.cubeengine.service.i18n.formatter.MessageType.POSITIVE;
@@ -119,9 +118,9 @@ public class CoreCommands extends ContainerCommand
     {
         if (name.getName().equalsIgnoreCase(context.getString(0)))
         {
-            context.sendTranslated(POSITIVE, "Matched exactly! User: {user}", name);
+            i18n.sendTranslated(context.getSource(), POSITIVE, "Matched exactly! User: {user}", name);
             return;
         }
-        context.sendTranslated(POSITIVE, "Matched not exactly! User: {user}", name);
+        i18n.sendTranslated(context.getSource(), POSITIVE, "Matched not exactly! User: {user}", name);
     }
 }

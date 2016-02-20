@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import com.google.common.base.Preconditions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

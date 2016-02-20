@@ -18,7 +18,8 @@
 package org.cubeengine.service.command.exception;
 
 import de.cubeisland.engine.logscribe.Log;
-import org.cubeengine.butler.*;
+import org.cubeengine.butler.CommandBase;
+import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.PriorityExceptionHandler;
 import org.spongepowered.api.command.CommandSource;
 

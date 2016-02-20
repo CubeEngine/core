@@ -22,12 +22,11 @@ import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
-import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.module.core.CoreModule;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
+import org.cubeengine.module.core.CoreModule;
 
 @ServiceProvider(LogFactory.class)
 public class SpongeLogFactory extends DefaultLogFactory

@@ -19,7 +19,6 @@ package org.cubeengine.service.logging;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-
 import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
 import de.cubeisland.engine.logscribe.target.file.format.FileFormat;
 import de.cubeisland.engine.logscribe.target.file.format.LogFileFormat;

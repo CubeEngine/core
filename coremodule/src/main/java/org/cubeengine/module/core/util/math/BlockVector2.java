@@ -17,9 +17,6 @@
  */
 package org.cubeengine.module.core.util.math;
 
-import static org.cubeengine.module.core.util.math.MathHelper.compare;
-import static org.cubeengine.module.core.util.math.MathHelper.isZero;
-
 /**
  * This class represents a 2D vector with integer coordinates.
  */

@@ -17,6 +17,8 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.List;
+import java.util.Locale;
 import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
@@ -27,9 +29,6 @@ import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
-
-import java.util.List;
-import java.util.Locale;
 
 import static java.util.stream.Collectors.toList;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

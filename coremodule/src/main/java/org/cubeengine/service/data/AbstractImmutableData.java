@@ -17,26 +17,16 @@
  */
 package org.cubeengine.service.data;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import com.google.common.collect.ImmutableSet;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.MemoryDataContainer;
-import org.spongepowered.api.data.Queries;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.manipulator.DataManipulator;
 import org.spongepowered.api.data.manipulator.ImmutableDataManipulator;
 import org.spongepowered.api.data.value.BaseValue;
-import org.spongepowered.api.data.value.ValueFactory;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.data.value.mutable.Value;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractImmutableData<I extends ImmutableDataManipulator<I, M>, M extends DataManipulator<M, I>>
     extends BaseAbstractData<I, ImmutableValue<?>>

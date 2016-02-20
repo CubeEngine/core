@@ -31,9 +31,8 @@ import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import org.cubeengine.service.filesystem.FileManager;
-import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.filesystem.FileManager;
 
 @Provider(Log.class)
 public class LogProvider implements ValueProvider<Log>

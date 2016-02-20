@@ -18,19 +18,17 @@
 package org.cubeengine.service.command;
 
 import java.util.Locale;
+import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parametric.context.ParameterizedContext;
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.text.serializer.TextSerializer;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class CommandContext extends ParameterizedContext
 {
@@ -83,7 +81,7 @@ public class CommandContext extends ParameterizedContext
                 return;
             }
         }
-        throw new PermissionDeniedException(new RawPermission(permission.getId(), permission.getDescription().toPlain())); // TODO
+        throw new PermissionDeniedException(new RawPermission(permission.getId(), permission.getDescription().toPlain()));
     }
 
     public Locale getLocale()

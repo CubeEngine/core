@@ -17,8 +17,8 @@
  */
 package org.cubeengine.service.database.mysql;
 
-import org.cubeengine.service.database.DatabaseConfiguration;
 import de.cubeisland.engine.reflect.annotations.Comment;
+import org.cubeengine.service.database.DatabaseConfiguration;
 
 /**
  * MySQLDatabaseConfig containing all needed information to connect to a MySQLDatabase

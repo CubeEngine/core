@@ -17,8 +17,11 @@
  */
 package org.cubeengine.service.command.readers;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;

@@ -27,7 +27,6 @@ import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.spongepowered.api.Game;

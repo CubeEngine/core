@@ -18,10 +18,10 @@
 package org.cubeengine.service.command.readers;
 
 import java.util.Locale;
+import de.cubeisland.engine.logscribe.LogLevel;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-import de.cubeisland.engine.logscribe.LogLevel;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;

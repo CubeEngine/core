@@ -17,15 +17,15 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
-import org.cubeengine.module.core.util.math.BlockVector2;
-import org.cubeengine.module.core.util.math.BlockVector3;
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.ChainedComponent;
-import org.cubeengine.dirigent.Component;
+import org.cubeengine.module.core.util.math.BlockVector2;
+import org.cubeengine.module.core.util.math.BlockVector3;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 
 import static org.spongepowered.api.text.format.TextColors.*;
 

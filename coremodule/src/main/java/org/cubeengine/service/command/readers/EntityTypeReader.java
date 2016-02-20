@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.command.readers;
 
+import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
@@ -36,6 +37,6 @@ public class EntityTypeReader implements ArgumentReader<EntityType>
     @Override
     public EntityType read(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return entityMatcher.any(invocation.consume(1));
+        return entityMatcher.any(invocation.consume(1), invocation.getContext(Locale.class));
     }
 }

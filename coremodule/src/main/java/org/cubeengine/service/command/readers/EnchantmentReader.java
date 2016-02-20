@@ -29,16 +29,14 @@ import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.command.CommandSource;
 
-import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
-import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
-import static org.cubeengine.service.i18n.formatter.MessageType.POSITIVE;
+import static org.cubeengine.service.i18n.formatter.MessageType.*;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {

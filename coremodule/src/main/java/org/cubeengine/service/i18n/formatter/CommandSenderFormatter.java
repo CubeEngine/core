@@ -17,14 +17,14 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
-import org.spongepowered.api.entity.Tamer;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.Tamer;
 import org.spongepowered.api.entity.living.player.User;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_GREEN;

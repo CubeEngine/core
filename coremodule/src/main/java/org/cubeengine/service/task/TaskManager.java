@@ -18,9 +18,6 @@
 package org.cubeengine.service.task;
 
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.Optional;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Module;

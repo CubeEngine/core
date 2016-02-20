@@ -18,8 +18,8 @@
 package org.cubeengine.service.command;
 
 import java.lang.reflect.Method;
-import org.cubeengine.butler.parametric.InvokableMethod;
 import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.parametric.InvokableMethod;
 
 /**
  * The origin of a Command in CubeEngine based on an invokable Method

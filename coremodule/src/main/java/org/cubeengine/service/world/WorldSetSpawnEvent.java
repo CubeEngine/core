@@ -19,7 +19,6 @@ package org.cubeengine.service.world;
 
 import com.flowpowered.math.vector.Vector3d;
 import de.cubeisland.engine.modularity.core.Module;
-
 import org.cubeengine.service.event.CubeEvent;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.cause.Cause;

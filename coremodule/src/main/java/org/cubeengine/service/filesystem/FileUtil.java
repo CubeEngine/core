@@ -35,7 +35,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import com.google.common.base.Preconditions;
 import org.cubeengine.module.core.CoreModule;
 
 import static com.google.common.base.Preconditions.checkNotNull;

@@ -19,8 +19,8 @@ package org.cubeengine.service.i18n.formatter;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.cubeengine.module.core.util.ChatFormat;
 import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.module.core.util.ChatFormat;
 import org.spongepowered.api.text.format.TextFormat;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.*;

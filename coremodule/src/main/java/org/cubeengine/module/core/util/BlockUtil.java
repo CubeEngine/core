@@ -20,9 +20,8 @@ package org.cubeengine.module.core.util;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Optional;
-
+import java.util.Set;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.manipulator.mutable.block.AttachedData;

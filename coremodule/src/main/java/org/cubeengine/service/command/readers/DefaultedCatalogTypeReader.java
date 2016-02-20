@@ -18,11 +18,8 @@
 package org.cubeengine.service.command.readers;
 
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.spongepowered.api.CatalogType;
-
-import java.util.List;
 
 public class DefaultedCatalogTypeReader<T extends CatalogType> extends CatalogTypeReader<T> implements DefaultValue<T>
 {

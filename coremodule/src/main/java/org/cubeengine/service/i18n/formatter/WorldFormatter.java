@@ -25,7 +25,6 @@ import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.World;
 
-import static org.cubeengine.service.i18n.formatter.component.StyledComponent.colored;
 import static org.spongepowered.api.text.format.TextColors.GOLD;
 
 @Names("world")

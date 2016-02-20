@@ -19,10 +19,7 @@ package org.cubeengine.module.core.util;
 
 import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.task.TaskManager;
-import org.apache.logging.log4j.LogManager;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.property.item.BurningFuelProperty;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;

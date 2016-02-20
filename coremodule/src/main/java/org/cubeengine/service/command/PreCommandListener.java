@@ -22,16 +22,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.matcher.StringMatcher;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.command.CommandSource;
 
 import static org.cubeengine.module.core.util.StringUtils.implode;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;

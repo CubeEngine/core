@@ -28,15 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.language.LanguageLoader;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.core.ModularityClassLoader;
-import org.cubeengine.service.filesystem.FileManager;
-import org.cubeengine.module.core.CoreModule;
 import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.filesystem.FileManager;
 
 import static org.cubeengine.service.filesystem.FileExtensionFilter.YAML;
 

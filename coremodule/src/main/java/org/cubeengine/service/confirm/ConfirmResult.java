@@ -17,10 +17,9 @@
  */
 package org.cubeengine.service.confirm;
 
+import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.result.CommandResult;
-import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.service.command.CommandContext;
 import org.spongepowered.api.command.CommandSource;
 
 
@@ -30,20 +29,20 @@ import org.spongepowered.api.command.CommandSource;
 public class ConfirmResult implements CommandResult
 {
     private final Runnable runnable;
-    private final CommandSource sender;
+    private final CommandSource source;
     private final Module module;
 
-    public ConfirmResult(Module module, Runnable runnable, CommandContext context)
+    public ConfirmResult(Module module, Runnable runnable, CommandSource source)
     {
         this.module = module;
         this.runnable = runnable;
-        this.sender = context.getSource();
+        this.source = source;
     }
 
     @Override
     public void process(CommandInvocation context)
     {
-        module.getModularity().provide(SpongeConfirmManager.class).registerConfirmation(this, this.module, sender);
+        module.getModularity().provide(SpongeConfirmManager.class).registerConfirmation(this, this.module, source);
     }
 
     public void run()

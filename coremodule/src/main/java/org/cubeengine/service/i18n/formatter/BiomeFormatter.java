@@ -17,10 +17,10 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
-import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.biome.BiomeType;
 
 import static org.spongepowered.api.text.format.TextColors.DARK_AQUA;

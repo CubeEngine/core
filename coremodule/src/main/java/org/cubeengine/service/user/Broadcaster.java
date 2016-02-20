@@ -17,6 +17,8 @@
  */
 package org.cubeengine.service.user;
 
+import java.util.Collection;
+import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.service.i18n.I18n;
@@ -26,9 +28,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextFormat;
-
-import javax.inject.Inject;
-import java.util.Collection;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;

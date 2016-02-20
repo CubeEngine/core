@@ -21,15 +21,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultProvider;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.cubeengine.service.command.TranslatedReaderException;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 

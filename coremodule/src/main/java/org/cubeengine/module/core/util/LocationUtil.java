@@ -17,6 +17,8 @@
  */
 package org.cubeengine.module.core.util;
 
+import java.util.Iterator;
+import java.util.Optional;
 import com.flowpowered.math.imaginary.Quaterniond;
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.block.BlockType;
@@ -27,9 +29,6 @@ import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-
-import java.util.Iterator;
-import java.util.Optional;
 
 import static org.spongepowered.api.data.property.block.MatterProperty.Matter.SOLID;
 

@@ -26,8 +26,7 @@ import org.spongepowered.api.service.permission.Subject;
 
 /**
  * A Filter checking a CommandSource Permission.
- * If the CommandSource is not a Subject TODO ... what to do what to do
- */
+q */
 public class PermissionFilter implements Filter
 {
     private RawPermission permission;

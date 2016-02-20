@@ -19,8 +19,8 @@ package org.cubeengine.service.matcher;
 
 import java.util.HashMap;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.data.type.DyeColor;
 
@@ -44,7 +44,6 @@ public class MaterialDataMatcher
         {
             dyeColors.put(dyeColor.getName(), dyeColor);
         }
-        // TODO map ItemType / BlockType -> Map<String, CatalogType> see datavalues.txt
     }
 
     /**
