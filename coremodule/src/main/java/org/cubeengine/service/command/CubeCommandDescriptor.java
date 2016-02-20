@@ -18,10 +18,9 @@
 package org.cubeengine.service.command;
 
 import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.parameter.GroupParser;
 import org.cubeengine.butler.parameter.Parameter;
-import org.cubeengine.butler.parameter.ParameterGroup;
 import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
-import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
@@ -69,23 +68,23 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
 
     public static void registerParameterPermissions(Module module, PermissionManager pm, PermissionDescription thisPerm, Parameter parameter)
     {
-        RawPermission rawPermission = parameter.valueFor(PermissionProvider.class);
+        RawPermission rawPermission = parameter.getProperty(RawPermission.class);
         if (rawPermission != null)
         {
             rawPermission.registerPermission(module, pm, thisPerm);
         }
 
-        if (parameter instanceof ParameterGroup)
+        if (parameter.getParser() instanceof GroupParser)
         {
-            for (Parameter param : ((ParameterGroup)parameter).getPositional())
+            for (Parameter param : ((GroupParser)parameter.getParser()).getPositional())
             {
                 registerParameterPermissions(module, pm, thisPerm, param);
             }
-            for (Parameter param : ((ParameterGroup)parameter).getNonPositional())
+            for (Parameter param : ((GroupParser)parameter.getParser()).getNonPositional())
             {
                 registerParameterPermissions(module, pm, thisPerm, param);
             }
-            for (Parameter param : ((ParameterGroup)parameter).getFlags())
+            for (Parameter param : ((GroupParser)parameter.getParser()).getFlags())
             {
                 registerParameterPermissions(module, pm, thisPerm, param);
             }

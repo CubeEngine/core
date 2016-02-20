@@ -37,16 +37,16 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.ModuleHandler;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.butler.CommandBase;
-import org.cubeengine.butler.CommandBuilder;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.DispatcherCommand;
 import org.cubeengine.butler.ProviderManager;
 import org.cubeengine.butler.alias.AliasCommand;
+import org.cubeengine.butler.builder.CommandBuilder;
 import org.cubeengine.butler.parametric.BasicParametricCommand;
 import org.cubeengine.butler.parametric.CompositeCommandBuilder;
-import org.cubeengine.butler.parametric.ParametricBuilder;
+import org.cubeengine.butler.parametric.builder.ParametricBuilder;
 import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.command.completer.PlayerCompleter;
 import org.cubeengine.service.command.completer.PlayerListCompleter;
@@ -124,7 +124,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private I18n i18n;
     private FileManager fm;
-    @Inject private CommandManager cm;
     @Inject private PermissionManager pm;
     @Inject private EventManager em;
     @Inject private ThreadFactory tf;
@@ -150,12 +149,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
         this.consoleSender = game.getServer().getConsole();
 
+        this.providerManager = new ProviderManager();
+
         this.builder = new CompositeCommandBuilder(new ParametricCommandBuilder(i18n));
 
         this.commandLogger = logFactory.getLog(CoreModule.class, "Commands");
-
-
-        this.providerManager = new ProviderManager();
 
         providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(core.getLog()));
         providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(core.getLog(), i18n));
@@ -183,7 +181,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
         providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(core, new CommandSourceReader(cm, game), CommandSource.class, Player.class);
+        providerManager.register(core, new CommandSourceReader(this, game), CommandSource.class, Player.class);
         providerManager.register(core, new WorldReader(game, i18n), World.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
 

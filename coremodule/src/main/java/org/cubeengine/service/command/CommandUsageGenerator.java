@@ -20,11 +20,10 @@ package org.cubeengine.service.command;
 import java.util.Locale;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.FlagParameter;
+import org.cubeengine.butler.parameter.FlagParser;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.butler.parameter.ParameterUsageGenerator;
 import org.cubeengine.service.command.exception.PermissionDeniedException;
-import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
@@ -49,8 +48,9 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
         return super.generateParameterUsage(invocation, parameters);
     }
 
+
     @Override
-    protected String generateFlagUsage(CommandInvocation invocation, FlagParameter parameter)
+    protected String generateFlagUsage(CommandInvocation invocation, Parameter parameter)
     {
         if (invocation != null)
         {
@@ -61,9 +61,9 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
 
     private void checkPermission(Object source, Parameter parameter)
     {
-        if (parameter.hasProperty(PermissionProvider.class) && source instanceof Subject)
+        if (parameter.getProperty(RawPermission.class) != null && source instanceof Subject)
         {
-            RawPermission rawPerm = parameter.valueFor(PermissionProvider.class);
+            RawPermission rawPerm = parameter.getProperty(RawPermission.class);
             if (!((Subject)source).hasPermission(rawPerm.getName()))
             {
                 throw new PermissionDeniedException(rawPerm);

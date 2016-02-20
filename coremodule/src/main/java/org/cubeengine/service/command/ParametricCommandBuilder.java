@@ -18,18 +18,18 @@
 package org.cubeengine.service.command;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import org.cubeengine.butler.filter.Filters;
-import org.cubeengine.butler.parameter.Parameter;
+import org.cubeengine.butler.builder.DescriptorFiller;
+import org.cubeengine.butler.parameter.property.Filters;
+import org.cubeengine.butler.parameter.property.Properties;
 import org.cubeengine.butler.parametric.BasicParametricCommand;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.InvokableMethod;
-import org.cubeengine.butler.parametric.ParametricBuilder;
 import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
+import org.cubeengine.butler.parametric.builder.ParametricBuilder;
+import org.cubeengine.butler.parametric.builder.parameter.ParametricParametersFiller;
 import org.cubeengine.service.command.annotation.CommandPermission;
 import org.cubeengine.service.command.annotation.ParameterPermission;
 import org.cubeengine.service.command.annotation.Unloggable;
-import org.cubeengine.service.command.property.PermissionProvider;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.i18n.I18n;
 
@@ -41,84 +41,66 @@ public class ParametricCommandBuilder extends ParametricBuilder
 
     public ParametricCommandBuilder(I18n i18n)
     {
-        super(new CommandUsageGenerator(i18n));
+        super(CubeCommandDescriptor::new, new CommandUsageGenerator(i18n));
         this.i18n = i18n;
-    }
 
-    @Override
-    protected Parameter createParameter(Type clazz, Annotation[] annotations, ParametricBuilder.LabelProvider javaParameter)
-    {
-        Parameter parameter = super.createParameter(clazz, annotations, javaParameter);
-
-        for (Annotation annotation : annotations)
-        {
-            if (annotation instanceof ParameterPermission)
+        getParameterFiller().addFiller((parameter, type, annotations) -> {
+            for (Annotation annotation : annotations)
             {
-                if (isRequired(parameter))
+                if (annotation instanceof ParameterPermission)
                 {
-                    throw new IllegalArgumentException("A Parameter cannot be required and have a permission"); // TODO custom execption
+                    if (isRequired(parameter))
+                    {
+                        throw new IllegalArgumentException("A Parameter cannot be required and have a permission"); // TODO custom execption
+                    }
+                    ParameterPermission annot = (ParameterPermission)annotation;
+                    RawPermission value = new RawPermission(annot.value(), annot.desc());
+                    parameter.offer(RawPermission.class, value);
+                    Filters filters = parameter.getProperty(Properties.FILTERS);
+                    if (filters == null)
+                    {
+                        filters = new Filters();
+                        parameter.offer(Properties.FILTERS, filters);
+                    }
+                    filters.addFilter(new PermissionFilter(value));
+                    return;
                 }
-                ParameterPermission annot = (ParameterPermission)annotation;
-                PermissionProvider provider = new PermissionProvider(new RawPermission(annot.value(), annot.desc()));
-                parameter.setProperty(provider);
-
-                Filters filters = parameter.valueFor(Filters.class);
-                if (filters == null)
-                {
-                    filters = new Filters();
-                    parameter.setProperty(filters);
-                }
-                filters.addFilter(new PermissionFilter(provider.value()));
             }
-        }
+        });
 
-        return parameter;
+        this.addFiller((descriptor, origin) -> {
+            String permName = descriptor.getName();
+            String permDesc = null;
+            boolean checkPerm = true;
+            String[] group = null;
+            CommandPermission perm = origin.getMethod().getAnnotation(CommandPermission.class);
+            if (perm != null)
+            {
+                permName = perm.value().isEmpty() ? permName : perm.value();
+                permDesc = perm.desc().isEmpty() ? "Allows using the command " + descriptor.getName() : perm.desc();
+                checkPerm = perm.checkPermission();
+                group = perm.group();
+            }
+
+            CubeCommandDescriptor cDescriptor = (CubeCommandDescriptor) descriptor;
+
+            cDescriptor.setPermission(new RawPermission(permName + ".use", permDesc).assign(group), checkPerm);
+
+            if (checkPerm)
+            {
+                descriptor.addFilter(new PermissionFilter(cDescriptor.getPermission()));
+            }
+
+            cDescriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
+
+            cDescriptor.setModule(((CommandOrigin) origin).getModule());
+        });
     }
 
     @Override
-    protected CubeCommandDescriptor newDescriptor()
+    protected BasicParametricCommand build(ParametricCommandDescriptor descriptor)
     {
-        return new CubeCommandDescriptor();
-    }
-
-    @Override
-    protected ParametricCommandDescriptor fillDescriptor(ParametricCommandDescriptor descriptor, Command annotation,
-                                                   InvokableMethod origin)
-    {
-        super.fillDescriptor(descriptor, annotation, origin);
-
-        String permName = descriptor.getName();
-        String permDesc = null;
-        boolean checkPerm = true;
-        String[] group = null;
-        CommandPermission perm = this.getClass().getAnnotation(CommandPermission.class);
-        if (perm != null)
-        {
-            permName = perm.value().isEmpty() ? permName : perm.value();
-            permDesc = perm.desc().isEmpty() ? "Allows using the command " + descriptor.getName() : perm.desc();
-            checkPerm = perm.checkPermission();
-            group = perm.group();
-        }
-
-        CubeCommandDescriptor cDescriptor = (CubeCommandDescriptor) descriptor;
-
-        cDescriptor.setPermission(new RawPermission(permName + ".use", permDesc).assign(group), checkPerm);
-
-        if (checkPerm)
-        {
-            descriptor.addFilter(new PermissionFilter(cDescriptor.getPermission()));
-        }
-
-        cDescriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
-
-        cDescriptor.setModule(((CommandOrigin) origin).getModule());
-        return descriptor;
-    }
-
-    @Override
-    protected BasicParametricCommand build(Command annotation, InvokableMethod origin)
-    {
-        BasicParametricCommand command = super.build(annotation, origin);
+        BasicParametricCommand command = super.build(descriptor);
         command.addCommand(new HelpCommand(command, i18n));
         return command;
     }
