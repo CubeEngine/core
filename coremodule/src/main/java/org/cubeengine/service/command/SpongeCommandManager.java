@@ -73,6 +73,7 @@ import org.cubeengine.service.command.readers.LongReader;
 import org.cubeengine.service.command.readers.ProfessionReader;
 import org.cubeengine.service.command.readers.ShortReader;
 import org.cubeengine.service.command.readers.UserReader;
+import org.cubeengine.service.command.readers.WorldPropertiesReader;
 import org.cubeengine.service.command.readers.WorldReader;
 import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.filesystem.FileManager;
@@ -104,6 +105,7 @@ import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.difficulty.Difficulty;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.cubeengine.module.core.CoreModule.isMainThread;
@@ -182,7 +184,8 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
         providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
         providerManager.register(core, new CommandSourceReader(this, game), CommandSource.class, Player.class);
-        providerManager.register(core, new WorldReader(game, i18n), World.class);
+        providerManager.register(core, new WorldReader(i18n), World.class);
+        providerManager.register(core, new WorldPropertiesReader(i18n), WorldProperties.class);
         providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
 
         providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);

@@ -24,12 +24,12 @@ import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.SingleClassConverter;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
-import org.cubeengine.service.world.WorldLocation;
+import org.cubeengine.service.world.WorldTransform;
 
-public class WorldLocationConverter extends SingleClassConverter<WorldLocation>
+public class WorldLocationConverter extends SingleClassConverter<WorldTransform>
 {
     @Override
-    public Node toNode(WorldLocation location, ConverterManager manager) throws ConversionException
+    public Node toNode(WorldTransform location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
         loc.put("x", location.x);
@@ -43,7 +43,7 @@ public class WorldLocationConverter extends SingleClassConverter<WorldLocation>
 
     @Override
     @SuppressWarnings("unchecked")
-    public WorldLocation fromNode(Node node, ConverterManager manager) throws ConversionException
+    public WorldTransform fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {
@@ -57,7 +57,7 @@ public class WorldLocationConverter extends SingleClassConverter<WorldLocation>
             // TODO convert the old vector too
             // float yaw = manager.convertFromNode(input.get("yaw"), float.class);
             // float pitch = manager.convertFromNode(input.get("pitch"), float.class);
-            return new WorldLocation(x, y, z, rx, ry, rz);
+            return new WorldTransform(x, y, z, rx, ry, rz);
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

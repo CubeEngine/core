@@ -31,8 +31,10 @@ import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.parametric.ParametricContainerCommand;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.i18n.formatter.MessageType;
+import org.cubeengine.service.i18n.formatter.component.HoverComponent;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.format.TextFormat;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -90,16 +92,14 @@ public class HelpCommand implements CommandBase
             {
                 i18n.sendTranslated(sender, NEUTRAL, "The following sub-commands are available:");
                 sender.sendMessage(Text.of());
-                for (CommandBase command : commands)
-                {
-                    if (command instanceof HelpCommand
-                     || command instanceof AliasCommand && commands.contains(((AliasCommand)command).getTarget()))
-                    {
-                        continue;
-                    }
-                    sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ",
-                        i18n.getTranslation(sender, formatGray, command.getDescriptor().getDescription())));
-            }
+                commands.stream()
+                        .filter(command -> !(command instanceof HelpCommand || command instanceof AliasCommand
+                                            && commands.contains(((AliasCommand)command).getTarget())))
+                        .filter(command -> !(command.getDescriptor() instanceof CubeCommandDescriptor
+                                          && ((CubeCommandDescriptor)command.getDescriptor()).isCheckPerm()
+                                          && !sender.hasPermission(((CubeCommandDescriptor)command.getDescriptor()).getPermission().getName())))
+                    .forEach(command -> sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", GRAY,
+                                                               i18n.getTranslation(sender, TextFormat.NONE, command.getDescriptor().getDescription()))));
                 sender.sendMessage(Text.of());
             }
             else if (helpTarget instanceof ParametricContainerCommand)

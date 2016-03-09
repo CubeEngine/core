@@ -71,7 +71,8 @@ public class UserMatcher
 
         if (searchOffline)
         {
-            String match = sm.matchString(name, storage.getAll().stream().map(GameProfile::getName).collect(toList()));
+            String match = sm.matchString(name, storage.getAll().stream().map(GameProfile::getName)
+                                                       .filter(Optional::isPresent).map(Optional::get).collect(toList()));
             if (match != null)
             {
                 return storage.get(match);

@@ -29,6 +29,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -78,7 +80,7 @@ public class InventoryGuard
                 Optional<Player> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
-                    player.get().openInventory(this.inventory);
+                    player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player)));
                 }
             }
         }

@@ -47,7 +47,7 @@ public class ColorPostProcessor implements PostProcessor
         {
             return component;
         }
-        String colorString = context.get("color");
+        String colorString = ((FoundFormatter)component).getContext().get("color");//context.get("color");
         ChatFormat color = defaultColor;
         if (colorString != null)
         {

@@ -18,13 +18,14 @@
 package org.cubeengine.service.world;
 
 import com.flowpowered.math.vector.Vector3d;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 /**
- * A Location in a world (without the world)
+ * A Transform in a world (without the world)
  */
-public class WorldLocation
+public class WorldTransform
 {
     public final double x;
     public final double y;
@@ -33,7 +34,7 @@ public class WorldLocation
     public final double ry;
     public final double rz;
 
-    public WorldLocation(double x, double y, double z, double rx, double ry, double rz)
+    public WorldTransform(double x, double y, double z, double rx, double ry, double rz)
     {
         this.x = x;
         this.y = y;
@@ -43,7 +44,7 @@ public class WorldLocation
         this.rz = rz;
     }
 
-    public WorldLocation(Location<World> location, Vector3d rotation)
+    public WorldTransform(Location<World> location, Vector3d rotation)
     {
         this.x = location.getX();
         this.y = location.getY();
@@ -61,5 +62,15 @@ public class WorldLocation
     public final Vector3d getRotation()
     {
         return new Vector3d(rx, ry, rz);
+    }
+
+    public final Transform<World> getTransformIn(World world)
+    {
+        return new Transform<>(world, new Vector3d(x, y, z), new Vector3d(rx, ry, rz));
+    }
+
+    public Vector3d getPosition()
+    {
+        return new Vector3d(x, y, z);
     }
 }

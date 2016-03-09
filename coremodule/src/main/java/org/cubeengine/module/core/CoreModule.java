@@ -68,7 +68,7 @@ import org.cubeengine.service.matcher.UserMatcher;
 import org.cubeengine.service.task.TaskManager;
 import org.cubeengine.service.world.ConfigWorld;
 import org.cubeengine.service.world.ConfigWorldConverter;
-import org.cubeengine.service.world.WorldLocation;
+import org.cubeengine.service.world.WorldTransform;
 import org.joda.time.Duration;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
@@ -112,7 +112,7 @@ public class CoreModule extends Module
     public void onSetup(UserMatcher um)
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
-        manager.registerConverter(new WorldLocationConverter(), WorldLocation.class);
+        manager.registerConverter(new WorldLocationConverter(), WorldTransform.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);

@@ -22,10 +22,14 @@ import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
+import org.cubeengine.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.service.i18n.formatter.component.StyledComponent;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import static org.spongepowered.api.text.format.TextColors.GOLD;
+import static org.spongepowered.api.text.format.TextColors.YELLOW;
 
 @Names("world")
 public class WorldFormatter extends ReflectedFormatter
@@ -33,6 +37,14 @@ public class WorldFormatter extends ReflectedFormatter
     @Format
     public Component format(World world, Context context)
     {
-        return StyledComponent.colored(GOLD, world.getName());
+        return HoverComponent.hoverText(Text.of(YELLOW, world.getUniqueId()),
+                    StyledComponent.colored(GOLD, world.getName()));
+    }
+
+    @Format
+    public Component format(WorldProperties world, Context context)
+    {
+        return HoverComponent.hoverText(Text.of(YELLOW, world.getUniqueId()),
+                    StyledComponent.colored(GOLD, world.getWorldName()));
     }
 }

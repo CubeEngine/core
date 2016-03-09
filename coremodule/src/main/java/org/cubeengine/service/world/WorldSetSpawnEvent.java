@@ -22,6 +22,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.service.event.CubeEvent;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -38,7 +39,7 @@ public class WorldSetSpawnEvent extends CubeEvent
         this.world = world;
         this.location = location;
         this.direction = direction;
-        this.cause = Cause.of(context);
+        this.cause = Cause.of(NamedCause.source(context));
     }
 
     public World getWorld()
