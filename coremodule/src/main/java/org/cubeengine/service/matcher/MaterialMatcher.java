@@ -32,8 +32,12 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.service.config.ItemStackConverter;
+import org.cubeengine.service.config.MaterialConverter;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameDictionary;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -81,21 +85,23 @@ public class MaterialMatcher
                                                                                       FLINT_AND_STEEL, BOW, FISHING_ROD,
                                                                                       SHEARS)));
     @Inject private StringMatcher stringMatcher;
-    private Game game;
 
     @Inject
-    public MaterialMatcher( Game game)
+    public MaterialMatcher(Reflector reflector)
     {
-        this.game = game;
-        this.builder = game.getRegistry().createBuilder(ItemStack.Builder.class);
+        reflector.getDefaultConverterManager().registerConverter(new ItemStackConverter(this), ItemStack.class);
+        reflector.getDefaultConverterManager().registerConverter(new MaterialConverter(this), ItemType.class);
+
+
+        this.builder = Sponge.getRegistry().createBuilder(ItemStack.Builder.class);
 
         // Read names from GameDirectory
-        for (Entry<String, GameDictionary.Entry> entry : game.getGameDictionary().getAll().entries())
+        for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().getAll().entries())
         {
             names.put(entry.getKey(), entry.getValue().getType());
         }
 
-        for (ItemType itemType : game.getRegistry().getAllOf(ItemType.class))
+        for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class))
         {
             ids.put(itemType.getName(), itemType);
         }
@@ -210,7 +216,7 @@ public class MaterialMatcher
 
     public BlockType block(String name)
     {
-        return game.getRegistry().getType(BlockType.class, name).orElse(null);
+        return Sponge.getRegistry().getType(BlockType.class, name).orElse(null);
     }
 
     /**

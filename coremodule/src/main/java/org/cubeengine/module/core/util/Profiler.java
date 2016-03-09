@@ -77,7 +77,7 @@ public class Profiler
         return unit.convert(endProfiling(id), TimeUnit.NANOSECONDS);
     }
 
-    public static void clean()
+    public static void clean() // TODO call this from somewhere?
     {
         synchronized (startTimes)
         {

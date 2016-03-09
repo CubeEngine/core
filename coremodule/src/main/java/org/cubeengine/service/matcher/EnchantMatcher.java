@@ -20,7 +20,10 @@ package org.cubeengine.service.matcher;
 import java.util.HashMap;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.service.config.EnchantmentConverter;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
 import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.item.Enchantment;
@@ -38,11 +41,13 @@ public class EnchantMatcher
     private StringMatcher stringMatcher;
 
     @Inject
-    public EnchantMatcher(Game game, StringMatcher stringMatcher)
+    public EnchantMatcher(Reflector reflector, StringMatcher stringMatcher)
     {
+        reflector.getDefaultConverterManager().registerConverter(new EnchantmentConverter(this), Enchantment.class);
+
         this.stringMatcher = stringMatcher;
         this.spongeNames = new HashMap<>();
-        for (Enchantment enchantment : game.getRegistry().getAllOf(Enchantment.class))
+        for (Enchantment enchantment : Sponge.getRegistry().getAllOf(Enchantment.class))
         {
             this.spongeNames.put(enchantment.getName(), enchantment);
         }

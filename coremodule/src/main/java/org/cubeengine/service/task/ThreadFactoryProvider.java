@@ -21,34 +21,38 @@ import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.LogTarget;
+import de.cubeisland.engine.logscribe.filter.PrefixFilter;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.Provider;
 import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.logging.LogProvider;
+import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.service.task.thread.CoreThreadFactory;
 
 @Provider(ThreadFactory.class)
 public class ThreadFactoryProvider implements ValueProvider<ThreadFactory>
 {
-    private CoreThreadFactory coreThreadFactory;
-
-    @Inject
-    public ThreadFactoryProvider(LogFactory logFactory)
-    {
-        this.coreThreadFactory = new CoreThreadFactory(logFactory.getLog(CoreModule.class, "CoreModule"));
-    }
+    @Inject private LogFactory logFactory;
+    private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
 
     @Override
     public ThreadFactory get(LifeCycle lifeCycle, Modularity modularity)
     {
-        if (lifeCycle.getInformation().getClassName().equals(CoreModule.class.getName())
-         || lifeCycle.getInformation().getClassName().equals(LogProvider.class.getName()))
+        String name;
+        if (lifeCycle.getInformation() instanceof ModuleMetadata)
         {
-            return coreThreadFactory;
+            name = ((ModuleMetadata)lifeCycle.getInformation()).getName();
         }
-        Log log = (Log)modularity.getLifecycle(Log.class).getProvided(lifeCycle);
-        return new ModuleThreadFactory(coreThreadFactory.getThreadGroup(), log);
+        else
+        {
+            name = lifeCycle.getInformation().getIdentifier().name();
+        }
+
+        return new ModuleThreadFactory(threadGroup, logFactory.getLog(LogFactory.class, name));
     }
 }

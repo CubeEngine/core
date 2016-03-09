@@ -18,6 +18,7 @@
 package org.cubeengine.module.core;
 
 import java.util.concurrent.TimeUnit;
+import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.core.Modularity;
 import org.cubeengine.butler.parametric.Command;
@@ -103,14 +104,14 @@ public class CoreCommands extends ContainerCommand
     @Command(desc = "Changes or displays the log level of the server.")
     public void loglevel(CommandSource context, @Optional LogLevel loglevel)
     {
+        // TODO persist
         if (loglevel != null)
         {
-            core.getLog().setLevel(loglevel);
+            core.getProvided(Log.class).setLevel(loglevel);
             i18n.sendTranslated(context, POSITIVE, "New log level successfully set!");
             return;
         }
-        i18n.sendTranslated(context, NEUTRAL, "The current log level is: {input#loglevel}",
-                               core.getLog().getLevel().getName());
+        i18n.sendTranslated(context, NEUTRAL, "The current log level is: {input#loglevel}", core.getProvided(Log.class).getLevel().getName());
     }
 
     @Command(alias = "finduser", desc = "Searches for a user in the database")

@@ -81,7 +81,7 @@ public class I18nLanguageLoader extends LanguageLoader
             ModularityClassLoader classLoader = core.getInformation().getClassLoader();
             if (classLoader == null)
             {
-                core.getLog().warn("ModularityClassLoader for CoreModule not set!");
+                core.getProvided(Log.class).warn("ModularityClassLoader for CoreModule not set!");
                 return; // No classLoader => Core was injected into classpath
             }
             loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, classLoader.getSourceURL()));

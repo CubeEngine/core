@@ -15,19 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.service.command;
+package org.cubeengine.service.logging;
 
-import org.cubeengine.service.command.exception.PermissionDeniedException;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.service.permission.PermissionDescription;
+import de.cubeisland.engine.logscribe.LogLevel;
+import de.cubeisland.engine.reflect.annotations.Comment;
+import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
 
-public class CommandUtil
+public class LoggerConfiguration extends ReflectedYaml
 {
-    public static void ensurePermission(CommandSource src, PermissionDescription perm) throws PermissionDeniedException
-    {
-        if (!src.hasPermission(perm.getId()))
-        {
-            throw new PermissionDeniedException(perm);
-        }
-    }
+    @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > NONE"})
+    public LogLevel consoleLevel = LogLevel.INFO;
+
+    @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > NONE"})
+    public LogLevel fileLevel = LogLevel.INFO;
+
+    @Comment("Zip all old logs to zip archives")
+    public boolean archiveLogs = true;
+
+    @Comment("Whether to log commands executed by players.")
+    public boolean logCommands = false;
 }

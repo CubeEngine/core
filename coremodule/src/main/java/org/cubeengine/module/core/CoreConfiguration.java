@@ -39,10 +39,6 @@ public class CoreConfiguration extends ReflectedYaml
 
     public CommandsSection commands;
 
-    @Comment("When two users have the same name in the database the old users last known name will be renamed using this pattern\n" +
-                 "{name} stands for the original name")
-    public String nameConflict = "{name}_";
-
     public class CommandsSection implements Section
     {
         @Comment("The maximum number of similar commands to offer when more than one command matches a mistyped command.")
@@ -55,57 +51,5 @@ public class CoreConfiguration extends ReflectedYaml
         public List<String> noOverride = new ArrayList<>();
     }
 
-    public ExecutorSection executor;
 
-    public class ExecutorSection implements Section
-    {
-        @Comment("The maximum amount of threads used by the executor at one time")
-        public int threads = 2;
-
-        @Comment("The time in seconds until timeout after shutdown")
-        public int terminate = 10;
-    }
-
-    public UsermanagerSection usermanager;
-
-    public class UsermanagerSection implements Section
-    {
-        @Comment("How often the UserManager should unload offline Players")
-        public int cleanup = 10;
-
-        @Comment("After which time should CubeEngine delete all of a users data from database")
-        public Duration garbageCollection = new Duration(TimeUnit.DAYS.toMillis(90));
-
-        @Comment("How many Ticks after disconnecting a user should stay in the user manager")
-        public int keepInMemory = 300;
-    }
-
-    public LoggingSection logging;
-
-    public class LoggingSection implements Section
-    {
-        @Comment({"Logging into Console", "ALL > TRACE > DEBUG > INFO > WARN > ERROR > NONE"})
-        public LogLevel consoleLevel = LogLevel.INFO;
-
-        @Comment({"Logging to the main log file", "ALL > DEBUG > INFO > WARN > ERROR > NONE"})
-        public LogLevel fileLevel = LogLevel.INFO;
-
-        @Comment("Zip all old logs to zip archives")
-        public boolean archiveLogs = true;
-
-        @Comment("Whether to log commands executed by players.")
-        public boolean logCommands = false;
-    }
-
-    @Comment("This allows the CubeEngine to act when signals are send to the Minecraft server")
-    public boolean catchSystemSignals = true;
-
-    @Override
-    public String[] head()
-    {
-        return new String[] {
-                "This is the CubeEngine CoreConfiguration.",
-                "Changes here can affect every CubeEngine-Module"
-        };
-    }
 }

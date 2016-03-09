@@ -20,6 +20,7 @@ package org.cubeengine.service.command;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.module.core.CoreModule;
@@ -32,15 +33,15 @@ import org.spongepowered.api.text.Text;
 
 public class ProxyCallable implements CommandCallable
 {
-    private final CoreModule core;
     private final SpongeCommandManager manager;
     private final String alias;
+    private Log logger;
 
-    public ProxyCallable(CoreModule core, SpongeCommandManager manager, String alias)
+    public ProxyCallable(SpongeCommandManager manager, String alias, Log logger)
     {
-        this.core = core;
         this.manager = manager;
         this.alias = alias;
+        this.logger = logger;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ProxyCallable implements CommandCallable
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick
             {
-                core.getLog().warn("Command Invocation Timing: {} | {}ms ({}%)", arguments,
+                logger.warn("Command Invocation Timing: {} | {}ms ({}%)", arguments,
                         delta, delta * 100 / (1000 / 20));
             }
 
@@ -66,7 +67,7 @@ public class ProxyCallable implements CommandCallable
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick
             {
-                core.getLog().warn("Command Execute Timing: {} | {}ms ({}%)", arguments,
+                logger.warn("Command Execute Timing: {} | {}ms ({}%)", arguments,
                                    delta, delta * 100 / (1000 / 20));
             }
 
@@ -75,7 +76,7 @@ public class ProxyCallable implements CommandCallable
         }
         catch (Exception e)
         {
-            core.getLog().error(e, "An Unknown Exception occurred while executing a command! Command: {}",
+            logger.error(e, "An Unknown Exception occurred while executing a command! Command: {}",
                                 alias + " " + arguments);
             return CommandResult.empty();
         }

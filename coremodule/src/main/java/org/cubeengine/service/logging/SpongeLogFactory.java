@@ -17,40 +17,97 @@
  */
 package org.cubeengine.service.logging;
 
+import java.io.File;
+import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.DefaultLogFactory;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.Modularity;
+import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.modularity.core.marker.Enable;
+import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.cubeengine.module.core.CoreModule;
+import org.cubeengine.service.command.CommandManager;
+import org.cubeengine.service.filesystem.FileManager;
+import org.cubeengine.service.task.ModuleThreadFactory;
+
+import static org.cubeengine.service.logging.LoggingUtil.getCycler;
+import static org.cubeengine.service.logging.LoggingUtil.getFileFormat;
+import static org.cubeengine.service.logging.LoggingUtil.getLogFile;
 
 @ServiceProvider(LogFactory.class)
 public class SpongeLogFactory extends DefaultLogFactory
 {
     private final Log4jProxyTarget baseTarget;
+    private final Log mainLogger;
+    private final LoggerConfiguration config;
+    @Inject private Modularity modularity;
 
     @Inject
-    public SpongeLogFactory()
+    public SpongeLogFactory(Reflector reflector, File pluginPath)
     {
+        config = reflector.load(LoggerConfiguration.class, pluginPath.toPath().resolve("logger.yml").toFile());
+
+        // configure console logger
         baseTarget = new Log4jProxyTarget((Logger)LogManager.getLogger("CubeEngine"));
         baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+        baseTarget.setLevel((config.consoleLevel));
 
-        getLog(CoreModule.class).addTarget(baseTarget);
+        // create main logger and attach console logger
+        mainLogger = getLog(LogFactory.class, "CubeEngine").addTarget(baseTarget);
     }
 
     @Enable
     public void onEnable()
     {
-        // Start Logging Exceptions
-        Log exLog = this.getLog(CoreModule.class, "Exceptions");
+        FileManager fm = modularity.provide(FileManager.class);
+        ThreadFactory tf = new ModuleThreadFactory(new ThreadGroup("CubeEngine"), getLog(LogFactory.class, "ThreadFactory"));
+
+        // configure main file logger
+        AsyncFileTarget mainFileTarget = new AsyncFileTarget(getLogFile(fm, "main"), getFileFormat(true, true), true, getCycler(), tf);
+        mainFileTarget.setLevel(config.fileLevel);
+        mainLogger.addTarget(mainFileTarget);
+
+        // configure exception logger
+        Log exLog = getLog(CoreModule.class, "Exceptions");
+        exLog.addTarget(new AsyncFileTarget(getLogFile(fm, "Exceptions"), getFileFormat(true, false), true, getCycler(), tf));
+
+        // hook into Minecraft Console Logger
         ExceptionAppender exceptionAppender = new ExceptionAppender(exLog);
         exceptionAppender.start();
         ((Logger)LogManager.getLogger("Minecraft")).addAppender(exceptionAppender);
         baseTarget.getHandle().addAppender(exceptionAppender);
+
+        if (!config.logCommands)
+        {
+            CommandLogging.disable();
+        }
+    }
+
+    @Disable
+    public void onDisable()
+    {
+        CommandLogging.reset();
+    }
+
+    @Override
+    public Log getLog(Class<?> clazz, String id)
+    {
+        if (config.logCommands && clazz.equals(CommandManager.class))
+        {
+            FileManager fm = modularity.provide(FileManager.class);
+            ThreadFactory tf = (ThreadFactory)modularity.getLifecycle(ThreadFactory.class).getProvided(modularity.getLifecycle(CommandManager.class));
+            Log cmdLogger = super.getLog(clazz, id);
+            cmdLogger.addTarget(new AsyncFileTarget(getLogFile(fm, "Commands"), getFileFormat(true, false), true, getCycler(), tf));
+            return cmdLogger;
+        }
+        return super.getLog(clazz, id);
     }
 
     // TODO log-cycling on shutdown ?

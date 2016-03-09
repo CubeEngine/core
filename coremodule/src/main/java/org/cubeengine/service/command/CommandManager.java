@@ -66,6 +66,4 @@ public interface CommandManager extends Dispatcher
     @SuppressWarnings("unchecked")
     void addCommands(Dispatcher dispatcher, Module module, Object commandHolder);
     void addCommands(Module module, Object commandHolder);
-
-    void logCommands(boolean logCommands);
 }

@@ -54,17 +54,21 @@ public class LogProvider implements ValueProvider<Log>
         {
             String name = ((ModuleMetadata)lifeCycle.getInformation()).getName();
 
-            logger = logFactory.getLog(CoreModule.class, name);
+            logger = logFactory.getLog(LogFactory.class, name);
 
             logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, name),
                                               LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), tf));
 
-            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(CoreModule.class));
+            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(LogFactory.class, "CubeEngine")); // delegate to main logger
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
         }
         else
         {
-            logger = logFactory.getLog(CoreModule.class, lifeCycle.getInformation().getIdentifier().name());
+            logger = logFactory.getLog(LogFactory.class, lifeCycle.getInformation().getIdentifier().name());
+
+            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(LogFactory.class, "CubeEngine")); // delegate to main logger
+            parentTarget.appendFilter(new PrefixFilter("[" + lifeCycle.getInformation().getIdentifier().name() + "] "));
+
             // TODO manually add Target for non-modules
         }
         loggers.put(lifeCycle, logger);

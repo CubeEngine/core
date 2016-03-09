@@ -15,41 +15,50 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.module.core.util;
+package org.cubeengine.module.freezedetection;
 
 
+import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import org.cubeengine.module.core.CoreModule;
+import javax.inject.Inject;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
+import de.cubeisland.engine.modularity.core.Module;
+import de.cubeisland.engine.modularity.core.marker.Disable;
+import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.service.task.TaskManager;
 
-public class FreezeDetection
+@ModuleInfo(name = "FreezeDetection", description = "Detects server freeze and produces thread dumps")
+public class FreezeDetection extends Module
 {
-    private final CoreModule core;
-    private final TaskManager taskManager;
+    @Inject private TaskManager taskManager;
+    @Inject private Log logger;
+    @Inject private ThreadFactory tf;
+    @Inject File pluginFolder;
+
     private ScheduledExecutorService executor;
     private UUID taskId;
-    private long lastHeartbeat;
-    private final long freezeThreshold;
+    private long lastHeartbeat = -1;
+    private final long freezeThreshold = TimeUnit.SECONDS.toMillis(20);
     private final ConcurrentLinkedQueue<Runnable> listeners = new ConcurrentLinkedQueue<>();
     private volatile boolean freezeNotified = false;
 
-    public FreezeDetection(CoreModule core, TaskManager tm, long freezeThreshold)
+    @Enable
+    public void onEnable()
     {
-        this(core, tm, freezeThreshold, TimeUnit.SECONDS);
+        start();
+        addListener(new ThreadDumpListener(logger, pluginFolder.toPath()));
     }
 
-    public FreezeDetection(CoreModule core, TaskManager tm, long freezeThreshold, TimeUnit unit)
+    @Disable
+    public void onDisable()
     {
-        this.core = core;
-        this.taskManager = tm;
-        this.executor = null;
-        this.lastHeartbeat = -1;
-        this.freezeThreshold = unit.toMillis(freezeThreshold);
+        shutdown();
     }
 
     public void addListener(Runnable r)
@@ -64,12 +73,12 @@ public class FreezeDetection
 
     public void start()
     {
-        this.taskId = this.taskManager.runAsynchronousTimer(core, new HeartbeatLogger(), 0, 1);
+        this.taskId = this.taskManager.runAsynchronousTimer(this, new HeartbeatLogger(), 0, 1);
         if (this.taskId == null)
         {
             throw new RuntimeException("Failed to schedule the heartbeat logging for freeze detection");
         }
-        this.executor = Executors.newSingleThreadScheduledExecutor(core.getProvided(ThreadFactory.class));
+        this.executor = Executors.newSingleThreadScheduledExecutor(tf);
         this.executor.scheduleAtFixedRate(new FreezeDetector(), this.freezeThreshold, this.freezeThreshold, TimeUnit.MILLISECONDS);
 
         this.lastHeartbeat = System.currentTimeMillis();
@@ -79,7 +88,7 @@ public class FreezeDetection
     {
         if (this.taskId != null)
         {
-            this.taskManager.cancelTask(this.core, this.taskId);
+            this.taskManager.cancelTask(this, this.taskId);
             this.taskId = null;
         }
         if (this.executor != null)
@@ -115,9 +124,7 @@ public class FreezeDetection
             if (System.currentTimeMillis() - lastHeartbeat > freezeThreshold && !freezeNotified)
             {
                 freezeNotified = true;
-                for (Runnable listener : listeners) {
-                    listener.run();
-                }
+                listeners.forEach(Runnable::run);
             }
         }
     }

@@ -24,12 +24,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
 import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Modularity;
@@ -47,7 +45,6 @@ import org.cubeengine.butler.builder.CommandBuilder;
 import org.cubeengine.butler.parametric.BasicParametricCommand;
 import org.cubeengine.butler.parametric.CompositeCommandBuilder;
 import org.cubeengine.butler.parametric.builder.ParametricBuilder;
-import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.command.completer.PlayerCompleter;
 import org.cubeengine.service.command.completer.PlayerListCompleter;
 import org.cubeengine.service.command.exception.CommandExceptionHandler;
@@ -75,10 +72,8 @@ import org.cubeengine.service.command.readers.ShortReader;
 import org.cubeengine.service.command.readers.UserReader;
 import org.cubeengine.service.command.readers.WorldPropertiesReader;
 import org.cubeengine.service.command.readers.WorldReader;
-import org.cubeengine.service.event.EventManager;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.I18n;
-import org.cubeengine.service.logging.LoggingUtil;
 import org.cubeengine.service.matcher.EnchantMatcher;
 import org.cubeengine.service.matcher.EntityMatcher;
 import org.cubeengine.service.matcher.MaterialDataMatcher;
@@ -89,6 +84,7 @@ import org.cubeengine.service.matcher.UserMatcher;
 import org.cubeengine.service.permission.PermissionManager;
 import org.cubeengine.service.user.UserList;
 import org.cubeengine.service.user.UserList.UserListReader;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -108,12 +104,20 @@ import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.cubeengine.module.core.CoreModule.isMainThread;
+import static org.spongepowered.api.Sponge.getGame;
+import static org.spongepowered.api.Sponge.getPluginManager;
 
 @ServiceImpl(CommandManager.class)
 @Version(1)
 public class SpongeCommandManager extends DispatcherCommand implements CommandManager, ModuleHandler
 {
+    private static Thread mainThread = Thread.currentThread();
+
+    public static boolean isMainThread()
+    {
+        return Thread.currentThread().equals(mainThread);
+    }
+
     private final ConsoleSource consoleSender;
     private final Log commandLogger;
     private final ProviderManager providerManager;
@@ -122,14 +126,9 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
     private final Object plugin;
-    private CoreModule core;
 
     private I18n i18n;
-    private FileManager fm;
     @Inject private PermissionManager pm;
-    @Inject private EventManager em;
-    @Inject private ThreadFactory tf;
-    @Inject private org.spongepowered.api.Game game;
 
     @Inject private MaterialDataMatcher materialDataMatcher;
     @Inject private EnchantMatcher enchantMatcher;
@@ -138,28 +137,28 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private EntityMatcher entityMatcher;
     @Inject private StringMatcher stringMatcher;
     @Inject private UserMatcher um;
+    
+    @Inject Log logger;
 
     @Inject
-    public SpongeCommandManager(CoreModule core, org.spongepowered.api.Game game, LogFactory logFactory, I18n i18n, FileManager fm, Modularity modularity)
+    public SpongeCommandManager(LogFactory logFactory, I18n i18n, FileManager fm, Modularity modularity)
     {
         super(new CommandManagerDescriptor());
-        this.core = core;
         this.i18n = i18n;
-        this.fm = fm;
-        this.plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
-        this.baseDispatcher = game.getCommandManager();
+        this.plugin = getGame().getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
+        this.baseDispatcher = getGame().getCommandManager();
 
-        this.consoleSender = game.getServer().getConsole();
+        this.consoleSender = getGame().getServer().getConsole();
 
         this.providerManager = new ProviderManager();
 
         this.builder = new CompositeCommandBuilder(new ParametricCommandBuilder(i18n));
 
-        this.commandLogger = logFactory.getLog(CoreModule.class, "Commands");
+        this.commandLogger = logFactory.getLog(CommandManager.class, "Commands");
 
-        providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(core.getLog()));
-        providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(core.getLog(), i18n));
-        providerManager.getExceptionHandler().addHandler(new UnknownExceptionHandler(core.getLog(), i18n));
+        providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(logger));
+        providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(logger, i18n));
+        providerManager.getExceptionHandler().addHandler(new UnknownExceptionHandler(logger, i18n));
 
         providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
         providerManager.register(this, new LocaleContextValue(i18n), Locale.class);
@@ -170,37 +169,37 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Enable
     public void enable()
     {
-        providerManager.register(core, new PlayerCompleter(game), User.class);
-        providerManager.register(core, new PlayerListCompleter(game), PlayerListCompleter.class);
+        providerManager.register(CommandManager.class, new PlayerCompleter(getGame()), User.class);
+        providerManager.register(CommandManager.class, new PlayerListCompleter(getGame()), PlayerListCompleter.class);
 
-        providerManager.register(core, new ByteReader(i18n), Byte.class, byte.class);
-        providerManager.register(core, new ShortReader(i18n), Short.class, short.class);
-        providerManager.register(core, new IntReader(i18n), Integer.class, int.class);
-        providerManager.register(core, new LongReader(i18n), Long.class, long.class);
-        providerManager.register(core, new FloatReader(i18n), Float.class, float.class);
-        providerManager.register(core, new DoubleReader(i18n), Double.class, double.class);
+        providerManager.register(CommandManager.class, new ByteReader(i18n), Byte.class, byte.class);
+        providerManager.register(CommandManager.class, new ShortReader(i18n), Short.class, short.class);
+        providerManager.register(CommandManager.class, new IntReader(i18n), Integer.class, int.class);
+        providerManager.register(CommandManager.class, new LongReader(i18n), Long.class, long.class);
+        providerManager.register(CommandManager.class, new FloatReader(i18n), Float.class, float.class);
+        providerManager.register(CommandManager.class, new DoubleReader(i18n), Double.class, double.class);
 
-        providerManager.register(core, new BooleanReader(i18n), Boolean.class, boolean.class);
-        providerManager.register(core, new EnchantmentReader(enchantMatcher, game, i18n), Enchantment.class);
-        providerManager.register(core, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(core, new CommandSourceReader(this, game), CommandSource.class, Player.class);
-        providerManager.register(core, new WorldReader(i18n), World.class);
-        providerManager.register(core, new WorldPropertiesReader(i18n), WorldProperties.class);
-        providerManager.register(core, new EntityTypeReader(entityMatcher), EntityType.class);
+        providerManager.register(CommandManager.class, new BooleanReader(i18n), Boolean.class, boolean.class);
+        providerManager.register(CommandManager.class, new EnchantmentReader(enchantMatcher, getGame(), i18n), Enchantment.class);
+        providerManager.register(CommandManager.class, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
+        providerManager.register(CommandManager.class, new CommandSourceReader(this, getGame()), CommandSource.class, Player.class);
+        providerManager.register(CommandManager.class, new WorldReader(i18n), World.class);
+        providerManager.register(CommandManager.class, new WorldPropertiesReader(i18n), WorldProperties.class);
+        providerManager.register(CommandManager.class, new EntityTypeReader(entityMatcher), EntityType.class);
 
-        providerManager.register(core, new DyeColorReader(materialDataMatcher), DyeColor.class);
-        providerManager.register(core, new ProfessionReader(professionMatcher), Profession.class);
-        providerManager.register(core, new UserReader(i18n, um), User.class);
-        providerManager.register(core, new FindUserReader(i18n, um));
-        providerManager.register(core, new DimensionTypeReader(), DimensionType.class);
-        providerManager.register(core, new GameModeReader(), GameMode.class);
-        providerManager.register(core, new DifficultyReader(i18n), Difficulty.class);
-        providerManager.register(core, new GeneratorTypeReader(), GeneratorType.class);
-        providerManager.register(core, new LogLevelReader(i18n), LogLevel.class);
+        providerManager.register(CommandManager.class, new DyeColorReader(materialDataMatcher), DyeColor.class);
+        providerManager.register(CommandManager.class, new ProfessionReader(professionMatcher), Profession.class);
+        providerManager.register(CommandManager.class, new UserReader(i18n, um), User.class);
+        providerManager.register(CommandManager.class, new FindUserReader(i18n, um));
+        providerManager.register(CommandManager.class, new DimensionTypeReader(), DimensionType.class);
+        providerManager.register(CommandManager.class, new GameModeReader(), GameMode.class);
+        providerManager.register(CommandManager.class, new DifficultyReader(i18n), Difficulty.class);
+        providerManager.register(CommandManager.class, new GeneratorTypeReader(), GeneratorType.class);
+        providerManager.register(CommandManager.class, new LogLevelReader(i18n), LogLevel.class);
 
-        providerManager.register(core, new UserListReader(game), UserList.class);
+        providerManager.register(CommandManager.class, new UserListReader(getGame()), UserList.class);
 
-        em.registerListener(core, new PreCommandListener(core, i18n, stringMatcher, game)); // TODO register later?
+        Sponge.getEventManager().registerListeners(getPluginManager().getPlugin("org.cubeengine").get().getInstance().get(), new PreCommandListener(i18n, stringMatcher));
     }
 
     @Override
@@ -259,7 +258,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Override
     public boolean addCommand(CommandBase command)
     {
-        Module module = core;
+        Module module = null;
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
             CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
@@ -275,6 +274,12 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
                 module = ((CubeDescriptor)((AliasCommand)command).getTarget().getDescriptor()).getModule();
             }
         }
+
+        if (module == null)
+        {
+            throw new IllegalArgumentException("Tried to register a non CubeEngine command: " + command.getDescriptor().getName());
+        }
+
         boolean b = super.addCommand(command);
 
         Optional<CommandMapping> mapping = registerSpongeCommand(command.getDescriptor().getName());
@@ -295,20 +300,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
 
     private Optional<CommandMapping> registerSpongeCommand(String name)
     {
-        return baseDispatcher.register(plugin, new ProxyCallable(core, this, name), name);
-    }
-
-    @Override
-    public void logCommands(boolean logCommands)
-    {
-        if (logCommands)
-        {
-            commandLogger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Commands"),
-                                                        LoggingUtil.getFileFormat(true, false),
-                                                        true, LoggingUtil.getCycler(),
-                                                        tf));
-        }
-
+        return baseDispatcher.register(plugin, new ProxyCallable(this, name, logger), name);
     }
 
     @Override

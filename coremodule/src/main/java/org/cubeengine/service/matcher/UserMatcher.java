@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.service.config.UserConverter;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,6 +37,12 @@ import static java.util.stream.Collectors.toList;
 public class UserMatcher
 {
     @Inject private StringMatcher sm;
+
+    @Inject
+    public UserMatcher(Reflector reflector)
+    {
+        reflector.getDefaultConverterManager().registerConverter(new UserConverter(this), User.class);
+    }
 
     public Optional<User> match(String name, boolean searchOffline)
     {

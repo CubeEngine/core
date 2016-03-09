@@ -22,10 +22,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import org.cubeengine.module.core.CoreModule;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.matcher.StringMatcher;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -40,17 +40,14 @@ import static org.spongepowered.api.event.Order.POST;
 
 public class PreCommandListener
 {
-    private final CoreModule core;
+    public static final int MAX_CORRECTION_OFFERS = 5;
     private final StringMatcher stringMatcher;
-    private Game game;
     private I18n i18n;
 
-    public PreCommandListener(CoreModule core, I18n i18n, StringMatcher stringMatcher, Game game)
+    public PreCommandListener(I18n i18n, StringMatcher stringMatcher)
     {
-        this.core = core;
         this.i18n = i18n;
         this.stringMatcher = stringMatcher;
-        this.game = game;
     }
 
     @Listener(order = POST)
@@ -67,12 +64,12 @@ public class PreCommandListener
             return false;
         }
         //String label = explode(" ", label)[0].toLowerCase(Locale.ENGLISH);
-        Set<String> aliases = game.getCommandManager().getAliases();
+        Set<String> aliases = Sponge.getCommandManager().getAliases();
         if (!aliases.contains(label))
         {
-            final Locale language = sender instanceof Player ? ((Player)sender).getLocale() : Locale.getDefault();
+            final Locale language = sender.getLocale();
             List<String> matches = new LinkedList<>(stringMatcher.getBestMatches(label, aliases, 1));
-            if (matches.size() > 0 && matches.size() <= this.core.getConfiguration().commands.maxCorrectionOffers)
+            if (matches.size() > 0 && matches.size() <= MAX_CORRECTION_OFFERS) // TODO config
             {
                 if (matches.size() == 1)
                 {
