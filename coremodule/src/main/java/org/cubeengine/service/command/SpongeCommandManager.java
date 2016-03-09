@@ -141,7 +141,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject Log logger;
 
     @Inject
-    public SpongeCommandManager(LogFactory logFactory, I18n i18n, FileManager fm, Modularity modularity)
+    public SpongeCommandManager(LogFactory logFactory, I18n i18n, Log logger, Modularity modularity)
     {
         super(new CommandManagerDescriptor());
         this.i18n = i18n;

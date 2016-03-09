@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.matcher.StringMatcher;
 import org.spongepowered.api.Game;
@@ -33,6 +34,7 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
 
+import static java.util.stream.Collectors.toList;
 import static org.cubeengine.module.core.util.StringUtils.implode;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -51,9 +53,9 @@ public class PreCommandListener
     }
 
     @Listener(order = POST)
-    private void handleCommand(SendCommandEvent event, @First Player player)
+    public void handleCommand(SendCommandEvent event, @First CommandSource sender)
     {
-        event.setCancelled(isCommandMissing(player, event.getCommand()));
+        event.setCancelled(isCommandMissing(sender, event.getCommand()));
     }
 
     private boolean isCommandMissing(CommandSource sender, String label)
@@ -73,22 +75,26 @@ public class PreCommandListener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(Text.of(i18n.translate(language, NEGATIVE,
+                    sender.sendMessage(i18n.translate(language, NEGATIVE,
                            "Couldn't find {input#command}. Did you mean {input#command}?",
-                           label, matches.iterator().next())));
+                           label, matches.iterator().next()));
                 }
                 else
                 {
                     Collections.sort(matches, String.CASE_INSENSITIVE_ORDER);
-                    sender.sendMessage(Text.of(i18n.translate(language, NEUTRAL,
-                            "Did you mean one of these: {input#command}?", implode(", /", matches))));
+                    if (sender instanceof Player)
+                    {
+                        matches = matches.stream().map(m -> "/" + m).collect(toList());
+                    }
+                    sender.sendMessage(i18n.translate(language, NEUTRAL,
+                            "Did you mean one of these: {input#command}?", implode(", ", matches)));
                 }
             }
             else
             {
-                sender.sendMessage(Text.of(i18n.translate(language, NEGATIVE,
+                sender.sendMessage(i18n.translate(language, NEGATIVE,
                         "I couldn't find any command for {input#command} ...",
-                        label)));
+                        label));
             }
             return true;
         }
