@@ -48,7 +48,7 @@ public class EventManager implements ModuleHandler
     {
         this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
+        this.plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
 
         modularity.registerHandler(this);
     }

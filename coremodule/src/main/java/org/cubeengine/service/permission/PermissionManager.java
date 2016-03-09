@@ -57,7 +57,7 @@ public class PermissionManager implements ModuleHandler
     @Inject
     public PermissionManager(Game game, Modularity modularity)
     {
-        plugin = game.getPluginManager().getPlugin("CubeEngine").get().getInstance().get();
+        plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
         modularity.registerHandler(this);
     }
 
