@@ -45,7 +45,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-@Plugin(id = "org.cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
+@Plugin(id = "org.cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "http://cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
 public class CubeEngineSpongePlugin
 {
     @Inject private PluginContainer instance;
