@@ -18,11 +18,12 @@
 package org.cubeengine.service.command;
 
 import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.service.command.property.RawPermission;
 import org.cubeengine.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
-public interface CubeDescriptor
+public interface CubeDescriptor extends CommandDescriptor
 {
     boolean isLoggable();
 

@@ -18,6 +18,7 @@
 package org.cubeengine.service.command;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,7 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.cubeengine.module.core.util.StringUtils.implode;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEGATIVE;
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -66,8 +68,8 @@ public class PreCommandListener
             return false;
         }
         //String label = explode(" ", label)[0].toLowerCase(Locale.ENGLISH);
-        Set<String> aliases = Sponge.getCommandManager().getAliases();
-        if (!aliases.contains(label))
+        Set<String> aliases = Sponge.getCommandManager().getAliases().stream().map(String::toLowerCase).collect(toSet());
+        if (!aliases.contains(label.toLowerCase()))
         {
             final Locale language = sender.getLocale();
             List<String> matches = new LinkedList<>(stringMatcher.getBestMatches(label, aliases, 1));

@@ -52,7 +52,7 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
     {
         if (!getPermission().isRegistered())
         {
-            getPermission().fallbackDescription("Allows using the command " + getName()).registerPermission(module, pm, parent);
+            getPermission().fallbackDescription("Allows using the container command " + getName()).registerPermission(module, pm, parent);
         }
         return getPermission().getRegistered();
     }

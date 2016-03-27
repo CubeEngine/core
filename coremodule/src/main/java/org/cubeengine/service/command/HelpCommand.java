@@ -35,6 +35,7 @@ import org.cubeengine.service.i18n.formatter.component.HoverComponent;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextFormat;
 
 import static org.cubeengine.service.i18n.formatter.MessageType.NEUTRAL;
@@ -98,8 +99,9 @@ public class HelpCommand implements CommandBase
                         .filter(command -> !(command.getDescriptor() instanceof CubeCommandDescriptor
                                           && ((CubeCommandDescriptor)command.getDescriptor()).isCheckPerm()
                                           && !sender.hasPermission(((CubeCommandDescriptor)command.getDescriptor()).getPermission().getName())))
-                    .forEach(command -> sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName(), WHITE, ": ", GRAY,
-                                                               i18n.getTranslation(sender, TextFormat.NONE, command.getDescriptor().getDescription()))));
+                    .forEach(command -> sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName()).toBuilder().onClick(
+                        TextActions.runCommand("/" + String.join(" ", labels) + " " + command.getDescriptor().getName() + " ? ")).append(Text.of(WHITE, ": ", GRAY,
+                                                               i18n.getTranslation(sender, TextFormat.NONE, command.getDescriptor().getDescription()))).build()));
                 sender.sendMessage(Text.of());
             }
             else if (helpTarget instanceof ParametricContainerCommand)
