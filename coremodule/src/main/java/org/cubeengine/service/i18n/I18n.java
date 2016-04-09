@@ -56,6 +56,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
+import org.cubeengine.service.i18n.formatter.ContextFormatter;
 import org.cubeengine.service.filesystem.FileExtensionFilter;
 import org.cubeengine.service.filesystem.FileManager;
 import org.cubeengine.service.i18n.formatter.BiomeFormatter;
@@ -142,6 +143,7 @@ public class I18n
         compositor.registerFormatter(new BiomeFormatter());
         compositor.registerFormatter(new VectorFormatter());
         compositor.registerFormatter(new DecimalFormatter());
+        compositor.registerFormatter(new ContextFormatter());
 
         compositor.addPostProcessor(new ColorPostProcessor());
     }

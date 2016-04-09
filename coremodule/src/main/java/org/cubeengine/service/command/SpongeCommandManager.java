@@ -72,7 +72,7 @@ import org.cubeengine.service.command.readers.ShortReader;
 import org.cubeengine.service.command.readers.UserReader;
 import org.cubeengine.service.command.readers.WorldPropertiesReader;
 import org.cubeengine.service.command.readers.WorldReader;
-import org.cubeengine.service.filesystem.FileManager;
+import org.cubeengine.service.command.readers.ContextReader;
 import org.cubeengine.service.i18n.I18n;
 import org.cubeengine.service.matcher.EnchantMatcher;
 import org.cubeengine.service.matcher.EntityMatcher;
@@ -96,6 +96,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
@@ -198,6 +199,9 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(CommandManager.class, new LogLevelReader(i18n), LogLevel.class);
 
         providerManager.register(CommandManager.class, new UserListReader(getGame()), UserList.class);
+
+        providerManager.register(CommandManager.class, new ContextReader(), Context.class);
+
 
         Sponge.getEventManager().registerListeners(getPluginManager().getPlugin("org.cubeengine").get().getInstance().get(), new PreCommandListener(i18n, stringMatcher));
     }
