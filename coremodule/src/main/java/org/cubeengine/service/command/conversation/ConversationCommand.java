@@ -61,7 +61,7 @@ public abstract class ConversationCommand extends ContainerCommand
         return this.getDescriptor().getModule();
     }
 
-    public boolean hasUser(User user)
+    public boolean hasUser(Player user)
     {
         return usersInMode.contains(user.getUniqueId());
     }
@@ -75,7 +75,7 @@ public abstract class ConversationCommand extends ContainerCommand
                                               WHITE, event.getMessage()));
 
             Text message = event.getRawMessage();
-            CommandInvocation invocation = newInvocation(player, message.toString()); // TODO
+            CommandInvocation invocation = newInvocation(player, message.toPlain()); // TODO
             this.execute(invocation);
 
             event.setCancelled(true);
