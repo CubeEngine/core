@@ -99,9 +99,14 @@ abstract class BaseAbstractData<C extends ValueContainer<C>, T extends BaseValue
     public Set<ImmutableValue<?>> getValues()
     {
         ImmutableSet.Builder<ImmutableValue<?>> builder = ImmutableSet.builder();
-        for (Supplier<T> function : this.valueGetters.values())
+        for (Entry<Key<? extends BaseValue<?>>, Supplier<?>> entry : getters.entrySet())
         {
-            T value = function.get();
+            if (entry.getValue().get() == null)
+            {
+                continue;
+            }
+            Supplier<T> valueSupplier = valueGetters.get(entry.getKey());
+            T value = valueSupplier.get();
             builder.add(checkNotNull(value instanceof Value ? ((Value)value).asImmutable() : ((ImmutableValue<?>)value)));
         }
         return builder.build();
@@ -131,6 +136,10 @@ abstract class BaseAbstractData<C extends ValueContainer<C>, T extends BaseValue
         DataContainer data = new MemoryDataContainer().set(CONTENT_VERSION, getContentVersion());
         for (Entry<Key<?>, Supplier<?>> entry : getters.entrySet())
         {
+            if (entry.getValue().get() == null)
+            {
+                continue;
+            }
             data.set(entry.getKey().getQuery(), entry.getValue().get());
         }
         return data;
