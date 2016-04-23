@@ -100,7 +100,7 @@ public class HelpCommand implements CommandBase
                                           && ((CubeCommandDescriptor)command.getDescriptor()).isCheckPerm()
                                           && !sender.hasPermission(((CubeCommandDescriptor)command.getDescriptor()).getPermission().getName())))
                     .forEach(command -> sender.sendMessage(Text.of(YELLOW, command.getDescriptor().getName()).toBuilder().onClick(
-                        TextActions.runCommand("/" + String.join(" ", labels) + " " + command.getDescriptor().getName() + " ? ")).append(Text.of(WHITE, ": ", GRAY,
+                        TextActions.runCommand("/" + (String.join(" ", labels) + " ").trim() + command.getDescriptor().getName() + " ? ")).append(Text.of(WHITE, ": ", GRAY,
                                                                i18n.getTranslation(sender, TextFormat.NONE, command.getDescriptor().getDescription()))).build()));
                 sender.sendMessage(Text.of());
             }
