@@ -17,6 +17,7 @@
  */
 package org.cubeengine.service.i18n.formatter;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
@@ -79,6 +80,34 @@ public class VectorFormatter extends ReflectedFormatter
                                     new StyledComponent(GOLD, String.valueOf(v.y)),
                                     new StyledComponent(DARK_AQUA, ","),
                                     new StyledComponent(GOLD, String.valueOf(v.z)),
+                                    new StyledComponent(DARK_AQUA, "]"));
+    }
+
+    @Format
+    public Component format(Vector3d v, Context context)
+    {
+        String arg0 = context.getFlag(0);
+        String arg1 = context.getFlag(1);
+        String arg2 = context.getFlag(2);
+        if (arg0 != null && arg1 != null && arg2 != null)
+        {
+            return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
+                                        new StyledComponent(WHITE, arg0),
+                                        new StyledComponent(GOLD, String.valueOf(v.getFloorX())),
+                                        new StyledComponent(DARK_AQUA, ","),
+                                        new StyledComponent(WHITE, arg1),
+                                        new StyledComponent(GOLD, String.valueOf(v.getFloorY())),
+                                        new StyledComponent(DARK_AQUA, ","),
+                                        new StyledComponent(WHITE, arg2),
+                                        new StyledComponent(GOLD, String.valueOf(v.getFloorZ())),
+                                        new StyledComponent(DARK_AQUA, "]"));
+        }
+        return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
+                                    new StyledComponent(GOLD, String.valueOf(v.getFloorX())),
+                                    new StyledComponent(DARK_AQUA, ","),
+                                    new StyledComponent(GOLD, String.valueOf(v.getFloorY())),
+                                    new StyledComponent(DARK_AQUA, ","),
+                                    new StyledComponent(GOLD, String.valueOf(v.getFloorZ())),
                                     new StyledComponent(DARK_AQUA, "]"));
     }
 
