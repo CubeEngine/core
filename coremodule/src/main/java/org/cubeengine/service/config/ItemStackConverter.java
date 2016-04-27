@@ -17,51 +17,25 @@
  */
 package org.cubeengine.service.config;
 
-import java.util.Optional;
 import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
+import de.cubeisland.engine.converter.ConverterManager;
+import de.cubeisland.engine.converter.converter.ClassedConverter;
 import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.NullNode;
-import de.cubeisland.engine.converter.node.StringNode;
-import org.cubeengine.service.matcher.MaterialMatcher;
-import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
+import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-public class ItemStackConverter extends SimpleConverter<ItemStack>
+public class ItemStackConverter implements ClassedConverter<ItemStack>
 {
-    private MaterialMatcher materialMatcher;
-
-    public ItemStackConverter(MaterialMatcher materialMatcher)
+    @Override
+    public Node toNode(ItemStack object, ConverterManager manager) throws ConversionException
     {
-        this.materialMatcher = materialMatcher;
+        return manager.convertToNode(object.toContainer());
     }
 
     @Override
-    public Node toNode(ItemStack object) throws ConversionException
+    public ItemStack fromNode(Node node, Class<? extends ItemStack> type,
+                              ConverterManager manager) throws ConversionException
     {
-        if (object == null)
-        {
-            return NullNode.emptyNode();
-        }
-        Optional<DurabilityData> dura = object.get(DurabilityData.class);
-        if (dura.isPresent())
-        {
-            return StringNode.of(object.getItem().getName() + ":" + dura.get().durability());
-        }
-        return StringNode.of(object.getItem().getName());
-    }
-
-    @Override
-    public ItemStack fromNode(Node node) throws ConversionException
-    {
-        if (node instanceof StringNode)
-        {
-            return materialMatcher.itemStack(((StringNode)node).getValue());
-        }
-        if (node instanceof NullNode)
-        {
-            return null;
-        }
-        throw ConversionException.of(this, node, "Node is not a StringNode!");
+        return ItemStack.builder().fromContainer(manager.convertFromNode(node, DataContainer.class)).build();
     }
 }

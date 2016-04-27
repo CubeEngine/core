@@ -33,9 +33,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.reflect.Reflector;
-import org.cubeengine.service.config.ItemStackConverter;
+import org.cubeengine.service.config.SimpleItemStackConverter;
 import org.cubeengine.service.config.MaterialConverter;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.GameDictionary;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
@@ -89,7 +88,7 @@ public class MaterialMatcher
     @Inject
     public MaterialMatcher(Reflector reflector)
     {
-        reflector.getDefaultConverterManager().registerConverter(new ItemStackConverter(this), ItemStack.class);
+        reflector.getDefaultConverterManager().registerConverter(new SimpleItemStackConverter(this), ItemStack.class);
         reflector.getDefaultConverterManager().registerConverter(new MaterialConverter(this), ItemType.class);
 
 
