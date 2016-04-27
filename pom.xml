@@ -17,12 +17,12 @@
         <repository>
             <id>cubeengine-repo</id>
             <name>Release</name>
-            <url>http://maven.cubeengine.org/content/repositories/releases</url>
+            <url>http://maven.cubyte.org/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>cubeengine-repo</id>
             <name>Snapshot</name>
-            <url>http://maven.cubeengine.org/content/repositories/snapshots</url>
+            <url>http://maven.cubyte.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
