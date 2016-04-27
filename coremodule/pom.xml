@@ -22,7 +22,7 @@
     <repositories>
         <repository>
             <id>cubeisland-repo</id>
-            <url>http://maven.cubeisland.de/content/groups/public/</url>
+            <url>http://maven.cubyte.org/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
