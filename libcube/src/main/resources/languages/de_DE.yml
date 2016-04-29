@@ -1,0 +1,5 @@
+locale: de_DE
+name: German
+local-name: Deutsch
+plural-count: 2
+plural-expression: "n != 1"
