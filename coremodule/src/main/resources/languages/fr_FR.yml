@@ -1,5 +1,0 @@
-locale: fr_FR
-name: French
-local-name: Francais
-plural-count: 2
-plural-expression: "n > 1"
