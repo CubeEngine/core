@@ -35,16 +35,15 @@ import org.spongepowered.api.entity.living.player.User;
 import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
 
 /**
- * Represents a list of users.
+ * Represents a list of online players
  * If it is all users the list is the currently online users
  */
-// TODO use User instead of Player
-public class UserList
+public class PlayerList
 {
     private final List<Player> list;
     private final boolean all;
 
-    public UserList(List<Player> list)
+    public PlayerList(List<Player> list)
     {
         if (list == null)
         {
@@ -72,7 +71,7 @@ public class UserList
         return all;
     }
 
-    public static class UserListReader implements ArgumentReader<UserList>, Completer
+    public static class UserListReader implements ArgumentReader<PlayerList>, Completer
     {
         private Game game;
 
@@ -93,14 +92,14 @@ public class UserList
 
         @Override
         @SuppressWarnings("unchecked")
-        public UserList read(Class type, CommandInvocation invocation) throws ReaderException
+        public PlayerList read(Class type, CommandInvocation invocation) throws ReaderException
         {
             if ("*".equals(invocation.currentToken()))
             {
                 invocation.consume(1);
-                return new UserList(null);
+                return new PlayerList(null);
             }
-            return new UserList((List<Player>)invocation.getManager().read(List.class, User.class, invocation));
+            return new PlayerList((List<Player>)invocation.getManager().read(List.class, User.class, invocation));
         }
 
         @Override

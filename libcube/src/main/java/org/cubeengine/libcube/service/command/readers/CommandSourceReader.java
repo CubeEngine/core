@@ -26,22 +26,13 @@ import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.libcube.service.command.CommandManager;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
 public class CommandSourceReader implements ArgumentReader<CommandSource>, DefaultValue<CommandSource>, Completer
 {
-    private final CommandManager cm;
-    private Game game;
-
-    public CommandSourceReader(CommandManager cm, Game game)
-    {
-        this.cm = cm;
-        this.game = game;
-    }
-
     @Override
     public CommandSource read(Class type, CommandInvocation invocation) throws ReaderException
     {
@@ -49,10 +40,10 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
         if ("console".equalsIgnoreCase(token))
         {
             invocation.consume(1);
-            return cm.getConsoleSender();
+            return Sponge.getServer().getConsole();
         }
 
-        Optional<Player> player = game.getServer().getPlayer(token);
+        Optional<Player> player = Sponge.getServer().getPlayer(token);
         if (!player.isPresent())
         {
             throw new ReaderException("Player {} not found", token);
@@ -76,7 +67,7 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     {
         ArrayList<String> list = new ArrayList<>();
         String token = invocation.currentToken().toLowerCase();
-        list.addAll(game.getServer().getOnlinePlayers().stream().map(Player::getName).filter(p -> p.startsWith(token)).collect(Collectors.toList()));
+        list.addAll(Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).filter(p -> p.startsWith(token)).collect(Collectors.toList()));
         if ("console".startsWith(token))
         {
             list.add("console");

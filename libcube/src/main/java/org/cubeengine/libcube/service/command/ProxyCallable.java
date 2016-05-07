@@ -32,11 +32,11 @@ import org.spongepowered.api.text.Text;
 
 public class ProxyCallable implements CommandCallable
 {
-    private final SpongeCommandManager manager;
+    private final CubeCommandManager manager;
     private final String alias;
     private Log logger;
 
-    public ProxyCallable(SpongeCommandManager manager, String alias, Log logger)
+    public ProxyCallable(CubeCommandManager manager, String alias, Log logger)
     {
         this.manager = manager;
         this.alias = alias;
@@ -123,7 +123,7 @@ public class ProxyCallable implements CommandCallable
     @Override
     public Optional<Text> getHelp(CommandSource source)
     {
-        return Optional.empty(); // TODO
+        return Optional.of(Text.of(getDescriptor().getUsage(null, alias)));
     }
 
     @Override

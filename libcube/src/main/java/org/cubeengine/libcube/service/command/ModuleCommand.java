@@ -17,30 +17,21 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import java.lang.reflect.Method;
-import de.cubeisland.engine.modularity.core.Module;
-import org.cubeengine.butler.parametric.InvokableMethod;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The origin of a Command in CubeEngine based on an invokable Method
+ * Module Annotation for Commands
+ *
+ * Any Module providing a command choose to use this annotation to register the command automatically
  */
-public class CommandOrigin extends InvokableMethod
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ModuleCommand
 {
-    private final Module module;
-
-    public CommandOrigin(Method method, Object holder, Module module)
-    {
-        super(method, holder);
-        this.module = module;
-    }
-
-    /**
-     * Returns the module owning the command
-     *
-     * @return the module
-     */
-    public Module getModule()
-    {
-        return module;
-    }
+    Class<? extends ContainerCommand> value() default ContainerCommand.class;
 }
+
+

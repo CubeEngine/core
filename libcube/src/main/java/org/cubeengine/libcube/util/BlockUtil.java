@@ -262,7 +262,7 @@ public class BlockUtil
         {
             direction = NORTH;
         }
-        if (hinge == Hinges.RIGHT) // TODO check if this is right might be the inverse
+        if (hinge == Hinges.RIGHT)
         {
             direction = direction.getOpposite();
         }

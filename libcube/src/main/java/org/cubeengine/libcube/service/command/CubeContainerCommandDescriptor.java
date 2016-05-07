@@ -17,9 +17,10 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.parametric.ContainerCommandDescriptor;
 import org.cubeengine.libcube.service.command.property.RawPermission;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
@@ -28,7 +29,11 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
     private boolean loggable;
     private RawPermission permission;
     private boolean checkPerm;
-    private Module module;
+
+    public CubeContainerCommandDescriptor(Dispatcher dispatcher)
+    {
+        super(dispatcher);
+    }
 
     public void setLoggable(boolean loggable)
     {
@@ -48,11 +53,11 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
     }
 
     @Override
-    public PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent)
+    public Permission registerPermission(PermissionManager pm, Permission parent)
     {
         if (!getPermission().isRegistered())
         {
-            getPermission().fallbackDescription("Allows using the container command " + getName()).registerPermission(module, pm, parent);
+            getPermission().fallbackDescription("Allows using the container command " + getName()).registerPermission(getOwner(), pm, parent);
         }
         return getPermission().getRegistered();
     }
@@ -68,16 +73,4 @@ public class CubeContainerCommandDescriptor extends ContainerCommandDescriptor i
     {
         return checkPerm;
     }
-
-    public void setModule(Module module)
-    {
-        this.module = module;
-    }
-
-    @Override
-    public Module getModule()
-    {
-        return module;
-    }
-
 }

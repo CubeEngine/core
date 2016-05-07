@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.command;
 
 import java.lang.annotation.Annotation;
+import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.builder.DescriptorFiller;
 import org.cubeengine.butler.parameter.property.Filters;
 import org.cubeengine.butler.parameter.property.Properties;
@@ -92,15 +93,13 @@ public class ParametricCommandBuilder extends ParametricBuilder
             }
 
             cDescriptor.setLoggable(!origin.getMethod().isAnnotationPresent(Unloggable.class));
-
-            cDescriptor.setModule(((CommandOrigin) origin).getModule());
         });
     }
 
     @Override
-    protected BasicParametricCommand build(ParametricCommandDescriptor descriptor)
+    protected BasicParametricCommand build(Dispatcher base, ParametricCommandDescriptor descriptor)
     {
-        BasicParametricCommand command = super.build(descriptor);
+        BasicParametricCommand command = super.build(base, descriptor);
         command.addCommand(new HelpCommand(command, i18n));
         return command;
     }

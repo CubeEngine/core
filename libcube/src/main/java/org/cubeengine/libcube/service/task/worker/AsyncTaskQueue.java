@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.spongepowered.api.entity.living.player.Player;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**

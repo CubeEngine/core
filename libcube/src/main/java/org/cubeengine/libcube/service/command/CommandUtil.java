@@ -18,12 +18,13 @@
 package org.cubeengine.libcube.service.command;
 
 import org.cubeengine.libcube.service.command.exception.PermissionDeniedException;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class CommandUtil
 {
-    public static void ensurePermission(CommandSource src, PermissionDescription perm) throws PermissionDeniedException
+    public static void ensurePermission(CommandSource src, Permission perm) throws PermissionDeniedException
     {
         if (!src.hasPermission(perm.getId()))
         {

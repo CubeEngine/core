@@ -17,27 +17,29 @@
  */
 package org.cubeengine.libcube.service.permission;
 
-import de.cubeisland.engine.modularity.core.Module;
-import org.spongepowered.api.service.permission.PermissionDescription;
-
-public abstract class PermissionContainer<T extends Module>
+public abstract class PermissionContainer
 {
-    public final T module;
     protected final PermissionManager pm;
+    private final Class owner;
 
-    public PermissionContainer(T module)
+    public PermissionContainer(PermissionManager pm, Class owner)
     {
-        this.module = module;
-        pm = module.getModularity().provide(PermissionManager.class);
+        this.pm = pm;
+        this.owner = owner;
     }
 
-    protected PermissionDescription register(String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
+    protected Permission register(String permission, String description)
     {
-        return pm.register(module, permission, description, parent, assigned);
+        return register(permission, description, null);
     }
 
-    protected PermissionDescription registerS(String permission, String description, PermissionDescription parent, String... assigned)
+    protected Permission register(String permission, String description, Permission parent, Permission... assigned)
     {
-        return pm.registerS(module, permission, description, parent, assigned);
+        return pm.register(owner, permission, description, parent, assigned);
+    }
+
+    protected Permission registerS(String permission, String description, Permission parent, String... assigned)
+    {
+        return pm.registerS(owner, permission, description, parent, assigned);
     }
 }

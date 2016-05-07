@@ -15,20 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.confirm;
+package org.cubeengine.libcube.service.event;
 
-import de.cubeisland.engine.modularity.asm.marker.Service;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
-import org.spongepowered.api.command.CommandSource;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Service
-@Version(1)
-public interface ConfirmManager
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ModuleListener
 {
-    void registerConfirmation(ConfirmResult confirmResult, Module module, CommandSource sender);
-
-    int countPendingConfirmations(CommandSource sender);
-
-    ConfirmResult getLastPendingConfirmation(CommandSource sender);
 }

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.libcube.service.command.CommandManager;
@@ -43,22 +44,14 @@ import static org.spongepowered.api.text.format.TextColors.WHITE;
 public abstract class ConversationCommand extends ContainerCommand
 {
     private final Set<UUID> usersInMode = new HashSet<>();
-    private final CommandManager cm;
 
-    protected ConversationCommand(Module module)
+    protected ConversationCommand(Modularity modularity, CommandManager base, Class owner)
     {
-        super(module);
-        module.getModularity().provide(EventManager.class).registerListener(module, this);
-        cm = getModule().getModularity().provide(CommandManager.class);
-        getDescriptor().setDispatcher(cm); // needed for exceptionhandler
+        super(base, owner);
+        modularity.provide(EventManager.class).registerListener(getDescriptor().getOwner(), this);
         RawPermission permission = getDescriptor().getPermission();
-        permission.registerPermission(module, module.getModularity().provide(PermissionManager.class), null);
+        permission.registerPermission(getDescriptor().getOwner(), base.getPermissionManager(), null);
         this.registerSubCommands();
-    }
-
-    public Module getModule()
-    {
-        return this.getDescriptor().getModule();
     }
 
     public boolean hasUser(Player user)
@@ -84,7 +77,7 @@ public abstract class ConversationCommand extends ContainerCommand
 
     private CommandInvocation newInvocation(CommandSource user, String message)
     {
-        return new CommandInvocation(user, message, cm.getProviderManager());
+        return new CommandInvocation(user, message, getManager().getProviderManager());
     }
 
     @Listener

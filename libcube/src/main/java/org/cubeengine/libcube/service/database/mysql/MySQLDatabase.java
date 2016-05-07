@@ -53,8 +53,7 @@ import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.modularity.core.marker.Disable;
 import de.cubeisland.engine.reflect.Reflector;
 import org.apache.logging.log4j.Level;
@@ -82,7 +81,7 @@ import org.jooq.impl.DefaultConfiguration;
 
 @ServiceImpl(Database.class)
 @de.cubeisland.engine.modularity.asm.marker.Version(1)
-public class MySQLDatabase extends AbstractDatabase implements Database, ModuleHandler
+public class MySQLDatabase extends AbstractDatabase implements Database, ModularityHandler
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
@@ -311,7 +310,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, ModuleH
     }
 
     @Override
-    public void onEnable(Module module)
+    public void onEnable(Object module)
     {
         ModuleTables annotation = module.getClass().getAnnotation(ModuleTables.class);
         if (annotation != null)
@@ -324,7 +323,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, ModuleH
     }
 
     @Override
-    public void onDisable(Module module)
+    public void onDisable(Object module)
     {
         // nothing here
     }

@@ -52,11 +52,6 @@ public class CommandContext extends ParameterizedContext
         return (CommandSource)super.getSource();
     }
 
-    public Module getModule()
-    {
-        return ((CubeDescriptor)this.getInvocation().getCommand().getDescriptor()).getModule();
-    }
-
     public void sendMessage(String message)
     {
         ((CommandSource)this.getInvocation().getCommandSource()).sendMessage(Text.of(message));

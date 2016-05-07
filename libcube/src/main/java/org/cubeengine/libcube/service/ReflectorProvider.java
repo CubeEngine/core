@@ -31,7 +31,7 @@ import org.cubeengine.libcube.service.config.LevelConverter;
 import org.cubeengine.libcube.service.config.LocationConverter;
 import org.cubeengine.libcube.service.config.VersionConverter;
 import org.cubeengine.libcube.service.config.WorldConverter;
-import org.cubeengine.libcube.service.config.WorldLocationConverter;
+import org.cubeengine.libcube.service.config.WorldTransformConverter;
 import org.cubeengine.libcube.service.config.ConfigWorld;
 import org.cubeengine.libcube.service.config.ConfigWorldConverter;
 import org.cubeengine.libcube.service.config.WorldTransform;
@@ -49,7 +49,7 @@ public class ReflectorProvider implements Provider<Reflector>
     public ReflectorProvider()
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
-        manager.registerConverter(new WorldLocationConverter(), WorldTransform.class);
+        manager.registerConverter(new WorldTransformConverter(), WorldTransform.class);
         manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);

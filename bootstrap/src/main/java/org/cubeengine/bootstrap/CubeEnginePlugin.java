@@ -46,7 +46,7 @@ import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModula
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Plugin(id = "org.cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "http://cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
-public class CubeEngineSpongePlugin
+public class CubeEnginePlugin
 {
     @Inject private PluginContainer instance;
     @Inject private Game game;
@@ -89,12 +89,10 @@ public class CubeEngineSpongePlugin
         catch (IOException e)
         {}
 
+        modularity.register(PluginContainer.class, instance);
         modularity.register(Game.class, game);
         modularity.register(Logger.class, pluginLogger);
         modularity.register(File.class, dataFolder);
-        modularity.register(PermissionService.class, new ServiceProvider<>(PermissionService.class, () -> {
-            return game.getServiceManager().provide(PermissionService.class).orElse(null);
-        }));
 
         modularity.registerProvider(Path.class, new ModulePathProvider(dataFolder));
 
@@ -105,6 +103,7 @@ public class CubeEngineSpongePlugin
         pluginLogger.info("done in {} seconds", MILLISECONDS.toSeconds(System.currentTimeMillis() - delta));
         delta = System.currentTimeMillis();
         pluginLogger.info("Set up Modules");
+
         try
         {
             modularity.setupModules();

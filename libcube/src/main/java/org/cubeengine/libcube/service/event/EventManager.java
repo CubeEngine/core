@@ -26,10 +26,11 @@ import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.modularity.core.ModularityHandler;
+import de.cubeisland.engine.modularity.core.PostInjectionHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Event;
+import org.spongepowered.api.plugin.PluginContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,9 +38,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This class manages all Event-(Un-)Registration and fires Events.
  */
 @ServiceProvider(EventManager.class)
-public class EventManager implements ModuleHandler
+public class EventManager implements ModularityHandler, PostInjectionHandler<ModuleListener>
 {
-    private final ConcurrentMap<Module, Set<Object>> listenerMap;
+    private final ConcurrentMap<Class, Set<Object>> listenerMap;
     private final org.spongepowered.api.event.EventManager eventManager;
     private final Object plugin;
 
@@ -48,7 +49,7 @@ public class EventManager implements ModuleHandler
     {
         this.eventManager = game.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
+        this.plugin = modularity.provide(PluginContainer.class).getInstance().get();
 
         modularity.registerHandler(this);
     }
@@ -56,16 +57,16 @@ public class EventManager implements ModuleHandler
     /**
      * Registers an event listener with a module
      *
-     * @param module   the module
+     * @param owner   the module
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager registerListener(Module module, Object listener)
+    public EventManager registerListener(Class owner, Object listener)
     {
-        Set<Object> listeners = this.listenerMap.get(module);
+        Set<Object> listeners = this.listenerMap.get(owner);
         if (listeners == null)
         {
-            this.listenerMap.put(module, listeners = new HashSet<>());
+            this.listenerMap.put(owner, listeners = new HashSet<>());
         }
         listeners.add(listener);
 
@@ -76,16 +77,16 @@ public class EventManager implements ModuleHandler
     /**
      * Removes an event listener from a module
      *
-     * @param module   the module
+     * @param owner   the module
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager removeListener(Module module, Object listener)
+    public EventManager removeListener(Class owner, Object listener)
     {
-        checkNotNull(module, "The module must not be null!");
+        checkNotNull(owner, "The module must not be null!");
         checkNotNull(listener, "The listener must not be null!");
 
-        Set<Object> listeners = this.listenerMap.get(module);
+        Set<Object> listeners = this.listenerMap.get(owner);
         if (listeners != null && listeners.remove(listener))
         {
             eventManager.unregisterListeners(listener);
@@ -96,11 +97,11 @@ public class EventManager implements ModuleHandler
     /**
      * Removes all listeners of the given module
      *
-     * @param module te module
+     * @param owner te module
      */
-    private void removeListeners(Module module)
+    private void removeListeners(Class owner)
     {
-        Set<Object> listeners = this.listenerMap.remove(module);
+        Set<Object> listeners = this.listenerMap.remove(owner);
         if (listeners != null)
         {
             listeners.forEach(eventManager::unregisterListeners);
@@ -114,7 +115,7 @@ public class EventManager implements ModuleHandler
      */
     public EventManager removeListeners()
     {
-        Iterator<Entry<Module, Set<Object>>> it = this.listenerMap.entrySet().iterator();
+        Iterator<Entry<Class, Set<Object>>> it = this.listenerMap.entrySet().iterator();
         while (it.hasNext())
         {
             it.next().getValue().forEach(eventManager::unregisterListeners);
@@ -137,14 +138,19 @@ public class EventManager implements ModuleHandler
     }
 
     @Override
-    public void onEnable(Module module)
+    public void onEnable(Object instance)
     {
-        // TODO maybe register all Listener automagically?
     }
 
     @Override
-    public void onDisable(Module module)
+    public void handle(ModuleListener annotation, Object injected, Object owner)
     {
-        removeListeners(module);
+        registerListener(owner.getClass(), injected);
+    }
+
+    @Override
+    public void onDisable(Object instance)
+    {
+        removeListeners(instance.getClass());
     }
 }

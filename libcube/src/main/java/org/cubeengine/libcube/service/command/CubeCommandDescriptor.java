@@ -17,11 +17,12 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.parameter.GroupParser;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
 import org.cubeengine.libcube.service.command.property.RawPermission;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
@@ -30,7 +31,6 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
     private boolean loggable;
     private RawPermission permission;
     private boolean checkPerm;
-    private Module module;
 
     public void setLoggable(boolean loggable)
     {
@@ -56,37 +56,37 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
     }
 
     @Override
-    public PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent)
+    public Permission registerPermission(PermissionManager pm, Permission parent)
     {
         if (!getPermission().isRegistered())
         {
-            PermissionDescription thisPerm = getPermission().fallbackDescription("Allows using the command " + getName()).registerPermission(module, pm, parent);
-            registerParameterPermissions(module, pm, thisPerm, getParameters());
+            Permission thisPerm = getPermission().fallbackDescription("Allows using the command " + getName()).registerPermission(getOwner(), pm, parent);
+            registerParameterPermissions(pm, thisPerm, getParameters());
         }
         return getPermission().getRegistered();
     }
 
-    public static void registerParameterPermissions(Module module, PermissionManager pm, PermissionDescription thisPerm, Parameter parameter)
+    public void registerParameterPermissions(PermissionManager pm, Permission thisPerm, Parameter parameter)
     {
         RawPermission rawPermission = parameter.getProperty(RawPermission.class);
         if (rawPermission != null)
         {
-            rawPermission.registerPermission(module, pm, thisPerm);
+            rawPermission.registerPermission(getOwner(), pm, thisPerm);
         }
 
         if (parameter.getParser() instanceof GroupParser)
         {
             for (Parameter param : ((GroupParser)parameter.getParser()).getPositional())
             {
-                registerParameterPermissions(module, pm, thisPerm, param);
+                registerParameterPermissions(pm, thisPerm, param);
             }
             for (Parameter param : ((GroupParser)parameter.getParser()).getNonPositional())
             {
-                registerParameterPermissions(module, pm, thisPerm, param);
+                registerParameterPermissions(pm, thisPerm, param);
             }
             for (Parameter param : ((GroupParser)parameter.getParser()).getFlags())
             {
-                registerParameterPermissions(module, pm, thisPerm, param);
+                registerParameterPermissions(pm, thisPerm, param);
             }
         }
     }
@@ -97,14 +97,9 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
         return checkPerm;
     }
 
-    public void setModule(Module module)
-    {
-        this.module = module;
-    }
-
     @Override
-    public Module getModule()
+    public void setDispatcher(Dispatcher dispatcher)
     {
-        return module;
+        super.setDispatcher(dispatcher);
     }
 }

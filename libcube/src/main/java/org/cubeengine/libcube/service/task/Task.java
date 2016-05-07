@@ -18,7 +18,6 @@
 package org.cubeengine.libcube.service.task;
 
 import java.util.UUID;
-import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * This Task can be cancelled from the inside.
@@ -26,13 +25,13 @@ import de.cubeisland.engine.modularity.core.Module;
 public abstract class Task implements Runnable
 {
     private UUID taskid;
-    private final Module module;
+    private final Class owner;
     private final TaskManager tm;
 
-    public Task(Module module)
+    public Task(Class owner, TaskManager tm)
     {
-        this.module = module;
-        this.tm = module.getModularity().provide(TaskManager.class);
+        this.owner = owner;
+        this.tm = tm;
     }
 
     /**
@@ -40,7 +39,7 @@ public abstract class Task implements Runnable
      */
     public void cancelTask()
     {
-        this.tm.cancelTask(this.module, this.taskid);
+        this.tm.cancelTask(this.owner, this.taskid);
     }
 
     /**
@@ -51,7 +50,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runAsynchronousTimer(this.module, this, delay, repeat);
+        this.taskid = this.tm.runAsynchronousTimer(this.owner, this, delay, repeat);
     }
 
     /**
@@ -61,7 +60,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncTask(int delay)
     {
-        this.taskid = this.tm.runAsynchronousTaskDelayed(this.module, this, delay);
+        this.taskid = this.tm.runAsynchronousTaskDelayed(this.owner, this, delay);
     }
 
     /**
@@ -72,7 +71,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runTimer(this.module, this, delay, repeat);
+        this.taskid = this.tm.runTimer(this.owner, this, delay, repeat);
     }
 
     /**
@@ -82,6 +81,6 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncTask(int delay)
     {
-        this.taskid = this.tm.runTaskDelayed(this.module, this, delay);
+        this.taskid = this.tm.runTaskDelayed(this.owner, this, delay);
     }
 }

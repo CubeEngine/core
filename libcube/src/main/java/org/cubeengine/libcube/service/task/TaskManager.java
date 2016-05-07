@@ -34,77 +34,77 @@ public interface TaskManager
     /**
      * Schedules a delayed task for a module
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @return the ID of the task
      */
-    UUID runTask(Module module, Runnable runnable);
+    UUID runTask(Class owner, Runnable runnable);
 
     /**
      * Schedules a delayed task for a module with the given delay on the main server thread
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    UUID runTaskDelayed(Module module, Runnable runnable, long delay);
+    UUID runTaskDelayed(Class owner, Runnable runnable, long delay);
 
     /**
      * Schedules a repeating task for a module with the given delay and interval
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    UUID runTimer(Module module, Runnable runnable, long delay, long interval);
+    UUID runTimer(Class owner, Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a asynchronous delayed task for a module
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @return the ID of the task
      */
-    UUID runAsynchronousTask(Module module, Runnable runnable);
+    UUID runAsynchronousTask(Class owner, Runnable runnable);
 
     /**
      * Schedules a asynchronous delayed task for a module with the given delay
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    UUID runAsynchronousTaskDelayed(Module module, Runnable runnable, long delay);
+    UUID runAsynchronousTaskDelayed(Class owner, Runnable runnable, long delay);
 
     /**
      * Schedules a asynchronous repeating task for a module with the given delay and interval
      *
-     * @param module   the module
+     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    UUID runAsynchronousTimer(Module module, Runnable runnable, long delay, long interval);
+    UUID runAsynchronousTimer(Class owner, Runnable runnable, long delay, long interval);
 
     /**
      * Cancels a task of a module
      *
-     * @param module the module
+     * @param owner the module
      * @param uuid the taskID
      */
-    void cancelTask(Module module, UUID uuid);
+    void cancelTask(Class owner, UUID uuid);
 
-    void cancelTasks(Module module);
+    void cancelTasks(Class owner);
 
     /**
      * This method can be used to remove all objects related to the given module
      *
-     * @param module the module
+     * @param owner the module
      */
-    void clean(Module module);
+    void clean(Class owner);
 }

@@ -19,23 +19,20 @@ package org.cubeengine.libcube.service.command;
 
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.ProviderManager;
-import org.cubeengine.butler.builder.CommandBuilder;
-import org.cubeengine.butler.parametric.BasicParametricCommand;
+import org.cubeengine.libcube.service.i18n.I18n;
+import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 
 /**
- * This class manages the reg>istration of commands.
+ * This class manages the registration of commands.
  */
 @Service
 @Version(1)
-public interface CommandManager extends Dispatcher
+public interface CommandManager extends org.cubeengine.butler.CommandManager
 {
-    ProviderManager getProviderManager();
-
     /**
      * Removes a command by its name
      *
@@ -46,24 +43,22 @@ public interface CommandManager extends Dispatcher
 
     boolean runCommand(CommandSource sender, String commandLine);
 
-    ConsoleSource getConsoleSender();
-
     void logExecution(CommandSource sender, boolean ran, String alias, String args);
 
     void logTabCompletion(CommandSource sender, String alias, String args);
-
-    CommandBuilder<BasicParametricCommand, CommandOrigin> getCommandBuilder();
-
 
     /**
      * Creates {@link org.cubeengine.butler.parametric.BasicParametricCommand} for all methods annotated as a command
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to
-     * @param module        the module owning the commands
+     * @param owner        the module owning the commands
      * @param commandHolder the command holder containing the command-methods
      */
     @SuppressWarnings("unchecked")
-    void addCommands(Dispatcher dispatcher, Module module, Object commandHolder);
-    void addCommands(Module module, Object commandHolder);
+    void addCommands(Dispatcher dispatcher, Object owner, Object commandHolder);
+    void addCommands(Object owner, Object commandHolder);
+
+    I18n getI18n();
+    PermissionManager getPermissionManager();
 }

@@ -22,17 +22,17 @@ import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class UserListInSight implements DefaultValue<UserList>
+public class UserListInSight implements DefaultValue<PlayerList>
 {
     @Override
-    public UserList getDefault(CommandInvocation invocation)
+    public PlayerList getDefault(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof Player)
         {
             Player player = getFirstPlayerInSight(((Player)invocation.getCommandSource()));
             if (player != null)
             {
-                return new UserList(Arrays.asList(player));
+                return new PlayerList(Arrays.asList(player));
             }
         }
         return null;

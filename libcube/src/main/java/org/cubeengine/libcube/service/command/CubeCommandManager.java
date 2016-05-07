@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.command;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,8 +32,10 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.modularity.core.ModularityHandler;
+import de.cubeisland.engine.modularity.core.PostInjectionHandler;
+import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.butler.CommandBase;
@@ -43,8 +46,7 @@ import org.cubeengine.butler.DispatcherCommand;
 import org.cubeengine.butler.ProviderManager;
 import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.builder.CommandBuilder;
-import org.cubeengine.butler.parametric.BasicParametricCommand;
-import org.cubeengine.butler.parametric.CompositeCommandBuilder;
+import org.cubeengine.butler.parametric.InvokableMethod;
 import org.cubeengine.butler.parametric.builder.ParametricBuilder;
 import org.cubeengine.libcube.service.command.completer.PlayerCompleter;
 import org.cubeengine.libcube.service.command.completer.PlayerListCompleter;
@@ -69,14 +71,15 @@ import org.cubeengine.libcube.service.command.readers.IntReader;
 import org.cubeengine.libcube.service.command.readers.ItemStackReader;
 import org.cubeengine.libcube.service.command.readers.LogLevelReader;
 import org.cubeengine.libcube.service.command.readers.LongReader;
+import org.cubeengine.libcube.service.command.readers.PlayerList;
+import org.cubeengine.libcube.service.command.readers.PlayerList.UserListReader;
 import org.cubeengine.libcube.service.command.readers.ProfessionReader;
 import org.cubeengine.libcube.service.command.readers.ShortReader;
-import org.cubeengine.libcube.service.command.readers.UserList;
-import org.cubeengine.libcube.service.command.readers.UserList.UserListReader;
 import org.cubeengine.libcube.service.command.readers.UserReader;
 import org.cubeengine.libcube.service.command.readers.WorldPropertiesReader;
 import org.cubeengine.libcube.service.command.readers.WorldReader;
 import org.cubeengine.libcube.service.filesystem.FileManager;
+import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
 import org.cubeengine.libcube.service.matcher.EntityMatcher;
@@ -85,11 +88,11 @@ import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.matcher.ProfessionMatcher;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
 import org.cubeengine.libcube.service.matcher.UserMatcher;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.data.type.DyeColor;
 import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.EntityType;
@@ -98,6 +101,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.world.DimensionType;
@@ -112,7 +116,7 @@ import static org.spongepowered.api.Sponge.getPluginManager;
 
 @ServiceImpl(CommandManager.class)
 @Version(1)
-public class SpongeCommandManager extends DispatcherCommand implements CommandManager, ModuleHandler
+public class CubeCommandManager extends DispatcherCommand implements CommandManager, PostInjectionHandler<ModuleCommand>, ModularityHandler
 {
     private static Thread mainThread = Thread.currentThread();
 
@@ -121,13 +125,10 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         return Thread.currentThread().equals(mainThread);
     }
 
-    private final ConsoleSource consoleSender;
     private final Log commandLogger;
     private final ProviderManager providerManager;
-    private final CommandBuilder<BasicParametricCommand, CommandOrigin> builder;
     private final org.spongepowered.api.command.CommandManager baseDispatcher;
 
-    private final Map<Module, Set<CommandMapping>> mappings = new HashMap<>();
     private final Object plugin;
 
     private I18n i18n;
@@ -140,26 +141,27 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     @Inject private EntityMatcher entityMatcher;
     @Inject private StringMatcher stringMatcher;
     @Inject private UserMatcher um;
-    
+    @Inject private Modularity modularity;
+
     @Inject Log logger;
 
-    private CommandConfiguration config;
+    private CommandConfiguration config; // TODO use config
+
+    private Map<Object, Set<CommandBase>> commands = new HashMap<>();
+    private Map<CommandBase, CommandMapping> mappings = new HashMap<>();
 
     @Inject
-    public SpongeCommandManager(LogFactory logFactory, I18n i18n, Log logger, Modularity modularity, Reflector reflector, FileManager fm)
+    public CubeCommandManager(LogFactory logFactory, I18n i18n, Log logger, Modularity modularity, Reflector reflector, FileManager fm)
     {
         super(new CommandManagerDescriptor());
 
         this.config = reflector.load(CommandConfiguration.class, fm.getDataPath().resolve("command.yml").toFile());
         this.i18n = i18n;
-        this.plugin = getGame().getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
+        this.plugin = modularity.provide(PluginContainer.class).getInstance().get();
         this.baseDispatcher = getGame().getCommandManager();
 
-        this.consoleSender = getGame().getServer().getConsole();
-
         this.providerManager = new ProviderManager();
-
-        this.builder = new CompositeCommandBuilder(new ParametricCommandBuilder(i18n));
+        this.providerManager.registerBuilder(InvokableMethod.class, new ParametricCommandBuilder(i18n));
 
         this.commandLogger = logFactory.getLog(CommandManager.class, "Commands");
 
@@ -170,6 +172,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
         providerManager.register(this, new LocaleContextValue(i18n), Locale.class);
 
+        modularity.registerPostInjectAnnotation(ModuleCommand.class, this);
         modularity.registerHandler(this);
     }
 
@@ -189,7 +192,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(CommandManager.class, new BooleanReader(i18n), Boolean.class, boolean.class);
         providerManager.register(CommandManager.class, new EnchantmentReader(enchantMatcher, getGame(), i18n), Enchantment.class);
         providerManager.register(CommandManager.class, new ItemStackReader(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(CommandManager.class, new CommandSourceReader(this, getGame()), CommandSource.class, Player.class);
+        providerManager.register(CommandManager.class, new CommandSourceReader(), CommandSource.class, Player.class);
         providerManager.register(CommandManager.class, new WorldReader(i18n), World.class);
         providerManager.register(CommandManager.class, new WorldPropertiesReader(i18n), WorldProperties.class);
         providerManager.register(CommandManager.class, new EntityTypeReader(entityMatcher), EntityType.class);
@@ -204,7 +207,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         providerManager.register(CommandManager.class, new GeneratorTypeReader(), GeneratorType.class);
         providerManager.register(CommandManager.class, new LogLevelReader(i18n), LogLevel.class);
 
-        providerManager.register(CommandManager.class, new UserListReader(getGame()), UserList.class);
+        providerManager.register(CommandManager.class, new UserListReader(getGame()), PlayerList.class);
 
         providerManager.register(CommandManager.class, new ContextReader(), Context.class);
 
@@ -251,43 +254,25 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    public CommandBuilder<BasicParametricCommand, CommandOrigin> getCommandBuilder()
-    {
-        return this.builder;
-    }
-
-    private void removeCommands(Module module)
-    {
-        Set<CommandMapping> byModule = mappings.get(module);
-        if (byModule != null)
-        {
-            byModule.forEach(baseDispatcher::removeMapping);
-        }
-    }
-
-    @Override
     public boolean addCommand(CommandBase command)
     {
-        Module module = null;
+        if (command instanceof AliasCommand)
+        {
+            Set<CommandBase> cmds = commands.get(((AliasCommand)command).getTarget());
+            if (cmds == null)
+            {
+                cmds = new HashSet<>();
+                commands.put(((AliasCommand)command).getTarget(), cmds);
+            }
+            cmds.add(command);
+        }
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
             CubeDescriptor descriptor = (CubeDescriptor)command.getDescriptor();
-            module = descriptor.getModule();
-
-            PermissionDescription parent = pm.register(module, "command", "Allows using all commands of " + module.getInformation().getName(), null);
+            DependencyInformation dep = modularity.getLifecycle(descriptor.getOwner()).getInformation();
+            Permission parent = pm.register(descriptor.getOwner(), "command", "Allows using all commands of " +
+                (dep instanceof ModuleMetadata ? ((ModuleMetadata)dep).getName() : dep.getClassName()), null);
             descriptor.registerPermission(pm, parent);
-        }
-        else if (command instanceof AliasCommand)
-        {
-            if (((AliasCommand)command).getTarget().getDescriptor() instanceof CubeDescriptor)
-            {
-                module = ((CubeDescriptor)((AliasCommand)command).getTarget().getDescriptor()).getModule();
-            }
-        }
-
-        if (module == null)
-        {
-            throw new IllegalArgumentException("Tried to register a non CubeEngine command: " + command.getDescriptor().getName());
         }
 
         boolean b = super.addCommand(command);
@@ -295,16 +280,11 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
         Optional<CommandMapping> mapping = registerSpongeCommand(command.getDescriptor().getName());
         if (mapping.isPresent())
         {
-            Set<CommandMapping> byModule = mappings.get(module);
-            if (byModule == null)
-            {
-                byModule = new HashSet<>();
-                mappings.put(module, byModule);
-            }
-            byModule.add(mapping.get());
+            mappings.put(command, mapping.get());
+            commandLogger.info("Registered command: " + mapping.get().getPrimaryAlias());
             return b;
         }
-        module.getProvided(Log.class).warn("Command was not registered successfully!");
+        commandLogger.warn("Command was not registered successfully!");
         return b;
     }
 
@@ -322,12 +302,6 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
             return execute(new CommandInvocation(sender, commandLine, providerManager));
         }
         return baseDispatcher.process(sender, commandLine).getSuccessCount().isPresent();
-    }
-
-    @Override
-    public ConsoleSource getConsoleSender()
-    {
-        return this.consoleSender;
     }
 
     @Override
@@ -358,7 +332,7 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
     }
 
     @Override
-    public Dispatcher getBaseDispatcher()
+    public org.cubeengine.butler.CommandManager getManager()
     {
         return this;
     }
@@ -368,55 +342,117 @@ public class SpongeCommandManager extends DispatcherCommand implements CommandMa
      * in the given commandHolder and add them to the given dispatcher
      *
      * @param dispatcher    the dispatcher to add the commands to
-     * @param module        the module owning the commands
+     * @param owner        the module owning the commands
      * @param commandHolder the command holder containing the command-methods
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void addCommands(Dispatcher dispatcher, Module module, Object commandHolder)
+    public void addCommands(Dispatcher dispatcher, Object owner, Object commandHolder)
     {
+        Set<CommandBase> cmds = this.commands.get(owner);
+        if (cmds == null)
+        {
+            cmds = new HashSet<>();
+        }
+        this.commands.put(owner, cmds);
+        dispatcher = new OwnedDispatcher(dispatcher, owner);
         for (Method method : ParametricBuilder.getMethods(commandHolder.getClass()))
         {
-            BasicParametricCommand cmd = this.getCommandBuilder().buildCommand(new CommandOrigin(method, commandHolder, module));
+            CommandBuilder<InvokableMethod> builder = getProviderManager().getBuilder(InvokableMethod.class);
+            CommandBase cmd = builder.buildCommand(dispatcher, new InvokableMethod(method, commandHolder));
             if (cmd != null)
             {
                 dispatcher.addCommand(cmd);
+                cmds.add(cmd);
             }
         }
     }
 
     @Override
-    public void addCommands(Module module, Object commandHolder)
+    public void addCommands(Object owner, Object commandHolder)
     {
-        this.addCommands(this, module, commandHolder);
+        this.addCommands(this, owner, commandHolder);
     }
 
 
     @Override
-    public void onEnable(Module module)
+    public void handle(ModuleCommand annotation, Object injected, Object owner)
     {
-        ModuleCommands annotation = module.getClass().getAnnotation(ModuleCommands.class);
-        if (annotation != null)
+        Dispatcher dispatcher = this;
+        if (annotation.value() != ContainerCommand.class)
         {
-            for (Class<? extends Object> commandClass : annotation.value())
+            dispatcher = modularity.provide(annotation.value());
+        }
+        boolean isCommand = CommandBase.class.isAssignableFrom(injected.getClass());
+        if (isCommand)
+        {
+            dispatcher.addCommand(((CommandBase)injected));
+        }
+        else
+        {
+            addCommands(dispatcher, owner, injected);
+        }
+    }
+
+    @Override
+    public void onEnable(Object instance)
+    {}
+
+    @Override
+    public void onDisable(Object instance)
+    {
+        for (Field field : instance.getClass().getDeclaredFields())
+        {
+            if (field.isAnnotationPresent(ModuleCommand.class))
             {
-                Object instance = module.getModularity().inject(commandClass);
-                boolean isCommand = CommandBase.class.isAssignableFrom(commandClass);
-                if (isCommand)
+                try
                 {
-                    addCommand(((CommandBase)instance));
+                    field.setAccessible(true);
+                    Object value = field.get(instance);
+                    removeMappings(value);
                 }
-                else
+                catch (IllegalAccessException e)
                 {
-                    addCommands(module, instance);
+                    throw new IllegalStateException(e);
                 }
             }
         }
     }
 
-    @Override
-    public void onDisable(Module module)
+    private void removeMappings(Object value)
     {
-        removeCommands(module);
+        if (value instanceof Dispatcher)
+        {
+            ((Dispatcher)value).getCommands().forEach(this::removeMappings);
+        }
+        else if (value instanceof CommandBase)
+        {
+            CommandMapping mapping = mappings.remove(value);
+            if (mapping != null)
+            {
+                baseDispatcher.removeMapping(mapping);
+            }
+            ((CommandBase)value).getDescriptor().getDispatcher().removeCommand(((CommandBase)value));
+        }
+        else
+        {
+            Set<CommandBase> cmds = commands.get(value);
+            if (cmds != null)
+            {
+                cmds.forEach(this::removeMappings);
+            }
+        }
+    }
+
+    @Override
+    public I18n getI18n()
+    {
+        return i18n;
+    }
+
+    @Override
+    public PermissionManager getPermissionManager()
+    {
+        return pm;
     }
 }

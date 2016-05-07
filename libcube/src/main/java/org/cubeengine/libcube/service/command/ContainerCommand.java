@@ -17,8 +17,6 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import java.lang.reflect.Method;
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.alias.AliasCommand;
@@ -26,20 +24,18 @@ import org.cubeengine.butler.parametric.ParametricContainerCommand;
 import org.cubeengine.libcube.service.command.annotation.CommandPermission;
 import org.cubeengine.libcube.service.command.annotation.Unloggable;
 import org.cubeengine.libcube.service.command.property.RawPermission;
-import org.cubeengine.libcube.service.i18n.I18n;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
-public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
+public class ContainerCommand extends ParametricContainerCommand
 {
-    private final PermissionManager pm;
-    private Module module;
+    private CommandManager manager;
 
-    public ContainerCommand(Module module)
+    public ContainerCommand(CommandManager base, Class owner)
     {
-        super(new CubeContainerCommandDescriptor(), module.getModularity().provide(CommandManager.class).getCommandBuilder());
-        this.module = module;
-        pm = module.getModularity().provide(PermissionManager.class);
+        super(new CubeContainerCommandDescriptor(base), owner);
+        this.manager = base;
         String permName = getDescriptor().getName();
         String permDesc = null;
         boolean checkPerm = true;
@@ -53,16 +49,9 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
             groups = perm.group();
         }
         getDescriptor().setPermission(new RawPermission(permName, permDesc).assign(groups), checkPerm);
-        getDescriptor().setModule(module);
         getDescriptor().setLoggable(!this.getClass().isAnnotationPresent(Unloggable.class));
 
-        this.addCommand(new HelpCommand(this, module.getModularity().provide(I18n.class)));
-    }
-
-    @Override
-    protected CommandOrigin originFor(Method method)
-    {
-        return new CommandOrigin(method, this, getDescriptor().getModule());
+        this.addCommand(new HelpCommand(this, base.getI18n()));
     }
 
     @Override
@@ -82,24 +71,18 @@ public class ContainerCommand extends ParametricContainerCommand<CommandOrigin>
     {
         if (!(command instanceof AliasCommand) && command.getDescriptor() instanceof CubeDescriptor)
         {
-            PermissionDescription thisPerm = getPermission();
-            ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, thisPerm);
-        }
-        return super.addCommand(command);
-    }
-
-    public PermissionDescription getPermission(String... alias)
-    {
-        CommandBase command = this.getCommand(alias);
-        if (command.getDescriptor() instanceof CubeDescriptor)
-        {
-            PermissionDescription cmdPerm = pm.getPermission(pm.getModulePermission(module).getId() + ".command");
+            PermissionManager pm = manager.getPermissionManager();
+            Class owner = getDescriptor().getOwner();
+            Permission basePerm = pm.getBasePermission(owner);
+            Permission cmdPerm = pm.getPermission(basePerm.getId() + ".command");
             if (cmdPerm == null)
             {
-                cmdPerm = pm.register(module, "command", "", null);
+                cmdPerm = pm.register(owner, "command", "", null); // TODO Description for BaseCommand Permission
             }
-            return ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, cmdPerm);// registers permission if not yet registered
+            Permission thisPerm = getDescriptor().registerPermission(pm, cmdPerm); // gets the container permission
+
+            ((CubeDescriptor)command.getDescriptor()).registerPermission(pm, thisPerm); // register the added cmd permission
         }
-        return null;
+        return super.addCommand(command);
     }
 }

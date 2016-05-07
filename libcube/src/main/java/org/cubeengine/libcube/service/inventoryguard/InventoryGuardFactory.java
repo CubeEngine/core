@@ -54,9 +54,9 @@ public class InventoryGuardFactory
      *
      * @param openInventory
      */
-    public void submitInventory(Module module, boolean openInventory)
+    public void submitInventory(Class owner, boolean openInventory)
     {
-        this.currentGuardConfig.get().submitInventory(module, openInventory);
+        this.currentGuardConfig.get().submitInventory(owner, openInventory);
     }
 
     /**

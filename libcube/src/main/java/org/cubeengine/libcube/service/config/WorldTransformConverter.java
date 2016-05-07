@@ -25,18 +25,18 @@ import de.cubeisland.engine.converter.converter.SingleClassConverter;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 
-public class WorldLocationConverter extends SingleClassConverter<WorldTransform>
+public class WorldTransformConverter extends SingleClassConverter<WorldTransform>
 {
     @Override
-    public Node toNode(WorldTransform location, ConverterManager manager) throws ConversionException
+    public Node toNode(WorldTransform transform, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("x", location.x);
-        loc.put("y", location.y);
-        loc.put("z", location.z);
-        loc.put("rx", location.rx);
-        loc.put("ry", location.ry);
-        loc.put("rz", location.rz);
+        loc.put("x", transform.x);
+        loc.put("y", transform.y);
+        loc.put("z", transform.z);
+        loc.put("rx", transform.rx);
+        loc.put("ry", transform.ry);
+        loc.put("rz", transform.rz);
         return manager.convertToNode(loc);
     }
 
@@ -53,9 +53,6 @@ public class WorldLocationConverter extends SingleClassConverter<WorldTransform>
             double rx = manager.convertFromNode(input.get("rx"), double.class);
             double ry = manager.convertFromNode(input.get("ry"), double.class);
             double rz = manager.convertFromNode(input.get("rz"), double.class);
-            // TODO convert the old vector too
-            // float yaw = manager.convertFromNode(input.get("yaw"), float.class);
-            // float pitch = manager.convertFromNode(input.get("pitch"), float.class);
             return new WorldTransform(x, y, z, rx, ry, rz);
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");

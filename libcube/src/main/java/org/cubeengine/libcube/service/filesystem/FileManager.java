@@ -37,9 +37,9 @@ import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.ModuleHandler;
+import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.reflect.ReflectedFile;
 import de.cubeisland.engine.reflect.Reflector;
 import org.slf4j.Logger;
@@ -51,10 +51,11 @@ import static java.nio.file.Files.createSymbolicLink;
  * Manages all the configurations of the CubeEngine.
  */
 @ServiceProvider(FileManager.class)
-public class FileManager implements ModuleHandler
+public class FileManager implements ModularityHandler
 {
     @Inject private Logger logger;
     @Inject private Reflector reflector;
+    @Inject private Modularity modularity;
     private File dataFolder;
 
     private Path languagePath;
@@ -279,13 +280,15 @@ public class FileManager implements ModuleHandler
         return this.getResourceStream(this.fileSources.get(file));
     }
 
-    public  <T extends ReflectedFile<?, ?, ?>> T loadConfig(Module module, Class<T> clazz)
+    public  <T extends ReflectedFile<?, ?, ?>> T loadConfig(Object instance, Class<T> clazz)
     {
         T config = reflector.create(clazz);
-        config.setFile(module.getProvided(Path.class).resolve("config." + config.getCodec().getExtension()).toFile());
+        LifeCycle lifecycle = modularity.getLifecycle(instance.getClass());
+        Path path = (Path)modularity.getLifecycle(Path.class).getProvided(lifecycle);
+        config.setFile(path.resolve("config." + config.getCodec().getExtension()).toFile());
         if (config.reload(true))
         {
-            module.getProvided(Log.class).info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+            ((Log)modularity.getLifecycle(Log.class).getProvided(lifecycle)).info("Saved new configuration file! config.{}", config.getCodec().getExtension());
         }
         return config;
     }
@@ -304,28 +307,28 @@ public class FileManager implements ModuleHandler
     }
 
     @Override
-    public void onEnable(Module module)
+    public void onEnable(Object instance)
     {
-        for (Field field : module.getClass().getDeclaredFields())
+        for (Field field : instance.getClass().getDeclaredFields())
         {
             if (field.isAnnotationPresent(ModuleConfig.class))
             {
-                ReflectedFile loaded = loadConfig(module, (Class<? extends ReflectedFile>)field.getType());
+                ReflectedFile loaded = loadConfig(instance, (Class<? extends ReflectedFile>)field.getType());
                 field.setAccessible(true);
                 try
                 {
-                    field.set(module, loaded);
+                    field.set(instance, loaded);
                 }
                 catch (IllegalAccessException e)
                 {
-                    throw new IllegalStateException("Could not set configuration for " + module.getInformation().getName(), e);
+                    throw new IllegalStateException(e);
                 }
             }
         }
     }
 
     @Override
-    public void onDisable(Module module)
+    public void onDisable(Object instance)
     {
         // do nothing
     }

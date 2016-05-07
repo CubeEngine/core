@@ -19,6 +19,7 @@ package org.cubeengine.libcube.service.command.exception;
 
 import org.cubeengine.butler.exception.CommandException;
 import org.cubeengine.libcube.service.command.property.RawPermission;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
 /**
@@ -48,9 +49,9 @@ public class PermissionDeniedException extends CommandException
         this.canCheck = true;
     }
 
-    public PermissionDeniedException(PermissionDescription description)
+    public PermissionDeniedException(Permission description)
     {
-        this(new RawPermission(description.getId(), description.getDescription().toPlain()));
+        this(new RawPermission(description.getId(), description.getDesc()));
     }
 
     /**

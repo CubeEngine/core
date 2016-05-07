@@ -17,201 +17,136 @@
  */
 package org.cubeengine.libcube.service.permission;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.ModuleHandler;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.service.permission.PermissionDescription;
+import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
+import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.permission.PermissionDescription.Builder;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Registers permissions to the server.
  */
 @ServiceProvider(PermissionManager.class)
 @Version(1)
-public class PermissionManager implements ModuleHandler
+public class PermissionManager
 {
-    private final Map<Module, Set<String>> modulePermissionMap = new HashMap<>();
-    private final Map<Module, PermissionDescription> modulePermissions = new HashMap<>();
-    private final Map<String, PermissionDescription> permissions = new HashMap<>();
+    @Inject private Modularity modularity;
+    private PluginContainer plugin;
 
-    private final Object plugin;
+    private final Map<Class, Permission> basePermission = new HashMap<>();
+    private final Map<String, Permission> permissions = new HashMap<>();
+    private Permission rootPermission;
 
-    private boolean registered = false;
-
-    @Inject private PermissionService permissionService;
+    private PermissionService permissionService;
+    private final Set<Permission> unregistered = new HashSet<>();
 
     @Inject
-    public PermissionManager(Game game, Modularity modularity)
+    public PermissionManager(PluginContainer plugin)
     {
-        plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
-        modularity.registerHandler(this);
+        this.plugin = plugin;
+        Sponge.getEventManager().registerListeners(plugin.getInstance().get(), this);
+        rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin",singleton("*"))); // TODO translatable
     }
 
-     private void registerBasePermission()
+    private String permId(Class owner, String permission, Permission parent)
     {
-        if (registered)
+        return (parent == null ? getBasePermission(owner).getId() : parent.getId()) + "." + permission;
+    }
+
+    public Permission register(Class owner, String permission, String description, Permission parent, Permission... assigned)
+    {
+        return register(permId(owner, permission, parent), description, asList(assigned).stream().map(Permission::getId).collect(toSet()));
+    }
+
+    public Permission registerS(Class owner, String permission, String description, Permission parent, String... assigned)
+    {
+        return register(permId(owner, permission, parent), description, new HashSet<>(asList(assigned)));
+    }
+
+    private Permission register(String id, String description, Set<String> toAssign)
+    {
+        return register(new Permission(id, description, toAssign));
+    }
+
+    private Permission register(Permission permission)
+    {
+        permissions.put(permission.getId(), permission);
+        if (permissionService == null)
         {
-            return;
+            unregistered.add(permission);
+            return permission;
         }
-
-        registered = true;
-
-        PermissionDescription.Builder builder = this.permissionService.newDescriptionBuilder(plugin).orElse(null);
-        if (builder == null)
+        Optional<Builder> builder = permissionService.newDescriptionBuilder(plugin.getInstance().get());
+        if (builder.isPresent())
         {
-            return;
+            Builder build = builder.get().id(permission.getId());
+            if (permission.getDesc() != null)
+            {
+                build.description(Text.of(permission.getDesc()));
+            }
+            permission.getExplicitParents().stream().map(s -> "permission:" + s).forEach(s -> build.assign(s, true));
+            build.register();
         }
-        builder.id("cubeengine");
-        builder.description(Text.of("Base Permission for the CubeEngine Plugin")); // TODO TRANSLATABLE
-        builder.assign("permission:*", true);
-        builder.register();
-    }
-
-    private Set<String> getPermissions(Module module)
-    {
-        Set<String> perms = this.modulePermissionMap.get(module);
-        if (perms == null)
-        {
-            this.modulePermissionMap.put(module, perms = new HashSet<>(1));
-        }
-        return perms;
-    }
-
-    /**
-     * Registers a permission
-     *
-     * @param permission the permission
-     */
-    public PermissionDescription register(Module module, String permission, String description, PermissionDescription parent, PermissionDescription... assigned)
-    {
-        Stream<String> toAssign = Arrays.asList(assigned).stream().map(PermissionDescription::getId).map(s -> "permission:" + s);
-        return register(module, getPermission(module, permission, parent), description, toAssign);
-    }
-
-    private String getPermission(Module module, String permission, PermissionDescription parent)
-    {
-        permission = (parent == null ? getModulePermission(module).getId() : parent.getId()) + "." + permission;
         return permission;
     }
 
-    private PermissionDescription register(Module module, String permission, String description, Stream<String> toAssign)
+    public Permission getBasePermission(Class owner)
     {
-        registerBasePermission();
-        Set<String> perms = modulePermissionMap.get(module);
-        if (perms == null)
-        {
-            perms = new HashSet<>();
-            modulePermissionMap.put(module, perms);
-        }
-
-        perms.add(permission);
-
-        return permissionService.newDescriptionBuilder(plugin).map(builder -> {
-            builder.id(permission);
-            if (description != null)
-            {
-                builder.description(Text.of(description));
-            }
-            return builder;
-        }).map(b -> assignAndRegister(b, toAssign)).orElse(null);
-    }
-
-
-    private PermissionDescription assignAndRegister(PermissionDescription.Builder builder, Stream<String> assign)
-    {
-        assign.forEach(s -> builder.assign(s, true));
-        PermissionDescription register = builder.register();
-        permissions.put(register.getId(), register);
-        return register;
-    }
-
-    public PermissionDescription registerS(Module module, String permission, String description,
-                                           PermissionDescription parent, String... assigned)
-    {
-        String parentId = getModulePermission(module).getId() + ".";
-        Stream<String> toAssign = Arrays.asList(assigned).stream().map(s -> "permission:" + parentId + s);
-        return register(module, getPermission(module, permission, parent), description, toAssign);
-    }
-
-    public PermissionDescription getModulePermission(Module module)
-    {
-        PermissionDescription perm = modulePermissions.get(module);
+        Permission perm = basePermission.get(owner);
         if (perm == null)
         {
-            PermissionDescription.Builder builder = permissionService.newDescriptionBuilder(plugin).orElse(null);
-            if (builder == null)
-            {
-                return null;
-            }
-            String moduleName = module.getInformation().getName();
-            builder.id("cubeengine." + moduleName.toLowerCase());
-            builder.description(Text.of(String.format("Base Permission for the %s Module", moduleName))); // TODO TRANSLATABLE
-            perm = builder.register();
-            modulePermissions.put(module, perm);
+            DependencyInformation info = modularity.getLifecycle(owner).getInformation();
+            String name = info instanceof ModuleMetadata ? ((ModuleMetadata)info).getName() : info.getClassName();
+
+            perm = register(new Permission(permId(null, name.toLowerCase(), rootPermission), "Base Permission for " + name, emptySet())); // TODO translatable
+            basePermission.put(owner, perm);
         }
         return perm;
     }
 
-    /**
-     * Returns the permission node with given name or {@link Optional#empty()} ()} if not found
-     * @param permission the permissions name
-     * @return the permission if found
-     */
-    public PermissionDescription getPermission(String permission)
+    public Permission getPermission(String permission)
     {
         return permissions.get(permission);
     }
 
-
-    @Override
-    public void onEnable(Module module)
+    public Permission getPermission(Class owner, String permission)
     {
-        for (Field field : module.getClass().getDeclaredFields())
+        return getPermission(permId(owner, permission, null));
+    }
+
+    @Listener
+    public void onRegisterService(ChangeServiceProviderEvent event)
+    {
+        if (event.getService() == PermissionService.class)
         {
-            if (field.isAnnotationPresent(ModulePermissions.class))
-            {
-                try
-                {
-                    Object container = field.getType().getConstructors()[0].newInstance(module);
-                    field.setAccessible(true);
-                    field.set(module, container);
-                }
-                catch (IllegalAccessException | InstantiationException | InvocationTargetException e)
-                {
-                    throw new IllegalStateException("Could not set configuration for " + module.getInformation().getName(), e);
-                }
-            }
+            register((PermissionService)event.getNewProvider());
         }
     }
 
-    @Override
-    public void onDisable(Module module)
+    private void register(PermissionService service)
     {
-        this.modulePermissionMap.remove(module);
-        // It is not possible to remove registered PermissionDescriptions from Sponge
-    }
-
-    public PermissionDescription getPermission(Module module, String permission)
-    {
-        PermissionDescription perm = getPermission(getModulePermission(module).getId() + "." + permission);
-        if (perm == null)
-        {
-            throw new IllegalArgumentException("Permission does not exists in this module or is not yet registered");
-        }
-        return perm;
+        this.permissionService = service;
+        ArrayList<Permission> unregistered = new ArrayList<>(this.unregistered);
+        this.unregistered.clear();
+        unregistered.forEach(this::register);
     }
 }

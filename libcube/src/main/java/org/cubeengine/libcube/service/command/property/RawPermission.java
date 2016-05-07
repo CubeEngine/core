@@ -17,14 +17,14 @@
  */
 package org.cubeengine.libcube.service.command.property;
 
-import de.cubeisland.engine.modularity.core.Module;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class RawPermission
 {
     private boolean registered = false;
-    private PermissionDescription register;
+    private Permission register;
     private String[] groups;
 
     public RawPermission(String permission, String description)
@@ -52,17 +52,17 @@ public class RawPermission
         return description;
     }
 
-    public PermissionDescription registerPermission(Module module, PermissionManager pm, PermissionDescription parent)
+    public Permission registerPermission(Class owner, PermissionManager pm, Permission parent)
     {
         if (!registered)
         {
-            String modulePerm = pm.getModulePermission(module).getId();
+            String modulePerm = pm.getBasePermission(owner).getId();
             for (int i = 0; i < groups.length; i++)
             {
                 groups[i] = modulePerm + "." + groups[i];
             }
 
-            this.register = pm.registerS(module, name, description == null ? "" : description, parent, groups);
+            this.register = pm.registerS(owner, name, description == null ? "" : description, parent, groups);
             name = register.getId();
             registered = true;
         }
@@ -83,7 +83,7 @@ public class RawPermission
         return registered;
     }
 
-    public PermissionDescription getRegistered()
+    public Permission getRegistered()
     {
         return register;
     }

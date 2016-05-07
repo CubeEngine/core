@@ -26,6 +26,7 @@ import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -33,8 +34,10 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
+import org.spongepowered.api.event.item.inventory.InteractInventoryEvent.Close;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 public class InventoryGuard
 {
@@ -42,7 +45,6 @@ public class InventoryGuard
     private TaskManager tm;
     private final Inventory inventory;
     private final HashSet<UUID> users;
-    private Module module;
 
     private boolean blockAllIn = false;
     private boolean blockAllOut = false;
@@ -55,6 +57,7 @@ public class InventoryGuard
     private final HashSet<Runnable> onChange = new HashSet<>();
 
     private boolean ignoreRepaircost = true;
+    private Class owner;
 
     public InventoryGuard(EventManager em, TaskManager tm, Inventory inventory, UUID[] users)
     {
@@ -69,10 +72,10 @@ public class InventoryGuard
         this.ignoreRepaircost = set;
     }
 
-    public void submitInventory(Module module, boolean openInventory)
+    public void submitInventory(Class owner, boolean openInventory)
     {
-        this.module = module;
-        em.registerListener(this.module, this);
+        this.owner = owner;
+        em.registerListener(owner, this);
         if (openInventory)
         {
             for (UUID user : users)
@@ -129,23 +132,37 @@ public class InventoryGuard
     }
 
     @Listener
-    public void onInventoryClose(InteractInventoryEvent.Close event, @First Player player)
+    public void onInventoryClose(Close event, @First Player player)
     {
         if ((event.getTargetInventory().equals(this.inventory)))
         {
-            User user = player; // TODO check if this is working
-            if (user != null && this.users.contains(user))
+            if (this.users.contains(player.getUniqueId()))
             {
-                this.users.remove(user);
+                this.users.remove(player.getUniqueId());
                 if (this.users.isEmpty())
                 {
-                    em.removeListener(this.module, this); // no user left to check
+                    em.removeListener(owner, this); // no user left to check
                 }
                 this.onClose.forEach(Runnable::run);
             }
         }
     }
 
+    @Listener
+    public void onInventoryInteract(InteractInventoryEvent event, @First Player player)
+    {
+        Transaction<ItemStackSnapshot> transaction = event.getCursorTransaction();
+        if (transaction == null)
+        {
+            return;
+        }
+        if (transaction.getOriginal().equals(transaction.getFinal()))
+        {
+            return;
+        }
+        System.out.print(transaction.getOriginal() + "\n");
+        System.out.print(transaction.getFinal() + "\n");
+    }
     /* // TODO inventory dragging
     @Subscribe
     @SuppressWarnings("deprecation")
@@ -376,7 +393,7 @@ public class InventoryGuard
     {
         for (Runnable runner : this.onChange)
         {
-            tm.runTask(this.module, runner);
+            tm.runTask(owner, runner);
         }
     }
 

@@ -17,9 +17,9 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.libcube.service.command.property.RawPermission;
+import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.service.permission.PermissionDescription;
 
@@ -31,7 +31,5 @@ public interface CubeDescriptor extends CommandDescriptor
 
     boolean isCheckPerm();
 
-    Module getModule();
-
-    PermissionDescription registerPermission(PermissionManager pm, PermissionDescription parent);
+    Permission registerPermission(PermissionManager pm, Permission parent);
 }

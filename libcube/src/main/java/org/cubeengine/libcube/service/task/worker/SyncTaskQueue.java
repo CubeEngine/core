@@ -20,7 +20,6 @@ package org.cubeengine.libcube.service.task.worker;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.libcube.service.task.TaskManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,21 +30,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    private final Module module;
-    private final TaskManager scheduler;
+    private final Class owner;
+    private final TaskManager tm;
     private final Queue<Runnable> taskQueue;
     private UUID taskID;
     private boolean isShutdown;
 
-    public SyncTaskQueue(Module core)
+    public SyncTaskQueue(Class owner, TaskManager tm)
     {
-        this(core, new LinkedList<Runnable>());
+        this(owner, tm, new LinkedList<>());
     }
 
-    public SyncTaskQueue(Module module, Queue<Runnable> taskQueue)
+    public SyncTaskQueue(Class owner, TaskManager tm, Queue<Runnable> taskQueue)
     {
-        this.module = module;
-        this.scheduler = this.module.getModularity().provide(TaskManager.class);
+        this.owner = owner;
+        this.tm = tm;
         this.taskQueue = taskQueue;
         this.taskID = null;
         this.isShutdown = false;
@@ -55,7 +54,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.taskQueue.isEmpty())
         {
-            this.scheduler.cancelTask(module, this.taskID);
+            this.tm.cancelTask(owner, this.taskID);
             return;
         }
         this.taskQueue.poll().run();
@@ -79,7 +78,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.scheduler.runTimer(module, this.workerTask, 0, 1);
+            this.taskID = this.tm.runTimer(owner, this.workerTask, 0, 1);
         }
     }
 
@@ -108,7 +107,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.isRunning())
         {
-            this.scheduler.cancelTask(module, this.taskID);
+            this.tm.cancelTask(owner, this.taskID);
             this.taskID = null;
         }
     }
