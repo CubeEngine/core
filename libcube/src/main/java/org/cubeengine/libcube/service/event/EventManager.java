@@ -52,6 +52,7 @@ public class EventManager implements ModularityHandler, PostInjectionHandler<Mod
         this.plugin = modularity.provide(PluginContainer.class).getInstance().get();
 
         modularity.registerHandler(this);
+        modularity.registerPostInjectAnnotation(ModuleListener.class, this);
     }
 
     /**
