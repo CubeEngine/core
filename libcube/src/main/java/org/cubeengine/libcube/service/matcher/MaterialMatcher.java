@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -37,10 +39,14 @@ import org.cubeengine.libcube.service.config.SimpleItemStackConverter;
 import org.cubeengine.libcube.service.config.MaterialConverter;
 import org.spongepowered.api.GameDictionary;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.block.BlockState.Builder;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import static java.util.stream.Collectors.toList;
 import static org.spongepowered.api.item.ItemTypes.*;
 
 /**
@@ -52,6 +58,10 @@ public class MaterialMatcher
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
     private final Map<String, ItemType> ids = new HashMap<>();
+
+    private final Map<BlockType, Map<String, BlockState>> variantMap;
+
+    //private final Map<String, ItemStack> fromBlockStates = new HashMap<>();
 
     private final ItemStack.Builder builder;
 
@@ -94,7 +104,7 @@ public class MaterialMatcher
 
         this.builder = Sponge.getRegistry().createBuilder(ItemStack.Builder.class);
 
-        // Read names from GameDirectory
+        // Read names from GameDictionary
         for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().getAll().entries())
         {
             names.put(entry.getKey(), entry.getValue().getType());
@@ -102,10 +112,155 @@ public class MaterialMatcher
 
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class))
         {
-            ids.put(itemType.getName(), itemType);
+            String id = itemType.getName();
+            ids.put(id, itemType);
+            if (id.startsWith("minecraft:"))
+            {
+                ids.put(id.substring("minecraft:".length()), itemType);
+            }
         }
 
+        this.variantMap = buildVariantMap();
+
         // TODO legacy ID -> ItemType Map
+    }
+
+    private Map<BlockType, Map<String, BlockState>> buildVariantMap()
+    {
+        Map<String, BlockState> blockStateItems = new HashMap<>();
+        for (BlockState blockState : Sponge.getRegistry().getAllOf(BlockState.class))
+        {
+            try
+            {
+                ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
+
+                Builder state = BlockState.builder().blockType(item.getItem().getBlock().get());
+
+                blockState.getKeys().stream().map(Key.class::cast).forEach(
+                    k -> {
+                        Optional value = item.get(k);
+                        if (value.isPresent())
+                        {
+                            state.add(k, value.get());
+                        }
+                    });
+
+
+                BlockState finalState = state.build();
+                /*
+                ItemStack.Builder builder = ItemStack.builder().itemType(finalState.getType().getItem().get());
+                blockState.getKeys().stream().map(Key.class::cast).forEach(
+                    k -> {
+                        Optional value = finalState.get(k);
+                        if (value.isPresent())
+                        {
+                            builder.add(k, value.get());
+                        }
+                    });
+                 */
+                blockStateItems.put(finalState.getName(), finalState);
+            }
+            catch (IllegalArgumentException ignored)
+            {}
+        }
+        Map<BlockType, Map<String, BlockState>> blockStateItemsByType = new HashMap<>();
+        for (Entry<String, BlockState> entry : blockStateItems.entrySet())
+        {
+            BlockType itemType = entry.getValue().getType();
+
+            Map<String, BlockState> itemTypes = blockStateItemsByType.get(itemType);
+            if (itemTypes == null)
+            {
+                itemTypes = new HashMap<>();
+                blockStateItemsByType.put(itemType, itemTypes);
+            }
+            itemTypes.put(entry.getKey(), entry.getValue());
+        }
+
+        Map<BlockType, Map<String, BlockState>> variants = new HashMap<>();
+        blockStateItemsByType.entrySet().stream().filter(e -> e.getValue().size() != 1).forEach(e -> {
+
+            Map<String, Set<String>> variantNames = new HashMap<>();
+            Map<List<String>, BlockState> fullVariant = new HashMap<>();
+            for (Entry<String, BlockState> entry : e.getValue().entrySet())
+            {
+                String variant = entry.getKey();
+                variant = variant.substring(variant.indexOf("[") + 1, variant.indexOf("]"));
+                String[] split = variant.split(","); // multiple variants
+                fullVariant.put(Arrays.asList(split), entry.getValue());
+                for (String variantEntry : split)
+                {
+                    String[] variantEntryPart = variantEntry.split("=");
+                    Set<String> variantValues = variantNames.get(variantEntryPart[0]);
+                    if (variantValues == null)
+                    {
+                        variantValues = new HashSet<>();
+                        variantNames.put(variantEntryPart[0], variantValues);
+                    }
+                    variantValues.add(variantEntryPart[1]);
+                }
+            }
+
+            for (Entry<String, Set<String>> entry : variantNames.entrySet())
+            {
+                if ((e.getKey() == LOG || e.getKey() == LOG2) && entry.getKey().equals("axis")
+                    || entry.getKey().equals("facing") || entry.getKey().equals("half")
+                    || entry.getKey().equals("shape") || entry.getKey().equals("open")
+                    || entry.getKey().equals("powered") || entry.getKey().equals("stage")
+                    || entry.getKey().equals("decayable"))
+                {
+                    Map<List<String>, BlockState> filtered = new HashMap<>();
+                    for (Entry<List<String>, BlockState> offender : fullVariant.entrySet())
+                    {
+                        List<String> key = new ArrayList<>(offender.getKey());
+                        for (String fv : entry.getValue())
+                        {
+                            key.remove(entry.getKey() + "=" + fv);
+                        }
+                        if (!key.isEmpty())
+                        {
+                            filtered.put(key, offender.getValue());
+                        }
+                    }
+                    fullVariant = filtered;
+                }
+                if (entry.getValue().size() == 1)
+                {
+                    String singleVariant = entry.getKey() + "=" + entry.getValue().iterator().next();
+                    fullVariant = fullVariant.entrySet().stream().collect(Collectors.toMap(fv -> {
+                        List<String> split = new ArrayList<>(fv.getKey());
+                        split.remove(singleVariant);
+                        return split;
+                    }, Entry::getValue));
+                }
+            }
+            for (Entry<List<String>, BlockState> variant : fullVariant.entrySet())
+            {
+                if (variant.getKey().size() > 1)
+                {
+                    System.out.print(e.getKey().getName() + " Has multiple Variants:");
+                    for (String s : variant.getKey())
+                    {
+                        System.out.print(" " + s);
+                    }
+                    System.out.print("\n");
+                }
+            }
+            variants.put(e.getKey(), fullVariant.entrySet().stream().collect(Collectors.toMap(en ->
+                String.join(" ", en.getKey().stream().map(s -> s.split("=")[1]).collect(toList())) , Entry::getValue)));
+        });
+
+        /*
+        for (Entry<ItemType, Map<String, ItemStack>> variant : variants.entrySet())
+        {
+            System.out.print(variant.getKey().getName() + ":\n");
+            for (Entry<String, ItemStack> entry : variant.getValue().entrySet())
+            {
+                System.out.print("  " + entry.getKey() + ": " + entry.getValue().getTranslation().get() + "\n");
+            }
+        }
+        */
+        return variants;
     }
 
     private ItemType matchWithLevenshteinDistance(String s, Map<String, ItemType> map)
@@ -149,17 +304,30 @@ public class MaterialMatcher
         {
             return null;
         }
-        String[] parts = name.toLowerCase(Locale.ENGLISH).split(":");
+        String[] parts = name.toLowerCase(Locale.ENGLISH).split("=");
         ItemType type = material(parts[0]);
+        if (type == null)
+        {
+            return null;
+        }
 
-        ItemStack.Builder builder = this.builder.itemType(type).quantity(1);
         if (parts.length > 1)
         {
-            for (int i = 1; i < parts.length; i++)
+            String variant = parts[1];
+            if (type.getBlock().isPresent())
             {
-                // TODO match data and add to itemstack
+                Map<String, BlockState> variants = variantMap.get(type.getBlock().get());
+                if (variants != null)
+                {
+                    String match = stringMatcher.matchString(variant, variants.keySet());
+                    if (match != null)
+                    {
+                        return ItemStack.builder().fromBlockState(variants.get(match)).build();
+                    }
+                }
             }
         }
+        ItemStack.Builder builder = this.builder.itemType(type).quantity(1);
         return builder.build();
     }
 
@@ -185,7 +353,7 @@ public class MaterialMatcher
         TreeSet<Entry<ItemStack, Double>> itemSet = new TreeSet<>(new ItemStackComparator());
         itemSet.addAll(itemMap.entrySet());
 
-        return itemSet.stream().map(Entry::getKey).collect(Collectors.toList());
+        return itemSet.stream().map(Entry::getKey).collect(toList());
     }
 
     /**
@@ -207,6 +375,12 @@ public class MaterialMatcher
             {
                 String match = stringMatcher.matchString(name, names.keySet());
                 type = names.get(match);
+
+                if (type == null)
+                {
+                    match = stringMatcher.matchString(name, ids.keySet());
+                    type = ids.get(match);
+                }
             }
         }
         return type;
