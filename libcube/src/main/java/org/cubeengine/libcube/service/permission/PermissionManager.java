@@ -64,7 +64,7 @@ public class PermissionManager
     {
         this.plugin = plugin;
         Sponge.getEventManager().registerListeners(plugin.getInstance().get(), this);
-        rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin",singleton("*"))); // TODO translatable
+        rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", singleton("*"))); // TODO translatable
     }
 
     private String permId(Class owner, String permission, Permission parent)
