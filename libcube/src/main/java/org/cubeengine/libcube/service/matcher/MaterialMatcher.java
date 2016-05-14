@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.reflect.Reflector;
+import org.apache.commons.lang3.NotImplementedException;
 import org.cubeengine.libcube.service.config.SimpleItemStackConverter;
 import org.cubeengine.libcube.service.config.MaterialConverter;
 import org.spongepowered.api.GameDictionary;
@@ -105,9 +106,17 @@ public class MaterialMatcher
         this.builder = Sponge.getRegistry().createBuilder(ItemStack.Builder.class);
 
         // Read names from GameDictionary
-        for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().getAll().entries())
+
+        try
         {
-            names.put(entry.getKey(), entry.getValue().getType());
+            for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().getAll().entries())
+            {
+                names.put(entry.getKey(), entry.getValue().getType());
+            }
+        }
+        catch (NotImplementedException e) // TODO remove when SpongeVanilla has it
+        {
+            System.err.println("Could not access GameDictionary! Material matching may not work as expected");
         }
 
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class))
