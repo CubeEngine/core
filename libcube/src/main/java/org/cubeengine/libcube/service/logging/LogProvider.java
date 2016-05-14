@@ -31,6 +31,7 @@ import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
+import de.cubeisland.engine.modularity.core.graph.meta.ServiceImplementationMetadata;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
 @Provider(Log.class)
@@ -49,6 +50,7 @@ public class LogProvider implements ValueProvider<Log>
         {
             return logger;
         }
+        Log baseLogger = logFactory.getLog(LogFactory.class, "CubeEngine");
         if (lifeCycle.getInformation() instanceof ModuleMetadata)
         {
             String name = ((ModuleMetadata)lifeCycle.getInformation()).getName();
@@ -58,15 +60,33 @@ public class LogProvider implements ValueProvider<Log>
             logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, name),
                                               LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), tf));
 
-            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(LogFactory.class, "CubeEngine")); // delegate to main logger
+            LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
         }
         else
         {
-            logger = logFactory.getLog(LogFactory.class, lifeCycle.getInformation().getIdentifier().name());
+            String name = lifeCycle.getInformation().getIdentifier().name();
+            if (lifeCycle.getInformation() instanceof ServiceImplementationMetadata)
+            {
+                try
+                {
+                    name = Class.forName(lifeCycle.getInformation().getActualClass()).getSimpleName();
+                }
+                catch (ClassNotFoundException e)
+                {
+                    throw new IllegalStateException(e);
+                }
+            }
+            else
+            {
+                baseLogger.info("Logger created for {}", name);
+            }
 
-            LogTarget parentTarget = logger.addDelegate(logFactory.getLog(LogFactory.class, "CubeEngine")); // delegate to main logger
-            parentTarget.appendFilter(new PrefixFilter("[" + lifeCycle.getInformation().getIdentifier().name() + "] "));
+            logger = logFactory.getLog(LogFactory.class, name);
+
+            LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
+
+            parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
 
             // TODO manually add Target for non-modules
         }
