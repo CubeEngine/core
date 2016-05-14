@@ -211,11 +211,10 @@ public class MaterialMatcher
 
             for (Entry<String, Set<String>> entry : variantNames.entrySet())
             {
-                if ((e.getKey() == LOG || e.getKey() == LOG2) && entry.getKey().equals("axis")
-                    || entry.getKey().equals("facing") || entry.getKey().equals("half")
-                    || entry.getKey().equals("shape") || entry.getKey().equals("open")
-                    || entry.getKey().equals("powered") || entry.getKey().equals("stage")
-                    || entry.getKey().equals("decayable"))
+                if (entry.getKey().equals("axis") || entry.getKey().equals("facing") ||
+                    entry.getKey().equals("half") || entry.getKey().equals("shape") ||
+                    entry.getKey().equals("open") || entry.getKey().equals("powered") ||
+                    entry.getKey().equals("stage") || entry.getKey().equals("decayable"))
                 {
                     Map<List<String>, BlockState> filtered = new HashMap<>();
                     for (Entry<List<String>, BlockState> offender : fullVariant.entrySet())
