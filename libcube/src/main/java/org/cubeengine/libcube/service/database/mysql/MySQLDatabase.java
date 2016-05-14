@@ -118,6 +118,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         dsConf.setThreadFactory(threadFactory);
         dataSource = new HikariDataSource(dsConf);
         dataSource.setConnectionTimeout(10000); // 10s
+        logger.debug("Connecting now...");
         try (Connection connection = dataSource.getConnection())
         {
             try (PreparedStatement s = connection.prepareStatement("SHOW variables WHERE Variable_name='wait_timeout'"))
