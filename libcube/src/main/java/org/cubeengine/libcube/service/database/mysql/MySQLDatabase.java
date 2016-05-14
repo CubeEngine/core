@@ -117,8 +117,8 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         dsConf.setMaximumPoolSize(20);
         dsConf.setThreadFactory(threadFactory);
         dsConf.setConnectionTimeout(10000); // 10s
+        dsConf.setInitializationFailFast(false);
         dataSource = new HikariDataSource(dsConf);
-        logger.debug("Connecting now...");
         try (Connection connection = dataSource.getConnection())
         {
             try (PreparedStatement s = connection.prepareStatement("SHOW variables WHERE Variable_name='wait_timeout'"))
@@ -139,6 +139,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         }
         catch (SQLException e)
         {
+            logger.error("Could not establish connection with the database!");
             throw new IllegalStateException("Could not establish connection with the database!", e);
         }
 
