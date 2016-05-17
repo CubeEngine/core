@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[cubeengine.libcube]
+file_filter = libcube/src/main/resources/assets/org/cubeengine/translations/<lang>_roles.po
+source_file = libcube/src/main/resources/assets/org/cubeengine/translations/messages_libcube.pot
+source_lang = en_US
+type = PO
+
