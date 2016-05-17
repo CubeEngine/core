@@ -57,7 +57,7 @@ public class DifficultyReader extends DefaultedCatalogTypeReader<Difficulty>
             Difficulty difficulty = difficultyMap.get(Integer.valueOf(token));
             if (difficulty == null)
             {
-                throw new TranslatedReaderException(i18n.translate(locale, MessageType.NEGATIVE, "The given difficulty level is unknown!"));
+                throw new TranslatedReaderException(i18n.getTranslation(locale, MessageType.NEGATIVE, "The given difficulty level is unknown!"));
             }
             invocation.consume(1);
             return difficulty;

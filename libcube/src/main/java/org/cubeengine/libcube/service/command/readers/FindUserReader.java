@@ -50,7 +50,7 @@ public class FindUserReader implements ArgumentReader<User>
         Optional<User> user = um.match(arg, true);
         if (user.isPresent())
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
         return user.get();
     }

@@ -54,7 +54,7 @@ public class DoubleReader implements ArgumentReader<Double>
             }
             catch (ParseException e1)
             {
-                throw new TranslatedReaderException(i18n.translate(locale, MessageType.NEGATIVE,
+                throw new TranslatedReaderException(i18n.getTranslation(locale, MessageType.NEGATIVE,
                                                          "Could not parse {input} to double!", arg));
             }
         }

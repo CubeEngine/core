@@ -31,6 +31,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -144,6 +145,12 @@ public class CubeEnginePlugin
                 .build(), "reload");
 
         // TODO register our services in Sponge
+    }
+
+    @Listener
+    public void onReload(GameReloadEvent event)
+    {
+
     }
 
     @Listener

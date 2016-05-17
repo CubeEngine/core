@@ -73,7 +73,7 @@ public class FuzzyUserReader implements ArgumentReader<List<Player>>
                            .collect(toList()));
             if (users.isEmpty())
             {
-                throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", token));
+                throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }

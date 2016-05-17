@@ -79,7 +79,6 @@ import org.cubeengine.libcube.service.command.readers.UserReader;
 import org.cubeengine.libcube.service.command.readers.WorldPropertiesReader;
 import org.cubeengine.libcube.service.command.readers.WorldReader;
 import org.cubeengine.libcube.service.filesystem.FileManager;
-import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
 import org.cubeengine.libcube.service.matcher.EntityMatcher;
@@ -178,7 +177,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     @Enable
     public void enable()
     {
-        providerManager.register(CommandManager.class, new PlayerCompleter(getGame()), User.class);
+        providerManager.register(CommandManager.class, new PlayerCompleter(), User.class);
         providerManager.register(CommandManager.class, new PlayerListCompleter(getGame()), PlayerListCompleter.class);
 
         providerManager.register(CommandManager.class, new ByteReader(i18n), Byte.class, byte.class);

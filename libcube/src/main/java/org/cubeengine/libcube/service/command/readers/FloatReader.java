@@ -53,7 +53,7 @@ public class FloatReader implements ArgumentReader<Float>
             }
             catch (ParseException e1)
             {
-                throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
+                throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE,
                                                          "Could not parse {input} to float!", consumed)); // standardized exception message
             }
         }

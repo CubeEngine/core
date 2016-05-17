@@ -34,6 +34,7 @@ import de.cubeisland.engine.i18n.language.LanguageLoader;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.libcube.service.filesystem.FileManager;
+import org.spongepowered.api.Sponge;
 
 import static org.cubeengine.libcube.service.filesystem.FileExtensionFilter.YAML;
 
@@ -68,28 +69,7 @@ public class I18nLanguageLoader extends LanguageLoader
         {
             log.error(ex, "Failed to load language configurations!");
         }
-
     }
-/* TODO
-    public void provideLanguages(CoreModule core)
-    {
-        try
-        {
-            // Search provided Languages in CoreModule.jar
-            ModularityClassLoader classLoader = core.getInformation().getClassLoader();
-            if (classLoader == null)
-            {
-                core.getProvided(Log.class).warn("ModularityClassLoader for CoreModule not set!");
-                return; // No classLoader => Core was injected into classpath
-            }
-            loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, classLoader.getSourceURL()));
-        }
-        catch (IOException ex)
-        {
-            log.error(ex, "Failed to load language configurations!");
-        }
-    }
-    */
 
     protected void loadLanguages(List<URL> languageFiles) throws IOException
     {

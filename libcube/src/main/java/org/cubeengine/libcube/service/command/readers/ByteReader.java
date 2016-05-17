@@ -45,7 +45,7 @@ public class ByteReader implements ArgumentReader<Byte>
         }
         catch (NumberFormatException e)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
         }
     }
 }

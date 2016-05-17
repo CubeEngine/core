@@ -64,8 +64,7 @@ public abstract class ConversationCommand extends ContainerCommand
     {
         if (this.hasUser(player))
         {
-            player.sendMessage(Text.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ",
-                                              WHITE, event.getMessage()));
+            player.sendMessage(Text.of(DARK_PURPLE, "[", WHITE, getDescriptor().getName(), DARK_PURPLE, "] ", WHITE, event.getMessage()));
 
             Text message = event.getRawMessage();
             CommandInvocation invocation = newInvocation(player, message.toPlain()); // TODO

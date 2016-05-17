@@ -52,7 +52,7 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>, 
         Optional<World> world = Sponge.getServer().getWorld(name);
         if (!world.isPresent())
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
         }
         return world.get();
     }

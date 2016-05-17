@@ -62,7 +62,7 @@ public class IntReader implements ArgumentReader<Integer>
         }
         catch (NumberFormatException e)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE,
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE,
                                                      "Could not parse {input} to integer!", num));
         }
     }

@@ -43,7 +43,7 @@ public class LogLevelReader implements ArgumentReader<LogLevel>
         LogLevel logLevel = LogLevel.toLevel(arg);
         if (logLevel == null)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE, "The given log level is unknown."));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "The given log level is unknown."));
         }
         return logLevel;
     }

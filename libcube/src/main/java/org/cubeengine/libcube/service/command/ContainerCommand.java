@@ -77,7 +77,7 @@ public class ContainerCommand extends ParametricContainerCommand
             Permission cmdPerm = pm.getPermission(basePerm.getId() + ".command");
             if (cmdPerm == null)
             {
-                cmdPerm = pm.register(owner, "command", "", null); // TODO Description for BaseCommand Permission
+                cmdPerm = pm.register(owner, "command", "Allows using all commands for this module", null); // TODO Description for BaseCommand Permission
             }
             Permission thisPerm = getDescriptor().registerPermission(pm, cmdPerm); // gets the container permission
 

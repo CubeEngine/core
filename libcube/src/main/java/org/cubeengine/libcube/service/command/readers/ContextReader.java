@@ -53,7 +53,6 @@ public class ContextReader implements ArgumentReader<Context>, Completer, Defaul
             if (!isValidWorld(parts[1]))
             {
                 throw new ReaderException("Unknown context: {}", token);
-                // TODO look in mirrors for other contexts
             }
             checkToken = parts[1];
         }

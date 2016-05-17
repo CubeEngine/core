@@ -19,9 +19,11 @@ package org.cubeengine.libcube.service.command.completer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -32,13 +34,6 @@ import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
  */
 public class PlayerCompleter implements Completer
 {
-    private Game game;
-
-    public PlayerCompleter(Game game)
-    {
-        this.game = game;
-    }
-
     private static boolean canSee(CommandSource sender, Player user)
     {
         // TODO can see
@@ -49,17 +44,14 @@ public class PlayerCompleter implements Completer
     @Override
     public List<String> getSuggestions(CommandInvocation invocation)
     {
-        List<String> playerNames = new ArrayList<>();
-        final CommandSource sender = (CommandSource)invocation.getCommandSource(); // TODO prevent class cast exceptions
-        for (Player player : game.getServer().getOnlinePlayers())
-        {
-            String name = player.getName();
-            if (canSee(sender, player) && startsWithIgnoreCase(name, invocation.currentToken()))
-            {
-                playerNames.add(name);
-            }
-        }
-        playerNames.remove(sender.getName());
-        return playerNames;
+        Object sender = invocation.getCommandSource();
+        boolean isCmdSource = sender instanceof CommandSource;
+        String token = invocation.currentToken();
+        return Sponge.getServer().getOnlinePlayers().stream()
+              .filter(p ->!isCmdSource || canSee(((CommandSource)sender), p)) // Filter can see ; no cmdsource can see everyone
+              .filter(p -> sender != p) // Filter self out
+              .map(Player::getName) // get Names
+              .filter(p -> startsWithIgnoreCase(p, token)) // Filter starting with token
+              .collect(Collectors.toList());
     }
 }

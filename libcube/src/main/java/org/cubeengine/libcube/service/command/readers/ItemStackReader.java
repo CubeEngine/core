@@ -46,7 +46,7 @@ public class ItemStackReader implements ArgumentReader<ItemStack>
         ItemStack item = materialMatcher.itemStack(arg);
         if (item == null)
         {
-            throw new TranslatedReaderException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }
