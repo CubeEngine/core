@@ -43,6 +43,7 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockState.Builder;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -312,7 +313,8 @@ public class MaterialMatcher
             return null;
         }
         String[] parts = name.toLowerCase(Locale.ENGLISH).split("=");
-        ItemType type = material(parts[0]);
+        String[] typeName = parts[0].split(":");
+        ItemType type = material(typeName[0]);
         if (type == null)
         {
             return null;
@@ -335,6 +337,10 @@ public class MaterialMatcher
             }
         }
         ItemStack.Builder builder = this.builder.itemType(type).quantity(1);
+        if (typeName.length == 2)
+        {
+            builder.add(Keys.ITEM_DURABILITY, Integer.valueOf(typeName[1]));
+        }
         return builder.build();
     }
 
