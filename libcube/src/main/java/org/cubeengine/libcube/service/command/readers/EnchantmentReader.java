@@ -34,9 +34,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import static org.cubeengine.libcube.service.i18n.formatter.MessageType.*;
+import static org.spongepowered.api.text.action.TextActions.showText;
+import static org.spongepowered.api.text.format.TextColors.YELLOW;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
@@ -55,7 +58,8 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     {
         List<Text> enchantments = registry.getAllOf(Enchantment.class).stream()
                                           .filter(e -> item == null || e.canBeAppliedToStack(item))
-                                          .map(Enchantment::getName).map(n -> Text.of(TextColors.YELLOW, n))
+                                          .map(e -> Text.of(YELLOW, e.getTranslation()).toBuilder()
+                                                    .onHover(showText(Text.of(YELLOW, e.getId()))).build())
                                           .collect(Collectors.toList());
         if (enchantments.isEmpty())
         {
