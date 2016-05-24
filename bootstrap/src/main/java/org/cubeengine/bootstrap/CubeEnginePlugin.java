@@ -46,6 +46,24 @@ import org.spongepowered.api.text.format.TextStyles;
 import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+/*
+Ideas:
+
+Multiverse using custom UserStorageService
+Enchanted Weapons - Add modifiers via crafting
+Drop Special loot - Loot tables for entities and blocks
+Spawn Special Mobs naturally
+more money sinks
+Service for Blockstorage - save data on any block - if TE save on it else separatly
+Broadcast Command help / show commandhelp to player
+debug permission to show source msg on hover
+chat module, when using + at the end of a chat-message buffer it
+per player pvp toggle cmd
+make Matchers static again if possible
+glow effect on module-items using empty enchantmentlist
+
+*/
+
 @Plugin(id = "org.cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "http://cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
 public class CubeEnginePlugin
 {
