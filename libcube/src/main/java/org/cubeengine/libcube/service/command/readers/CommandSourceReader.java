@@ -26,6 +26,7 @@ import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.DefaultValue;
 import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.libcube.util.StringUtils;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -67,7 +68,8 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     {
         ArrayList<String> list = new ArrayList<>();
         String token = invocation.currentToken().toLowerCase();
-        list.addAll(Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).filter(p -> p.startsWith(token)).collect(Collectors.toList()));
+        list.addAll(Sponge.getServer().getOnlinePlayers().stream().map(Player::getName)
+                          .filter(p -> StringUtils.startsWithIgnoreCase(p, token)).collect(Collectors.toList()));
         if ("console".startsWith(token))
         {
             list.add("console");
