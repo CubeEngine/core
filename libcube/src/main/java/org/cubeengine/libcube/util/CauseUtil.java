@@ -13,6 +13,6 @@ public class CauseUtil
     public static Cause spawnCause(CommandSource source)
     {
         return Cause.of(NamedCause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
-                        NamedCause.source(source));
+                        NamedCause.notifier(source));
     }
 }
