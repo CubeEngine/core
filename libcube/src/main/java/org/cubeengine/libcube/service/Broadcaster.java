@@ -66,8 +66,17 @@ public class Broadcaster
         {
             return;
         }
-        MessageChannel.permission(perm).getMembers().stream()
-                .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
+        if (perm == null)
+        {
+            MessageChannel.TO_ALL.getMembers().stream()
+                    .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
+        }
+        else
+        {
+            MessageChannel.permission(perm).getMembers().stream()
+                    .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
+        }
+
     }
 
     public void broadcastTranslated(TextFormat format, String message, Object... params)
@@ -85,7 +94,7 @@ public class Broadcaster
         for (Player user : this.getOnlinePlayers())
         {
             user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {input#message:color=WHITE}",
-                                                 sender.getName(), message));
+                                                 sender.getName(), message, params));
         }
     }
 
@@ -93,8 +102,8 @@ public class Broadcaster
     {
         for (Player user : this.getOnlinePlayers())
         {
-            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {input#message:color=WHITE}", sender.getName(),
-                                                 i18n.getTranslation(user, NONE, message)));
+            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {txt#message:color=WHITE}", sender.getName(),
+                                                 i18n.getTranslation(user, NONE, message, params)));
         }
     }
 
