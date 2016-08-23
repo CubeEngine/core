@@ -29,6 +29,10 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+
+import javax.annotation.Nullable;
 
 public class ProxyCallable implements CommandCallable
 {
@@ -82,8 +86,9 @@ public class ProxyCallable implements CommandCallable
     }
 
     @Override
-    public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException
+    public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws CommandException
     {
+        // TODO maybe add targetPosition as Context in invocation? iirc there are a few cmds that use the block the player is looking at
         List<String> suggestions = manager.getSuggestions(newInvocation(source, alias + " " + arguments));
         manager.logTabCompletion(source, alias, arguments);
 

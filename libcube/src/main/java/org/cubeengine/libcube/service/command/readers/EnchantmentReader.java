@@ -30,6 +30,7 @@ import org.cubeengine.libcube.service.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -76,7 +77,8 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
         if (enchantment == null)
         {
             CommandSource sender = (CommandSource)invocation.getCommandSource();
-            Text possibleEnchs = getPossibleEnchantments(registry, sender instanceof Player ? ((Player)sender).getItemInHand().orElse(null) : null);
+            Text possibleEnchs = getPossibleEnchantments(registry, sender instanceof Player ? ((Player)sender).getItemInHand(HandTypes.MAIN_HAND)
+                    .orElse(null) : null);
 
             i18n.sendTranslated(sender, NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)
