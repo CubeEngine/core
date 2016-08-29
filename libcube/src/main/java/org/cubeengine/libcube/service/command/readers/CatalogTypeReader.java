@@ -27,6 +27,8 @@ import org.cubeengine.butler.parameter.reader.ArgumentReader;
 import org.cubeengine.butler.parameter.reader.ReaderException;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.translation.Translatable;
 
 public abstract class CatalogTypeReader<T extends CatalogType> implements ArgumentReader<T>, Completer
@@ -44,7 +46,7 @@ public abstract class CatalogTypeReader<T extends CatalogType> implements Argume
         String token = invocation.currentToken();
         for (T cType : getAllOf())
         {
-            String name = cType.getName();
+            String name = cType.getName().replace(" ", "_");
             if (name.equalsIgnoreCase(token))
             {
                 invocation.consume(1);
@@ -82,8 +84,9 @@ public abstract class CatalogTypeReader<T extends CatalogType> implements Argume
             }
             else
             {
-                name = cType.getName();
+                name = cType.getName().replace(" ", "_");
             }
+
 
             if (name.toLowerCase().startsWith(token))
             {
