@@ -17,13 +17,11 @@
  */
 package org.cubeengine.bootstrap;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import com.google.inject.Inject;
 import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.service.ServiceProvider;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;
@@ -38,13 +36,14 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import static de.cubeisland.engine.modularity.asm.AsmInformationLoader.newModularity;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /*
 Ideas:
@@ -79,7 +78,6 @@ public class CubeEnginePlugin
     {
         // During this state, the plugin gets ready for initialization.
         // Access to a default logger instance and access to information regarding preferred configuration file locations is available.
-
         pluginLogger.info("Start CubeEngine...");
 
         Path loadPath = dataFolder.toPath().resolve("temp");

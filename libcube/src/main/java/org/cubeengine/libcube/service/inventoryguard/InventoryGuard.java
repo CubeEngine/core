@@ -34,17 +34,21 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.type.Exclude;
+import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent.Close;
+import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 public class InventoryGuard
 {
     private EventManager em;
     private TaskManager tm;
-    private final Inventory inventory;
+    private Inventory inventory;
+    private Container container;
     private final HashSet<UUID> users;
 
     private boolean blockAllIn = false;
@@ -84,7 +88,7 @@ public class InventoryGuard
                 Optional<Player> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
-                    player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player)));
+                    this.container = player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player)));
                 }
             }
         }
@@ -135,7 +139,7 @@ public class InventoryGuard
     @Listener
     public void onInventoryClose(InteractInventoryEvent.Close event, @First Player player)
     {
-        if ((event.getTargetInventory().equals(this.inventory)))
+        if ((event.getTargetInventory().equals(this.container)))
         {
             if (this.users.contains(player.getUniqueId()))
             {
@@ -153,7 +157,6 @@ public class InventoryGuard
     @Exclude(value = {InteractInventoryEvent.Open.class, InteractInventoryEvent.Close.class})
     public void onInventoryInteract(InteractInventoryEvent event, @First Player player)
     {
-        System.out.print("INV-EVENT\n");
         Transaction<ItemStackSnapshot> transaction = event.getCursorTransaction();
         if (transaction == null)
         {
@@ -163,9 +166,28 @@ public class InventoryGuard
         {
             return;
         }
-        System.out.print(transaction.getOriginal() + "\n");
-        System.out.print(transaction.getFinal() + "\n");
     }
+
+    @Listener
+    public void onInventoryInteract(InteractInventoryEvent event)
+    {
+    }
+
+    @Listener
+    public void onInventoryInteract(ClickInventoryEvent event)
+    {
+        // TODO somehow check if affected slot is upper or lower inventory
+        System.out.print("C-INV-EVENT " + event.getClass() + " | " + event.getCause() + "\n" );
+        for (SlotTransaction transaction : event.getTransactions())
+        {
+            System.out.print(transaction.getSlot() + " "
+                    + transaction.getOriginal().getType().getName() + "x" + transaction.getOriginal().getCount() + " -> "
+                    + transaction.getFinal().getType().getName()  + "x" + transaction.getFinal().getCount() + "\n");
+        }
+
+    }
+
+
     /* // TODO inventory dragging
     @Subscribe
     @SuppressWarnings("deprecation")
