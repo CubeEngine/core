@@ -162,13 +162,13 @@ public class I18n implements ModularityHandler
     public void enable()
     {
         LanguageLoader languageLoader = getBackend().getLanguageLoader();
-        Asset langs = getAssetManager().getAsset(plugin.getInstance().get(), "languages/languages.yml").get();
+        Asset langs = getAssetManager().getAsset(plugin, "languages/languages.yml").get();
         try
         {
             List<URL> urls = new ArrayList<>();
             for (String lang : langs.readLines())
             {
-                Optional<Asset> langAsset = getAssetManager().getAsset(plugin.getInstance().get(), "languages/" + lang + "yml");
+                Optional<Asset> langAsset = getAssetManager().getAsset(plugin, "languages/" + lang + "yml");
                 if (langAsset.isPresent())
                 {
                     urls.add(langAsset.get().getUrl());
