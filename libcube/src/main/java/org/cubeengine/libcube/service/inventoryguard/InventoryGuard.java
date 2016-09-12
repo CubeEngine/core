@@ -88,7 +88,8 @@ public class InventoryGuard
                 Optional<Player> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
-                    this.container = player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player)));
+                    this.container = player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player))).orElse(null);
+                    // TODO check if not opened
                 }
             }
         }
@@ -177,12 +178,17 @@ public class InventoryGuard
     public void onInventoryInteract(ClickInventoryEvent event)
     {
         // TODO somehow check if affected slot is upper or lower inventory
-        System.out.print("C-INV-EVENT " + event.getClass() + " | " + event.getCause() + "\n" );
+        System.out.print("C-INV-EVENT\n");
+
         for (SlotTransaction transaction : event.getTransactions())
         {
-            System.out.print(transaction.getSlot() + " "
-                    + transaction.getOriginal().getType().getName() + "x" + transaction.getOriginal().getCount() + " -> "
-                    + transaction.getFinal().getType().getName()  + "x" + transaction.getFinal().getCount() + "\n");
+            boolean upper = transaction.getSlot().parent().equals(this.inventory);
+            if (upper)
+            {
+                System.out.print("Transactions Canceled\n");
+                event.setCancelled(true);
+                return;
+            }
         }
 
     }

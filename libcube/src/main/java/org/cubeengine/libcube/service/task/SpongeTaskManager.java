@@ -44,7 +44,7 @@ public class SpongeTaskManager implements TaskManager
     @Inject
     public SpongeTaskManager(Game game)
     {
-        this.plugin = game.getPluginManager().getPlugin("org.cubeengine").get().getInstance().get();
+        this.plugin = game.getPluginManager().getPlugin("cubeengine").get().getInstance().get();
         this.scheduler = game.getScheduler();
         this.tasks = new ConcurrentHashMap<>();
     }

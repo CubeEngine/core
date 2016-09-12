@@ -63,7 +63,7 @@ glow effect on module-items using empty enchantmentlist
 
 */
 
-@Plugin(id = "org.cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "http://cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
+@Plugin(id = "cubeengine", name = "CubeEngine", version = "1.0.0", description = "Bootstrapper for the CubeEngine Module Environment", url = "http://cubeengine.org", authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
 public class CubeEnginePlugin
 {
     @Inject private PluginContainer instance;

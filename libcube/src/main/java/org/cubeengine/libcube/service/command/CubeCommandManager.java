@@ -210,7 +210,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         providerManager.register(CommandManager.class, new ContextReader(), Context.class);
 
 
-        Sponge.getEventManager().registerListeners(getPluginManager().getPlugin("org.cubeengine").get().getInstance().get(), new PreCommandListener(i18n, stringMatcher));
+        Sponge.getEventManager().registerListeners(getPluginManager().getPlugin("cubeengine").get().getInstance().get(), new PreCommandListener(i18n, stringMatcher));
     }
 
     @Override
