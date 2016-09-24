@@ -22,7 +22,7 @@ import org.spongepowered.api.item.inventory.ItemStackComparators;
 
 public class GuardedItemStack
 {
-    private  final ItemStack item;
+    private final ItemStack item;
     final int amount;
 
     public GuardedItemStack(ItemStack item, int amount)
