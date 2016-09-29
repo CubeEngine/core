@@ -39,11 +39,13 @@ import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent.Close;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
+import org.spongepowered.api.text.Text;
 
 public class InventoryGuard
 {
@@ -157,65 +159,69 @@ public class InventoryGuard
     }
 
     @Listener
-    @Exclude(value = {InteractInventoryEvent.Open.class, InteractInventoryEvent.Close.class})
-    public void onInventoryInteract(InteractInventoryEvent event, @First Player player)
-    {
-        Transaction<ItemStackSnapshot> transaction = event.getCursorTransaction();
-        if (transaction == null)
-        {
-            return;
-        }
-        if (transaction.getOriginal().equals(transaction.getFinal()))
-        {
-            return;
-        }
-    }
-
-    @Listener
-    public void onInventoryInteract(InteractInventoryEvent event)
-    {
-    }
-
-    @Listener
     public void onInventoryInteract(ClickInventoryEvent event)
     {
-        System.out.print("C-INV-EVENT\n");
+        if (!this.container.equals(event.getTargetInventory()) && !this.inventory.equals(event.getTargetInventory().first()))
+        {
+            return;
+        }
 
+        System.out.print("Event:\n");
+        boolean cancel = false;
         for (SlotTransaction transaction : event.getTransactions())
         {
             ItemStack origStack = transaction.getOriginal().createStack();
             ItemStack finalStack = transaction.getFinal().createStack();
+            String origString = origStack.getItem().equals(ItemTypes.NONE) ? origStack.getItem().getId() :origStack.getItem().getId() + " " + origStack.getQuantity();
+            String finalString = finalStack.getItem().equals(ItemTypes.NONE) ? finalStack.getItem().getId() :origStack.getItem().getId() + " " + finalStack.getQuantity();
+            System.out.print(origString + "->" + finalString + "\n");
             boolean upper = transaction.getSlot().parent().equals(this.inventory);
             if (upper)
             {
-                if (!transaction.getOriginal().equals(transaction.getFinal()))
+                if (checkTransaction(event, transaction, origStack, finalStack))
                 {
-                    if (BlockTypes.AIR.equals(transaction.getOriginal().getType())) // Putting Item in Top Inventory
-                    {
-                        if (hasBlockIn(event, origStack, finalStack)) return;
-                    }
-                    else if (BlockTypes.AIR.equals(transaction.getFinal().getType())) // Taking Item out of Top Inventory
-                    {
-                        if (hasBlockOut(event, origStack, finalStack)) return;
-                    }
-                    else // Swapping Item in Top Inventory
-                    {
-                        if (hasBlockIn(event, origStack, finalStack)) return;
-                        if (hasBlockOut(event, origStack, finalStack)) return;
-                    }
+                    cancel = true;
                 }
-                runOnChange();
+                else
+                {
+                    runOnChange();
+                }
             }
             // else lower inventory was affected ; actually we don't care (yet)
         }
+        if (cancel)
+        {
+            System.out.print("Cancelled\n");
+        }
+        System.out.print("\n");
+    }
 
+    private boolean checkTransaction(ClickInventoryEvent event, SlotTransaction transaction, ItemStack origStack, ItemStack finalStack)
+    {
+        if (!transaction.getOriginal().equals(transaction.getFinal()))
+        {
+            if (ItemTypes.NONE.equals(transaction.getOriginal().getType())) // Putting Item in Top Inventory
+            {
+                if (hasBlockIn(event, origStack, finalStack)) return true;
+            }
+            else if (ItemTypes.NONE.equals(transaction.getFinal().getType())) // Taking Item out of Top Inventory
+            {
+                if (hasBlockOut(event, origStack, finalStack)) return true;
+            }
+            else // Swapping Item in Top Inventory
+            {
+                if (hasBlockIn(event, origStack, finalStack)) return true;
+                if (hasBlockOut(event, origStack, finalStack)) return true;
+            }
+        }
+        return false;
     }
 
     private boolean hasBlockOut(ClickInventoryEvent event, ItemStack origStack, ItemStack finalStack)
     {
         if (blockAllOut)
         {
-            if (this.hasAllowOut(origStack, finalStack))
+            if (!this.hasAllowOut(origStack, finalStack))
             {
                 event.setCancelled(true);
                 return true;
@@ -223,7 +229,7 @@ public class InventoryGuard
         }
         else
         {
-            if (this.hasDenyOut(origStack))
+            if (!this.hasDenyOut(origStack))
             {
                 event.setCancelled(true);
                 return true;
@@ -291,7 +297,7 @@ public class InventoryGuard
             {
                 if (guardedItem.amount == 0) return true;
                 int amountIn = this.inventory.query(itemStackAtPosition).totalItems();
-                System.out.print("AllowInCheck: " + amountIn);
+                System.out.print("AllowInCheck: " + amountIn + "\n");
                 return amountIn <= guardedItem.amount;
             }
         }
@@ -307,7 +313,7 @@ public class InventoryGuard
             {
                 if (guardedItem.amount == 0) return true;
                 int amountIn = this.inventory.query(itemStackToOut).totalItems();
-                System.out.print("AllowOutCheck: " + amountIn);
+                System.out.print("AllowOutCheck: " + amountIn + "\n");
                 return amountIn >= guardedItem.amount;
             }
         }
