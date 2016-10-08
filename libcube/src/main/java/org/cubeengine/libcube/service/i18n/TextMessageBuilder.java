@@ -109,7 +109,7 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
         }
         else if (toHover instanceof ItemStack)
         {
-            b.onHover(showItem(((ItemStack)toHover)));
+            b.onHover(showItem(((ItemStack)toHover).createSnapshot()));
         }
         else if (toHover instanceof ShowEntity.Ref)
         {

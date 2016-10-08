@@ -56,7 +56,7 @@ public class LocationUtil
 
     public static Optional<Location<World>> getBlockBehindWall(Player player, int maxRange, int maxWallThickness)
     {
-        Iterator<BlockRayHit<World>> it = BlockRay.from(player).blockLimit(maxRange).iterator();
+        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(maxRange).iterator();
         Optional<BlockRayHit<World>> end = Optional.empty();
 
         while (it.hasNext())
@@ -76,7 +76,7 @@ public class LocationUtil
 
         Vector3d rotation = player.getRotation();
         rotation = Quaterniond.fromAxesAnglesDeg(rotation.getX(), -rotation.getY(), rotation.getZ()).getDirection();
-        it = BlockRay.from(end.get().getExtent(), end.get().getPosition()).direction(rotation).blockLimit(maxWallThickness).iterator();
+        it = BlockRay.from(end.get().getExtent(), end.get().getPosition()).direction(rotation).distanceLimit(maxWallThickness).iterator();
         end = Optional.empty();
         while (it.hasNext())
         {
