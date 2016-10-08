@@ -79,7 +79,10 @@ import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
 import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextFormat;
 
 import static java.util.stream.Collectors.toList;
@@ -336,7 +339,7 @@ public class I18n implements ModularityHandler
         return languages;
     }
 
-    public Locale getLocale(MessageReceiver source)
+    public Locale getLocale(Object source)
     {
         if (source instanceof CommandSource)
         {
@@ -431,17 +434,17 @@ public class I18n implements ModularityHandler
 
     // MessageReceiver and TextFormat
 
-    public Text getTranslation(MessageReceiver source, TextFormat format, String message, Object... args)
+    public Text getTranslation(Object source, TextFormat format, String message, Object... args)
     {
         return getTranslation(getLocale(source), format, message, args);
     }
 
-    public Text getTranslationN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
+    public Text getTranslationN(Object source, TextFormat format, int n, String singular, String plural, Object... args)
     {
         return getTranslationN(getLocale(source), format, n, singular, plural, args);
     }
 
-    // Send to MessageReceiver with Textformat
+    // Send to MessageReceiver with TextFormat
 
     public void sendTranslated(MessageReceiver source, TextFormat format, String message, Object... args)
     {
@@ -451,5 +454,17 @@ public class I18n implements ModularityHandler
     public void sendTranslatedN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
     {
         source.sendMessage(this.getTranslationN(source, format, n, singular, plural, args));
+    }
+
+    // Send to ChatTypeMessageReceiver with TextFormat
+
+    public void sendTranslated(ChatType type, ChatTypeMessageReceiver source, TextFormat format, String message, Object... args)
+    {
+        source.sendMessage(type, this.getTranslation(source, format, message, args));
+    }
+
+    public void sendTranslatedN(ChatType type, ChatTypeMessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
+    {
+        source.sendMessage(type, this.getTranslationN(source, format, n, singular, plural, args));
     }
 }
