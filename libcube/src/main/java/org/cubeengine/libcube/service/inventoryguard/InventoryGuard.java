@@ -44,6 +44,7 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 import org.spongepowered.api.text.Text;
 
@@ -72,7 +73,8 @@ public class InventoryGuard
     {
         this.em = em;
         this.tm = tm;
-        this.inventory = inventory;
+        this.inventory = inventory instanceof Container ? inventory.first().parent() : inventory;
+        this.container = inventory instanceof Container ? (Container) inventory : null;
         this.users = new HashSet<>(Arrays.asList(users));
     }
 
@@ -161,7 +163,7 @@ public class InventoryGuard
     @Listener
     public void onInventoryInteract(ClickInventoryEvent event)
     {
-        if (!this.container.equals(event.getTargetInventory()) && !this.inventory.equals(event.getTargetInventory().first()))
+        if (!event.getTargetInventory().equals(this.container) && !event.getTargetInventory().first().parent().equals(this.inventory))
         {
             return;
         }
@@ -173,9 +175,10 @@ public class InventoryGuard
             ItemStack origStack = transaction.getOriginal().createStack();
             ItemStack finalStack = transaction.getFinal().createStack();
             String origString = origStack.getItem().equals(ItemTypes.NONE) ? origStack.getItem().getId() :origStack.getItem().getId() + " " + origStack.getQuantity();
-            String finalString = finalStack.getItem().equals(ItemTypes.NONE) ? finalStack.getItem().getId() :origStack.getItem().getId() + " " + finalStack.getQuantity();
+            String finalString = finalStack.getItem().equals(ItemTypes.NONE) ? finalStack.getItem().getId() :finalStack.getItem().getId() + " " + finalStack.getQuantity();
             System.out.print(origString + "->" + finalString + "\n");
-            boolean upper = transaction.getSlot().parent().equals(this.inventory);
+
+            boolean upper = !(transaction.getSlot().parent() instanceof PlayerInventory);
             if (upper)
             {
                 if (checkTransaction(event, transaction, origStack, finalStack))
