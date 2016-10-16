@@ -166,7 +166,6 @@ public class CubeEnginePlugin
     @Listener
     public void onReload(GameReloadEvent event)
     {
-
     }
 
     @Listener
