@@ -134,7 +134,7 @@ public class HelpCommand implements CommandBase
     }
 
     /*
-    TODO ConversationHelp
+    TODO ConversationHelp - Click help has to be without slash
     context.sendTranslated(NEUTRAL, "Flags:");
             Set<String> flags = new HashSet<>();
             for (FlagParameter flag : helpTarget.getContextFactory().descriptor().getFlags())

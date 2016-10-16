@@ -100,7 +100,6 @@ public class ContextReader implements ArgumentReader<Context>, Completer, Defaul
                     .map(n -> "world|" + n)
                     .collect(toList()));
         }
-        // TODO last ctx from mirror
         return list;
     }
 }

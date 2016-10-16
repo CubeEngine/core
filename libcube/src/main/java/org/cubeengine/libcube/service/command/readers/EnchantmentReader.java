@@ -17,8 +17,12 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEUTRAL;
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.POSITIVE;
+import static org.spongepowered.api.text.action.TextActions.showText;
+import static org.spongepowered.api.text.format.TextColors.YELLOW;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
@@ -35,12 +39,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.*;
-import static org.spongepowered.api.text.action.TextActions.showText;
-import static org.spongepowered.api.text.format.TextColors.YELLOW;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
 {
