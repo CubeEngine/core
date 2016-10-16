@@ -267,7 +267,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
     public void shutdown()
     {
         super.shutdown();
-        this.dataSource.shutdown();
+        this.dataSource.close();
     }
 
     @Override
