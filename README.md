@@ -6,7 +6,7 @@
 - Multiverse **[WIP Porting]**
 - Netherportals **[WIP Porting]**
 - Portals
-- Roles
+- [Roles](https://github.com/CubeEngine/modules-main/tree/master/roles)
 - Teleport
 - Travel
 - VanillaPlus
