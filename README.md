@@ -3,15 +3,15 @@
 #Modules
 
 - [Locker](https://github.com/CubeEngine/modules-main/tree/master/locker)
-- Multiverse **[WIP Porting]**
+- [Multiverse](https://github.com/CubeEngine/modules-main/tree/master/multiverse)
 - Netherportals **[WIP Porting]**
-- Portals
+- [Portals](https://github.com/CubeEngine/modules-main/tree/master/portals)
 - [Roles](https://github.com/CubeEngine/modules-main/tree/master/roles)
-- Teleport
-- Travel
+- [Teleport](https://github.com/CubeEngine/modules-main/tree/master/teleport)
+- [Travel](https://github.com/CubeEngine/modules-main/tree/master/travel)
 - VanillaPlus
 - WorldControl **[WIP]**
-- Worlds
+- [Worlds](https://github.com/CubeEngine/modules-main/tree/master/worlds)
 
 - ApiServer **[WIP Porting]**
 - Authorization **[WIP Porting]**
@@ -45,4 +45,3 @@
 - Vigil **[WIP Porting]**
 - Vote **[WIP Porting]**
 - Writer **[WIP Porting]**
-
