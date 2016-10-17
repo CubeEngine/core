@@ -49,4 +49,33 @@ public class ConfigWorld
         }
         return this.world;
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (!(o instanceof ConfigWorld))
+        {
+            return false;
+        }
+
+        ConfigWorld that = (ConfigWorld) o;
+        if (getWorld() != null ? !getWorld().getUniqueId().equals(that.getWorld().getUniqueId()) : that.getWorld() != null)
+        {
+            return false;
+        }
+        return getName().equals(that.getName());
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = 0/*getWorld() != null ? getWorld().getUniqueId().hashCode() : 0*/;
+        result = 31 * result + getName().hashCode();
+        return result;
+    }
 }
