@@ -170,7 +170,7 @@ public class InventoryGuard
             String finalString = finalStack.getItem().equals(ItemTypes.NONE) ? finalStack.getItem().getId() :finalStack.getItem().getId() + " " + finalStack.getQuantity();
             System.out.print(origString + "->" + finalString + "\n");
 
-            boolean upper = !(transaction.getSlot().parent() instanceof PlayerInventory);
+            boolean upper = !(transaction.getSlot().parent() instanceof PlayerInventory); // TODO this will not work when viewing another playerinventory
             if (upper)
             {
                 if (checkTransaction(event, transaction, origStack, finalStack))

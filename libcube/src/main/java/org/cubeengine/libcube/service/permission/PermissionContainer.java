@@ -33,13 +33,8 @@ public abstract class PermissionContainer
         return register(permission, description, null);
     }
 
-    protected Permission register(String permission, String description, Permission parent, Permission... assigned)
+    protected Permission register(String permission, String description, Permission parent, String... assigned)
     {
         return pm.register(owner, permission, description, parent, assigned);
-    }
-
-    protected Permission registerS(String permission, String description, Permission parent, String... assigned)
-    {
-        return pm.registerS(owner, permission, description, parent, assigned);
     }
 }

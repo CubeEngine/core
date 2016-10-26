@@ -64,7 +64,7 @@ public class PermissionManager
     {
         this.plugin = plugin;
         Sponge.getEventManager().registerListeners(plugin.getInstance().get(), this);
-        rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", singleton("*"))); // TODO translatable
+        rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", emptySet())); // TODO translatable
     }
 
     private String permId(Class owner, String permission, Permission parent)
@@ -72,12 +72,7 @@ public class PermissionManager
         return (parent == null ? getBasePermission(owner).getId() : parent.getId()) + "." + permission;
     }
 
-    public Permission register(Class owner, String permission, String description, Permission parent, Permission... assigned)
-    {
-        return register(permId(owner, permission, parent), description, asList(assigned).stream().map(Permission::getId).collect(toSet()));
-    }
-
-    public Permission registerS(Class owner, String permission, String description, Permission parent, String... assigned)
+    public Permission register(Class owner, String permission, String description, Permission parent, String... assigned)
     {
         return register(permId(owner, permission, parent), description, new HashSet<>(asList(assigned)));
     }
@@ -103,7 +98,7 @@ public class PermissionManager
             {
                 build.description(Text.of(permission.getDesc()));
             }
-            permission.getExplicitParents().stream().map(s -> "permission:" + s).forEach(s -> build.assign(s, true));
+            permission.getExplicitParents().forEach(s -> build.assign(s, true));
             build.register();
         }
         return permission;
