@@ -71,10 +71,12 @@ public class ContextReader implements ArgumentReader<Context>, Completer, Defaul
     @Override
     public Context getDefault(CommandInvocation invocation)
     {
+        /*
         if (invocation.getCommandSource() instanceof Player)
         {
             return new Context(WORLD_KEY, ((Player)invocation.getCommandSource()).getWorld().getName());
         }
+        */
         return GLOBAL;
     }
 
