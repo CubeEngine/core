@@ -146,4 +146,10 @@ public abstract class AbstractCommandSource implements CommandSource
     {
         return internalSubject().getActiveContexts();
     }
+
+    @Override
+    public Optional<String> getOption(Set<Context> contexts, String key)
+    {
+        return internalSubject().getOption(contexts, key);
+    }
 }
