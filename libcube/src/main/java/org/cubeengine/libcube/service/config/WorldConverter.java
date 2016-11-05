@@ -24,17 +24,11 @@ import de.cubeisland.engine.converter.converter.SimpleConverter;
 import de.cubeisland.engine.converter.node.Node;
 import de.cubeisland.engine.converter.node.StringNode;
 import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 
 public class WorldConverter extends SimpleConverter<World>
 {
-    private final Server server;
-
-    public WorldConverter(Server server)
-    {
-        this.server = server;
-    }
-
     @Override
     public Node toNode(World object) throws ConversionException
     {
@@ -51,12 +45,12 @@ public class WorldConverter extends SimpleConverter<World>
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));
-                world = server.getWorld(uid);
+                world = Sponge.getServer().getWorld(uid);
                 string = string.substring(0, string.indexOf('('));
             }
             if (!world.isPresent())
             {
-                world = server.getWorld(string);
+                world = Sponge.getServer().getWorld(string);
             }
             if (world.isPresent())
             {

@@ -149,7 +149,7 @@ public class CubeEnginePlugin
     {
         // By this state, inter-plugin communication should be ready to occur.
         // Plugins providing an API should be ready to accept basic requests.
-        game.getServer().getConsole().sendMessage(Text.of(TextColors.RED, TextStyles.BOLD, "Hi i am the CubeEngine"));
+        pluginLogger.info("CubeEngine is enabled!");
 
         game.getCommandManager().register(this, CommandSpec.builder()
                 .description(Text.of("Reloads the CubeEngine"))

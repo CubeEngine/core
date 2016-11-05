@@ -54,7 +54,7 @@ public class ReflectorProvider implements Provider<Reflector>
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new WorldConverter(Sponge.getServer()), World.class);
+        manager.registerConverter(new WorldConverter(), World.class);
         manager.registerConverter(new ConfigWorldConverter(), ConfigWorld.class);
         manager.registerConverter(new LocationConverter(), Location.class);
         manager.registerConverter(new DataContainerConverter(), DataContainer.class);
