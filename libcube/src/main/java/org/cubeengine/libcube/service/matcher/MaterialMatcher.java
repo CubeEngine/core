@@ -45,6 +45,7 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import static java.util.stream.Collectors.toList;
@@ -141,9 +142,16 @@ public class MaterialMatcher
         {
             try
             {
+
                 ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
 
-                Builder state = BlockState.builder().blockType(item.getItem().getBlock().get());
+                Optional<BlockType> block = item.getItem().getBlock();
+                if (!block.isPresent()) {
+                    // TODO item of blocks without item are an air item ; how to intercept this????
+                    System.out.print("Blockstate item " + blockState.getId() + "->" + item.getItem().getId() + " has no block\n");
+                    continue;
+                }
+                Builder state = BlockState.builder().blockType(block.get());
 
                 blockState.getKeys().stream().map(Key.class::cast).forEach(
                     k -> {

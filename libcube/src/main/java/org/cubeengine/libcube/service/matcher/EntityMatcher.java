@@ -67,6 +67,27 @@ public class EntityMatcher
         {
             return null;
         }
+
+        // 1.11 change // TODO there are more...
+        if ("minecraft:entityhorse".equalsIgnoreCase(name))
+        {
+            name = "minecraft:horse";
+        }
+        if ("minecraft:minecartchest".equals(name))
+        {
+            name = "minecraft:chest_minecart";
+        }
+
+        if ("minecraft:minecarthopper".equals(name))
+        {
+            name = "minecraft:hopper_minecart";
+        }
+
+        if ("minecraft:itemframe".equals(name))
+        {
+            name = "minecraft:item_frame";
+        }
+
         EntityType entity = game.getRegistry().getType(EntityType.class, name).orElse(null);
         if (entity != null)
         {
