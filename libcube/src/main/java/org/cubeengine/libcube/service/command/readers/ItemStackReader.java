@@ -43,7 +43,7 @@ public class ItemStackReader implements ArgumentReader<ItemStack>
     public ItemStack read(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        ItemStack item = materialMatcher.itemStack(arg);
+        ItemStack item = materialMatcher.itemStack(arg, invocation.getContext(Locale.class));
         if (item == null)
         {
             throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));

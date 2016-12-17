@@ -17,9 +17,15 @@
  */
 package org.cubeengine.libcube.service.inventoryguard;
 
+import static java.util.stream.Collectors.toList;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.Module;
@@ -80,32 +86,34 @@ public class InventoryGuardFactory
      */
     public InventoryGuardFactory blockPutIn(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<>();
-        for (ItemStack item : items)
-        {
-            list.add(new GuardedItemStack(item, item.getQuantity()));
-        }
-        this.currentGuardConfig.get().filter(true, true, list);
+        this.currentGuardConfig.get().filter(true, true, Arrays.stream(items).map(i -> new GuardedItemStack(i, 0)).collect(toList()));
         return this;
-
     }
 
     /**
      * Does not block an action that puts any of given items into the top inventory.
-     * <p>The amount of the ItemStack is the maximum amount that will be allowed in the inventory.
-     * <p>Use 0 as amount to always allow to put in given item.
+     * To limit the maximum amount that will be allowed in the inventory use {@link GuardedItemStack}s instead.
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory notBlockPutIn(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<>();
-        for (ItemStack item : items)
-        {
-            list.add(new GuardedItemStack(item, item.getQuantity()));
-        }
-        this.currentGuardConfig.get().filter(true, false, list);
+        this.currentGuardConfig.get().filter(true, false, Arrays.stream(items).map(i -> new GuardedItemStack(i, 0)).collect(toList()));
+        return this;
+    }
+
+    /**
+     * Does not block an action that puts any of given items into the top inventory.
+     * <p>The amount of the GuardedItemStack is the maximum amount that will be allowed in the inventory.
+     * <p>To allow without limit use plain {@link ItemStack}s instead.
+     *
+     * @param items
+     * @return fluent interface
+     */
+    public InventoryGuardFactory notBlockPutIn(GuardedItemStack... items)
+    {
+        this.currentGuardConfig.get().filter(true, false, Arrays.asList(items));
         return this;
     }
 
@@ -122,36 +130,40 @@ public class InventoryGuardFactory
 
     /**
      * Blocks every action that takes any of given items out of the top inventory.
+     * <p>To only block an items to go under a certain amount use notBlockTakeOut(...)
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory blockTakeOut(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<>();
-        for (ItemStack item : items)
-        {
-            list.add(new GuardedItemStack(item,item.getQuantity()));
-        }
-        this.currentGuardConfig.get().filter(false, true, list);
+        this.currentGuardConfig.get().filter(false, true, Arrays.stream(items).map(i -> new GuardedItemStack(i, 0)).collect(toList()));
         return this;
     }
 
     /**
      * Does not block an action that puts any of given items into the top inventory.
-     * <p>The amount of the ItemStack is the minimum amount of that item that has to remain in the inventory.
+     * To limit the minimum amount that will be allowed in the inventory use {@link GuardedItemStack}s instead.
      *
      * @param items
      * @return fluent interface
      */
     public InventoryGuardFactory notBlockTakeOut(ItemStack... items)
     {
-        List<GuardedItemStack> list = new ArrayList<>();
-        for (ItemStack item : items)
-        {
-            list.add(new GuardedItemStack(item,item.getQuantity()));
-        }
-        this.currentGuardConfig.get().filter(false, false, list);
+        this.currentGuardConfig.get().filter(false, false, Arrays.stream(items).map(i -> new GuardedItemStack(i, 0)).collect(toList()));
+        return this;
+    }
+
+    /**
+     * Does not block an action that puts any of given items into the top inventory.
+     * <p>The amount of the GuardedItemStack is the minimum amount of that item that has to remain in the inventory.
+     *
+     * @param items
+     * @return fluent interface
+     */
+    public InventoryGuardFactory notBlockTakeOut(GuardedItemStack... items)
+    {
+        this.currentGuardConfig.get().filter(false, false, Arrays.asList(items));
         return this;
     }
 

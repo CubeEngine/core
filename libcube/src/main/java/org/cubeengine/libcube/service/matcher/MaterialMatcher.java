@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.SimpleItemStackConverter;
@@ -45,7 +46,6 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import static java.util.stream.Collectors.toList;
@@ -60,8 +60,12 @@ public class MaterialMatcher
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
     private final Map<String, ItemType> ids = new HashMap<>();
-
     private final Map<BlockType, Map<String, BlockState>> variantMap;
+
+    private final Map<Locale, Map<String, ItemType>> localizedNames = new HashMap<>();
+    private final Map<Locale, Map<String, BlockState>> localizedVariantMap;
+
+    private final Map<Locale, Map<String, ItemStack>> localizedStackMap = new HashMap<>();
 
     //private final Map<String, ItemStack> fromBlockStates = new HashMap<>();
 
@@ -96,13 +100,13 @@ public class MaterialMatcher
                                                                                       FLINT_AND_STEEL, BOW, FISHING_ROD,
                                                                                       SHEARS)));
     @Inject private StringMatcher stringMatcher;
+    private Map<String, BlockState> blockStateItems;
 
     @Inject
     public MaterialMatcher(Reflector reflector)
     {
         reflector.getDefaultConverterManager().registerConverter(new SimpleItemStackConverter(this), ItemStack.class);
         reflector.getDefaultConverterManager().registerConverter(new MaterialConverter(this), ItemType.class);
-
 
         this.builder = Sponge.getRegistry().createBuilder(ItemStack.Builder.class);
 
@@ -120,6 +124,57 @@ public class MaterialMatcher
             System.err.println("Could not access GameDictionary! Material matching may not work as expected");
         }
 
+        Map<String, ItemType> defLocalizedName = new HashMap<>();
+        Map<String, ItemType> localizedName = new HashMap<>();
+        localizedNames.put(Locale.getDefault(), defLocalizedName);
+        localizedNames.put(Locale.US, localizedName);
+        buildLocalizedNames(defLocalizedName, localizedName);
+
+        this.blockStateItems = buildBlockStateItems(); // Helper
+        this.variantMap = buildVariantMap();
+        this.localizedVariantMap = new HashMap<>();
+        this.localizedVariantMap.put(Locale.getDefault(), buildLocalizedVariantMap(Locale.getDefault()));
+        this.localizedVariantMap.put(Locale.US, buildLocalizedVariantMap(Locale.US));
+        // TODO legacy ID -> ItemType Map
+
+        for (Entry<Locale, Map<String, ItemType>> entry : localizedNames.entrySet())
+        {
+            Map<String, ItemStack> map = localizedStackMap.get(entry.getKey());
+            if (map == null)
+            {
+                localizedStackMap.put(entry.getKey(), map = new HashMap<>());
+            }
+            buildLocalizedStackMapFromType(entry.getValue(), map);
+        }
+        for (Entry<Locale, Map<String, BlockState>> entry : localizedVariantMap.entrySet())
+        {
+            Map<String, ItemStack> map = localizedStackMap.get(entry.getKey());
+            if (map == null)
+            {
+                localizedStackMap.put(entry.getKey(), map = new HashMap<>());
+            }
+            buildLocalizedStackMapFromState(entry.getValue(), map);
+        }
+
+
+    }
+
+    private void buildLocalizedStackMapFromState(Map<String, BlockState> value, Map<String, ItemStack> map)
+    {
+        for (Entry<String, BlockState> entry : value.entrySet())
+        {
+            map.put(entry.getKey(), ItemStack.builder().fromBlockState(entry.getValue()).quantity(1).build());
+        }
+    }
+
+    private void buildLocalizedStackMapFromType(Map<String, ItemType> value, Map<String, ItemStack> map) {
+        for (Entry<String, ItemType> entry : value.entrySet())
+        {
+            map.put(entry.getKey(), ItemStack.of(entry.getValue(), 1));
+        }
+    }
+
+    private void buildLocalizedNames(Map<String, ItemType> defLocalizedName, Map<String, ItemType> localizedName) {
         for (ItemType itemType : Sponge.getRegistry().getAllOf(ItemType.class))
         {
             String id = itemType.getName();
@@ -128,58 +183,38 @@ public class MaterialMatcher
             {
                 ids.put(id.substring("minecraft:".length()), itemType);
             }
+            String defName = itemType.getTranslation().get(Locale.getDefault());
+            defLocalizedName.put(defName, itemType);
+            String[] splitDefName = defName.split(" ");
+            if (splitDefName.length > 1) {
+                defName = splitDefName[splitDefName.length - 1];
+                defName += String.join(" ", splitDefName).replace(defName, "");
+                defLocalizedName.put(defName, itemType);
+            }
+            String sourceName = itemType.getTranslation().get(Locale.US);
+            localizedName.put(sourceName, itemType);
+            String[] splitSourceName = sourceName.split(" ");
+            if (splitSourceName.length > 1) {
+                sourceName = splitSourceName[splitSourceName.length - 1];
+                sourceName += String.join(" ", splitSourceName).replace(sourceName, "");
+                localizedName.put(sourceName, itemType);
+            }
         }
+    }
 
-        this.variantMap = buildVariantMap();
+    private Map<String, BlockState> buildLocalizedVariantMap(Locale locale)
+    {
+        HashMap<String, BlockState> map = new HashMap<>();
 
-        // TODO legacy ID -> ItemType Map
+        for (BlockState blockState : blockStateItems.values())
+        {
+            map.put(ItemStack.builder().fromBlockState(blockState).build().getTranslation().get(locale), blockState);
+        }
+        return map;
     }
 
     private Map<BlockType, Map<String, BlockState>> buildVariantMap()
     {
-        Map<String, BlockState> blockStateItems = new HashMap<>();
-        for (BlockState blockState : Sponge.getRegistry().getAllOf(BlockState.class))
-        {
-            try
-            {
-
-                ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
-
-                Optional<BlockType> block = item.getItem().getBlock();
-                if (!block.isPresent()) {
-                    // TODO item of blocks without item are an air item ; how to intercept this????
-                    System.out.print("Blockstate item " + blockState.getId() + "->" + item.getItem().getId() + " has no block\n");
-                    continue;
-                }
-                Builder state = BlockState.builder().blockType(block.get());
-
-                blockState.getKeys().stream().map(Key.class::cast).forEach(
-                    k -> {
-                        Optional value = item.get(k);
-                        if (value.isPresent())
-                        {
-                            state.add(k, value.get());
-                        }
-                    });
-
-
-                BlockState finalState = state.build();
-                /*
-                ItemStack.Builder builder = ItemStack.builder().itemType(finalState.getType().getItem().get());
-                blockState.getKeys().stream().map(Key.class::cast).forEach(
-                    k -> {
-                        Optional value = finalState.get(k);
-                        if (value.isPresent())
-                        {
-                            builder.add(k, value.get());
-                        }
-                    });
-                 */
-                blockStateItems.put(finalState.getName(), finalState);
-            }
-            catch (IllegalArgumentException ignored)
-            {}
-        }
         Map<BlockType, Map<String, BlockState>> blockStateItemsByType = new HashMap<>();
         for (Entry<String, BlockState> entry : blockStateItems.entrySet())
         {
@@ -279,6 +314,46 @@ public class MaterialMatcher
         return variants;
     }
 
+    private Map<String, BlockState> buildBlockStateItems() {
+        Map<String, BlockState> blockStateItems = new HashMap<>();
+        for (BlockState blockState : Sponge.getRegistry().getAllOf(BlockState.class))
+        {
+            try
+            {
+                ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
+
+                Builder state = BlockState.builder().blockType(item.getItem().getBlock().get());
+
+                blockState.getKeys().stream().map(Key.class::cast).forEach(
+                    k -> {
+                        Optional value = item.get(k);
+                        if (value.isPresent())
+                        {
+                            state.add(k, value.get());
+                        }
+                    });
+
+
+                BlockState finalState = state.build();
+                /*
+                ItemStack.Builder builder = ItemStack.builder().itemType(finalState.getType().getItem().get());
+                blockState.getKeys().stream().map(Key.class::cast).forEach(
+                    k -> {
+                        Optional value = finalState.get(k);
+                        if (value.isPresent())
+                        {
+                            builder.add(k, value.get());
+                        }
+                    });
+                 */
+                blockStateItems.put(finalState.getName(), finalState);
+            }
+            catch (IllegalArgumentException ignored)
+            {}
+        }
+        return blockStateItems;
+    }
+
     private ItemType matchWithLevenshteinDistance(String s, Map<String, ItemType> map)
     {
 
@@ -316,13 +391,31 @@ public class MaterialMatcher
      */
     public ItemStack itemStack(String name)
     {
+        return this.itemStack(name, Locale.getDefault());
+
+    }
+
+    public ItemStack itemStack(String name, Locale locale)
+    {
         if (name == null)
         {
             return null;
         }
+
+        Map<String, ItemStack> map = localizedStackMap.get(locale);
+        if (map != null)
+        {
+            String match = stringMatcher.matchString(name, map.keySet());
+            ItemStack itemStack = map.get(match);
+            if (itemStack != null)
+            {
+                return itemStack.copy();
+            }
+        }
+
         String[] parts = name.toLowerCase(Locale.ENGLISH).split("=");
         String[] typeName = parts[0].split(":");
-        ItemType type = material(typeName[0]);
+        ItemType type = material(typeName[0], locale);
         if (type == null)
         {
             return null;
@@ -336,10 +429,10 @@ public class MaterialMatcher
                 Map<String, BlockState> variants = variantMap.get(type.getBlock().get());
                 if (variants != null)
                 {
-                    String match = stringMatcher.matchString(variant, variants.keySet());
-                    if (match != null)
+                    String match2 = stringMatcher.matchString(variant, variants.keySet());
+                    if (match2 != null)
                     {
-                        return ItemStack.builder().fromBlockState(variants.get(match)).build();
+                        return ItemStack.builder().fromBlockState(variants.get(match2)).quantity(1).build();
                     }
                 }
             }
@@ -347,10 +440,18 @@ public class MaterialMatcher
         ItemStack.Builder builder = this.builder.itemType(type).quantity(1);
         if (typeName.length == 2)
         {
-            builder.add(Keys.ITEM_DURABILITY, Integer.valueOf(typeName[1]));
+            try
+            {
+                builder.add(Keys.ITEM_DURABILITY, Integer.valueOf(typeName[1]));
+            }
+            catch (IllegalArgumentException e)
+            {
+                return null;
+            }
         }
         return builder.build();
     }
+
 
     /**
      * Tries to match a ItemStack-list for given name
@@ -385,23 +486,43 @@ public class MaterialMatcher
      */
     public ItemType material(String name)
     {
-        ItemType type = this.names.get(name); //direct match
-        if (type == null)
-        {
-            try
-            {
-                type = legacyIds.get(Integer.valueOf(name));
-            }
-            catch (NumberFormatException e)
-            {
-                String match = stringMatcher.matchString(name, names.keySet());
-                type = names.get(match);
+        return material(name, Locale.getDefault());
+    }
 
-                if (type == null)
-                {
-                    match = stringMatcher.matchString(name, ids.keySet());
-                    type = ids.get(match);
-                }
+    public ItemType material(String name, Locale locale)
+    {
+        ItemType type = null;
+        Map<String, ItemType> map = localizedNames.get(locale);
+        if (map != null)
+        {
+            type = map.get(name);
+            if (type == null)
+            {
+                String match = stringMatcher.matchString(name, map.keySet());
+                type = map.get(match);
+            }
+        }
+        else
+        {
+            System.out.print("Localized Name Map not generated for: " + locale.getDisplayName());
+        }
+
+        if (type != null) return type;
+        type = this.names.get(name); //direct match
+        if (type != null) return type;
+        try
+        {
+            type = legacyIds.get(Integer.valueOf(name));
+        }
+        catch (NumberFormatException e)
+        {
+            String match = stringMatcher.matchString(name, names.keySet());
+            type = names.get(match);
+
+            if (type == null)
+            {
+                match = stringMatcher.matchString(name, ids.keySet());
+                type = ids.get(match);
             }
         }
         return type;
