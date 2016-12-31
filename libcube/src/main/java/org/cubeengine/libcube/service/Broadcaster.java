@@ -56,8 +56,14 @@ public class Broadcaster
         {
             return;
         }
-        MessageChannel.permission(perm).getMembers().stream()
-                .forEach(s -> i18n.sendTranslated(s, format, message, params));
+        if (perm == null)
+        {
+            MessageChannel.TO_ALL.getMembers().forEach(s -> i18n.sendTranslated(s, format, message, params));
+        }
+        else
+        {
+            MessageChannel.permission(perm).getMembers().forEach(s -> i18n.sendTranslated(s, format, message, params));
+        }
     }
 
     public void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params)
@@ -68,12 +74,12 @@ public class Broadcaster
         }
         if (perm == null)
         {
-            MessageChannel.TO_ALL.getMembers().stream()
+            MessageChannel.TO_ALL.getMembers()
                     .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
         }
         else
         {
-            MessageChannel.permission(perm).getMembers().stream()
+            MessageChannel.permission(perm).getMembers()
                     .forEach(s -> s.sendMessage(i18n.composeMessage(i18n.getLocale(s), format, message, params)));
         }
 
