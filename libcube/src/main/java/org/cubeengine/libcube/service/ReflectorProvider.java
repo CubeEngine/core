@@ -22,6 +22,7 @@ import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.libcube.service.config.ContextConverter;
 import org.cubeengine.libcube.util.Version;
 import org.cubeengine.libcube.util.math.BlockVector3;
 import org.cubeengine.libcube.service.config.BlockVector3Converter;
@@ -38,6 +39,7 @@ import org.cubeengine.libcube.service.config.WorldTransform;
 import org.joda.time.Duration;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -58,6 +60,7 @@ public class ReflectorProvider implements Provider<Reflector>
         manager.registerConverter(new ConfigWorldConverter(), ConfigWorld.class);
         manager.registerConverter(new LocationConverter(), Location.class);
         manager.registerConverter(new DataContainerConverter(), DataContainer.class);
+        manager.registerConverter(new ContextConverter(), Context.class);
     }
 
     @Override
