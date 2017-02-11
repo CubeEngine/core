@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.BlockTypeConverter;
+import org.cubeengine.libcube.service.config.ItemStackConverter;
 import org.cubeengine.libcube.service.config.SimpleItemStackConverter;
 import org.cubeengine.libcube.service.config.ItemTypeConverter;
 import org.spongepowered.api.GameDictionary;
@@ -106,7 +107,8 @@ public class MaterialMatcher
     @Inject
     public MaterialMatcher(Reflector reflector)
     {
-        reflector.getDefaultConverterManager().registerConverter(new SimpleItemStackConverter(this), ItemStack.class);
+        reflector.getDefaultConverterManager().registerConverter(new SimpleItemStackConverter(this));
+        reflector.getDefaultConverterManager().registerConverter(new ItemStackConverter(), ItemStack.class);
         reflector.getDefaultConverterManager().registerConverter(new ItemTypeConverter(this), ItemType.class);
         reflector.getDefaultConverterManager().registerConverter(new BlockTypeConverter(this), BlockType.class);
 
@@ -165,7 +167,13 @@ public class MaterialMatcher
     {
         for (Entry<String, BlockState> entry : value.entrySet())
         {
-            map.put(entry.getKey(), ItemStack.builder().fromBlockState(entry.getValue()).quantity(1).build());
+            if (!map.containsKey(entry.getKey()))
+            {
+                map.put(entry.getKey(), ItemStack.builder().fromBlockState(entry.getValue()).quantity(1).build());
+            }
+            else {
+                System.out.println(entry.getKey());
+            }
         }
     }
 
