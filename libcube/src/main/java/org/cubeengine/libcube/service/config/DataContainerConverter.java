@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.ClassedConverter;
+import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -46,8 +47,10 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
     public DataContainer fromNode(Node node, Class<? extends DataContainer> type, ConverterManager manager) throws ConversionException
     {
         MemoryDataContainer data = new MemoryDataContainer();
-        Map<String, Object> map = manager.convertFromNode(node, Map.class);
-        map.entrySet().forEach(e -> data.set(DataQuery.of("_", e.getKey()), e.getValue()));
+        for (Entry<String, Node> entry : ((MapNode) node).getValue().entrySet())
+        {
+            data.set(DataQuery.of('_', ((MapNode) node).getOriginalKey(entry.getKey())), manager.convertFromNode(entry.getValue(), entry.getValue().getValue().getClass()));
+        }
         return data;
     }
 }
