@@ -17,30 +17,27 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import de.cubeisland.engine.converter.ConversionException;
 import de.cubeisland.engine.converter.ConverterManager;
 import de.cubeisland.engine.converter.converter.ClassedConverter;
+import de.cubeisland.engine.converter.node.ListNode;
 import de.cubeisland.engine.converter.node.MapNode;
 import de.cubeisland.engine.converter.node.Node;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.MemoryDataContainer;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class DataContainerConverter implements ClassedConverter<DataContainer>
 {
     @Override
     public Node toNode(DataContainer object, ConverterManager manager) throws ConversionException
     {
-        Map<DataQuery, Object> deep = object.getValues(true);
-        Map<String, Object> map = deep.entrySet().stream()
-                                      .filter(e -> !(e.getValue() instanceof DataView))
-                                      .collect(Collectors.toMap(e -> e.getKey().asString("_"), Entry::getValue));
-
-        return manager.convertToNode(map);
+        return manager.convertToNode(object.getValues(false));
     }
 
     @Override
@@ -49,8 +46,29 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
         MemoryDataContainer data = new MemoryDataContainer();
         for (Entry<String, Node> entry : ((MapNode) node).getValue().entrySet())
         {
-            data.set(DataQuery.of('_', ((MapNode) node).getOriginalKey(entry.getKey())), manager.convertFromNode(entry.getValue(), entry.getValue().getValue().getClass()));
+            DataQuery key = DataQuery.of('_', ((MapNode) node).getOriginalKey(entry.getKey()));
+            Object value;
+            if (entry.getValue() instanceof ListNode)
+            {
+                value = toList(((ListNode) entry.getValue()));
+            }
+            else
+            {
+                Type vType = entry.getValue() instanceof MapNode ? DataContainer.class : entry.getValue().getValue().getClass();
+                value = manager.convertFromNode(entry.getValue(), vType);
+            }
+            data.set(key, value);
         }
         return data;
+    }
+
+    private List toList(ListNode value)
+    {
+        List<Object> list = new ArrayList<>();
+        for (Node node : value.getValue())
+        {
+            list.add(node.getValue());
+        }
+        return list;
     }
 }
