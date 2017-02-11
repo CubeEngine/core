@@ -388,6 +388,12 @@ public class I18n implements ModularityHandler
         return this.service.translate(locale, message);
     }
 
+    // Simple with CommandSource
+    public String translate(CommandSource commandSource, String message)
+    {
+        return this.service.translate(getLocale(commandSource), message);
+    }
+
     public String translateN(Locale locale, int n, String singular, String plural)
     {
         return this.service.translateN(locale, singular, plural, n);
