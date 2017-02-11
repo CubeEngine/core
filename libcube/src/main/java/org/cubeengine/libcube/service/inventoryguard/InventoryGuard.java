@@ -32,6 +32,7 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 import java.util.Arrays;
@@ -159,9 +160,13 @@ public class InventoryGuard
         {
             return;
         }
-
+        if (!blockAllIn && !blockAllOut && blockIn.isEmpty() && blockOut.isEmpty())
+        {
+            return;
+        }
         System.out.print("Event:\n");
         boolean cancel = false;
+
         for (SlotTransaction transaction : event.getTransactions())
         {
             ItemStack origStack = transaction.getOriginal().createStack();
@@ -170,7 +175,10 @@ public class InventoryGuard
             String finalString = finalStack.getItem().equals(ItemTypes.NONE) ? finalStack.getItem().getId() :finalStack.getItem().getId() + " " + finalStack.getQuantity();
             System.out.print(origString + "->" + finalString + "\n");
 
+            System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
             boolean upper = !(transaction.getSlot().parent() instanceof PlayerInventory); // TODO this will not work when viewing another playerinventory
+           // Inventory next = event.getTargetInventory().iterator().next() == transaction.getSlot().parent().notify();
+
             if (upper)
             {
                 if (checkTransaction(event, transaction, origStack, finalStack))
