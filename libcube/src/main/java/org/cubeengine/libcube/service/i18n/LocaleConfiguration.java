@@ -20,7 +20,7 @@ package org.cubeengine.libcube.service.i18n;
 import java.util.Locale;
 import de.cubeisland.engine.i18n.language.LanguageDefinition;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 /**
  * This configuration is used to parse the language configurations.

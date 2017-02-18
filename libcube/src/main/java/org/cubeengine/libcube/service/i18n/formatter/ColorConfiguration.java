@@ -19,7 +19,7 @@ package org.cubeengine.libcube.service.i18n.formatter;
 
 import java.util.HashMap;
 import java.util.Map;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 import org.cubeengine.libcube.util.ChatFormat;
 import org.spongepowered.api.text.format.TextFormat;
 

@@ -37,7 +37,7 @@ import de.cubeisland.engine.modularity.core.PostInjectionHandler;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.marker.Enable;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;

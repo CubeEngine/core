@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.logging;
 
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.reflect.annotations.Comment;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.annotations.Comment;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 public class LoggerConfiguration extends ReflectedYaml
 {

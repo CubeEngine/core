@@ -17,12 +17,12 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.ConverterManager;
-import de.cubeisland.engine.converter.converter.ClassedConverter;
-import de.cubeisland.engine.converter.node.ListNode;
-import de.cubeisland.engine.converter.node.MapNode;
-import de.cubeisland.engine.converter.node.Node;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.ConverterManager;
+import org.cubeengine.converter.converter.ClassedConverter;
+import org.cubeengine.converter.node.ListNode;
+import org.cubeengine.converter.node.MapNode;
+import org.cubeengine.converter.node.Node;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.MemoryDataContainer;

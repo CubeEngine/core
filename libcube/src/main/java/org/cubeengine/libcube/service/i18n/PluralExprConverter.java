@@ -19,9 +19,9 @@ package org.cubeengine.libcube.service.i18n;
 
 import java.util.HashMap;
 import java.util.Map;
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
-import de.cubeisland.engine.converter.node.Node;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.converter.SimpleConverter;
+import org.cubeengine.converter.node.Node;
 import de.cubeisland.engine.i18n.plural.ComplexExpr;
 import de.cubeisland.engine.i18n.plural.GreaterThanOneExpr;
 import de.cubeisland.engine.i18n.plural.NotOneExpr;

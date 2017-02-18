@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.ConverterManager;
-import de.cubeisland.engine.converter.converter.ClassedConverter;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.StringNode;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.ConverterManager;
+import org.cubeengine.converter.converter.ClassedConverter;
+import org.cubeengine.converter.node.Node;
+import org.cubeengine.converter.node.StringNode;
 import org.spongepowered.api.data.DataQuery;
 
 public class DataQueryConverter implements ClassedConverter<DataQuery>

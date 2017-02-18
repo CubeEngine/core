@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.i18n;
 
 import java.util.Locale;
-import de.cubeisland.engine.reflect.annotations.Comment;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.annotations.Comment;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 public class I18nConfig extends ReflectedYaml
 {

@@ -18,11 +18,11 @@
 package org.cubeengine.libcube.service.config;
 
 import java.util.Optional;
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.NullNode;
-import de.cubeisland.engine.converter.node.StringNode;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.converter.SimpleConverter;
+import org.cubeengine.converter.node.Node;
+import org.cubeengine.converter.node.NullNode;
+import org.cubeengine.converter.node.StringNode;
 import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
 import org.spongepowered.api.item.inventory.ItemStack;

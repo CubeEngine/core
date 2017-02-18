@@ -58,7 +58,7 @@ import de.cubeisland.engine.modularity.core.ModularityClassLoader;
 import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.marker.Enable;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.formatter.example.DecimalFormatter;
 import org.cubeengine.libcube.service.filesystem.FileExtensionFilter;
@@ -82,7 +82,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextFormat;
 
 import static java.util.stream.Collectors.toList;

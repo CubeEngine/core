@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.converter.SimpleConverter;
-import de.cubeisland.engine.converter.node.Node;
-import de.cubeisland.engine.converter.node.NullNode;
-import de.cubeisland.engine.converter.node.StringNode;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.converter.SimpleConverter;
+import org.cubeengine.converter.node.Node;
+import org.cubeengine.converter.node.NullNode;
+import org.cubeengine.converter.node.StringNode;
 import org.cubeengine.libcube.util.ChatFormat;
 
 public class ChatFormatConverter extends SimpleConverter<ChatFormat>

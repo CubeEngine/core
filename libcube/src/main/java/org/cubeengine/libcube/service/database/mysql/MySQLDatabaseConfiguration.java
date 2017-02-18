@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.database.mysql;
 
-import de.cubeisland.engine.reflect.annotations.Comment;
+import org.cubeengine.reflect.annotations.Comment;
 import org.cubeengine.libcube.service.database.DatabaseConfiguration;
 
 /**

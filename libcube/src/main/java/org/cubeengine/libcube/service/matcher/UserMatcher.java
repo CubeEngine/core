@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.UserConverter;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;

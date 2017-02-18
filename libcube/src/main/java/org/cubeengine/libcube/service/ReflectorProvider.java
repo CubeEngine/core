@@ -18,10 +18,10 @@
 package org.cubeengine.libcube.service;
 
 import javax.inject.Provider;
-import de.cubeisland.engine.converter.ConverterManager;
+import org.cubeengine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.ContextConverter;
 import org.cubeengine.libcube.service.config.DataQueryConverter;
 import org.cubeengine.libcube.util.Version;
@@ -38,7 +38,6 @@ import org.cubeengine.libcube.service.config.ConfigWorld;
 import org.cubeengine.libcube.service.config.ConfigWorldConverter;
 import org.cubeengine.libcube.service.config.WorldTransform;
 import org.joda.time.Duration;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.service.context.Context;

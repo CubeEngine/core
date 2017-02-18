@@ -19,11 +19,11 @@ package org.cubeengine.libcube.service.config;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import de.cubeisland.engine.converter.ConversionException;
-import de.cubeisland.engine.converter.ConverterManager;
-import de.cubeisland.engine.converter.converter.SingleClassConverter;
-import de.cubeisland.engine.converter.node.MapNode;
-import de.cubeisland.engine.converter.node.Node;
+import org.cubeengine.converter.ConversionException;
+import org.cubeengine.converter.ConverterManager;
+import org.cubeengine.converter.converter.SingleClassConverter;
+import org.cubeengine.converter.node.MapNode;
+import org.cubeengine.converter.node.Node;
 
 public class WorldTransformConverter extends SingleClassConverter<WorldTransform>
 {

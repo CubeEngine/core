@@ -38,7 +38,7 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.modularity.core.marker.Disable;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;

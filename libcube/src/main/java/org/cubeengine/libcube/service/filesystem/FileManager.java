@@ -40,8 +40,8 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.LifeCycle;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ModularityHandler;
-import de.cubeisland.engine.reflect.ReflectedFile;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.ReflectedFile;
+import org.cubeengine.reflect.Reflector;
 import org.slf4j.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;

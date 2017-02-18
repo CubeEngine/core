@@ -19,8 +19,8 @@ package org.cubeengine.libcube.service.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import de.cubeisland.engine.reflect.annotations.Comment;
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.annotations.Comment;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 public class CommandConfiguration extends ReflectedYaml
 {

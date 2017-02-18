@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.reflect.Reflector;
+import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.BlockTypeConverter;
 import org.cubeengine.libcube.service.config.ItemStackConverter;
 import org.cubeengine.libcube.service.config.SimpleItemStackConverter;
@@ -170,9 +170,6 @@ public class MaterialMatcher
             if (!map.containsKey(entry.getKey()))
             {
                 map.put(entry.getKey(), ItemStack.builder().fromBlockState(entry.getValue()).quantity(1).build());
-            }
-            else {
-                System.out.println(entry.getKey());
             }
         }
     }

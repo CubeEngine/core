@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.database;
 
-import de.cubeisland.engine.reflect.codec.yaml.ReflectedYaml;
+import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 /**
  * DatabaseConfiguration have to return their corresponding DatabaseClass.
