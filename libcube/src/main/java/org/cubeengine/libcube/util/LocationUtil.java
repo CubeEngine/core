@@ -17,20 +17,23 @@
  */
 package org.cubeengine.libcube.util;
 
-import java.util.Iterator;
-import java.util.Optional;
-import com.flowpowered.math.imaginary.Quaterniond;
-import com.flowpowered.math.vector.Vector3d;
+import static java.util.stream.Collectors.toList;
+import static org.spongepowered.api.util.Direction.UP;
+
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
-import org.spongepowered.api.data.property.AbstractProperty;
-import org.spongepowered.api.data.property.block.MatterProperty;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.data.property.block.PassableProperty;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.extra.fluid.FluidType;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import static org.spongepowered.api.data.property.block.MatterProperty.Matter.SOLID;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 public class LocationUtil
 {
@@ -56,39 +59,114 @@ public class LocationUtil
 
     public static Optional<Location<World>> getBlockBehindWall(Player player, int maxRange, int maxWallThickness)
     {
-        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(maxRange).iterator();
-        Optional<BlockRayHit<World>> end = Optional.empty();
-
+        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(maxRange + maxWallThickness).iterator();
+        boolean wallHit = false;
+        int blocks = 0;
+        Location<World> loc = null;
         while (it.hasNext())
         {
-            BlockRayHit<World> hit = it.next();
-            BlockType blockType = hit.getExtent().getBlockType(hit.getBlockX(), hit.getBlockY(), hit.getBlockZ());
-            if (blockType.getProperty(MatterProperty.class).map(AbstractProperty::getValue).orElse(null) == SOLID)
+            blocks++;
+            if (!wallHit && blocks > maxRange)
             {
-                end = Optional.of(hit);
+                break;
+            }
+            BlockRayHit<World> hit = it.next();
+            Location<World> curLoc = hit.getLocation();
+            BlockType blockType = curLoc.getBlockType();
+            if (!wallHit)
+            {
+                if (!canPass(blockType))
+                {
+                    wallHit = true;
+                }
+            }
+            else
+            {
+                if (canPass(blockType) && canPass(curLoc.getRelative(UP).getBlockType()))
+                {
+                    loc = curLoc;
+                    break;
+                }
+            }
+
+        }
+        return Optional.ofNullable(loc);
+    }
+
+    /**
+     * Returns the block in sight.
+     * When in fluids returns the first Air or Solid Block
+     * else returns the first Solid or Fluid Block
+     *
+     * @param player the looking player
+     * @return the block in sight
+     */
+    public static Location<World> getBlockInSight(Player player)
+    {
+        BlockType headIn = player.getLocation().getRelative(UP).getBlockType();
+        List<BlockType> fluidBlocks = Sponge.getRegistry().getAllOf(FluidType.class).stream()
+                .map(FluidType::getBlockTypeBase)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(toList());
+
+        boolean headInFluid = fluidBlocks.contains(headIn);
+        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(500).iterator();
+        BlockRayHit<World> next = null;
+        while (it.hasNext())
+        {
+            next = it.next();
+            BlockType nextType = next.getLocation().getBlockType();
+            if (fluidBlocks.contains(nextType))
+            {
+                if (!headInFluid)
+                {
+                    break;
+                }
+            }
+            else if (canPass(nextType))
+            {
+                if (BlockTypes.AIR.equals(nextType) && headInFluid)
+                {
+                    break;
+                }
+            }
+            else
+            {
                 break;
             }
         }
-        if (!end.isPresent())
-        {
-            return Optional.empty();
-        }
+        return next == null ? null : next.getLocation();
+    }
 
-        Vector3d rotation = player.getRotation();
-        rotation = Quaterniond.fromAxesAnglesDeg(rotation.getX(), -rotation.getY(), rotation.getZ()).getDirection();
-        it = BlockRay.from(end.get().getExtent(), end.get().getPosition()).direction(rotation).distanceLimit(maxWallThickness).iterator();
-        end = Optional.empty();
-        while (it.hasNext())
+    public static boolean canPass(BlockType type)
+    {
+        return type.getProperty(PassableProperty.class).map(PassableProperty::getValue).orElse(false);
+    }
+
+    /**
+     * Returns the next location up that is not obstructed.
+     *
+     * @param loc the location to start the search at
+     * @return the next non-obstructed location up
+     */
+    public static Location<World> getLocationUp(Location<World> loc)
+    {
+        if (!canPass(loc.getBlockType()))
         {
-            BlockRayHit<World> hit = it.next();
-            BlockType blockType = hit.getExtent().getBlockType(hit.getBlockX(), hit.getBlockY(), hit.getBlockZ());
-            if (blockType.getProperty(MatterProperty.class).map(AbstractProperty::getValue).orElse(null) != SOLID)
+            loc = loc.getRelative(UP);
+        }
+        int maxHeight = loc.getExtent().getDimension().getBuildHeight();
+        while (!(canPass(loc.getBlockType()) && canPass(loc.getRelative(UP).getBlockType())) && loc.getY() < maxHeight)
+        {
+            // TODO half block gaps
+            Location<World> rel = loc.getRelative(UP);
+            if (rel.getY() == 0)
             {
-                end = Optional.of(hit);
                 break;
             }
+            loc = rel;
         }
-
-        return end.map(BlockRayHit::getLocation);
+        return loc;
     }
 }
