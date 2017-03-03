@@ -20,6 +20,9 @@ package org.cubeengine.libcube.service.command;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
@@ -52,25 +55,20 @@ public class ProxyCallable implements CommandCallable
     {
         try
         {
-            long delta = System.currentTimeMillis();
 
             CommandInvocation invocation = newInvocation(source, arguments.isEmpty() ? alias : alias + " " + arguments);
 
-            delta = System.currentTimeMillis() - delta;
-            if (delta > 1000 / 20 / 3) // third of a tick
+            long delta = System.currentTimeMillis();
+            boolean ran;
+            try (Timing timing = Timings.ofStart(manager.getPlugin(), "CE Command Execute " + alias))
             {
-                logger.warn("Command Invocation Timing: {} | {}ms ({}%)", arguments,
-                        delta, delta * 100 / (1000 / 20));
+                ran = manager.execute(invocation);
             }
 
-            delta = System.currentTimeMillis();
-
-            boolean ran = manager.execute(invocation);
-
             delta = System.currentTimeMillis() - delta;
             if (delta > 1000 / 20 / 3) // third of a tick
             {
-                logger.warn("Command Execute Timing: {} | {}ms ({}%)", arguments,
+                logger.warn("Command Execute Timing: {} {} | {}ms ({}%)", this.alias, arguments,
                                    delta, delta * 100 / (1000 / 20));
             }
 

@@ -17,6 +17,8 @@
  */
 package org.cubeengine.libcube.util.math;
 
+import com.flowpowered.math.vector.Vector3d;
+
 public class SquareMatrix3
 {
     private final double[][] values;
@@ -55,14 +57,14 @@ public class SquareMatrix3
         );
     }
     
-    public Vector3 multiply( Vector3 other )
+    public Vector3d multiply( Vector3d other )
     {
-        return this.multiply( other.x, other.y, other.z );
+        return this.multiply( other.getX(), other.getY(), other.getZ() );
     }
     
-    public Vector3 multiply(double x, double y, double z)
+    public Vector3d multiply(double x, double y, double z)
     {
-        return new Vector3
+        return new Vector3d
         (
                 this.values[0][0] * x + this.values[0][1] * y + this.values[0][2] * z,
                 this.values[1][0] * x + this.values[1][1] * y + this.values[1][2] * z,

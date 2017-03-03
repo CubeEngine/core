@@ -17,16 +17,16 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
 public class Cube extends Cuboid
 {
-    public Cube(Vector3 point, int length)
+    public Cube(Vector3d point, int length)
     {
         super(point, length, length, length);
     }
     
-    public Cube(Vector3 point, int length, Vector3 centerOfRotation, Vector3 rotationAngle)
+    public Cube(Vector3d point, int length, Vector3d centerOfRotation, Vector3d rotationAngle)
     {
         super(point, length, length, length, centerOfRotation, rotationAngle);
     }

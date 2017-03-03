@@ -17,15 +17,15 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import com.flowpowered.math.vector.Vector2i;
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.ChainedComponent;
-import org.cubeengine.libcube.util.math.BlockVector2;
-import org.cubeengine.libcube.util.math.BlockVector3;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 
 import static org.spongepowered.api.text.format.TextColors.*;
@@ -34,7 +34,7 @@ import static org.spongepowered.api.text.format.TextColors.*;
 public class VectorFormatter extends ReflectedFormatter
 {
     @Format
-    public Component format(BlockVector2 v, Context context)
+    public Component format(Vector2i v, Context context)
     {
         String arg0 = context.getFlag(0);
         String arg1 = context.getFlag(1);
@@ -42,21 +42,21 @@ public class VectorFormatter extends ReflectedFormatter
         {
             return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
                                         new StyledComponent(WHITE, arg0),
-                                        new StyledComponent(GOLD, String.valueOf(v.x)),
+                                        new StyledComponent(GOLD, String.valueOf(v.getX())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg1),
-                                        new StyledComponent(GOLD, String.valueOf(v.z)),
+                                        new StyledComponent(GOLD, String.valueOf(v.getY())),
                                         new StyledComponent(DARK_AQUA, "]"));
         }
         return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
-                                    new StyledComponent(GOLD, String.valueOf(v.x)),
+                                    new StyledComponent(GOLD, String.valueOf(v.getX())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.z)),
+                                    new StyledComponent(GOLD, String.valueOf(v.getY())),
                                     new StyledComponent(DARK_AQUA, "]"));
     }
 
     @Format
-    public Component format(BlockVector3 v, Context context)
+    public Component format(Vector3i v, Context context)
     {
         String arg0 = context.getFlag(0);
         String arg1 = context.getFlag(1);
@@ -65,21 +65,21 @@ public class VectorFormatter extends ReflectedFormatter
         {
             return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
                                         new StyledComponent(WHITE, arg0),
-                                        new StyledComponent(GOLD, String.valueOf(v.x)),
+                                        new StyledComponent(GOLD, String.valueOf(v.getX())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg1),
-                                        new StyledComponent(GOLD, String.valueOf(v.y)),
+                                        new StyledComponent(GOLD, String.valueOf(v.getY())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg2),
-                                        new StyledComponent(GOLD, String.valueOf(v.z)),
+                                        new StyledComponent(GOLD, String.valueOf(v.getZ())),
                                         new StyledComponent(DARK_AQUA, "]"));
         }
         return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
-                                    new StyledComponent(GOLD, String.valueOf(v.x)),
+                                    new StyledComponent(GOLD, String.valueOf(v.getX())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.y)),
+                                    new StyledComponent(GOLD, String.valueOf(v.getY())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.z)),
+                                    new StyledComponent(GOLD, String.valueOf(v.getZ())),
                                     new StyledComponent(DARK_AQUA, "]"));
     }
 

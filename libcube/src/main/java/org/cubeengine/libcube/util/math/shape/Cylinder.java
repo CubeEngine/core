@@ -19,20 +19,20 @@ package org.cubeengine.libcube.util.math.shape;
 
 import java.util.Iterator;
 import org.cubeengine.libcube.util.math.MathHelper;
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
 public class Cylinder implements Shape
 {
-    private final Vector3 point;
+    private final Vector3d point;
     
     private final double radiusX;
     private final double radiusZ;
     private final double height;
     
-    private final Vector3 rotationAngle;
-    private final Vector3 centerOfRotation;
+    private final Vector3d rotationAngle;
+    private final Vector3d centerOfRotation;
 
-    public Cylinder( Vector3 point, double radiusX, double radiusZ, double height, Vector3 centerOfRotation, Vector3 rotationAngle )
+    public Cylinder( Vector3d point, double radiusX, double radiusZ, double height, Vector3d centerOfRotation, Vector3d rotationAngle )
     {
         this.point = point;
         this.radiusX = radiusX;
@@ -43,9 +43,9 @@ public class Cylinder implements Shape
         this.rotationAngle = rotationAngle;
     }
 
-    public Cylinder( Vector3 point, double radiusX, double radiusZ, double height )
+    public Cylinder( Vector3d point, double radiusX, double radiusZ, double height )
     {
-        this( point, radiusX, radiusZ, height, new Vector3( point.x, point.y + height / 2d, point.z ), new Vector3( 0, 0, 0 ) );
+        this( point, radiusX, radiusZ, height, new Vector3d( point.getX(), point.getY() + height / 2d, point.getZ()), new Vector3d( 0, 0, 0 ) );
     }
 
     public Cylinder setRadiusX( double radiusX )
@@ -79,53 +79,53 @@ public class Cylinder implements Shape
     }
 
     @Override
-    public Shape setPoint( Vector3 point )
+    public Shape setPoint( Vector3d point )
     {
         return new Cylinder( point, this.radiusX, this.radiusZ, this.height, this.centerOfRotation, this.rotationAngle );
     }
 
     @Override
-    public Vector3 getPoint()
+    public Vector3d getPoint()
     {
         return this.point;
     }
 
     @Override
-    public Shape rotate( Vector3 angle )
+    public Shape rotate( Vector3d angle )
     {
         return new Cylinder( this.point, this.radiusX, this.radiusZ, this.height, this.centerOfRotation, angle );
     }
 
     @Override
-    public Shape setCenterOfRotation( Vector3 center )
+    public Shape setCenterOfRotation( Vector3d center )
     {
         return new Cylinder( this.point, this.radiusX, this.radiusZ, this.height, center, this.rotationAngle );
     }
 
     @Override
-    public Vector3 getRotationAngle()
+    public Vector3d getRotationAngle()
     {
         return this.rotationAngle;
     }
 
     @Override
-    public Vector3 getCenterOfRotation()
+    public Vector3d getCenterOfRotation()
     {
         return this.centerOfRotation;
     }
     
     @Override
-    public Shape scale( Vector3 vector )
+    public Shape scale( Vector3d vector )
     {
-        return new Cylinder( this.point, this.radiusX * vector.x, this.radiusZ * vector.z, this.height * vector.y, this.centerOfRotation, this.rotationAngle );
+        return new Cylinder( this.point, this.radiusX * vector.getX(), this.radiusZ * vector.getZ(), this.height * vector.getY(), this.centerOfRotation, this.rotationAngle );
     }
 
     @Override
-    public Cuboid getEncircledCuboid()
+    public Cuboid getBoundingCuboid()
     {
         return new Cuboid
         (
-                new Vector3( this.getPoint().x - this.getRadiusX(), this.getPoint().y, this.getPoint().z - this.getRadiusZ() ),
+                new Vector3d( this.getPoint().getX() - this.getRadiusX(), this.getPoint().getY(), this.getPoint().getZ() - this.getRadiusZ() ),
                 this.getRadiusX() * 2d,
                 this.getHeight(),
                 this.getRadiusZ() * 2d,
@@ -135,16 +135,16 @@ public class Cylinder implements Shape
     }
     
     @Override
-    public boolean contains( Vector3 point )
+    public boolean contains( Vector3d point )
     {
-        return this.contains( point.x, point.y, point.z );
+        return this.contains( point.getX(), point.getY(), point.getZ() );
     }
     
     @Override
     public boolean contains( double x, double y, double z )
     {
-        return !(y < this.getPoint().y || y > this.getPoint().y + this.getHeight()) && MathHelper.pow(
-            (x - this.getPoint().x) / this.getRadiusX(), 2) + MathHelper.pow( (z - this.getPoint().z) / this.getRadiusZ(), 2 ) < 1;
+        return !(y < this.getPoint().getY() || y > this.getPoint().getY() + this.getHeight()) && MathHelper.pow(
+            (x - this.getPoint().getX()) / this.getRadiusX(), 2) + MathHelper.pow( (z - this.getPoint().getZ()) / this.getRadiusZ(), 2 ) < 1;
     }
     
     @Override
@@ -160,7 +160,7 @@ public class Cylinder implements Shape
     }
 
     @Override
-    public Iterator<Vector3> iterator()
+    public Iterator<Vector3d> iterator()
     {
         return new ShapeIterator( this );
     }

@@ -17,31 +17,31 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
-public interface Shape extends Iterable<Vector3>
+public interface Shape extends Iterable<Vector3d>
 {
-    public Shape setPoint( Vector3 point );
+    Shape setPoint(Vector3d point);
 
-    public Vector3 getPoint();
+    Vector3d getPoint();
 
-    public Shape rotate( Vector3 angle );
+    Shape rotate(Vector3d angle);
 
-    public Shape setCenterOfRotation( Vector3 center );
+    Shape setCenterOfRotation(Vector3d center);
 
-    public Vector3 getRotationAngle();
+    Vector3d getRotationAngle();
 
-    public Vector3 getCenterOfRotation();
+    Vector3d getCenterOfRotation();
 
-    public Shape scale( Vector3 vector );
+    Shape scale(Vector3d vector);
 
-    public boolean contains( Vector3 point );
+    boolean contains(Vector3d point);
 
-    public boolean contains( double x, double y, double z );
+    boolean contains(double x, double y, double z);
 
-    public boolean intersects( Shape other );
+    boolean intersects(Shape other);
 
-    public boolean contains( Shape other );
+    boolean contains(Shape other);
 
-    public Cuboid getEncircledCuboid();
+    Cuboid getBoundingCuboid();
 }

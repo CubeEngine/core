@@ -17,6 +17,9 @@
  */
 package org.cubeengine.libcube.util.math;
 
+import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
+
 /**
  * This class provides some utility methods for maths.
  */
@@ -111,5 +114,14 @@ public class MathHelper
     public static boolean compare(double first, double second, double epsilon)
     {
         return isZero(first - second, epsilon);
+    }
+
+    public static Vector3i midpoint(Vector3i v1, Vector3i v2)
+    {
+        return v1.add(v2.sub(v1).div(2));
+    }
+
+    public static Vector3d midpoint(Vector3d v1, Vector3d v2) {
+        return v1.add(v2.sub(v1).div(2));
     }
 }

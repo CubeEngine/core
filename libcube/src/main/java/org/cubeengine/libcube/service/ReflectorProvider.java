@@ -18,6 +18,8 @@
 package org.cubeengine.libcube.service;
 
 import javax.inject.Provider;
+
+import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
@@ -25,8 +27,7 @@ import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.ContextConverter;
 import org.cubeengine.libcube.service.config.DataQueryConverter;
 import org.cubeengine.libcube.util.Version;
-import org.cubeengine.libcube.util.math.BlockVector3;
-import org.cubeengine.libcube.service.config.BlockVector3Converter;
+import org.cubeengine.libcube.service.config.Vector3iConverter;
 import org.cubeengine.libcube.service.config.DataContainerConverter;
 import org.cubeengine.libcube.service.config.DurationConverter;
 import org.cubeengine.libcube.service.config.LevelConverter;
@@ -53,7 +54,7 @@ public class ReflectorProvider implements Provider<Reflector>
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
         manager.registerConverter(new WorldTransformConverter(), WorldTransform.class);
-        manager.registerConverter(new BlockVector3Converter(), BlockVector3.class);
+        manager.registerConverter(new Vector3iConverter(), Vector3i.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
         manager.registerConverter(new LevelConverter(), LogLevel.class);

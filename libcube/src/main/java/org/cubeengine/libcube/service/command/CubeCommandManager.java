@@ -127,6 +127,11 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     private final ProviderManager providerManager;
     private final org.spongepowered.api.command.CommandManager baseDispatcher;
 
+    public Object getPlugin()
+    {
+        return plugin;
+    }
+
     private final Object plugin;
 
     private I18n i18n;

@@ -18,32 +18,32 @@
 package org.cubeengine.libcube.util.math.shape;
 
 import java.util.Iterator;
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
 public class Cuboid implements Shape
 {
-    private Vector3 point;
+    private Vector3d point;
     
     private double width;
     private double height;
     private double depth;
     
-    private Vector3 rotationAngle;
-    private Vector3 centerOfRotation;
+    private Vector3d rotationAngle;
+    private Vector3d centerOfRotation;
 
-    public Cuboid( Vector3 point, double width, double height, double depth )
+    public Cuboid( Vector3d point, double width, double height, double depth )
     {
         this.point = point;
         this.width = width;
         this.height = height;
         this.depth = depth;
         
-        this.centerOfRotation = new Vector3(this.point.x + width / 2, this.point.y + height / 2, this.point.z + depth / 2);
-        this.rotationAngle = new Vector3(0, 0, 0);
+        this.centerOfRotation = new Vector3d(this.point.getX() + width / 2, this.point.getY() + height / 2, this.point.getZ() + depth / 2);
+        this.rotationAngle = new Vector3d(0, 0, 0);
     }
 
     
-    public Cuboid( Vector3 point, double width, double height, double depth, Vector3 centerOfRotation, Vector3 rotationAngle)
+    public Cuboid( Vector3d point, double width, double height, double depth, Vector3d centerOfRotation, Vector3d rotationAngle)
     {
         this.point = point;
         this.width = width;
@@ -54,19 +54,19 @@ public class Cuboid implements Shape
         this.rotationAngle = rotationAngle;
     }
 
-    public Cuboid(Vector3 point, Vector3 size)
+    public Cuboid(Vector3d point, Vector3d size)
     {
-        this(point, size.x, size.y, size.z);
+        this(point, size.getX(), size.getY(), size.getZ());
     }
 
     @Override
-    public Shape setPoint( Vector3 point )
+    public Shape setPoint( Vector3d point )
     {
         return new Cuboid(point, this.width, this.height, this.depth, this.centerOfRotation, this.rotationAngle);
     }
     
     @Override
-    public Vector3 getPoint()
+    public Vector3d getPoint()
     {
         return this.point;
     }
@@ -102,57 +102,84 @@ public class Cuboid implements Shape
     }
 
     @Override
-    public Shape rotate( Vector3 angle )
+    public Shape rotate( Vector3d angle )
     {
         return new Cuboid(this.point, this.width, this.height, this.depth, this.centerOfRotation, angle);
     }
 
     @Override
-    public Shape setCenterOfRotation( Vector3 center )
+    public Shape setCenterOfRotation( Vector3d center )
     {
         return new Cuboid(this.point, this.width, this.height, this.depth, center, this.rotationAngle);
     }
 
     @Override
-    public Vector3 getRotationAngle()
+    public Vector3d getRotationAngle()
     {
         return this.rotationAngle;
     }
 
     @Override
-    public Vector3 getCenterOfRotation()
+    public Vector3d getCenterOfRotation()
     {
         return this.centerOfRotation;
     }
 
     @Override
-    public Shape scale( Vector3 vector )
+    public Shape scale( Vector3d vector )
     {
-        return new Cuboid(this.point, this.width * vector.x, this.height * vector.y, this.depth * vector.z, this.centerOfRotation, this.rotationAngle);
+        return new Cuboid(this.point, this.width * vector.getX(), this.height * vector.getY(), this.depth * vector.getZ(), this.centerOfRotation, this.rotationAngle);
     }
 
     @Override
-    public Cuboid getEncircledCuboid()
+    public Cuboid getBoundingCuboid()
     {
         return this;
     }
     
     @Override
-    public boolean contains( Vector3 point )
+    public boolean contains( Vector3d point )
     {
-        return this.contains( point.x, point.y, point.z );
+        return this.contains( point.getX(), point.getY(), point.getZ() );
+    }
+
+
+    /**
+     * Gets a Vektor3 pointing to the minium point
+     *
+     * @return the Vektor pointing to the minimum point
+     */
+    public Vector3d getMinimumPoint()
+    {
+        return new Vector3d(
+            Math.min(this.point.getX(), this.point.getX() + this.width),
+            Math.min(this.point.getY(), this.point.getY() + this.height),
+            Math.min(this.point.getZ(), this.point.getZ() + this.depth));
+    }
+
+    /**
+     * Gets a Vektor3 pointing to the maximum point
+     *
+     * @return the Vektor pointing to the maximum point
+     */
+    public Vector3d getMaximumPoint()
+    {
+        return new Vector3d(
+                Math.max(this.point.getX(), this.point.getX() + this.width),
+                Math.max(this.point.getY(), this.point.getY() + this.height),
+                Math.max(this.point.getZ(), this.point.getZ() + this.depth));
     }
 
     @Override
     public boolean contains( double x, double y, double z )
     {
         return !(   
-            x < this.getPoint().x || 
-            x > this.getPoint().x + this.getWidth() ||
-            y < this.getPoint().y ||
-            y > this.getPoint().y + this.getHeight() ||
-            z < this.getPoint().z ||
-            z > this.getPoint().z + this.getDepth()
+            x < this.getPoint().getX() || 
+            x > this.getPoint().getX() + this.getWidth() ||
+            y < this.getPoint().getY() ||
+            y > this.getPoint().getY() + this.getHeight() ||
+            z < this.getPoint().getZ() ||
+            z > this.getPoint().getZ() + this.getDepth()
         );
     }
     
@@ -166,12 +193,12 @@ public class Cuboid implements Shape
     {
         return 
         (
-            this.getPoint().y + this.getHeight() > other.getPoint().y + other.getHeight() &&    // this.top > other.top
-            this.getPoint().y < other.getPoint().y &&                                           // this.bottom < other.bottom
-            this.getPoint().x < other.getPoint().x &&                                           // this.left < other.left
-            this.getPoint().x + this.getWidth() > other.getPoint().x + other.getWidth() &&      // this.right > other.right
-            this.getPoint().z < other.getPoint().z &&                                           // this.front < other.front
-            this.getPoint().z + this.getDepth() > other.getPoint().z + other.getDepth()         // this.back > other.back
+            this.getPoint().getY() + this.getHeight() > other.getPoint().getY() + other.getHeight() &&    // this.top > other.top
+            this.getPoint().getY() < other.getPoint().getY() &&                                           // this.bottom < other.bottom
+            this.getPoint().getX() < other.getPoint().getX() &&                                           // this.left < other.left
+            this.getPoint().getX() + this.getWidth() > other.getPoint().getX() + other.getWidth() &&      // this.right > other.right
+            this.getPoint().getZ() < other.getPoint().getZ() &&                                           // this.front < other.front
+            this.getPoint().getZ() + this.getDepth() > other.getPoint().getZ() + other.getDepth()         // this.back > other.back
         );
     }
     
@@ -184,18 +211,18 @@ public class Cuboid implements Shape
     private boolean intersects(Cuboid other)
     { 
         return !(                                                           // invert it
-            this.getPoint().y + this.getHeight() < other.getPoint().y ||    // this.top < other.bottom
-            this.getPoint().y > other.getPoint().y + other.getHeight()  ||  // this.bottom > other.top
-            this.getPoint().x > other.getPoint().x + other.getWidth() ||    // this.left > other.right
-            this.getPoint().x + this.getWidth() < other.getPoint().x ||     // this.right < other.left
-            this.getPoint().z > other.getPoint().z + other.getDepth() ||    // this.front > other.back
-            this.getPoint().z + this.getDepth() < other.getPoint().z ||     // this.back < other.front
+            this.getPoint().getY() + this.getHeight() < other.getPoint().getY() ||    // this.top < other.bottom
+            this.getPoint().getY() > other.getPoint().getY() + other.getHeight()  ||  // this.bottom > other.top
+            this.getPoint().getX() > other.getPoint().getX() + other.getWidth() ||    // this.left > other.right
+            this.getPoint().getX() + this.getWidth() < other.getPoint().getX() ||     // this.right < other.left
+            this.getPoint().getZ() > other.getPoint().getZ() + other.getDepth() ||    // this.front > other.back
+            this.getPoint().getZ() + this.getDepth() < other.getPoint().getZ() ||     // this.back < other.front
             this.contains( other )
         );
     }
     
     @Override
-    public Iterator<Vector3> iterator()
+    public Iterator<Vector3d> iterator()
     {
         return new ShapeIterator( this );
     }

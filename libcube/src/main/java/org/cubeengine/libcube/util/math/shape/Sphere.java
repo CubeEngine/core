@@ -19,22 +19,22 @@ package org.cubeengine.libcube.util.math.shape;
 
 import java.util.Iterator;
 import org.cubeengine.libcube.util.math.MathHelper;
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
 public class Sphere implements Shape
 {
-    private Vector3 point;
+    private Vector3d point;
     private double radius;
     
-    private Vector3 centerOfRotation;
-    private Vector3 rotationAngle;
+    private Vector3d centerOfRotation;
+    private Vector3d rotationAngle;
     
-    public Sphere(Vector3 point, double radius)
+    public Sphere(Vector3d point, double radius)
     {
-        this(point, radius, point, new Vector3(0,0,0));
+        this(point, radius, point, new Vector3d(0,0,0));
     }
     
-    public Sphere(Vector3 point, double radius, Vector3 centerOfRotation, Vector3 rotationAngle)
+    public Sphere(Vector3d point, double radius, Vector3d centerOfRotation, Vector3d rotationAngle)
     {
         this.point = point;
         this.radius = radius;
@@ -54,57 +54,58 @@ public class Sphere implements Shape
     }
     
     @Override
-    public Shape setPoint( Vector3 point )
+    public Shape setPoint( Vector3d point )
     {
         return new Sphere(point, this.radius, this.centerOfRotation, this.rotationAngle);
     }
 
     @Override
-    public Vector3 getPoint()
+    public Vector3d getPoint()
     {
         return this.point;
     }
 
     @Override
-    public Shape rotate( Vector3 angle )
+    public Shape rotate( Vector3d angle )
     {
         return new Sphere(this.point, this.radius, this.centerOfRotation, angle);
     }
 
     @Override
-    public Shape setCenterOfRotation( Vector3 center )
+    public Shape setCenterOfRotation( Vector3d center )
     {
         return new Sphere(this.point, this.radius, center, this.rotationAngle);
     }
 
     @Override
-    public Vector3 getRotationAngle()
+    public Vector3d getRotationAngle()
     {
         return this.rotationAngle;
     }
 
     @Override
-    public Vector3 getCenterOfRotation()
+    public Vector3d getCenterOfRotation()
     {
         return this.centerOfRotation;
     }
 
     @Override
-    public Shape scale( Vector3 vector )
+    public Shape scale( Vector3d vector )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
     }
 
     @Override
-    public boolean contains( Vector3 point )
+    public boolean contains( Vector3d point )
     {
-        return contains(point.x, point.y, point.z);
+        return contains(point.getX(), point.getY(), point.getZ());
     }
 
     @Override
     public boolean contains( double x, double y, double z )
     {
-        return MathHelper.pow( this.point.x - x, 2 ) + MathHelper.pow( this.point.y - y, 2 ) + MathHelper.pow( this.point.z - z, 2 ) < this.radius * this.radius;
+        return MathHelper.pow( this.point.getX() - x, 2 ) + MathHelper.pow( this.point.getY() - y, 2 ) + MathHelper.pow( this.point.getZ() -z, 2 ) < this
+                .radius * this.radius;
     }
 
     @Override
@@ -120,11 +121,12 @@ public class Sphere implements Shape
     }
 
     @Override
-    public Cuboid getEncircledCuboid()
+    public Cuboid getBoundingCuboid()
     {
         return new Cuboid
         (
-                new Vector3( this.getPoint().x - this.getRadius(), this.getPoint().y - this.getRadius(), this.getPoint().z - this.getRadius() ),
+                new Vector3d( this.getPoint().getX() - this.getRadius(), this.getPoint().getX() - this.getRadius(), this.getPoint().getX() - this
+                        .getRadius() ),
                 this.getRadius() * 2d,
                 this.getRadius() * 2d,
                 this.getRadius() * 2d,
@@ -134,7 +136,7 @@ public class Sphere implements Shape
     }
 
     @Override
-    public Iterator<Vector3> iterator()
+    public Iterator<Vector3d> iterator()
     {
         return new ShapeIterator(this);
     }

@@ -17,37 +17,37 @@
  */
 package org.cubeengine.libcube.service.config;
 
+import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.SingleClassConverter;
 import org.cubeengine.converter.node.IntNode;
 import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
-import org.cubeengine.libcube.util.math.BlockVector3;
 
-public class BlockVector3Converter extends SingleClassConverter<BlockVector3>
+public class Vector3iConverter extends SingleClassConverter<Vector3i>
 {
     @Override
-    public Node toNode(BlockVector3 blockVector3, ConverterManager converterManager) throws ConversionException
+    public Node toNode(Vector3i blockVector3, ConverterManager converterManager) throws ConversionException
     {
         MapNode mapNode = MapNode.emptyMap();
-        mapNode.set("x", new IntNode(blockVector3.x));
-        mapNode.set("y", new IntNode(blockVector3.y));
-        mapNode.set("z", new IntNode(blockVector3.z));
+        mapNode.set("x", new IntNode(blockVector3.getX()));
+        mapNode.set("y", new IntNode(blockVector3.getY()));
+        mapNode.set("z", new IntNode(blockVector3.getZ()));
         return mapNode;
     }
 
     @Override
-    public BlockVector3 fromNode(Node node, ConverterManager converterManager) throws ConversionException
+    public Vector3i fromNode(Node node, ConverterManager converterManager) throws ConversionException
     {
         if (node instanceof MapNode)
         {
             Node x = ((MapNode)node).get("x");
             Node y = ((MapNode)node).get("y");
             Node z = ((MapNode)node).get("z");
-            return new BlockVector3((Integer)converterManager.convertFromNode(x, Integer.class),
-                                    (Integer)converterManager.convertFromNode(y, Integer.class),
-                                    (Integer)converterManager.convertFromNode(z, Integer.class));
+            return new Vector3i(converterManager.convertFromNode(x, Integer.class),
+                    converterManager.convertFromNode(y, Integer.class),
+                    converterManager.convertFromNode(z, Integer.class));
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

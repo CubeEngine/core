@@ -20,6 +20,8 @@ package org.cubeengine.libcube.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.SingleClassConverter;
@@ -29,7 +31,6 @@ import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.NullNode;
 import org.cubeengine.reflect.Reflector;
-import org.cubeengine.libcube.util.math.BlockVector3;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.world.Location;
@@ -42,8 +43,8 @@ import org.spongepowered.api.world.World;
 public class CuboidBlockClipboard
 {
     private final BlockData[][][] data;
-    private final BlockVector3 size;
-    private BlockVector3 relative;
+    private final Vector3i size;
+    private Vector3i relative;
 
     /**
      * Creates a Clipboard containing all BlockData in between pos1 and pos2 in the given world
@@ -52,51 +53,51 @@ public class CuboidBlockClipboard
      * @param pos1 origin and position with lowest x,y and z coordinates
      * @param pos2 position with highest x,y and z coordinates
      */
-    public CuboidBlockClipboard(BlockVector3 relativeBlock, World world, BlockVector3 pos1, BlockVector3 pos2)
+    public CuboidBlockClipboard(Vector3i relativeBlock, World world, Vector3i pos1, Vector3i pos2)
     {
-        BlockVector3 minimum = new BlockVector3(pos1.x < pos2.x ? pos1.x : pos2.x, pos1.y < pos2.y ? pos1.y : pos2.y, pos1.z < pos2.z ? pos1.z : pos2.z);
-        BlockVector3 maximum = new BlockVector3(pos1.x > pos2.x ? pos1.x : pos2.x, pos1.y > pos2.y ? pos1.y : pos2.y, pos1.z > pos2.z ? pos1.z : pos2.z);
-        this.relative = minimum.subtract(relativeBlock);
-        this.size = maximum.subtract(minimum).add(new BlockVector3(1,1,1));
-        this.data = new BlockData[this.size.x][this.size.y][this.size.z];
-        for (int x = 0; x < this.size.x; ++x)
+        Vector3i minimum = new Vector3i(pos1.getX() < pos2.getX() ? pos1.getX() : pos2.getX(), pos1.getY() < pos2.getY() ? pos1.getY() : pos2.getY(), pos1.getZ() < pos2.getZ() ? pos1.getZ() : pos2.getZ());
+        Vector3i maximum = new Vector3i(pos1.getX() > pos2.getX() ? pos1.getX() : pos2.getX(), pos1.getY() > pos2.getY() ? pos1.getY() : pos2.getY(), pos1.getZ() > pos2.getZ() ? pos1.getZ() : pos2.getZ());
+        this.relative = minimum.sub(relativeBlock);
+        this.size = maximum.sub(minimum).add(new Vector3i(1,1,1));
+        this.data = new BlockData[this.size.getX()][this.size.getY()][this.size.getZ()];
+        for (int x = 0; x < this.size.getX(); ++x)
         {
-            for (int y = 0; y < this.size.y; ++y)
+            for (int y = 0; y < this.size.getY(); ++y)
             {
-                for (int z = 0; z < this.size.z; ++z)
+                for (int z = 0; z < this.size.getZ(); ++z)
                 {
-                    data[x][y][z] = new BlockData(world.getLocation(x + minimum.x, y + minimum.y, z + minimum.z),minimum);
+                    data[x][y][z] = new BlockData(world.getLocation(x + minimum.getX(), y + minimum.getY(), z + minimum.getZ()),minimum);
                 }
             }
         }
     }
 
-    public CuboidBlockClipboard(BlockVector3 size, BlockVector3 relative)
+    public CuboidBlockClipboard(Vector3i size, Vector3i relative)
     {
-        this.size = new BlockVector3(Math.abs(size.x),Math.abs(size.y),Math.abs(size.z));
-        this.data = new BlockData[this.size.x][this.size.y][this.size.z];
+        this.size = new Vector3i(Math.abs(size.getX()),Math.abs(size.getY()),Math.abs(size.getZ()));
+        this.data = new BlockData[this.size.getX()][this.size.getY()][this.size.getZ()];
         this.relative = relative;
     }
 
-    public void setRelativeVector(BlockVector3 relative)
+    public void setRelativeVector(Vector3i relative)
     {
         this.relative = relative;
     }
 
     private Map<Byte,BlockType> mappedMaterials;
 
-    public void applyToWorld(World world, BlockVector3 relative)
+    public void applyToWorld(World world, Vector3i relative)
     {
         relative = relative.add(this.relative);
-        for (int y = 0; y < this.size.y; ++y)
+        for (int y = 0; y < this.size.getY(); ++y)
         {
-            for (int z = 0; z < this.size.z; ++z)
+            for (int z = 0; z < this.size.getZ(); ++z)
             {
-                for (int x = 0; x < this.size.x; ++x)
+                for (int x = 0; x < this.size.getX(); ++x)
                 {
                     /* TODO
                     BlockData blockData = this.data[x][y][z];
-                    BlockState state = world.getBlock(relative.x + x, relative.y + y, relative.z + z);
+                    BlockState state = world.getBlock(relative.getX() + x, relative.getY() + y, relative.getZ() + z);
                     state.setType(blockData.material);
                     state.setRawData(blockData.data);
                     state.update(true,false);
@@ -116,7 +117,7 @@ public class CuboidBlockClipboard
         private DataContainer dataContainer;
         public BlockType material;
 
-        public BlockData(Location block, BlockVector3 relative)
+        public BlockData(Location block, Vector3i relative)
         {
             this.material = block.getBlockType();
             this.dataContainer = block.toContainer();
@@ -135,30 +136,30 @@ public class CuboidBlockClipboard
         public Node toNode(CuboidBlockClipboard object, ConverterManager manager) throws ConversionException
         {
             MapNode result = MapNode.emptyMap();
-            result.set("width", new IntNode(object.size.x));
-            result.set("height", new IntNode(object.size.y));
-            result.set("length", new IntNode(object.size.z));
+            result.set("width", new IntNode(object.size.getX()));
+            result.set("height", new IntNode(object.size.getY()));
+            result.set("length", new IntNode(object.size.getZ()));
             if (object.relative != null)
             {
                 MapNode relative = MapNode.emptyMap();
                 result.set("relative", relative);
-                relative.set("x", new IntNode(object.relative.x));
-                relative.set("y", new IntNode(object.relative.y));
-                relative.set("z", new IntNode(object.relative.z));
+                relative.set("x", new IntNode(object.relative.getX()));
+                relative.set("y", new IntNode(object.relative.getY()));
+                relative.set("z", new IntNode(object.relative.getZ()));
             }
             ListNode tileEntities = ListNode.emptyList();
             result.set("tileentities", tileEntities);
             Map<BlockType,Byte> materials = new HashMap<>();
             object.mappedMaterials = new HashMap<>();
-            Byte[] blocks = new Byte[object.size.x * object.size.y * object.size.z];
-            Byte[] bData = new Byte[object.size.x * object.size.y * object.size.z];
+            Byte[] blocks = new Byte[object.size.getX() * object.size.getY() * object.size.getZ()];
+            Byte[] bData = new Byte[object.size.getX() * object.size.getY() * object.size.getZ()];
             int i = 0;
             byte lastBdata = 0;
-            for (int y = 0; y < object.size.y; ++y)
+            for (int y = 0; y < object.size.getY(); ++y)
             {
-                for (int z = 0; z < object.size.z; ++z)
+                for (int z = 0; z < object.size.getZ(); ++z)
                 {
-                    for (int x = 0; x < object.size.x; ++x)
+                    for (int x = 0; x < object.size.getX(); ++x)
                     {
                         BlockData curData = object.data[x][y][z];
                         Byte block = materials.get(curData.material);
@@ -210,7 +211,7 @@ public class CuboidBlockClipboard
                             if (listedNode instanceof MapNode)
                             {
                                 Map<String, Node> teData = ((MapNode)listedNode).getValue();
-                                BlockVector3 vector = new BlockVector3(((IntNode)teData.get("x")).getValue(),
+                                Vector3i vector = new Vector3i(((IntNode)teData.get("x")).getValue(),
                                                                        ((IntNode)teData.get("y")).getValue(),
                                                                        ((IntNode)teData.get("z")).getValue());
                                // TODO NBTTagCompound tileTag = (NBTTagCompound)NBTUtils.convertNodeToNBT(listedNode);
@@ -227,16 +228,16 @@ public class CuboidBlockClipboard
                             }
                         }
                     }
-                    BlockVector3 relative = null;
+                    Vector3i relative = null;
                     if (mappedNodes.containsKey("relative"))
                     {
                         MapNode relativeMap = (MapNode)mappedNodes.get("relative");
                         int x = (Integer)relativeMap.getValue().get("x").getValue();
                         int y = (Integer)relativeMap.getValue().get("y").getValue();
                         int z = (Integer)relativeMap.getValue().get("z").getValue();
-                        relative = new BlockVector3(x,y,z);
+                        relative = new Vector3i(x,y,z);
                     }
-                    CuboidBlockClipboard result = new CuboidBlockClipboard(new BlockVector3(width, height, length),relative);
+                    CuboidBlockClipboard result = new CuboidBlockClipboard(new Vector3i(width, height, length),relative);
                     int i = 0;
                     for (int y = 0; y < height; ++y)
                     {
@@ -252,7 +253,7 @@ public class CuboidBlockClipboard
                     }
                     // TODO  for (Entry<BlockVector3, NBTTagCompound> entry : tileEntities.entrySet())
                     {
-                        // TODO       result.data[entry.getKey().x][entry.getKey().y][entry.getKey().z].nbt = entry.getValue();
+                        // TODO       result.data[entry.getKey().getX()][entry.getKey().getY()][entry.getKey().getZ()].nbt = entry.getValue();
                     }
                     return result;
                 }

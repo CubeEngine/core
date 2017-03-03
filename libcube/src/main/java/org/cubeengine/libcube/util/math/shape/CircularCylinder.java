@@ -17,16 +17,16 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import org.cubeengine.libcube.util.math.Vector3;
+import com.flowpowered.math.vector.Vector3d;
 
 public class CircularCylinder extends Cylinder
 {
-    public CircularCylinder( Vector3 point, double radius, double height )
+    public CircularCylinder( Vector3d point, double radius, double height )
     {
         super( point, radius, radius, height );
     }
 
-    public CircularCylinder( Vector3 point, double radius, double height, Vector3 centerOfRadius, Vector3 rotationAngle )
+    public CircularCylinder( Vector3d point, double radius, double height, Vector3d centerOfRadius, Vector3d rotationAngle )
     {
         super( point, radius, radius, height, centerOfRadius, rotationAngle );
     }
