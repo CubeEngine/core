@@ -60,7 +60,10 @@ public interface Selector
      * @param user the user
      * @return the first selected position
      */
-    Location<World> getFirstPoint(Player user);
+    default Location<World> getFirstPoint(Player user)
+    {
+        return this.getPoint(user, 1);
+    }
 
     /**
      * Gets the second position
@@ -68,7 +71,10 @@ public interface Selector
      * @param user the user
      * @return the second selected position
      */
-    Location<World> getSecondPoint(Player user);
+    default Location<World> getSecondPoint(Player user)
+    {
+        return this.getPoint(user, 1);
+    }
 
     /**
      * Gets the n-th position in the current shape
@@ -78,4 +84,15 @@ public interface Selector
      * @return the Location
      */
     Location<World> getPoint(Player user, int index);
+
+    default void setFirstPoint(Player user, Location<World> loc)
+    {
+        setPoint(user, 0, loc);
+    }
+    default void setSecondPoint(Player user, Location<World> loc)
+    {
+        setPoint(user, 1, loc);
+    }
+
+    void setPoint(Player user, int index, Location<World> loc);
 }

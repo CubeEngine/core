@@ -217,7 +217,8 @@
                             <exclude>com.google.code.findbugs:*</exclude>
                             <exclude>com.google.inject:*</exclude>
                             <exclude>ninja.leaping.configurate:*</exclude>
-                            <exclude>com.flowpowered:*</exclude>
+                            <exclude>com.flowpowered.math:*</exclude>
+                            <exclude>com.flowpowered.noise:*</exclude>
                             <exclude>org.ow2.asm:*</exclude>
                             <exclude>org.spongepowered:*</exclude>
                             <exclude>javax.persistence:*</exclude>
