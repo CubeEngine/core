@@ -71,7 +71,7 @@ public class CubeEnginePlugin
     @Inject private org.slf4j.Logger pluginLogger;
     @ConfigDir(sharedRoot = false) @Inject File dataFolder;
 
-    private final Modularity modularity = newModularity();
+    private Modularity modularity;
 
     @Listener
     public void preInit(GamePreInitializationEvent event)
@@ -105,6 +105,8 @@ public class CubeEnginePlugin
         }
         catch (IOException e)
         {}
+
+        modularity = newModularity(new SpongePluginModularity(pluginLogger));
 
         modularity.register(PluginContainer.class, instance);
         modularity.register(Game.class, game);
