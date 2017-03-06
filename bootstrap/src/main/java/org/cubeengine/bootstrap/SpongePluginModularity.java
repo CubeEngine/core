@@ -35,4 +35,10 @@ public class SpongePluginModularity extends BasicModularity
     {
         this.pluginLogger.info(message);
     }
+
+    @Override
+    public void logError(String message, Throwable t)
+    {
+        this.pluginLogger.error(message, t);
+    }
 }

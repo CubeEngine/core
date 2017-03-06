@@ -55,7 +55,7 @@ public class SpongeLogFactory extends DefaultLogFactory
 
         // configure console logger
         baseTarget = new Log4jProxyTarget((Logger)LogManager.getLogger("CubeEngine"));
-        baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+        // Sponge is already adding this baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
         baseTarget.setLevel((config.consoleLevel));
 
         // create main logger and attach console logger

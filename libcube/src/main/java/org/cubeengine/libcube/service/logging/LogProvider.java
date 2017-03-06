@@ -32,6 +32,7 @@ import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ValueProvider;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.graph.meta.ServiceImplementationMetadata;
+import de.cubeisland.engine.modularity.core.graph.meta.ServiceProviderMetadata;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
 @Provider(Log.class)
@@ -66,7 +67,7 @@ public class LogProvider implements ValueProvider<Log>
         else
         {
             String name = lifeCycle.getInformation().getIdentifier().name();
-            if (lifeCycle.getInformation() instanceof ServiceImplementationMetadata)
+            if (lifeCycle.getInformation() instanceof ServiceImplementationMetadata || lifeCycle.getInformation() instanceof ServiceProviderMetadata)
             {
                 try
                 {
