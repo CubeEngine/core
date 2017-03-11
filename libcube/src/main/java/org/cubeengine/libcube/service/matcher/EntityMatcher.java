@@ -22,6 +22,9 @@ import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import org.cubeengine.libcube.service.config.EntityTypeConverter;
+import org.cubeengine.libcube.service.config.ItemTypeConverter;
+import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
@@ -29,6 +32,7 @@ import org.spongepowered.api.entity.living.Villager;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
 import org.spongepowered.api.entity.projectile.Projectile;
+import org.spongepowered.api.item.ItemType;
 
 /**
  * This Matcher provides methods to match Entities.
@@ -43,7 +47,7 @@ public class EntityMatcher
     private StringMatcher stringMatcher;
 
     @Inject
-    public EntityMatcher(Game game, StringMatcher stringMatcher)
+    public EntityMatcher(Game game, StringMatcher stringMatcher, Reflector reflector)
     {
         this.game = game;
         this.stringMatcher = stringMatcher;
@@ -52,6 +56,7 @@ public class EntityMatcher
             ids.put(type.getName().toLowerCase(), type);
             translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
         }
+        reflector.getDefaultConverterManager().registerConverter(new EntityTypeConverter(), EntityType.class);
     }
 
     /**
