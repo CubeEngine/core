@@ -36,20 +36,26 @@ import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENC
 @ServiceProvider(EnchantMatcher.class)
 public class EnchantMatcher
 {
-    private final HashMap<String, Enchantment> spongeNames;
-    private StringMatcher stringMatcher;
+    private final HashMap<String, Enchantment> names = new HashMap<>();
+    private final HashMap<String, Enchantment> ids = new HashMap<>();
+    private StringMatcher sm;
 
     @Inject
     public EnchantMatcher(Reflector reflector, StringMatcher stringMatcher)
     {
         reflector.getDefaultConverterManager().registerConverter(new EnchantmentConverter(this), Enchantment.class);
 
-        this.stringMatcher = stringMatcher;
-        this.spongeNames = new HashMap<>();
+        this.sm = stringMatcher;
         for (Enchantment enchantment : Sponge.getRegistry().getAllOf(Enchantment.class))
         {
-            this.spongeNames.put(enchantment.getName(), enchantment);
+            this.ids.put(enchantment.getName(), enchantment);
+            if (enchantment.getName().startsWith("minecraft:"))
+            {
+                this.ids.put(enchantment.getName().substring(9), enchantment);
+            }
+            this.names.put(enchantment.getTranslation().get(), enchantment);
         }
+
     }
 
     /**
@@ -60,8 +66,12 @@ public class EnchantMatcher
      */
     public Enchantment enchantment(String s)
     {
-        String match = stringMatcher.matchString(s, spongeNames.keySet());
-        return spongeNames.get(match);
+        String match = sm.matchString(s, names.keySet());
+        if (match != null)
+        {
+            return names.get(match);
+        }
+        return ids.get(sm.matchString(s, ids.keySet()));
     }
 
     public boolean applyMatchedEnchantment(ItemStack item, String enchName, int enchStrength, boolean force)

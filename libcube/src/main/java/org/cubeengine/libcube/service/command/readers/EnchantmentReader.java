@@ -61,7 +61,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     {
         List<Text> enchantments = registry.getAllOf(Enchantment.class).stream()
                                           .filter(e -> item == null || e.canBeAppliedToStack(item))
-                                          .map(e -> Text.of(YELLOW, e.getName()).toBuilder() // TODO getTranslation
+                                          .map(e -> Text.of(YELLOW, e.getTranslation().get().replace(" ", "")).toBuilder() // TODO getTranslation
                                                     .onHover(showText(Text.of(YELLOW, e.getId()))).build())
                                           .collect(Collectors.toList());
         if (enchantments.isEmpty())
