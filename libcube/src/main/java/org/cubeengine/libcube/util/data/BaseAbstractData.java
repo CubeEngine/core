@@ -70,7 +70,7 @@ abstract class BaseAbstractData<C extends ValueContainer<C>, T extends BaseValue
         {
             return Optional.empty();
         }
-        return Optional.of((E)this.getters.get(key).get());
+        return Optional.ofNullable((E)this.getters.get(key).get());
     }
 
     @Override
