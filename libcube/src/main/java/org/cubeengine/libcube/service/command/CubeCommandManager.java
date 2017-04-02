@@ -19,8 +19,10 @@ package org.cubeengine.libcube.service.command;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +39,8 @@ import de.cubeisland.engine.modularity.core.PostInjectionHandler;
 import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
 import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
 import de.cubeisland.engine.modularity.core.marker.Enable;
+import org.cubeengine.butler.alias.AliasConfiguration;
+import org.cubeengine.butler.alias.AliasDescriptor;
 import org.cubeengine.libcube.service.command.readers.BlockTypeReader;
 import org.cubeengine.libcube.service.command.readers.ItemTypeReader;
 import org.cubeengine.reflect.Reflector;
@@ -286,20 +290,35 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
 
         boolean b = super.addCommand(command);
 
-        Optional<CommandMapping> mapping = registerSpongeCommand(command.getDescriptor().getName());
-        if (mapping.isPresent())
+        if (!(command instanceof AliasCommand) || ((AliasDescriptor) command.getDescriptor()).mainDescriptor().getDispatcher() != this)
         {
-            mappings.put(command, mapping.get());
-            commandLogger.info("Registered command: " + mapping.get().getPrimaryAlias());
-            return b;
+            Optional<CommandMapping> mapping = registerSpongeCommand(command.getDescriptor());
+            if (mapping.isPresent())
+            {
+                mappings.put(command, mapping.get());
+                commandLogger.debug("Registered command: " + mapping.get().getPrimaryAlias());
+                return b;
+            }
+            commandLogger.warn("Command was not registered successfully!");
         }
-        commandLogger.warn("Command was not registered successfully!");
         return b;
     }
 
-    private Optional<CommandMapping> registerSpongeCommand(String name)
+    private Optional<CommandMapping> registerSpongeCommand(CommandDescriptor descriptor)
     {
-        return baseDispatcher.register(plugin, new ProxyCallable(this, name, logger), name);
+        ArrayList<String> aliasList = new ArrayList<>();
+        aliasList.add(descriptor.getName());
+        for (AliasConfiguration alias : descriptor.getAliases())
+        {
+            if ((alias.getDispatcher() != null && alias.getDispatcher().length == 0)
+                    && (alias.getPrefix() == null || alias.getPrefix().isEmpty())
+                    && (alias.getSuffix() == null || alias.getSuffix().isEmpty()))
+            {
+                aliasList.add(alias.getName());
+            }
+        }
+
+        return baseDispatcher.register(plugin, new ProxyCallable(this, descriptor.getName(), logger), aliasList);
     }
 
     @Override

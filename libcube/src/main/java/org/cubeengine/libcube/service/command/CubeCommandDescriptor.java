@@ -17,14 +17,12 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.parameter.GroupParser;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
 import org.cubeengine.libcube.service.command.property.RawPermission;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
-import org.spongepowered.api.service.permission.PermissionDescription;
 
 public class CubeCommandDescriptor extends ParametricCommandDescriptor implements CubeDescriptor
 {
@@ -95,11 +93,5 @@ public class CubeCommandDescriptor extends ParametricCommandDescriptor implement
     public boolean isCheckPerm()
     {
         return checkPerm;
-    }
-
-    @Override
-    public void setDispatcher(Dispatcher dispatcher)
-    {
-        super.setDispatcher(dispatcher);
     }
 }
