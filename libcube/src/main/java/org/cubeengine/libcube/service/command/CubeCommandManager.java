@@ -310,7 +310,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         aliasList.add(descriptor.getName());
         for (AliasConfiguration alias : descriptor.getAliases())
         {
-            if ((alias.getDispatcher() != null && alias.getDispatcher().length == 0)
+            if ( (alias.getDispatcher() == null || (alias.getDispatcher() != null && alias.getDispatcher().length == 0))
                     && (alias.getPrefix() == null || alias.getPrefix().isEmpty())
                     && (alias.getSuffix() == null || alias.getSuffix().isEmpty()))
             {
