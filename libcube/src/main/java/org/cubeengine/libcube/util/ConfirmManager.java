@@ -57,7 +57,7 @@ public class ConfirmManager
         confirm = confirm.toBuilder().color(TextColors.GOLD).onClick(TextActions.executeCallback(s -> confirm(i18n, source, uuid, run))).build();
         cancel = cancel.toBuilder().color(TextColors.GOLD).onClick(TextActions.executeCallback(s -> cancel(i18n, source, uuid))).build();
         times.put(uuid, System.currentTimeMillis());
-        source.sendMessage(msg.toBuilder().append(confirm).append(Text.of(" ")).append(cancel).build());
+        source.sendMessage(msg.toBuilder().append(Text.of(" ")).append(confirm).append(Text.of(" ")).append(cancel).build());
     }
 
     private static void confirm(I18n i18n, CommandSource source, UUID uuid, Runnable run)
