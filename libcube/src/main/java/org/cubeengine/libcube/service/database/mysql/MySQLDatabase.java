@@ -52,8 +52,7 @@ import org.cubeengine.libcube.service.database.TableCreator;
 import org.cubeengine.libcube.service.database.TableUpdateCreator;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.logging.LoggingUtil;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.conf.MappedSchema;
 import org.jooq.conf.MappedTable;
 import org.jooq.conf.RenderMapping;
@@ -61,6 +60,7 @@ import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
+import org.jooq.impl.DefaultVisitListenerProvider;
 
 @ServiceImpl(Database.class)
 @de.cubeisland.engine.modularity.asm.marker.Version(1)
@@ -258,8 +258,13 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
     @Override
     public DSLContext getDSL()
     {
-        return DSL.using(new DefaultConfiguration().set(SQLDialect.MYSQL).set(new DataSourceConnectionProvider(
-            this.dataSource)).set(jooqLogger).set(settings));
+        Configuration conf = new DefaultConfiguration()
+                .set(SQLDialect.MYSQL)
+                .set(new DataSourceConnectionProvider(this.dataSource))
+                .set(jooqLogger)
+                .set(settings)
+                .set(new DefaultVisitListenerProvider(new TablePrefixer(getTablePrefix())));
+        return DSL.using(conf);
     }
 
     @Override
