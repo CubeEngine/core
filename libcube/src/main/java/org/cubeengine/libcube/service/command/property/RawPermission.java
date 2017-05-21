@@ -29,7 +29,7 @@ public class RawPermission
 
     public RawPermission(String permission, String description)
     {
-        this.name = permission;
+        this.name = permission.toLowerCase();
         this.description = description;
     }
 
