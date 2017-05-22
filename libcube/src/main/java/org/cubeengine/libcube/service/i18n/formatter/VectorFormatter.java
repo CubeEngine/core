@@ -36,8 +36,8 @@ public class VectorFormatter extends ReflectedFormatter
     @Format
     public Component format(Vector2i v, Context context)
     {
-        String arg0 = context.getFlag(0);
-        String arg1 = context.getFlag(1);
+        String arg0 = context.get(0);
+        String arg1 = context.get(1);
         if (arg0 != null && arg1 != null)
         {
             return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
@@ -58,9 +58,9 @@ public class VectorFormatter extends ReflectedFormatter
     @Format
     public Component format(Vector3i v, Context context)
     {
-        String arg0 = context.getFlag(0);
-        String arg1 = context.getFlag(1);
-        String arg2 = context.getFlag(2);
+        String arg0 = context.get(0);
+        String arg1 = context.get(1);
+        String arg2 = context.get(2);
         if (arg0 != null && arg1 != null && arg2 != null)
         {
             return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),
@@ -86,9 +86,9 @@ public class VectorFormatter extends ReflectedFormatter
     @Format
     public Component format(Vector3d v, Context context)
     {
-        String arg0 = context.getFlag(0);
-        String arg1 = context.getFlag(1);
-        String arg2 = context.getFlag(2);
+        String arg0 = context.get(0);
+        String arg1 = context.get(1);
+        String arg2 = context.get(2);
         if (arg0 != null && arg1 != null && arg2 != null)
         {
             return new ChainedComponent(new StyledComponent(DARK_AQUA, "["),

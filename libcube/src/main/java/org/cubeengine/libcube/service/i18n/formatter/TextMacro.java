@@ -31,7 +31,7 @@ public class TextMacro extends ConstantFormatter
     @Override
     public Component format(Context context)
     {
-        return new Text(context.getFlag(0));
+        return new Text(context.get(0));
     }
 
     @Override
