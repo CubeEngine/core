@@ -22,12 +22,16 @@ import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
+import org.cubeengine.dirigent.parser.component.Text;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.text.format.TextColors;
 
-@Names({"amount", "integer", "long", "short"})
-public class IntegerFormatter extends ReflectedFormatter
-{
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+
+@Names({"amount", "integer", "long", "short", "decimal"})
+public class NumberFormatter extends ReflectedFormatter {
+
     @Format
     public Component format(Integer i, Context context)
     {
@@ -44,5 +48,37 @@ public class IntegerFormatter extends ReflectedFormatter
     public Component format(Short s, Context context)
     {
         return new StyledComponent(TextColors.GOLD, String.valueOf(s));
+    }
+
+    @Format
+    public Component format(Double d, Context context)
+    {
+        return formatDecimal(d, context);
+    }
+
+    @Format
+    public Component format(Float f, Context context)
+    {
+        return formatDecimal(f, context);
+    }
+
+    @Format
+    public Component format(BigDecimal bd, Context context)
+    {
+        return formatDecimal(bd, context);
+    }
+
+    public Component formatDecimal(Number number, Context context)
+    {
+        NumberFormat format = NumberFormat.getInstance(context.getLocale());
+        String arg = context.get(0);
+        if (arg == null)
+        {
+            return new Text(format.format(number));
+        }
+        Integer decimalPlaces = Integer.valueOf(arg);
+        format.setMaximumFractionDigits(decimalPlaces);
+        format.setMinimumFractionDigits(decimalPlaces);
+        return new Text(format.format(number));
     }
 }
