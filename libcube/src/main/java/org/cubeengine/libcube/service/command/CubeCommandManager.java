@@ -48,7 +48,7 @@ import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.DispatcherCommand;
-import org.cubeengine.butler.provider.ProviderManager;
+import org.cubeengine.butler.provider.Providers;
 import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.builder.CommandBuilder;
 import org.cubeengine.butler.parametric.InvokableMethod;
@@ -131,7 +131,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     }
 
     private final Log commandLogger;
-    private final ProviderManager providerManager;
+    private final Providers providers;
     private final org.spongepowered.api.command.CommandManager baseDispatcher;
 
     public Object getPlugin()
@@ -170,17 +170,17 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         this.plugin = modularity.provide(PluginContainer.class).getInstance().get();
         this.baseDispatcher = getGame().getCommandManager();
 
-        this.providerManager = new ProviderManager();
-        this.providerManager.registerBuilder(InvokableMethod.class, new ParametricCommandBuilder(i18n));
+        this.providers = new Providers();
+        this.providers.registerBuilder(InvokableMethod.class, new ParametricCommandBuilder(i18n));
 
         this.commandLogger = logFactory.getLog(CommandManager.class, "Commands");
 
-        providerManager.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(logger));
-        providerManager.getExceptionHandler().addHandler(new CommandExceptionHandler(logger, i18n));
-        providerManager.getExceptionHandler().addHandler(new UnknownExceptionHandler(logger, i18n));
+        providers.getExceptionHandler().addHandler(new UnknownSourceExceptionHandler(logger));
+        providers.getExceptionHandler().addHandler(new CommandExceptionHandler(logger, i18n));
+        providers.getExceptionHandler().addHandler(new UnknownExceptionHandler(logger, i18n));
 
-        providerManager.register(this, new CommandContextValue(i18n), CommandContext.class);
-        providerManager.register(this, new LocaleContextValue(i18n), Locale.class);
+        providers.register(this, new CommandContextValue(i18n), CommandContext.class);
+        providers.register(this, new LocaleContextValue(i18n), Locale.class);
 
         modularity.registerPostInjectAnnotation(ModuleCommand.class, this);
         modularity.registerHandler(this);
@@ -189,39 +189,39 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     @Enable
     public void enable()
     {
-        providerManager.register(CommandManager.class, new PlayerCompleter(), User.class);
-        providerManager.register(CommandManager.class, new PlayerListCompleter(getGame()), PlayerListCompleter.class);
+        providers.register(CommandManager.class, new PlayerCompleter(), User.class);
+        providers.register(CommandManager.class, new PlayerListCompleter(getGame()), PlayerListCompleter.class);
 
-        providerManager.register(CommandManager.class, new ByteParser(i18n), Byte.class, byte.class);
-        providerManager.register(CommandManager.class, new ShortParser(i18n), Short.class, short.class);
-        providerManager.register(CommandManager.class, new IntParser(i18n), Integer.class, int.class);
-        providerManager.register(CommandManager.class, new LongParser(i18n), Long.class, long.class);
-        providerManager.register(CommandManager.class, new FloatParser(i18n), Float.class, float.class);
-        providerManager.register(CommandManager.class, new DoubleParser(i18n), Double.class, double.class);
+        providers.register(CommandManager.class, new ByteParser(i18n), Byte.class, byte.class);
+        providers.register(CommandManager.class, new ShortParser(i18n), Short.class, short.class);
+        providers.register(CommandManager.class, new IntParser(i18n), Integer.class, int.class);
+        providers.register(CommandManager.class, new LongParser(i18n), Long.class, long.class);
+        providers.register(CommandManager.class, new FloatParser(i18n), Float.class, float.class);
+        providers.register(CommandManager.class, new DoubleParser(i18n), Double.class, double.class);
 
-        providerManager.register(CommandManager.class, new BooleanParser(i18n), Boolean.class, boolean.class);
-        providerManager.register(CommandManager.class, new EnchantmentParser(enchantMatcher, getGame(), i18n), Enchantment.class);
-        providerManager.register(CommandManager.class, new ItemStackParser(materialMatcher, i18n), ItemStack.class);
-        providerManager.register(CommandManager.class, new ItemTypeParser(i18n), ItemType.class);
-        providerManager.register(CommandManager.class, new BlockTypeParser(i18n), BlockType.class);
-        providerManager.register(CommandManager.class, new CommandSourceParser(), CommandSource.class, Player.class);
-        providerManager.register(CommandManager.class, new WorldParser(i18n), World.class);
-        providerManager.register(CommandManager.class, new WorldPropertiesParser(i18n), WorldProperties.class);
-        providerManager.register(CommandManager.class, new EntityTypeParser(entityMatcher), EntityType.class);
+        providers.register(CommandManager.class, new BooleanParser(i18n), Boolean.class, boolean.class);
+        providers.register(CommandManager.class, new EnchantmentParser(enchantMatcher, getGame(), i18n), Enchantment.class);
+        providers.register(CommandManager.class, new ItemStackParser(materialMatcher, i18n), ItemStack.class);
+        providers.register(CommandManager.class, new ItemTypeParser(i18n), ItemType.class);
+        providers.register(CommandManager.class, new BlockTypeParser(i18n), BlockType.class);
+        providers.register(CommandManager.class, new CommandSourceParser(), CommandSource.class, Player.class);
+        providers.register(CommandManager.class, new WorldParser(i18n), World.class);
+        providers.register(CommandManager.class, new WorldPropertiesParser(i18n), WorldProperties.class);
+        providers.register(CommandManager.class, new EntityTypeParser(entityMatcher), EntityType.class);
 
-        providerManager.register(CommandManager.class, new DyeColorParser(materialDataMatcher), DyeColor.class);
-        providerManager.register(CommandManager.class, new ProfessionParser(professionMatcher), Profession.class);
-        providerManager.register(CommandManager.class, new UserParser(i18n, um), User.class);
-        providerManager.register(CommandManager.class, new FindUserParser(i18n, um));
-        providerManager.register(CommandManager.class, new DimensionTypeParser(), DimensionType.class);
-        providerManager.register(CommandManager.class, new GameModeParser(), GameMode.class);
-        providerManager.register(CommandManager.class, new DifficultyParser(i18n), Difficulty.class);
-        providerManager.register(CommandManager.class, new GeneratorTypeParser(), GeneratorType.class);
-        providerManager.register(CommandManager.class, new LogLevelParser(i18n), LogLevel.class);
+        providers.register(CommandManager.class, new DyeColorParser(materialDataMatcher), DyeColor.class);
+        providers.register(CommandManager.class, new ProfessionParser(professionMatcher), Profession.class);
+        providers.register(CommandManager.class, new UserParser(i18n, um), User.class);
+        providers.register(CommandManager.class, new FindUserParser(i18n, um));
+        providers.register(CommandManager.class, new DimensionTypeParser(), DimensionType.class);
+        providers.register(CommandManager.class, new GameModeParser(), GameMode.class);
+        providers.register(CommandManager.class, new DifficultyParser(i18n), Difficulty.class);
+        providers.register(CommandManager.class, new GeneratorTypeParser(), GeneratorType.class);
+        providers.register(CommandManager.class, new LogLevelParser(i18n), LogLevel.class);
 
-        providerManager.register(CommandManager.class, new UserListParser(getGame()), PlayerList.class);
+        providers.register(CommandManager.class, new UserListParser(getGame()), PlayerList.class);
 
-        providerManager.register(CommandManager.class, new ContextParser(), Context.class);
+        providers.register(CommandManager.class, new ContextParser(), Context.class);
 
 
         Sponge.getEventManager().registerListeners(getPluginManager().getPlugin("cubeengine").get().getInstance().get(), new PreCommandListener(i18n, stringMatcher));
@@ -234,9 +234,9 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     }
 
     @Override
-    public ProviderManager getProviderManager()
+    public Providers getProviders()
     {
-        return providerManager;
+        return providers;
     }
 
     @Override
@@ -319,7 +319,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         checkArgument(isMainThread(), "Commands may only be called synchronously!");
         if (sender == null)
         {
-            return execute(new CommandInvocation(null, commandLine, providerManager));
+            return execute(new CommandInvocation(null, commandLine, providers));
         }
         return baseDispatcher.process(sender, commandLine).getSuccessCount().isPresent();
     }
@@ -378,7 +378,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         dispatcher = new OwnedDispatcher(dispatcher, owner);
         for (Method method : ParametricBuilder.getMethods(commandHolder.getClass()))
         {
-            CommandBuilder<InvokableMethod> builder = getProviderManager().getBuilder(InvokableMethod.class);
+            CommandBuilder<InvokableMethod> builder = getProviders().getBuilder(InvokableMethod.class);
             CommandBase cmd = builder.buildCommand(dispatcher, new InvokableMethod(method, commandHolder));
             if (cmd != null)
             {

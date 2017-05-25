@@ -99,7 +99,7 @@ public class PlayerList
                 invocation.consume(1);
                 return new PlayerList(null);
             }
-            return new PlayerList((List<Player>)invocation.getManager().read(List.class, User.class, invocation));
+            return new PlayerList((List<Player>)invocation.providers().read(List.class, User.class, invocation));
         }
 
         @Override

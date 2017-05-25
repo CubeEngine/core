@@ -137,7 +137,7 @@ public class ProxyCallable implements CommandCallable
 
     private CommandInvocation newInvocation(CommandSource source, String commandLine)
     {
-        return new CommandInvocation(source, commandLine, manager.getProviderManager());
+        return new CommandInvocation(source, commandLine, manager.getProviders());
     }
 
     public String getAlias()

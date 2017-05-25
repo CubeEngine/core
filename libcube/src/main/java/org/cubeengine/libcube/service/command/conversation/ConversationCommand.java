@@ -76,7 +76,7 @@ public abstract class ConversationCommand extends ContainerCommand
 
     private CommandInvocation newInvocation(CommandSource user, String message)
     {
-        return new CommandInvocation(user, message, getManager().getProviderManager());
+        return new CommandInvocation(user, message, getManager().getProviders());
     }
 
     @Listener

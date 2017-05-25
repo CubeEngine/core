@@ -60,7 +60,7 @@ public class FuzzyUserParser implements ArgumentParser<List<Player>>
         }
         if (invocation.currentToken().contains(","))
         {
-            ((List<List<Player>>)invocation.getManager().parsers().get(List.class).parse(FuzzyUserParser.class, invocation))
+            ((List<List<Player>>)invocation.providers().parsers().get(List.class).parse(FuzzyUserParser.class, invocation))
                 .forEach(users::addAll);
             return users;
         }
@@ -79,7 +79,7 @@ public class FuzzyUserParser implements ArgumentParser<List<Player>>
         }
         else
         {
-            users.add((Player)invocation.getManager().read(Player.class, Player.class, invocation));
+            users.add((Player)invocation.providers().read(Player.class, Player.class, invocation));
         }
         return users;
     }
