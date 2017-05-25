@@ -17,12 +17,10 @@
  */
 package org.cubeengine.libcube.service.command.completer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -42,7 +40,7 @@ public class PlayerCompleter implements Completer
     }
 
     @Override
-    public List<String> suggest(CommandInvocation invocation)
+    public List<String> suggest(Class type, CommandInvocation invocation)
     {
         Object sender = invocation.getCommandSource();
         boolean isCmdSource = sender instanceof CommandSource;

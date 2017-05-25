@@ -15,35 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.completer;
+package org.cubeengine.libcube.service.command.parser;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ParserException;
+import org.cubeengine.libcube.service.matcher.MaterialDataMatcher;
+import org.spongepowered.api.data.type.DyeColor;
 
-import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
-
-public abstract class SimpleCompleter implements Completer
+public class DyeColorParser implements ArgumentParser<DyeColor>
 {
-    private final String[] strings;
+    private MaterialDataMatcher matcher;
 
-    protected SimpleCompleter(String... strings)
+    public DyeColorParser(MaterialDataMatcher matcher)
     {
-        this.strings = strings;
+
+        this.matcher = matcher;
     }
 
     @Override
-    public List<String> suggest(Class type, CommandInvocation invocation)
+    public DyeColor parse(Class type, CommandInvocation invocation) throws ParserException
     {
-        List<String> offers = new ArrayList<>();
-        for (String string : this.strings)
-        {
-            if (startsWithIgnoreCase(string, invocation.currentToken()))
-            {
-                offers.add(string);
-            }
-        }
-        return offers;
+        return matcher.colorData(invocation.consume(1));
     }
 }

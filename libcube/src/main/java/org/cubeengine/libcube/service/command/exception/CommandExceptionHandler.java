@@ -28,7 +28,7 @@ import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.filter.RestrictedSourceException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.TooManyArgumentsException;
-import org.cubeengine.butler.parameter.argument.ReaderException;
+import org.cubeengine.butler.parameter.argument.ParserException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.command.CommandSource;
 
@@ -84,9 +84,9 @@ public class CommandExceptionHandler implements PriorityExceptionHandler
             i18n.sendTranslated(sender, NEGATIVE, "You've given too many arguments.");
             i18n.sendTranslated(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
         }
-        else if (t instanceof ReaderException)
+        else if (t instanceof ParserException)
         {
-            i18n.sendTranslated(sender, NEGATIVE, t.getMessage(), ((ReaderException)t).getArgs());
+            i18n.sendTranslated(sender, NEGATIVE, t.getMessage(), ((ParserException)t).getArgs());
         }
         else if (t instanceof RestrictedSourceException)
         {

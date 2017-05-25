@@ -15,23 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command;
+package org.cubeengine.libcube.service.command.parser;
 
-import org.cubeengine.butler.parameter.argument.ReaderException;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.DimensionTypes;
 
-public class TranslatedReaderException extends ReaderException
+public class DimensionTypeParser extends DefaultedCatalogTypeParser<DimensionType>
 {
-    private Text text;
-
-    public TranslatedReaderException(Text text)
+    public DimensionTypeParser()
     {
-        super(text.toPlain());
-        this.text = text;
-    }
-
-    public Text getText()
-    {
-        return text;
+        super(DimensionType.class, DimensionTypes.OVERWORLD);
     }
 }

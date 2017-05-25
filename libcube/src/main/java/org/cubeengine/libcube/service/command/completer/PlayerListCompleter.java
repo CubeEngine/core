@@ -35,7 +35,7 @@ public class PlayerListCompleter implements Completer
     }
 
     @Override
-    public List<String> suggest(CommandInvocation invocation)
+    public List<String> suggest(Class type, CommandInvocation invocation)
     {
         List<String> result = new ArrayList<>();
         String lastToken = invocation.currentToken();

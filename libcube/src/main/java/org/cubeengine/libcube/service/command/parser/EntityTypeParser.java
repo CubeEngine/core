@@ -15,35 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.completer;
+package org.cubeengine.libcube.service.command.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ParserException;
+import org.cubeengine.libcube.service.matcher.EntityMatcher;
+import org.spongepowered.api.entity.EntityType;
 
-import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
-
-public abstract class SimpleCompleter implements Completer
+public class EntityTypeParser implements ArgumentParser<EntityType>
 {
-    private final String[] strings;
 
-    protected SimpleCompleter(String... strings)
+    private EntityMatcher entityMatcher;
+
+    public EntityTypeParser(EntityMatcher entityMatcher)
     {
-        this.strings = strings;
+        this.entityMatcher = entityMatcher;
     }
 
     @Override
-    public List<String> suggest(Class type, CommandInvocation invocation)
+    public EntityType parse(Class type, CommandInvocation invocation) throws ParserException
     {
-        List<String> offers = new ArrayList<>();
-        for (String string : this.strings)
-        {
-            if (startsWithIgnoreCase(string, invocation.currentToken()))
-            {
-                offers.add(string);
-            }
-        }
-        return offers;
+        return entityMatcher.any(invocation.consume(1), invocation.getContext(Locale.class));
     }
 }

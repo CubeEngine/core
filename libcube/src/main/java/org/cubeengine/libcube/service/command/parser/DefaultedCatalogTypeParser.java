@@ -15,35 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.completer;
+package org.cubeengine.libcube.service.command.parser;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.spongepowered.api.CatalogType;
 
-import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
-
-public abstract class SimpleCompleter implements Completer
+public class DefaultedCatalogTypeParser<T extends CatalogType> extends CatalogTypeParser<T> implements DefaultValue<T>
 {
-    private final String[] strings;
+    private T defaultValue;
 
-    protected SimpleCompleter(String... strings)
+    public DefaultedCatalogTypeParser(Class<T> type, T defaultValue)
     {
-        this.strings = strings;
+        super(type);
+        this.defaultValue = defaultValue;
     }
 
     @Override
-    public List<String> suggest(Class type, CommandInvocation invocation)
+    public T getDefault(CommandInvocation commandInvocation)
     {
-        List<String> offers = new ArrayList<>();
-        for (String string : this.strings)
-        {
-            if (startsWithIgnoreCase(string, invocation.currentToken()))
-            {
-                offers.add(string);
-            }
-        }
-        return offers;
+        return defaultValue;
     }
 }

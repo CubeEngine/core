@@ -15,35 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.completer;
+package org.cubeengine.libcube.service.command.parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.spongepowered.api.entity.living.player.Player;
 
-import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
-
-public abstract class SimpleCompleter implements Completer
+public class UserListInSight implements DefaultValue<PlayerList>
 {
-    private final String[] strings;
-
-    protected SimpleCompleter(String... strings)
-    {
-        this.strings = strings;
-    }
-
     @Override
-    public List<String> suggest(Class type, CommandInvocation invocation)
+    public PlayerList getDefault(CommandInvocation invocation)
     {
-        List<String> offers = new ArrayList<>();
-        for (String string : this.strings)
+        if (invocation.getCommandSource() instanceof Player)
         {
-            if (startsWithIgnoreCase(string, invocation.currentToken()))
+            Player player = getFirstPlayerInSight(((Player)invocation.getCommandSource()));
+            if (player != null)
             {
-                offers.add(string);
+                return new PlayerList(Arrays.asList(player));
             }
         }
-        return offers;
+        return null;
+    }
+
+    private Player getFirstPlayerInSight(Player source)
+    {
+        // TODO wait for https://github.com/SpongePowered/SpongeAPI/issues/797
+        return null;
     }
 }

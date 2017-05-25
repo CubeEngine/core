@@ -38,7 +38,7 @@ public abstract class ListCompleter<T> implements Completer
     protected abstract String convertToString(T convertable);
 
     @Override
-    public List<String> suggest(CommandInvocation invocation)
+    public List<String> suggest(Class type, CommandInvocation invocation)
     {
         String token = invocation.currentToken();
         List<String> tokens = Arrays.asList(StringUtils.explode(",", token));
