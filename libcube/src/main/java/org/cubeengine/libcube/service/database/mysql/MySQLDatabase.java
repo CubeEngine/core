@@ -57,10 +57,7 @@ import org.jooq.conf.MappedSchema;
 import org.jooq.conf.MappedTable;
 import org.jooq.conf.RenderMapping;
 import org.jooq.conf.Settings;
-import org.jooq.impl.DSL;
-import org.jooq.impl.DataSourceConnectionProvider;
-import org.jooq.impl.DefaultConfiguration;
-import org.jooq.impl.DefaultVisitListenerProvider;
+import org.jooq.impl.*;
 
 @ServiceImpl(Database.class)
 @de.cubeisland.engine.modularity.asm.marker.Version(1)
@@ -261,7 +258,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         Configuration conf = new DefaultConfiguration()
                 .set(SQLDialect.MYSQL)
                 .set(new DataSourceConnectionProvider(this.dataSource))
-                .set(jooqLogger)
+                .set(new DefaultExecuteListenerProvider(jooqLogger))
                 .set(settings)
                 .set(new DefaultVisitListenerProvider(new TablePrefixer(getTablePrefix())));
         return DSL.using(conf);

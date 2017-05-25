@@ -8,32 +8,18 @@
         <version>2</version>
     </parent>
 
-    <groupId>org.cubeengine</groupId>
     <artifactId>bootstrap</artifactId>
     <name>CubeEngine</name>
     <version>1.0.1-SNAPSHOT</version>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
-        <minecraftVersion>1.8.3</minecraftVersion>
-        <java-version>1.8</java-version>
     </properties>
 
     <repositories>
         <repository>
             <id>cubeisland-repo</id>
             <url>https://repo.cubeengine.org</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

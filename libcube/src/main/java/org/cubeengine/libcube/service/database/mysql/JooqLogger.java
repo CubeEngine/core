@@ -19,11 +19,9 @@ package org.cubeengine.libcube.service.database.mysql;
 
 import org.cubeengine.libcube.service.database.Database;
 import org.jooq.ExecuteContext;
-import org.jooq.ExecuteListener;
-import org.jooq.ExecuteListenerProvider;
 import org.jooq.impl.DefaultExecuteListener;
 
-public class JooqLogger extends DefaultExecuteListener implements ExecuteListenerProvider
+public class JooqLogger extends DefaultExecuteListener
 {
     private Database database;
 
@@ -39,11 +37,5 @@ public class JooqLogger extends DefaultExecuteListener implements ExecuteListene
         {
             database.getLog().debug(ctx.query().getSQL());
         }
-    }
-
-    @Override
-    public ExecuteListener provide()
-    {
-        return this;
     }
 }

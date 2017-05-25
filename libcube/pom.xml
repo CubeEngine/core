@@ -8,7 +8,6 @@
         <version>2</version>
     </parent>
 
-    <groupId>org.cubeengine</groupId>
     <artifactId>libcube</artifactId>
     <name>LibCube</name>
     <description>Such Cube Very Lib Much Util Wow</description>
@@ -16,24 +15,13 @@
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
-        <minecraftVersion>1.8.3</minecraftVersion>
+        <minecraftVersion>1.11.2</minecraftVersion>
     </properties>
 
     <repositories>
         <repository>
             <id>cubeisland-repo</id>
             <url>https://repo.cubeengine.org</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -141,14 +129,14 @@
         <dependency>
             <groupId>org.ocpsoft.prettytime</groupId>
             <artifactId>prettytime</artifactId>
-            <version>3.2.7.Final</version>
+            <version>4.0.1.Final</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>3.5.3</version>
+            <version>3.9.2</version>
         </dependency>
 
         <!-- Test dependencies -->
@@ -162,14 +150,14 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.6</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.6</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -241,19 +229,6 @@
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>templating-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <id>filter-src</id>
-                        <goals>
-                            <goal>filter-sources</goal>
                         </goals>
                     </execution>
                 </executions>

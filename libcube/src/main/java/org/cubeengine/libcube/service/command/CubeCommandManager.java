@@ -270,12 +270,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     {
         if (command instanceof AliasCommand)
         {
-            Set<CommandBase> cmds = commands.get(((AliasCommand)command).getTarget());
-            if (cmds == null)
-            {
-                cmds = new HashSet<>();
-                commands.put(((AliasCommand)command).getTarget(), cmds);
-            }
+            Set<CommandBase> cmds = commands.computeIfAbsent(((AliasCommand) command).getTarget(), k -> new HashSet<>());
             cmds.add(command);
         }
         if (command.getDescriptor() instanceof CubeDescriptor)
@@ -309,9 +304,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         aliasList.add(descriptor.getName());
         for (AliasConfiguration alias : descriptor.getAliases())
         {
-            if ( (alias.getDispatcher() == null || (alias.getDispatcher() != null && alias.getDispatcher().length == 0))
-                    && (alias.getPrefix() == null || alias.getPrefix().isEmpty())
-                    && (alias.getSuffix() == null || alias.getSuffix().isEmpty()))
+            if ((alias.getDispatcher() == null || (alias.getDispatcher() != null && alias.getDispatcher().length == 0)))
             {
                 aliasList.add(alias.getName());
             }
@@ -326,7 +319,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         checkArgument(isMainThread(), "Commands may only be called synchronously!");
         if (sender == null)
         {
-            return execute(new CommandInvocation(sender, commandLine, providerManager));
+            return execute(new CommandInvocation(null, commandLine, providerManager));
         }
         return baseDispatcher.process(sender, commandLine).getSuccessCount().isPresent();
     }
