@@ -24,9 +24,10 @@ import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.Text;
+import org.cubeengine.libcube.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.text.translation.Translation;
 
-@Names({"name","input","message"})
+@Names({"name","input","message", "txt"})
 public class StringFormatter extends ReflectedFormatter
 {
     @Format
@@ -39,5 +40,11 @@ public class StringFormatter extends ReflectedFormatter
     public Component format(Translation translation, Context context)
     {
         return new Text(translation.get(context.getLocale()));
+    }
+
+    @Format
+    public Component format(org.spongepowered.api.text.Text text, Context context)
+    {
+        return new TextComponent(text);
     }
 }

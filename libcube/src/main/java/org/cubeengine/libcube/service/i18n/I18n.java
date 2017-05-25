@@ -69,7 +69,6 @@ import org.cubeengine.libcube.service.i18n.formatter.CommandSenderFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.ContextFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.NumberFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.StringFormatter;
-import org.cubeengine.libcube.service.i18n.formatter.TextFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.TextMacro;
 import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
@@ -146,7 +145,6 @@ public class I18n implements ModularityHandler
 
         compositor.registerFormatter(new WorldFormatter());
         compositor.registerFormatter(new StringFormatter());
-        compositor.registerFormatter(new TextFormatter());
         compositor.registerFormatter(new BooleanFormatter());
         compositor.registerFormatter(new NumberFormatter());
         compositor.registerFormatter(new CommandSenderFormatter());
