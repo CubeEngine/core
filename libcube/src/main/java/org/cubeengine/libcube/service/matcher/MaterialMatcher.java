@@ -19,6 +19,7 @@ package org.cubeengine.libcube.service.matcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -326,7 +327,9 @@ public class MaterialMatcher
 
     private Map<String, BlockState> buildBlockStateItems() {
         Map<String, BlockState> blockStateItems = new HashMap<>();
-        for (BlockState blockState : Sponge.getRegistry().getAllOf(BlockState.class))
+        Collection<BlockState> blocks = Sponge.getRegistry().getAllOf(BlockState.class);
+        System.out.println("Loading Names for " + blocks.size() + " Blockstates");
+        for (BlockState blockState : blocks)
         {
             try
             {
