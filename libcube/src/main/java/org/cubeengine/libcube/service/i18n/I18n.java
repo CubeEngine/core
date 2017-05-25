@@ -168,7 +168,7 @@ public class I18n implements ModularityHandler
             List<URL> urls = new ArrayList<>();
             for (String lang : langs.readLines())
             {
-                Optional<Asset> langAsset = getAssetManager().getAsset(plugin, "languages/" + lang + "yml");
+                Optional<Asset> langAsset = getAssetManager().getAsset(plugin, "languages/" + lang + ".yml");
                 if (langAsset.isPresent())
                 {
                     urls.add(langAsset.get().getUrl());
