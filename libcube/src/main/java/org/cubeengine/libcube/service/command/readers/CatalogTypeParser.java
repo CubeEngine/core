@@ -23,25 +23,23 @@ import java.util.List;
 import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.translation.Translatable;
 
-public abstract class CatalogTypeReader<T extends CatalogType> implements ArgumentReader<T>, Completer
+public abstract class CatalogTypeParser<T extends CatalogType> implements ArgumentParser<T>, Completer
 {
     private Class<T> type;
 
-    public CatalogTypeReader(Class<T> type)
+    public CatalogTypeParser(Class<T> type)
     {
         this.type = type;
     }
 
     @Override
-    public T read(Class type, CommandInvocation invocation) throws ReaderException
+    public T parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.currentToken();
         for (T cType : getAllOf())
@@ -71,7 +69,7 @@ public abstract class CatalogTypeReader<T extends CatalogType> implements Argume
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         List<String> list = new ArrayList<>();
         String token = invocation.currentToken().toLowerCase();

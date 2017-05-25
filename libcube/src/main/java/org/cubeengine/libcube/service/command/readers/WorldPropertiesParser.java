@@ -24,32 +24,32 @@ import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
 import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
 
-public class WorldReader implements ArgumentReader<World>, DefaultValue<World>, Completer
+public class WorldPropertiesParser implements ArgumentParser<WorldProperties>, DefaultValue<WorldProperties>, Completer
 {
-    private final I18n i18n;
+    private I18n i18n;
 
-    public WorldReader(I18n i18n)
+    public WorldPropertiesParser(I18n i18n)
     {
         this.i18n = i18n;
     }
 
     @Override
-    public World read(Class type, CommandInvocation invocation) throws ReaderException
+    public WorldProperties parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String name = invocation.consume(1);
-        Optional<World> world = Sponge.getServer().getWorld(name);
+        Optional<WorldProperties> world = Sponge.getServer().getWorldProperties(name);
         if (!world.isPresent())
         {
             throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
@@ -58,22 +58,22 @@ public class WorldReader implements ArgumentReader<World>, DefaultValue<World>, 
     }
 
     @Override
-    public World getDefault(CommandInvocation invocation)
+    public WorldProperties getDefault(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof Player)
         {
-            return ((Player)invocation.getCommandSource()).getWorld();
+            return ((Player)invocation.getCommandSource()).getWorld().getProperties();
         }
         throw new TooFewArgumentsException();
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         List<String> offers = new ArrayList<>();
-        for (World world : Sponge.getServer().getWorlds())
+        for (WorldProperties world : Sponge.getServer().getAllWorldProperties())
         {
-            final String name = world.getName();
+            final String name = world.getWorldName();
             if (startsWithIgnoreCase(name, invocation.currentToken()))
             {
                 offers.add(name);

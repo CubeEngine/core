@@ -24,19 +24,19 @@ import java.util.Locale;
 import java.util.Set;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 
 
-public class BooleanReader implements ArgumentReader<Boolean>, Completer, DefaultValue<Boolean>
+public class BooleanParser implements ArgumentParser<Boolean>, Completer, DefaultValue<Boolean>
 {
     private final Set<String> yesStrings;
     private final Set<String> noStrings;
     private final I18n i18n;
 
-    public BooleanReader(I18n i18n)
+    public BooleanParser(I18n i18n)
     {
         this.i18n = i18n;
         this.yesStrings = new HashSet<>();
@@ -53,7 +53,7 @@ public class BooleanReader implements ArgumentReader<Boolean>, Completer, Defaul
     }
 
     @Override
-    public Boolean read(Class type, CommandInvocation invocation) throws ReaderException
+    public Boolean parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         Locale locale = invocation.getContext(Locale.class);
@@ -83,7 +83,7 @@ public class BooleanReader implements ArgumentReader<Boolean>, Completer, Defaul
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         List<String> list = new ArrayList<>();
         String token = invocation.currentToken();

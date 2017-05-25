@@ -17,24 +17,13 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
-import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.libcube.service.matcher.ProfessionMatcher;
-import org.spongepowered.api.data.type.Profession;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.DimensionTypes;
 
-public class ProfessionReader implements ArgumentReader<Profession>
+public class DimensionTypeParser extends DefaultedCatalogTypeParser<DimensionType>
 {
-    private ProfessionMatcher professionMatcher;
-
-    public ProfessionReader(ProfessionMatcher professionMatcher)
+    public DimensionTypeParser()
     {
-        this.professionMatcher = professionMatcher;
-    }
-
-    @Override
-    public Profession read(Class type, CommandInvocation invocation) throws ReaderException
-    {
-        return professionMatcher.profession(invocation.consume(1));
+        super(DimensionType.class, DimensionTypes.OVERWORLD);
     }
 }

@@ -20,9 +20,9 @@ package org.cubeengine.libcube.service.command.readers;
 import java.util.Locale;
 import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.matcher.UserMatcher;
@@ -33,19 +33,19 @@ import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE
 /**
  * This argument is used to get users
  */
-public class UserReader implements ArgumentReader<User>, DefaultValue<User>
+public class UserParser implements ArgumentParser<User>, DefaultValue<User>
 {
     private final I18n i18n;
     private UserMatcher um;
 
-    public UserReader(I18n i18n, UserMatcher um)
+    public UserParser(I18n i18n, UserMatcher um)
     {
         this.i18n = i18n;
         this.um = um;
     }
 
     @Override
-    public User read(Class type, CommandInvocation invocation) throws ReaderException
+    public User parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
         Optional<User> user = um.match(arg, false);

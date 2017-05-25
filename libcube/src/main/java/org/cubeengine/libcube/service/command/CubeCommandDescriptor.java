@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import org.cubeengine.butler.parameter.GroupParser;
+import org.cubeengine.butler.parameter.parser.GroupParser;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.butler.parametric.ParametricCommandDescriptor;
 import org.cubeengine.libcube.service.command.property.RawPermission;

@@ -17,41 +17,46 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
-import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.matcher.UserMatcher;
-import org.spongepowered.api.entity.living.player.User;
+import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
-
-/**
- * This argument is used to get users
- */
-public class FindUserReader implements ArgumentReader<User>
+public class DoubleParser implements ArgumentParser<Double>
 {
-    private final I18n i18n;
-    private UserMatcher um;
+    private I18n i18n;
 
-    public FindUserReader(I18n i18n, UserMatcher um)
+    public DoubleParser(I18n i18n)
     {
+
         this.i18n = i18n;
-        this.um = um;
     }
 
     @Override
-    public User read(Class type, CommandInvocation invocation) throws ReaderException
+    public Double parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        Optional<User> user = um.match(arg, true);
-        if (user.isPresent())
+        Locale locale = invocation.getContext(Locale.class);
+        try
         {
-            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
+            return NumberFormat.getInstance(locale).parse(arg).doubleValue();
         }
-        return user.get();
+        catch (ParseException e)
+        {
+            try
+            {
+                return NumberFormat.getInstance().parse(arg).doubleValue(); // Try parsing with default locale
+            }
+            catch (ParseException e1)
+            {
+                throw new TranslatedReaderException(i18n.getTranslation(locale, MessageType.NEGATIVE,
+                                                         "Could not parse {input} to double!", arg));
+            }
+        }
     }
 }

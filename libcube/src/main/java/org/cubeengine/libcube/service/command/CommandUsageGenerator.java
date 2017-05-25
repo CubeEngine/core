@@ -20,7 +20,6 @@ package org.cubeengine.libcube.service.command;
 import java.util.Locale;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.FlagParser;
 import org.cubeengine.butler.parameter.Parameter;
 import org.cubeengine.butler.parameter.ParameterUsageGenerator;
 import org.cubeengine.libcube.service.command.exception.PermissionDeniedException;

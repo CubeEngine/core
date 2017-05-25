@@ -20,11 +20,10 @@ package org.cubeengine.libcube.service.command.readers;
 import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.World;
 
@@ -32,10 +31,10 @@ import static java.util.stream.Collectors.toList;
 import static org.cubeengine.libcube.util.ContextUtil.GLOBAL;
 import static org.spongepowered.api.service.context.Context.WORLD_KEY;
 
-public class ContextReader implements ArgumentReader<Context>, Completer, DefaultValue<Context>
+public class ContextParser implements ArgumentParser<Context>, Completer, DefaultValue<Context>
 {
     @Override
-    public Context read(Class type, CommandInvocation invocation) throws ReaderException
+    public Context parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
         String checkToken = token.toLowerCase();
@@ -81,7 +80,7 @@ public class ContextReader implements ArgumentReader<Context>, Completer, Defaul
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         String token = invocation.currentToken();
         List<String> list = Sponge.getServer().getWorlds().stream()

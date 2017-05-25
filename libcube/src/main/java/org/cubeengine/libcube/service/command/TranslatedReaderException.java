@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.spongepowered.api.text.Text;
 
 public class TranslatedReaderException extends ReaderException

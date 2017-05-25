@@ -19,35 +19,33 @@ package org.cubeengine.libcube.service.command.readers;
 
 import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.matcher.MaterialMatcher;
-import org.spongepowered.api.item.inventory.ItemStack;
+import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
-
-public class ItemStackReader implements ArgumentReader<ItemStack>
+public class ByteParser implements ArgumentParser<Byte>
 {
-    private MaterialMatcher materialMatcher;
     private I18n i18n;
 
-    public ItemStackReader(MaterialMatcher materialMatcher, I18n i18n)
+    public ByteParser(I18n i18n)
     {
-        this.materialMatcher = materialMatcher;
         this.i18n = i18n;
     }
 
     @Override
-    public ItemStack read(Class type, CommandInvocation invocation) throws ReaderException
+    public Byte parse(Class type, CommandInvocation invocation) throws ReaderException
     {
-        String arg = invocation.consume(1);
-        ItemStack item = materialMatcher.itemStack(arg, invocation.getContext(Locale.class));
-        if (item == null)
+
+        String num = invocation.consume(1);
+        try
         {
-            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
+            return Byte.parseByte(num.replace(',', '.').replace(".", ""));
         }
-        return item;
+        catch (NumberFormatException e)
+        {
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
+        }
     }
 }

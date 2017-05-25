@@ -21,41 +21,41 @@ import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE
 
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.block.BlockType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ItemTypeReader implements ArgumentReader<ItemType>, Completer
+public class BlockTypeParser implements ArgumentParser<BlockType>, Completer
 {
-    private static final String MINECRAFT = "minecraft:";
     private I18n i18n;
+    private static final String MINECRAFT = "minecraft:";
 
-    public ItemTypeReader(I18n i18n)
+    public BlockTypeParser(I18n i18n)
     {
         this.i18n = i18n;
     }
 
     @Override
-    public ItemType read(Class aClass, CommandInvocation invocation) throws ReaderException
+    public BlockType parse(Class aClass, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        ItemType item = Sponge.getRegistry().getType(ItemType.class, arg.toLowerCase()).orElse(null);
+        BlockType item = Sponge.getRegistry().getType(BlockType.class, arg.toLowerCase()).orElse(null);
         if (item == null)
         {
-            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#block} not found!", arg));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#item} not found!", arg));
         }
         return item;
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         ArrayList<String> list = new ArrayList<>();
         String token = invocation.currentToken().toLowerCase();
@@ -64,7 +64,7 @@ public class ItemTypeReader implements ArgumentReader<ItemType>, Completer
             list.add(MINECRAFT);
         }
         boolean startMc = token.startsWith(MINECRAFT);
-        for (ItemType type : Sponge.getRegistry().getAllOf(ItemType.class))
+        for (BlockType type : Sponge.getRegistry().getAllOf(BlockType.class))
         {
             if (type.getId().startsWith(token))
             {

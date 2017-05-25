@@ -18,22 +18,24 @@
 package org.cubeengine.libcube.service.command.readers;
 
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.spongepowered.api.CatalogType;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
+import org.cubeengine.libcube.service.matcher.MaterialDataMatcher;
+import org.spongepowered.api.data.type.DyeColor;
 
-public class DefaultedCatalogTypeReader<T extends CatalogType> extends CatalogTypeReader<T> implements DefaultValue<T>
+public class DyeColorParser implements ArgumentParser<DyeColor>
 {
-    private T defaultValue;
+    private MaterialDataMatcher matcher;
 
-    public DefaultedCatalogTypeReader(Class<T> type, T defaultValue)
+    public DyeColorParser(MaterialDataMatcher matcher)
     {
-        super(type);
-        this.defaultValue = defaultValue;
+
+        this.matcher = matcher;
     }
 
     @Override
-    public T getDefault(CommandInvocation commandInvocation)
+    public DyeColor parse(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return defaultValue;
+        return matcher.colorData(invocation.consume(1));
     }
 }

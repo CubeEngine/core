@@ -34,7 +34,7 @@ public abstract class SimpleCompleter implements Completer
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         List<String> offers = new ArrayList<>();
         for (String string : this.strings)

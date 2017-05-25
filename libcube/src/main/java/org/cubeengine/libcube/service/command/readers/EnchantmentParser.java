@@ -26,9 +26,9 @@ import static org.spongepowered.api.text.format.TextColors.YELLOW;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
@@ -44,13 +44,13 @@ import org.spongepowered.api.text.format.TextColors;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultValue<Enchantment>
+public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultValue<Enchantment>
 {
     private GameRegistry registry;
     private EnchantMatcher enchantMatcher;
     private I18n i18n;
 
-    public EnchantmentReader(EnchantMatcher enchantMatcher, Game game, I18n i18n)
+    public EnchantmentParser(EnchantMatcher enchantMatcher, Game game, I18n i18n)
     {
         this.enchantMatcher = enchantMatcher;
         this.i18n = i18n;
@@ -72,7 +72,7 @@ public class EnchantmentReader implements ArgumentReader<Enchantment>, DefaultVa
     }
 
     @Override
-    public Enchantment read(Class type, CommandInvocation invocation) throws ReaderException
+    public Enchantment parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.consume(1);
         Enchantment enchantment = enchantMatcher.enchantment(token);

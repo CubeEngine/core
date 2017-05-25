@@ -18,24 +18,23 @@
 package org.cubeengine.libcube.service.command.readers;
 
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.libcube.service.matcher.MaterialDataMatcher;
-import org.spongepowered.api.data.type.DyeColor;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
+import org.cubeengine.libcube.service.matcher.ProfessionMatcher;
+import org.spongepowered.api.data.type.Profession;
 
-public class DyeColorReader implements ArgumentReader<DyeColor>
+public class ProfessionParser implements ArgumentParser<Profession>
 {
-    private MaterialDataMatcher matcher;
+    private ProfessionMatcher professionMatcher;
 
-    public DyeColorReader(MaterialDataMatcher matcher)
+    public ProfessionParser(ProfessionMatcher professionMatcher)
     {
-
-        this.matcher = matcher;
+        this.professionMatcher = professionMatcher;
     }
 
     @Override
-    public DyeColor read(Class type, CommandInvocation invocation) throws ReaderException
+    public Profession parse(Class type, CommandInvocation invocation) throws ReaderException
     {
-        return matcher.colorData(invocation.consume(1));
+        return professionMatcher.profession(invocation.consume(1));
     }
 }

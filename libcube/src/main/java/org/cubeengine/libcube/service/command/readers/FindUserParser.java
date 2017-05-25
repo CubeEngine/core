@@ -18,34 +18,40 @@
 package org.cubeengine.libcube.service.command.readers;
 
 import java.util.Locale;
+import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.i18n.formatter.MessageType;
+import org.cubeengine.libcube.service.matcher.UserMatcher;
+import org.spongepowered.api.entity.living.player.User;
 
-public class ByteReader implements ArgumentReader<Byte>
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
+
+/**
+ * This argument is used to get users
+ */
+public class FindUserParser implements ArgumentParser<User>
 {
-    private I18n i18n;
+    private final I18n i18n;
+    private UserMatcher um;
 
-    public ByteReader(I18n i18n)
+    public FindUserParser(I18n i18n, UserMatcher um)
     {
         this.i18n = i18n;
+        this.um = um;
     }
 
     @Override
-    public Byte read(Class type, CommandInvocation invocation) throws ReaderException
+    public User parse(Class type, CommandInvocation invocation) throws ReaderException
     {
-
-        String num = invocation.consume(1);
-        try
+        String arg = invocation.consume(1);
+        Optional<User> user = um.match(arg, true);
+        if (user.isPresent())
         {
-            return Byte.parseByte(num.replace(',', '.').replace(".", ""));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
-        catch (NumberFormatException e)
-        {
-            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
-        }
+        return user.get();
     }
 }

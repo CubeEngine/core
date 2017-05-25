@@ -21,14 +21,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
-public class DifficultyReader extends DefaultedCatalogTypeReader<Difficulty>
+public class DifficultyParser extends DefaultedCatalogTypeParser<Difficulty>
 {
     private Map<Integer, Difficulty> difficultyMap = new HashMap<Integer, Difficulty>()
     {
@@ -41,14 +41,14 @@ public class DifficultyReader extends DefaultedCatalogTypeReader<Difficulty>
     };
     private final I18n i18n;
 
-    public DifficultyReader(I18n i18n)
+    public DifficultyParser(I18n i18n)
     {
         super(Difficulty.class, Difficulties.NORMAL);
         this.i18n = i18n;
     }
 
     @Override
-    public Difficulty read(Class type, CommandInvocation invocation) throws ReaderException
+    public Difficulty parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.currentToken();
         Locale locale = invocation.getContext(Locale.class);
@@ -64,7 +64,7 @@ public class DifficultyReader extends DefaultedCatalogTypeReader<Difficulty>
         }
         catch (NumberFormatException e)
         {
-            return super.read(type, invocation);
+            return super.parse(type, invocation);
         }
     }
 }

@@ -18,33 +18,36 @@
 package org.cubeengine.libcube.service.command.readers;
 
 import java.util.Locale;
-import de.cubeisland.engine.logscribe.LogLevel;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.i18n.formatter.MessageType;
+import org.cubeengine.libcube.service.matcher.MaterialMatcher;
+import org.spongepowered.api.item.inventory.ItemStack;
 
-public class LogLevelReader implements ArgumentReader<LogLevel>
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
+
+public class ItemStackParser implements ArgumentParser<ItemStack>
 {
+    private MaterialMatcher materialMatcher;
     private I18n i18n;
 
-    public LogLevelReader(I18n i18n)
+    public ItemStackParser(MaterialMatcher materialMatcher, I18n i18n)
     {
-
+        this.materialMatcher = materialMatcher;
         this.i18n = i18n;
     }
 
     @Override
-    public LogLevel read(Class type, CommandInvocation invocation) throws ReaderException
+    public ItemStack parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String arg = invocation.consume(1);
-        LogLevel logLevel = LogLevel.toLevel(arg);
-        if (logLevel == null)
+        ItemStack item = materialMatcher.itemStack(arg, invocation.getContext(Locale.class));
+        if (item == null)
         {
-            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "The given log level is unknown."));
+            throw new TranslatedReaderException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
         }
-        return logLevel;
+        return item;
     }
 }

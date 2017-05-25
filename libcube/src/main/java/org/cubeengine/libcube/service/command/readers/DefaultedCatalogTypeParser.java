@@ -17,26 +17,23 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
-import java.util.Locale;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
-import org.cubeengine.libcube.service.matcher.EntityMatcher;
-import org.spongepowered.api.entity.EntityType;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.spongepowered.api.CatalogType;
 
-public class EntityTypeReader implements ArgumentReader<EntityType>
+public class DefaultedCatalogTypeParser<T extends CatalogType> extends CatalogTypeParser<T> implements DefaultValue<T>
 {
+    private T defaultValue;
 
-    private EntityMatcher entityMatcher;
-
-    public EntityTypeReader(EntityMatcher entityMatcher)
+    public DefaultedCatalogTypeParser(Class<T> type, T defaultValue)
     {
-        this.entityMatcher = entityMatcher;
+        super(type);
+        this.defaultValue = defaultValue;
     }
 
     @Override
-    public EntityType read(Class type, CommandInvocation invocation) throws ReaderException
+    public T getDefault(CommandInvocation commandInvocation)
     {
-        return entityMatcher.any(invocation.consume(1), invocation.getContext(Locale.class));
+        return defaultValue;
     }
 }

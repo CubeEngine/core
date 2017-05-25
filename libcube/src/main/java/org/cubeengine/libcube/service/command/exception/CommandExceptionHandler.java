@@ -28,7 +28,7 @@ import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.filter.RestrictedSourceException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.TooManyArgumentsException;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.command.CommandSource;
 

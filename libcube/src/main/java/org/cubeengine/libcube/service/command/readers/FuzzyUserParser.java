@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.service.command.TranslatedReaderException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.Game;
@@ -35,13 +35,13 @@ import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE
 /**
  * Matches exact offline players and online players using * for wildcard
  */
-public class FuzzyUserReader implements ArgumentReader<List<Player>>
+public class FuzzyUserParser implements ArgumentParser<List<Player>>
 {
 
     private final Game game;
     private final I18n i18n;
 
-    public FuzzyUserReader(Game game, I18n i18n)
+    public FuzzyUserParser(Game game, I18n i18n)
     {
         this.game = game;
         this.i18n = i18n;
@@ -49,7 +49,7 @@ public class FuzzyUserReader implements ArgumentReader<List<Player>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Player> read(Class type, CommandInvocation invocation) throws ReaderException
+    public List<Player> parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         ArrayList<Player> users = new ArrayList<>();
         if ("*".equals(invocation.currentToken()))
@@ -60,7 +60,7 @@ public class FuzzyUserReader implements ArgumentReader<List<Player>>
         }
         if (invocation.currentToken().contains(","))
         {
-            ((List<List<Player>>)invocation.getManager().getReader(List.class).read(FuzzyUserReader.class, invocation))
+            ((List<List<Player>>)invocation.getManager().getReader(List.class).parse(FuzzyUserParser.class, invocation))
                 .forEach(users::addAll);
             return users;
         }

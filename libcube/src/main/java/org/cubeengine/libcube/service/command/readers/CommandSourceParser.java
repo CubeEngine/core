@@ -23,19 +23,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.cubeengine.libcube.util.StringUtils;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class CommandSourceReader implements ArgumentReader<CommandSource>, DefaultValue<CommandSource>, Completer
+public class CommandSourceParser implements ArgumentParser<CommandSource>, DefaultValue<CommandSource>, Completer
 {
     @Override
-    public CommandSource read(Class type, CommandInvocation invocation) throws ReaderException
+    public CommandSource parse(Class type, CommandInvocation invocation) throws ReaderException
     {
         String token = invocation.currentToken();
         if ("console".equalsIgnoreCase(token))
@@ -64,7 +63,7 @@ public class CommandSourceReader implements ArgumentReader<CommandSource>, Defau
     }
 
     @Override
-    public List<String> getSuggestions(CommandInvocation invocation)
+    public List<String> suggest(CommandInvocation invocation)
     {
         ArrayList<String> list = new ArrayList<>();
         String token = invocation.currentToken().toLowerCase();

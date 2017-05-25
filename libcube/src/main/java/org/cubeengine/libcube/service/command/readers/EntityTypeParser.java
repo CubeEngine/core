@@ -17,22 +17,26 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
-import java.util.Collection;
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import java.util.Locale;
+import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
+import org.cubeengine.libcube.service.matcher.EntityMatcher;
+import org.spongepowered.api.entity.EntityType;
 
-public class GameModeReader extends DefaultedCatalogTypeReader<GameMode>
+public class EntityTypeParser implements ArgumentParser<EntityType>
 {
-    public GameModeReader()
+
+    private EntityMatcher entityMatcher;
+
+    public EntityTypeParser(EntityMatcher entityMatcher)
     {
-        super(GameMode.class, GameModes.SURVIVAL);
+        this.entityMatcher = entityMatcher;
     }
 
     @Override
-    protected Collection<GameMode> getAllOf()
+    public EntityType parse(Class type, CommandInvocation invocation) throws ReaderException
     {
-        Collection<GameMode> allOf = super.getAllOf();
-        allOf.remove(GameModes.NOT_SET);
-        return allOf;
+        return entityMatcher.any(invocation.consume(1), invocation.getContext(Locale.class));
     }
 }

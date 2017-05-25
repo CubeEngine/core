@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.completer.Completer;
-import org.cubeengine.butler.parameter.reader.ArgumentReader;
-import org.cubeengine.butler.parameter.reader.ReaderException;
+import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.ReaderException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -71,11 +71,11 @@ public class PlayerList
         return all;
     }
 
-    public static class UserListReader implements ArgumentReader<PlayerList>, Completer
+    public static class UserListParser implements ArgumentParser<PlayerList>, Completer
     {
         private Game game;
 
-        public UserListReader(Game game)
+        public UserListParser(Game game)
         {
             this.game = game;
         }
@@ -92,7 +92,7 @@ public class PlayerList
 
         @Override
         @SuppressWarnings("unchecked")
-        public PlayerList read(Class type, CommandInvocation invocation) throws ReaderException
+        public PlayerList parse(Class type, CommandInvocation invocation) throws ReaderException
         {
             if ("*".equals(invocation.currentToken()))
             {
@@ -103,7 +103,7 @@ public class PlayerList
         }
 
         @Override
-        public List<String> getSuggestions(CommandInvocation invocation)
+        public List<String> suggest(CommandInvocation invocation)
         {
             List<String> list = new ArrayList<>();
 

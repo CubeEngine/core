@@ -19,7 +19,7 @@ package org.cubeengine.libcube.service.command.readers;
 
 import java.util.Arrays;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.parameter.reader.DefaultValue;
+import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.spongepowered.api.entity.living.player.Player;
 
 public class UserListInSight implements DefaultValue<PlayerList>

@@ -17,13 +17,22 @@
  */
 package org.cubeengine.libcube.service.command.readers;
 
-import org.spongepowered.api.world.GeneratorType;
-import org.spongepowered.api.world.GeneratorTypes;
+import java.util.Collection;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
-public class GeneratorTypeReader extends DefaultedCatalogTypeReader<GeneratorType>
+public class GameModeParser extends DefaultedCatalogTypeParser<GameMode>
 {
-    public GeneratorTypeReader()
+    public GameModeParser()
     {
-        super(GeneratorType.class, GeneratorTypes.DEFAULT);
+        super(GameMode.class, GameModes.SURVIVAL);
+    }
+
+    @Override
+    protected Collection<GameMode> getAllOf()
+    {
+        Collection<GameMode> allOf = super.getAllOf();
+        allOf.remove(GameModes.NOT_SET);
+        return allOf;
     }
 }
