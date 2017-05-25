@@ -20,7 +20,7 @@ package org.cubeengine.libcube.service.command.completer;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;

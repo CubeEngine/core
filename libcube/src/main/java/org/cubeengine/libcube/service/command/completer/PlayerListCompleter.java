@@ -20,7 +20,7 @@ package org.cubeengine.libcube.service.command.completer;
 import java.util.ArrayList;
 import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.Player;
 

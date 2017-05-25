@@ -98,7 +98,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
     }
 
     @Override
-    public Enchantment getDefault(CommandInvocation invocation)
+    public Enchantment provide(CommandInvocation invocation)
     {
         CommandSource sender = (CommandSource)invocation.getCommandSource();
         i18n.sendTranslated(sender, POSITIVE, "Following Enchantments are availiable:");

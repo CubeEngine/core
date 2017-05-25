@@ -19,7 +19,7 @@ package org.cubeengine.libcube.service.command.parser;
 
 import java.util.List;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.cubeengine.butler.parameter.argument.ParserException;
@@ -68,7 +68,7 @@ public class ContextParser implements ArgumentParser<Context>, Completer, Defaul
     }
 
     @Override
-    public Context getDefault(CommandInvocation invocation)
+    public Context provide(CommandInvocation invocation)
     {
         /*
         if (invocation.getCommandSource() instanceof Player)

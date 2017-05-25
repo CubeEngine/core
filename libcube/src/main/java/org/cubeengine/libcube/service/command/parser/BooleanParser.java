@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.cubeengine.butler.parameter.argument.ParserException;
@@ -99,7 +99,7 @@ public class BooleanParser implements ArgumentParser<Boolean>, Completer, Defaul
     }
 
     @Override
-    public Boolean getDefault(CommandInvocation invocation)
+    public Boolean provide(CommandInvocation invocation)
     {
         return false;
     }

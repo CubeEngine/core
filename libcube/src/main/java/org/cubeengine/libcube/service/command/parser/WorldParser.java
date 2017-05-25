@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
@@ -58,7 +58,7 @@ public class WorldParser implements ArgumentParser<World>, DefaultValue<World>, 
     }
 
     @Override
-    public World getDefault(CommandInvocation invocation)
+    public World provide(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof Player)
         {

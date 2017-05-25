@@ -25,7 +25,7 @@ import org.spongepowered.api.entity.living.player.Player;
 public class UserListInSight implements DefaultValue<PlayerList>
 {
     @Override
-    public PlayerList getDefault(CommandInvocation invocation)
+    public PlayerList provide(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof Player)
         {

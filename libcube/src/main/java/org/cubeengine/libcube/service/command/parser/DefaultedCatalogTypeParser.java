@@ -32,7 +32,7 @@ public class DefaultedCatalogTypeParser<T extends CatalogType> extends CatalogTy
     }
 
     @Override
-    public T getDefault(CommandInvocation commandInvocation)
+    public T provide(CommandInvocation commandInvocation)
     {
         return defaultValue;
     }

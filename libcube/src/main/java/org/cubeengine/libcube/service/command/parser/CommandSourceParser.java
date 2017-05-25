@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.completer.Completer;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.cubeengine.butler.parameter.argument.ParserException;
@@ -53,7 +53,7 @@ public class CommandSourceParser implements ArgumentParser<CommandSource>, Defau
     }
 
     @Override
-    public CommandSource getDefault(CommandInvocation invocation)
+    public CommandSource provide(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof Player)
         {

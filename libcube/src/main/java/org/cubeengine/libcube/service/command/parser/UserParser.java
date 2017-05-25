@@ -57,7 +57,7 @@ public class UserParser implements ArgumentParser<User>, DefaultValue<User>
     }
 
     @Override
-    public User getDefault(CommandInvocation invocation)
+    public User provide(CommandInvocation invocation)
     {
         if (invocation.getCommandSource() instanceof User)
         {
