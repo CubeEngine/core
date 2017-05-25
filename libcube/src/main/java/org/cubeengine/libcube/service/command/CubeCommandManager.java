@@ -48,7 +48,7 @@ import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.DispatcherCommand;
-import org.cubeengine.butler.ProviderManager;
+import org.cubeengine.butler.provider.ProviderManager;
 import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.builder.CommandBuilder;
 import org.cubeengine.butler.parametric.InvokableMethod;

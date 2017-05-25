@@ -20,11 +20,9 @@ package org.cubeengine.libcube.service.command;
 import de.cubeisland.engine.modularity.asm.marker.Service;
 import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.butler.Dispatcher;
-import org.cubeengine.butler.ProviderManager;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.source.ConsoleSource;
 
 /**
  * This class manages the registration of commands.
