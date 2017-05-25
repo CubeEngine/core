@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
  *

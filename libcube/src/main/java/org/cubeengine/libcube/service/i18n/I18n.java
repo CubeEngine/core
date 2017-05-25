@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of CubeEngine.
  * CubeEngine is licensed under the GNU General Public License Version 3.
  *
@@ -435,7 +435,7 @@ public class I18n implements ModularityHandler
         return this.translateN(locale, format, n, singular, plural, args);
     }
 
-    // MessageReceiver and TextFormat
+    // Get from Object with TextFormat
 
     public Text getTranslation(Object source, TextFormat format, String message, Object... args)
     {
