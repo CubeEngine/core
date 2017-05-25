@@ -28,7 +28,6 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.value.BaseValue;
 import org.spongepowered.api.data.value.ValueContainer;
@@ -133,7 +132,7 @@ abstract class BaseAbstractData<C extends ValueContainer<C>, T extends BaseValue
     @Override
     public DataContainer toContainer()
     {
-        DataContainer data = new MemoryDataContainer().set(CONTENT_VERSION, getContentVersion());
+        DataContainer data = DataContainer.createNew().set(CONTENT_VERSION, getContentVersion());
         for (Entry<Key<?>, Supplier<?>> entry : getters.entrySet())
         {
             if (entry.getValue().get() == null)
