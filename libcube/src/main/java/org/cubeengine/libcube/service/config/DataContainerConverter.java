@@ -43,7 +43,7 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
     @Override
     public DataContainer fromNode(Node node, Class<? extends DataContainer> type, ConverterManager manager) throws ConversionException
     {
-        MemoryDataContainer data = new MemoryDataContainer();
+        DataContainer data = DataContainer.createNew();
         for (Entry<String, Node> entry : ((MapNode) node).getValue().entrySet())
         {
             DataQuery key = DataQuery.of('_', ((MapNode) node).getOriginalKey(entry.getKey()));
