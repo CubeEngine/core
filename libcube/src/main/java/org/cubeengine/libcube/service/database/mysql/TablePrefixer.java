@@ -19,6 +19,7 @@ package org.cubeengine.libcube.service.database.mysql;
 
 import org.cubeengine.libcube.service.database.Table;
 import org.jooq.QueryPart;
+import org.jooq.RenderContext;
 import org.jooq.VisitContext;
 import org.jooq.impl.DefaultVisitListener;
 
@@ -34,7 +35,7 @@ public class TablePrefixer extends DefaultVisitListener {
 
     @Override
     public void visitStart(VisitContext context) {
-        if (context.renderContext() != null)
+        if (context.context() instanceof RenderContext)
         {
             QueryPart part = context.queryPart();
             if (part instanceof Table)
