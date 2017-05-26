@@ -23,6 +23,7 @@ import org.jooq.RenderContext;
 import org.jooq.VisitContext;
 import org.jooq.impl.DefaultVisitListener;
 
+import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.table;
 
 public class TablePrefixer extends DefaultVisitListener {
@@ -41,7 +42,7 @@ public class TablePrefixer extends DefaultVisitListener {
             if (part instanceof Table)
             {
                 String prefixedName = this.prefix + ((Table) part).getName();
-                context.queryPart(table(prefixedName));
+                context.queryPart(table(name(prefixedName)));
             }
         }
     }
