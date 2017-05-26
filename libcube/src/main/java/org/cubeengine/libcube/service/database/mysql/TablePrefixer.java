@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.service.database.mysql;
 
+import org.cubeengine.libcube.service.database.Table;
 import org.jooq.QueryPart;
-import org.jooq.Table;
 import org.jooq.VisitContext;
 import org.jooq.impl.DefaultVisitListener;
 
@@ -37,7 +37,7 @@ public class TablePrefixer extends DefaultVisitListener {
         if (context.renderContext() != null)
         {
             QueryPart part = context.queryPart();
-            if (part instanceof Table<?>)
+            if (part instanceof Table)
             {
                 String prefixedName = this.prefix + ((Table) part).getName();
                 context.queryPart(table(prefixedName));
