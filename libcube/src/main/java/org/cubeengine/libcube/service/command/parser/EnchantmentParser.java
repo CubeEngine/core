@@ -23,16 +23,19 @@ import static org.cubeengine.libcube.service.i18n.formatter.MessageType.POSITIVE
 import static org.spongepowered.api.text.action.TextActions.showText;
 import static org.spongepowered.api.text.format.TextColors.YELLOW;
 
+import com.sun.org.apache.bcel.internal.generic.RET;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
+import org.cubeengine.butler.parameter.argument.Completer;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.cubeengine.butler.parameter.argument.ParserException;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -41,10 +44,11 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultValue<Enchantment>
+public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultValue<Enchantment>, Completer
 {
     private GameRegistry registry;
     private EnchantMatcher enchantMatcher;
@@ -57,9 +61,9 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
         registry = game.getRegistry();
     }
 
-    public static Text getPossibleEnchantments(GameRegistry registry, ItemStack item)
+    public static Text getPossibleEnchantments(ItemStack item)
     {
-        List<Text> enchantments = registry.getAllOf(Enchantment.class).stream()
+        List<Text> enchantments = Sponge.getRegistry().getAllOf(Enchantment.class).stream()
                                           .filter(e -> item == null || e.canBeAppliedToStack(item))
                                           .map(e -> Text.of(YELLOW, e.getTranslation().get().replace(" ", "")).toBuilder() // TODO getTranslation
                                                     .onHover(showText(Text.of(YELLOW, e.getId()))).build())
@@ -79,8 +83,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
         if (enchantment == null)
         {
             CommandSource sender = (CommandSource)invocation.getCommandSource();
-            Text possibleEnchs = getPossibleEnchantments(registry, sender instanceof Player ? ((Player)sender).getItemInHand(HandTypes.MAIN_HAND)
-                    .orElse(null) : null);
+            Text possibleEnchs = getPossibleEnchantments(sender instanceof Player ? ((Player)sender).getItemInHand(HandTypes.MAIN_HAND).orElse(null) : null);
 
             i18n.sendTranslated(sender, NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)
@@ -102,7 +105,21 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
     {
         CommandSource sender = (CommandSource)invocation.getCommandSource();
         i18n.sendTranslated(sender, POSITIVE, "Following Enchantments are availiable:");
-        sender.sendMessage(getPossibleEnchantments(registry, null));
+        sender.sendMessage(getPossibleEnchantments(null));
         throw new TooFewArgumentsException();
+    }
+
+    @Override
+    public List<String> suggest(Class clazz, CommandInvocation invocation)
+    {
+        CommandSource sender = (CommandSource)invocation.getCommandSource();
+        ItemStack item = sender instanceof Player ? ((Player) sender).getItemInHand(HandTypes.MAIN_HAND).orElse(null) : null;
+        String token = invocation.currentToken();
+
+        return Sponge.getRegistry().getAllOf(Enchantment.class).stream()
+                .filter(e -> item == null || e.canBeAppliedToStack(item))
+                .map(e -> e.getTranslation().get().replace(" ", ""))
+                .filter(name -> name.toLowerCase().startsWith(token.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }
