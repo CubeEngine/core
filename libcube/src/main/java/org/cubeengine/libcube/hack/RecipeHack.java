@@ -43,7 +43,8 @@ public class RecipeHack
         }
         catch (ReflectiveOperationException e)
         {
-
+            System.err.println("RecipeHack failed");
+            e.printStackTrace();
         }
     }
 
