@@ -17,10 +17,10 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.argument.Arguments;
+import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.biome.BiomeType;
 

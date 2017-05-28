@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
-import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.parser.Text;
+import org.cubeengine.dirigent.parser.component.Component;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;

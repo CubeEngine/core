@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
 import java.net.URL;
-import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.parser.Text;
+import org.cubeengine.dirigent.parser.component.Component;
 
 public class ClickComponent implements Component
 {

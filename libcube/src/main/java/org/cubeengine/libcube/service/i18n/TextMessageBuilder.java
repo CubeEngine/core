@@ -21,11 +21,11 @@ import java.net.URL;
 import java.util.Locale;
 
 import de.cubeisland.engine.i18n.I18nService;
-import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.builder.MessageBuilder;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.parser.InvalidMacro;
 import org.cubeengine.dirigent.parser.component.UnresolvableMacro;
+import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.ClickComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
