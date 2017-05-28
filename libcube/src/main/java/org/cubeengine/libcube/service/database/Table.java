@@ -127,7 +127,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             throw new IllegalStateException("Add your fields to the table OR implement createTable yourself!");
         }
         StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
-        sb.append(QUOTE).append(this.getName()).append(QUOTE).append(" (\n");
+        sb.append(QUOTE).append(db.getTablePrefix() + this.getName()).append(QUOTE).append(" (\n");
         boolean first = true;
         for (TableField<R, ?> field : this.fields)
         {
@@ -165,7 +165,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
             // TODO foreign Key Name
             this.appendFieldList(sb, foreignKey.getFields());
             UniqueKey<? extends Record> key = foreignKey.getKey();
-            sb.append(" REFERENCES ").append(QUOTE).append(key.getTable().getName()).append(QUOTE);
+            sb.append(" REFERENCES ").append(QUOTE).append(db.getTablePrefix() + key.getTable().getName()).append(QUOTE);
             sb.append("(");
             first = true;
             for (TableField field : key.getFields())
