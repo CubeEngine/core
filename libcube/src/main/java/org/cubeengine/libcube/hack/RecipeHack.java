@@ -35,33 +35,47 @@ public class RecipeHack
 
     static
     {
+        Class<?> c = null;
         try
         {
-            Class<?> c = Class.forName("net.minecraft.item.crafting.CraftingManager");
-            manager = c.getDeclaredMethod("getInstance").invoke(null);
-
-            try
-            {
-                addRecipe = c.getMethod("addRecipe", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class); // 1st try
-            }
-            catch (ReflectiveOperationException ignore)
-            {
-                try
-                {
-                    addRecipe = c.getMethod("func_92103_a", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class); // 2nd try
-                }
-                catch (ReflectiveOperationException e)
-                {
-                    System.err.println("RecipeHack failed to find a way to add recipes");
-                    e.printStackTrace();
-                }
-            }
-
+            c = Class.forName("net.minecraft.item.crafting.CraftingManager");
         }
-        catch (ReflectiveOperationException e)
+        catch (ClassNotFoundException e)
         {
             System.err.println("RecipeHack failed finding the CraftingManager!");
-            e.printStackTrace();
+        }
+        try
+        {
+            manager = c.getDeclaredMethod("getInstance").invoke(null);
+        }
+        catch (ReflectiveOperationException ignore)
+        {
+            try
+            {
+                manager = c.getDeclaredMethod("func_77594_a").invoke(null);
+            }
+            catch (ReflectiveOperationException e)
+            {
+                System.err.println("RecipeHack failed finding the CraftingManager!");
+                e.printStackTrace();
+            }
+        }
+
+        try
+        {
+            addRecipe = c.getMethod("addRecipe", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class);
+        }
+        catch (ReflectiveOperationException ignore)
+        {
+            try
+            {
+                addRecipe = c.getMethod("func_92103_a", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class);
+            }
+            catch (ReflectiveOperationException e)
+            {
+                System.err.println("RecipeHack failed to find a way to add recipes");
+                e.printStackTrace();
+            }
         }
     }
 
