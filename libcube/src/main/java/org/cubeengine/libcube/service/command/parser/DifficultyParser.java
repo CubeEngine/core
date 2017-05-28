@@ -57,7 +57,7 @@ public class DifficultyParser extends DefaultedCatalogTypeParser<Difficulty>
             Difficulty difficulty = difficultyMap.get(Integer.valueOf(token));
             if (difficulty == null)
             {
-                throw new TranslatedParserException(i18n.getTranslation(locale, MessageType.NEGATIVE, "The given difficulty level is unknown!"));
+                throw new TranslatedParserException(i18n.translate(locale, MessageType.NEGATIVE, "The given difficulty level is unknown!"));
             }
             invocation.consume(1);
             return difficulty;

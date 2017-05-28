@@ -45,7 +45,7 @@ public class ByteParser implements ArgumentParser<Byte>
         }
         catch (NumberFormatException e)
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE, "Could not parse {input} to a byte!", num));
         }
     }
 }

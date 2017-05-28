@@ -49,7 +49,7 @@ public class ItemTypeParser implements ArgumentParser<ItemType>, Completer
         ItemType item = Sponge.getRegistry().getType(ItemType.class, arg.toLowerCase()).orElse(null);
         if (item == null)
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#block} not found!", arg));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#block} not found!", arg));
         }
         return item;
     }

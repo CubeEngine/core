@@ -18,7 +18,6 @@
 package org.cubeengine.libcube.service.i18n.formatter;
 
 import org.cubeengine.dirigent.Component;
-import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
@@ -36,26 +35,26 @@ import static org.spongepowered.api.text.format.TextColors.GOLD;
 public class CommandSenderFormatter extends ReflectedFormatter
 {
     @Format
-    public Component format(String string, Context context)
+    public Component format(String string)
     {
         return new StyledComponent(DARK_GREEN, string);
     }
 
     @Format
-    public Component format(CommandSource sender, Context context)
+    public Component format(CommandSource sender)
     {
-        return this.format(sender.getName(), context);
+        return this.format(sender.getName());
     }
 
     @Format
-    public Component format(Tamer tamer, Context context)
+    public Component format(Tamer tamer)
     {
-        return this.format(tamer.getName(), context);
+        return this.format(tamer.getName());
     }
 
     @Format
-    public Component format(User user, Context context)
+    public Component format(User user)
     {
-        return HoverComponent.hoverText(Text.of(GOLD, user.getUniqueId().toString()), this.format(user.getName(), context));
+        return HoverComponent.hoverText(Text.of(GOLD, user.getUniqueId().toString()), this.format(user.getName()));
     }
 }

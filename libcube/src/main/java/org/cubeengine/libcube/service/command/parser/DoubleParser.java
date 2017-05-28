@@ -54,7 +54,7 @@ public class DoubleParser implements ArgumentParser<Double>
             }
             catch (ParseException e1)
             {
-                throw new TranslatedParserException(i18n.getTranslation(locale, MessageType.NEGATIVE,
+                throw new TranslatedParserException(i18n.translate(locale, MessageType.NEGATIVE,
                                                          "Could not parse {input} to double!", arg));
             }
         }

@@ -85,7 +85,7 @@ public class CommandUsageGenerator extends ParameterUsageGenerator
     {
         if (invocation != null && invocation.getCommandSource() instanceof CommandSource)
         {
-            return i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NONE, valueLabel).toPlain();
+            return i18n.translate(invocation.getContext(Locale.class), MessageType.NONE, valueLabel).toPlain();
         }
         return valueLabel;
     }

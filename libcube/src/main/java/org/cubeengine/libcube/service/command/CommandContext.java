@@ -18,7 +18,7 @@
 package org.cubeengine.libcube.service.command;
 
 import java.util.Locale;
-import de.cubeisland.engine.modularity.core.Module;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parametric.context.ParameterizedContext;
 import org.cubeengine.libcube.service.command.exception.PermissionDeniedException;
@@ -59,12 +59,12 @@ public class CommandContext extends ParameterizedContext
 
     public void sendTranslated(TextFormat type, String message, Object... args)
     {
-        i18n.sendTranslated(sender, type, message, args);
+        i18n.send(sender, type, message, args);
     }
 
     public void sendTranslatedN(TextFormat type, int count, String sMessage, String pMessage, Object... args)
     {
-        i18n.sendTranslatedN(sender, type, count, sMessage, pMessage, args);
+        i18n.sendN(sender, type, count, sMessage, pMessage, args);
     }
 
     public void ensurePermission(PermissionDescription permission) throws PermissionDeniedException

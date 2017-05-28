@@ -19,7 +19,8 @@ package org.cubeengine.libcube.service.i18n.formatter;
 
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
-import org.cubeengine.dirigent.parser.component.Text;
+import org.cubeengine.dirigent.formatter.argument.Arguments;
+import org.cubeengine.dirigent.parser.Text;
 import org.spongepowered.api.service.context.Context;
 
 public class ContextFormatter extends AbstractFormatter<Context>
@@ -30,7 +31,7 @@ public class ContextFormatter extends AbstractFormatter<Context>
     }
 
     @Override
-    public Component format(Context object, org.cubeengine.dirigent.formatter.Context context)
+    public Component format(Context object, org.cubeengine.dirigent.context.Context context, Arguments args)
     {
         return new Text(object.getValue().isEmpty() ? object.getKey() : object.getKey() + "|" + object.getValue());
     }

@@ -68,12 +68,12 @@ public class BooleanParser implements ArgumentParser<Boolean>, Completer, Defaul
         }
         else
         {
-            String word = i18n.translate(locale, "yes");
+            String word = i18n.getTranslation(locale, "yes");
             if (arg.equalsIgnoreCase(word))
             {
                 return true;
             }
-            word = i18n.translate(locale, "no");
+            word = i18n.getTranslation(locale, "no");
             if (arg.equalsIgnoreCase(word))
             {
                 return false;

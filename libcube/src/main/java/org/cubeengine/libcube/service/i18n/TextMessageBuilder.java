@@ -18,23 +18,37 @@
 package org.cubeengine.libcube.service.i18n;
 
 import java.net.URL;
+import java.util.Locale;
+
+import de.cubeisland.engine.i18n.I18nService;
 import org.cubeengine.dirigent.Component;
 import org.cubeengine.dirigent.builder.MessageBuilder;
-import org.cubeengine.dirigent.parser.component.ErrorComponent;
+import org.cubeengine.dirigent.context.Context;
+import org.cubeengine.dirigent.parser.InvalidMacro;
+import org.cubeengine.dirigent.parser.component.UnresolvableMacro;
 import org.cubeengine.libcube.service.i18n.formatter.component.ClickComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.statistic.achievement.Achievement;
+import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.HoverAction.ShowEntity;
 
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 import static org.spongepowered.api.text.action.TextActions.*;
 import static org.spongepowered.api.text.format.TextColors.DARK_RED;
 
 public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
 {
+
+    private final I18nService i18n;
+
+    public TextMessageBuilder(I18nService i18n)
+    {
+        this.i18n = i18n;
+    }
 
     @Override
     public Text.Builder newBuilder()
@@ -43,31 +57,42 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
     }
 
     @Override
-    public Text finalize(Text.Builder textBuilder)
+    public Text finalize(Text.Builder textBuilder, Context context)
     {
         return textBuilder.build();
     }
 
     @Override
-    public void build(org.cubeengine.dirigent.parser.component.Text component, Text.Builder builder)
+    public void buildText(org.cubeengine.dirigent.parser.component.TextComponent component, Text.Builder builder, Context context)
     {
-        builder.append(Text.of(component.getString()));
+        LiteralText text = Text.of(component.getText());
+        if (component instanceof InvalidMacro)
+        {
+            Locale locale = context.get(LOCALE);
+            Text.Builder b = Text.builder();
+            b.onHover(showText(Text.of(i18n.translate(locale, "This part seemed to be a macro, but it's not!"))));
+            builder.append(b.build());
+        }
+        else
+        {
+            builder.append(text);
+        }
     }
 
     @Override
-    public void buildOther(Component component, Text.Builder builder)
+    public void buildOther(Component component, Text.Builder builder, Context context)
     {
         if (component instanceof StyledComponent)
         {
-            buildStyled((StyledComponent)component, builder);
+            buildStyled((StyledComponent)component, builder, context);
         }
         else if (component instanceof HoverComponent)
         {
-            buildHover(((HoverComponent)component), builder);
+            buildHover(((HoverComponent)component), builder, context);
         }
         else if (component instanceof ClickComponent)
         {
-            buildClick(((ClickComponent)component), builder);
+            buildClick(((ClickComponent)component), builder, context);
         }
         else if (component instanceof TextComponent)
         {
@@ -79,10 +104,10 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
         }
     }
 
-    private void buildClick(ClickComponent click, Text.Builder builder)
+    private void buildClick(ClickComponent click, Text.Builder builder, Context context)
     {
         Text.Builder b = Text.builder();
-        buildAny(click.getComponent(), b);
+        buildAny(click.getComponent(), b, context);
 
         Object toClick = click.getClick();
         if (toClick instanceof URL)
@@ -97,10 +122,10 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
         builder.append(b.build());
     }
 
-    private void buildHover(HoverComponent hover, Text.Builder builder)
+    private void buildHover(HoverComponent hover, Text.Builder builder, Context context)
     {
         Text.Builder b = Text.builder();
-        buildAny(hover.getComponent(), b);
+        buildAny(hover.getComponent(), b, context);
 
         Object toHover = hover.getHover();
         if (toHover instanceof Achievement)
@@ -122,26 +147,21 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
         builder.append(b.build());
     }
 
-    private void buildStyled(StyledComponent styled, Text.Builder builder)
+    private void buildStyled(StyledComponent styled, Text.Builder builder, Context context)
     {
         Text.Builder b = Text.builder();
-        buildAny(styled.getComponent(), b);
+        buildAny(styled.getComponent(), b, context);
         b.format(styled.getFormat());
         builder.append(b.build());
     }
 
     @Override
-    public void build(ErrorComponent component, Text.Builder builder)
+    public void buildUnresolvable(UnresolvableMacro component, Text.Builder builder, Context context)
     {
         Text.Builder b = Text.builder();
-        if (component instanceof org.cubeengine.dirigent.parser.component.Text)
-        {
-            b.append(Text.of(DARK_RED, ((org.cubeengine.dirigent.parser.component.Text)component).getString()));
-        }
-        else
-        {
-            b.append(Text.of(DARK_RED, "ERROR"));
-        }
-        b.onHover(showText(Text.of(component.getError())));
+        Locale locale = context.get(LOCALE);
+        b.append(Text.of(DARK_RED, i18n.translate(locale, "{{MISSING MACRO}}")));
+        b.onHover(showText(Text.of(i18n.translate(locale, "Please report this!"))));
+        builder.append(b.build());
     }
 }

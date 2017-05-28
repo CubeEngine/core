@@ -65,36 +65,36 @@ public class CommandExceptionHandler implements PriorityExceptionHandler
             PermissionDeniedException e = (PermissionDeniedException)t;
             if (e.getMessage() != null)
             {
-                i18n.sendTranslated(sender, NEGATIVE, e.getMessage(), e.getArgs());
+                i18n.send(sender, NEGATIVE, e.getMessage(), e.getArgs());
             }
             else
             {
-                i18n.sendTranslated(sender, NEGATIVE, "You're not allowed to do this!");
-                i18n.sendTranslated(sender, NEGATIVE, "Contact an administrator if you think this is a mistake!");
+                i18n.send(sender, NEGATIVE, "You're not allowed to do this!");
+                i18n.send(sender, NEGATIVE, "Contact an administrator if you think this is a mistake!");
             }
-            i18n.sendTranslated(sender, NEGATIVE, "Missing permission: {name}", e.getPermission().getName());
+            i18n.send(sender, NEGATIVE, "Missing permission: {name}", e.getPermission().getName());
         }
         else if (t instanceof TooFewArgumentsException)
         {
-            i18n.sendTranslated(sender, NEGATIVE, "You've given too few arguments.");
-            i18n.sendTranslated(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
+            i18n.send(sender, NEGATIVE, "You've given too few arguments.");
+            i18n.send(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
         }
         else if (t instanceof TooManyArgumentsException)
         {
-            i18n.sendTranslated(sender, NEGATIVE, "You've given too many arguments.");
-            i18n.sendTranslated(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
+            i18n.send(sender, NEGATIVE, "You've given too many arguments.");
+            i18n.send(sender, NEUTRAL, "Proper usage: {input#usage}", command.getDescriptor().getUsage(invocation));
         }
         else if (t instanceof ParserException)
         {
-            i18n.sendTranslated(sender, NEGATIVE, t.getMessage(), ((ParserException)t).getArgs());
+            i18n.send(sender, NEGATIVE, t.getMessage(), ((ParserException)t).getArgs());
         }
         else if (t instanceof RestrictedSourceException)
         {
             // TODO handle Restriction when its not for CommandSource (maybe programming error)
-            i18n.sendTranslated(sender, NEGATIVE, "You cannot execute this command!");
+            i18n.send(sender, NEGATIVE, "You cannot execute this command!");
             if (t.getMessage() != null)
             {
-                i18n.sendTranslated(sender, NEUTRAL, t.getMessage());
+                i18n.send(sender, NEUTRAL, t.getMessage());
             }
         }
         else if (t instanceof SilentException)

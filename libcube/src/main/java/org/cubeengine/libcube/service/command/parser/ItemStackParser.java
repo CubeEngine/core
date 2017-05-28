@@ -46,7 +46,7 @@ public class ItemStackParser implements ArgumentParser<ItemStack>
         ItemStack item = materialMatcher.itemStack(arg, invocation.getContext(Locale.class));
         if (item == null)
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Item {input#item} not found!", arg));
         }
         return item;
     }

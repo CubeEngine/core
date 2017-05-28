@@ -85,15 +85,15 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
             CommandSource sender = (CommandSource)invocation.getCommandSource();
             Text possibleEnchs = getPossibleEnchantments(sender instanceof Player ? ((Player)sender).getItemInHand(HandTypes.MAIN_HAND).orElse(null) : null);
 
-            i18n.sendTranslated(sender, NEGATIVE, "Enchantment {input#enchantment} not found!", token);
+            i18n.send(sender, NEGATIVE, "Enchantment {input#enchantment} not found!", token);
             if (possibleEnchs != null)
             {
-                i18n.sendTranslated(sender, NEUTRAL, "Try one of those instead:");
+                i18n.send(sender, NEUTRAL, "Try one of those instead:");
                 sender.sendMessage(possibleEnchs);
             }
             else
             {
-                i18n.sendTranslated(sender, NEGATIVE, "You can not enchant this item!");
+                i18n.send(sender, NEGATIVE, "You can not enchant this item!");
             }
             throw new SilentException();
         }
@@ -104,7 +104,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
     public Enchantment provide(CommandInvocation invocation)
     {
         CommandSource sender = (CommandSource)invocation.getCommandSource();
-        i18n.sendTranslated(sender, POSITIVE, "Following Enchantments are availiable:");
+        i18n.send(sender, POSITIVE, "Following Enchantments are availiable:");
         sender.sendMessage(getPossibleEnchantments(null));
         throw new TooFewArgumentsException();
     }

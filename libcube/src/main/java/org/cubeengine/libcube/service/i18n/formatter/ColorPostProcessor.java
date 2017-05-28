@@ -18,9 +18,10 @@
 package org.cubeengine.libcube.service.i18n.formatter;
 
 import org.cubeengine.dirigent.Component;
-import org.cubeengine.dirigent.formatter.Context;
+import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.PostProcessor;
-import org.cubeengine.dirigent.parser.component.FoundFormatter;
+import org.cubeengine.dirigent.formatter.argument.Arguments;
+import org.cubeengine.dirigent.parser.component.ResolvedMacro;
 import org.cubeengine.libcube.util.ChatFormat;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 
@@ -41,13 +42,13 @@ public class ColorPostProcessor implements PostProcessor
     }
 
     @Override
-    public Component process(Component component, Context context)
+    public Component process(Component component, Context context, Arguments args)
     {
-        if (!(component instanceof FoundFormatter))
+        if (!(component instanceof ResolvedMacro))
         {
             return component;
         }
-        String colorString = ((FoundFormatter)component).getContext().get("color");//context.get("color");
+        String colorString = ((ResolvedMacro)component).getArguments().get("color");//context.get("color");
         ChatFormat color = defaultColor;
         if (colorString != null)
         {

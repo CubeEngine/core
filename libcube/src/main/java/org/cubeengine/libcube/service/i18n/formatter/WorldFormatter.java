@@ -18,7 +18,6 @@
 package org.cubeengine.libcube.service.i18n.formatter;
 
 import org.cubeengine.dirigent.Component;
-import org.cubeengine.dirigent.formatter.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
@@ -35,14 +34,14 @@ import static org.spongepowered.api.text.format.TextColors.YELLOW;
 public class WorldFormatter extends ReflectedFormatter
 {
     @Format
-    public Component format(World world, Context context)
+    public Component format(World world)
     {
         return HoverComponent.hoverText(Text.of(YELLOW, world.getUniqueId()),
                     StyledComponent.colored(GOLD, world.getName()));
     }
 
     @Format
-    public Component format(WorldProperties world, Context context)
+    public Component format(WorldProperties world)
     {
         return HoverComponent.hoverText(Text.of(YELLOW, world.getUniqueId()),
                     StyledComponent.colored(GOLD, world.getWorldName()));

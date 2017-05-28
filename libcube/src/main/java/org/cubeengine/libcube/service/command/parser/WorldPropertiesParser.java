@@ -52,7 +52,7 @@ public class WorldPropertiesParser implements ArgumentParser<WorldProperties>, D
         Optional<WorldProperties> world = Sponge.getServer().getWorldProperties(name);
         if (!world.isPresent())
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "World {input} not found!", name));
         }
         return world.get();
     }

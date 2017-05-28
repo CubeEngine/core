@@ -51,7 +51,7 @@ public class UserParser implements ArgumentParser<User>, DefaultValue<User>
         Optional<User> user = um.match(arg, false);
         if (!user.isPresent())
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", arg));
         }
         return user.get();
     }

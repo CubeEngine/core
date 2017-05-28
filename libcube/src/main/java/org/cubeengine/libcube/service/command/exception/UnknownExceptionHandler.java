@@ -70,7 +70,7 @@ public class UnknownExceptionHandler implements PriorityExceptionHandler
             stackTrace.append(Text.of(DARK_GRAY, "at ", Text.of(our ? GOLD : GRAY, parts[0], line), "\n"));
         }
         Text hover = Text.builder().append(Text.of(GRAY, r.getClass().getName(), ": ", r.getMessage())).onHover(showText(stackTrace.build())).build();
-        sender.sendMessage(Text.of(Text.of(i18n.getTranslation(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
+        sender.sendMessage(Text.of(Text.of(i18n.translate(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
         return true;
     }
 

@@ -28,17 +28,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.inject.Inject;
@@ -58,6 +48,7 @@ import de.cubeisland.engine.modularity.core.ModularityClassLoader;
 import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.modularity.core.Module;
 import de.cubeisland.engine.modularity.core.marker.Enable;
+import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.libcube.service.filesystem.FileExtensionFilter;
@@ -77,16 +68,15 @@ import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.api.text.format.TextFormat;
 
 import static java.util.stream.Collectors.toList;
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+import static org.cubeengine.dirigent.context.Contexts.createContext;
+import static org.cubeengine.libcube.service.i18n.Properties.*;
 import static org.spongepowered.api.Sponge.getAssetManager;
 
 @ServiceProvider(I18n.class)
-public class I18n implements ModularityHandler
+public class I18n extends I18nTranslate implements ModularityHandler
 {
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
@@ -94,6 +84,7 @@ public class I18n implements ModularityHandler
     private BuilderDirigent<Text, Text.Builder> compositor;
     private StringMatcher stringMatcher;
     private I18nConfig config;
+    private final Context defaultContext;
 
     @Inject private Log log;
     @Inject private PluginContainer plugin;
@@ -110,7 +101,13 @@ public class I18n implements ModularityHandler
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
         I18nLanguageLoader languageLoader = new I18nLanguageLoader(reflector, fm, log);
-        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, languageLoader, getDefaultLocale());
+        Locale defaultLocale = config.defaultLocale;
+        if (defaultLocale == null)
+        {
+            defaultLocale = Locale.getDefault();
+        }
+
+        this.service = new I18nService(SourceLanguage.EN_US, translationLoader, languageLoader, defaultLocale);
 
         // Search for languages on classPath
         ClassLoader classLoader = getClass().getClassLoader();
@@ -141,11 +138,11 @@ public class I18n implements ModularityHandler
             }
         }
 
-        this.compositor = new BuilderDirigent<>(new TextMessageBuilder());
+        this.compositor = new BuilderDirigent<>(new TextMessageBuilder(service));
 
         compositor.registerFormatter(new WorldFormatter());
         compositor.registerFormatter(new StringFormatter());
-        compositor.registerFormatter(new BooleanFormatter());
+        compositor.registerFormatter(new BooleanFormatter(this.service));
         compositor.registerFormatter(new NumberFormatter());
         compositor.registerFormatter(new CommandSenderFormatter());
         compositor.registerFormatter(new TextMacro());
@@ -154,12 +151,14 @@ public class I18n implements ModularityHandler
         compositor.registerFormatter(new ContextFormatter());
 
         compositor.addPostProcessor(new ColorPostProcessor());
+
+        defaultContext = createContext(LOCALE.with(defaultLocale));
     }
 
     @Enable
     public void enable()
     {
-        LanguageLoader languageLoader = getBackend().getLanguageLoader();
+        LanguageLoader languageLoader = service.getLanguageLoader();
         Asset langs = getAssetManager().getAsset(plugin, "languages/languages.yml").get();
         try
         {
@@ -188,27 +187,19 @@ public class I18n implements ModularityHandler
         }
     }
 
-    public BuilderDirigent<Text, Text.Builder> getCompositor()
+    @Override
+    public void onEnable(Object o)
     {
-        return compositor;
+        if (o instanceof Module)
+        {
+            registerModule(((Module)o));
+        }
     }
 
-    private void addPoFilesFromDirectory(Path translations)
+    @Override
+    public void onDisable(Object o)
     {
-        if (Files.exists(translations))
-        {
-            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, FileExtensionFilter.PO))
-            {
-                for (Path path : directoryStream)
-                {
-                    this.poFiles.add(path.toUri().toURL());
-                }
-            }
-            catch (IOException e)
-            {
-                log.error(e, "Error while getting translation override files!");
-            }
-        }
+
     }
 
     public void registerModule(Module module)
@@ -227,6 +218,49 @@ public class I18n implements ModularityHandler
             if (asset.isPresent())
             {
                 poFiles.add(asset.get().getUrl());
+            }
+        }
+    }
+
+    Context contextFromLocale(Locale locale)
+    {
+        return defaultContext.set(LOCALE, locale);
+    }
+
+    Context contextFromReceiver(Object receiver)
+    {
+        if (receiver instanceof CommandSource)
+        {
+            CommandSource source = (CommandSource) receiver;
+            return defaultContext.set(LOCALE.with(source.getLocale()), SOURCE.with(source));
+        }
+        return defaultContext;
+    }
+
+    public BuilderDirigent<Text, Text.Builder> getCompositor()
+    {
+        return compositor;
+    }
+
+    I18nService getI18nService()
+    {
+        return service;
+    }
+
+    private void addPoFilesFromDirectory(Path translations)
+    {
+        if (Files.exists(translations))
+        {
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(translations, FileExtensionFilter.PO))
+            {
+                for (Path path : directoryStream)
+                {
+                    this.poFiles.add(path.toUri().toURL());
+                }
+            }
+            catch (IOException e)
+            {
+                log.error(e, "Error while getting translation override files!");
             }
         }
     }
@@ -262,7 +296,7 @@ public class I18n implements ModularityHandler
                 }
             }
 
-            urls.addAll(files.stream().map(file -> classLoader.getResource(file)).collect(toList()));
+            urls.addAll(files.stream().map(classLoader::getResource).collect(toList()));
             return urls;
         }
         catch (IOException | URISyntaxException e)
@@ -271,14 +305,14 @@ public class I18n implements ModularityHandler
         }
     }
 
-    public Text composeMessage(Locale locale, TextFormat format, String message, Object... args)
+    public Locale getDefaultLocale()
     {
-        return compositor.compose(locale, message, args).toBuilder().format(format).build();
+        return service.getDefaultLocale();
     }
 
-    private Locale getDefaultLocale()
+    public Language getDefaultLanguage()
     {
-        return Locale.getDefault();
+        return this.getLanguage(getDefaultLocale());
     }
 
     public Language getLanguage(Locale locale)
@@ -298,11 +332,6 @@ public class I18n implements ModularityHandler
             log.error(e, "Error while getting Language!");
             return null;
         }
-    }
-
-    public Language getDefaultLanguage()
-    {
-        return this.getLanguage(service.getDefaultLocale());
     }
 
     public Set<Language> getLanguages()
@@ -332,140 +361,5 @@ public class I18n implements ModularityHandler
         }
 
         return languages;
-    }
-
-    public Locale getLocale(Object source)
-    {
-        if (source instanceof CommandSource)
-        {
-            return ((CommandSource)source).getLocale();
-        }
-        // TODO locale of connections settings maybe one day in the far far future?
-        // eventually (tm)
-        return getBackend().getDefaultLocale();
-    }
-
-    @Override
-    public void onEnable(Object o)
-    {
-        if (o instanceof Module)
-        {
-            registerModule(((Module)o));
-        }
-    }
-
-    @Override
-    public void onDisable(Object o)
-    {
-
-    }
-
-    public I18nService getBackend()
-    {
-        return service;
-    }
-
-    // Translation Methods:
-
-    // Simple
-    public String translate(String message)
-    {
-        return this.translate(getDefaultLocale(), message);
-    }
-    public String translateN(int n, String singular, String plural)
-    {
-        return this.translateN(getDefaultLocale(), n, singular, plural);
-    }
-
-    // Simple with Locale
-    public String translate(Locale locale, String message)
-    {
-        return this.service.translate(locale, message);
-    }
-
-    // Simple with CommandSource
-    public String translate(CommandSource commandSource, String message)
-    {
-        return this.service.translate(getLocale(commandSource), message);
-    }
-
-    public String translateN(Locale locale, int n, String singular, String plural)
-    {
-        return this.service.translateN(locale, singular, plural, n);
-    }
-
-    // TextFormat and Locale
-    public Text translate(Locale locale, TextFormat format, String message, Object... args)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The language must not be null!");
-        }
-        if (message == null)
-        {
-            return Text.of("null");
-        }
-        return composeMessage(locale, format, this.translate(locale, message), args);
-    }
-
-    public Text translateN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The language must not be null!");
-        }
-        if (singular == null || plural == null)
-        {
-            return null;
-        }
-        return composeMessage(locale, format, translateN(locale, n, singular, plural), args);
-    }
-
-    // alternative
-
-    public Text getTranslation(Locale locale, TextFormat format, String message, Object... args)
-    {
-        return this.translate(locale, format, message, args);
-    }
-
-    public Text getTranslationN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        return this.translateN(locale, format, n, singular, plural, args);
-    }
-
-    // Get from Object with TextFormat
-
-    public Text getTranslation(Object source, TextFormat format, String message, Object... args)
-    {
-        return getTranslation(getLocale(source), format, message, args);
-    }
-
-    public Text getTranslationN(Object source, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        return getTranslationN(getLocale(source), format, n, singular, plural, args);
-    }
-
-    // Send to MessageReceiver with TextFormat
-
-    public void sendTranslated(MessageReceiver source, TextFormat format, String message, Object... args)
-    {
-        source.sendMessage(this.getTranslation(source, format, message, args));
-    }
-
-    public void sendTranslatedN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        source.sendMessage(this.getTranslationN(source, format, n, singular, plural, args));
-    }
-
-    // Send to ChatTypeMessageReceiver with TextFormat
-
-    public void sendTranslated(ChatType type, ChatTypeMessageReceiver source, TextFormat format, String message, Object... args)
-    {
-        source.sendMessage(type, this.getTranslation(source, format, message, args));
-    }
-
-    public void sendTranslatedN(ChatType type, ChatTypeMessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        source.sendMessage(type, this.getTranslationN(source, format, n, singular, plural, args));
     }
 }

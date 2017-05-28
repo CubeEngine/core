@@ -73,7 +73,7 @@ public class FuzzyUserParser implements ArgumentParser<List<Player>>
                            .collect(toList()));
             if (users.isEmpty())
             {
-                throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", token));
+                throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "Player {user} not found!", token));
             }
             invocation.consume(1);
         }

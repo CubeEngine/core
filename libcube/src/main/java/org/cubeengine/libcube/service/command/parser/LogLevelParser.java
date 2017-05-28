@@ -43,7 +43,7 @@ public class LogLevelParser implements ArgumentParser<LogLevel>
         LogLevel logLevel = LogLevel.toLevel(arg);
         if (logLevel == null)
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), MessageType.NEGATIVE, "The given log level is unknown."));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), MessageType.NEGATIVE, "The given log level is unknown."));
         }
         return logLevel;
     }

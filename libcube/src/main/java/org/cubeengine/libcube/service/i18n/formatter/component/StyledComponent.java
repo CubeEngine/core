@@ -18,7 +18,7 @@
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
 import org.cubeengine.dirigent.Component;
-import org.cubeengine.dirigent.parser.component.Text;
+import org.cubeengine.dirigent.parser.Text;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextFormat;
 import org.spongepowered.api.text.format.TextStyle;

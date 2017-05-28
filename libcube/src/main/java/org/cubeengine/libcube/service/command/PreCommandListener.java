@@ -73,7 +73,7 @@ public class PreCommandListener
             {
                 if (matches.size() == 1)
                 {
-                    sender.sendMessage(i18n.getTranslation(language, NEGATIVE,
+                    sender.sendMessage(i18n.translate(language, NEGATIVE,
                            "Couldn't find {input#command}. Did you mean {input#command}?",
                            label, matches.iterator().next()));
                 }
@@ -84,13 +84,13 @@ public class PreCommandListener
                     {
                         matches = matches.stream().map(m -> "/" + m).collect(toList());
                     }
-                    sender.sendMessage(i18n.getTranslation(language, NEUTRAL,
+                    sender.sendMessage(i18n.translate(language, NEUTRAL,
                             "Did you mean one of these: {input#command}?", implode(", ", matches)));
                 }
             }
             else
             {
-                sender.sendMessage(i18n.getTranslation(language, NEGATIVE,
+                sender.sendMessage(i18n.translate(language, NEGATIVE,
                         "I couldn't find any command for {input#command} ...",
                         label));
             }

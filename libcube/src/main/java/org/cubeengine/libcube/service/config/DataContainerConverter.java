@@ -25,7 +25,6 @@ import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.data.MemoryDataContainer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

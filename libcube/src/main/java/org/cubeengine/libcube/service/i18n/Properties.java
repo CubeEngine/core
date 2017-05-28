@@ -15,30 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.i18n.formatter;
+package org.cubeengine.libcube.service.i18n;
 
-import java.util.Set;
-import org.cubeengine.dirigent.Component;
-import org.cubeengine.dirigent.context.Context;
-import org.cubeengine.dirigent.formatter.ConstantFormatter;
-import org.cubeengine.dirigent.formatter.argument.Arguments;
-import org.cubeengine.dirigent.parser.Text;
+import org.cubeengine.dirigent.context.ContextProperty;
+import org.spongepowered.api.command.CommandSource;
 
-import static java.util.Collections.singleton;
-
-public class TextMacro extends ConstantFormatter
-{
-    private final Set<String> names = singleton("text");
-
-    @Override
-    public Component format(Context context, Arguments args)
-    {
-        return new Text(args.get(0));
-    }
-
-    @Override
-    public Set<String> names()
-    {
-        return this.names;
-    }
+public class Properties {
+    public static final ContextProperty<CommandSource> SOURCE = new ContextProperty<>();
 }

@@ -49,7 +49,7 @@ public class BlockTypeParser implements ArgumentParser<BlockType>, Completer
         BlockType item = Sponge.getRegistry().getType(BlockType.class, arg.toLowerCase()).orElse(null);
         if (item == null)
         {
-            throw new TranslatedParserException(i18n.getTranslation(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#item} not found!", arg));
+            throw new TranslatedParserException(i18n.translate(invocation.getContext(Locale.class), NEGATIVE, "ItemType {input#item} not found!", arg));
         }
         return item;
     }

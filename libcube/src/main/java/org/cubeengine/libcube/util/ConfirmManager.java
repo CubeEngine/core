@@ -18,20 +18,10 @@
 package org.cubeengine.libcube.util;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
 import java.util.UUID;
-import javax.inject.Inject;
-import com.google.common.base.Preconditions;
-import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.marker.Enable;
-import org.cubeengine.libcube.util.Pair;
-import org.cubeengine.libcube.service.command.CommandManager;
+
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -51,8 +41,8 @@ public class ConfirmManager
 
     public static void requestConfirmation(I18n i18n, Text msg, CommandSource source, Runnable run)
     {
-        Text confirm = i18n.getTranslation(source, NONE, "Confirm");
-        Text cancel = i18n.getTranslation(source, NONE, "Cancel");
+        Text confirm = i18n.translate(source, NONE, "Confirm");
+        Text cancel = i18n.translate(source, NONE, "Cancel");
         UUID uuid = UUID.randomUUID();
         confirm = confirm.toBuilder().color(TextColors.GOLD).onClick(TextActions.executeCallback(s -> confirm(i18n, source, uuid, run))).build();
         cancel = cancel.toBuilder().color(TextColors.GOLD).onClick(TextActions.executeCallback(s -> cancel(i18n, source, uuid))).build();
@@ -65,7 +55,7 @@ public class ConfirmManager
         Long start = times.remove(uuid);
         if (start == null || System.currentTimeMillis() - start > CONFIRM_TIMEOUT)
         {
-            i18n.sendTranslated(source, NEGATIVE, "Confirmation Request is no longer valid");
+            i18n.send(source, NEGATIVE, "Confirmation Request is no longer valid");
             return;
         }
         run.run();
@@ -76,9 +66,9 @@ public class ConfirmManager
         Long remove = times.remove(uuid);
         if (remove == null)
         {
-            i18n.sendTranslated(source, NEGATIVE, "Confirmation Request is no longer valid");
+            i18n.send(source, NEGATIVE, "Confirmation Request is no longer valid");
             return;
         }
-        i18n.sendTranslated(source, POSITIVE, "Confirmation cancelled!");
+        i18n.send(source, POSITIVE, "Confirmation cancelled!");
     }
 }

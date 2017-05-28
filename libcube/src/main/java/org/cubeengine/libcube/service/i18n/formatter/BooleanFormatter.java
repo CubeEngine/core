@@ -17,21 +17,28 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import de.cubeisland.engine.i18n.I18nService;
 import org.cubeengine.dirigent.Component;
+import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
-import org.cubeengine.dirigent.formatter.Context;
-import org.cubeengine.dirigent.parser.component.Text;
+import org.cubeengine.dirigent.formatter.argument.Arguments;
+import org.cubeengine.dirigent.parser.Text;
+
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 
 public class BooleanFormatter extends AbstractFormatter<Boolean>
 {
-    public BooleanFormatter()
+    private final I18nService i18n;
+
+    public BooleanFormatter(I18nService i18n)
     {
         super("bool");
+        this.i18n = i18n;
     }
 
     @Override
-    public Component format(Boolean object, Context context)
+    public Component format(Boolean object, Context context, Arguments args)
     {
-        return new Text(String.valueOf(object)); // TODO translation ?
+        return new Text(i18n.translate(context.get(LOCALE), object ? "yes" : "no"));
     }
 }
