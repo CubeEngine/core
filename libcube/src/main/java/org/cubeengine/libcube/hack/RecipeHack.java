@@ -39,11 +39,28 @@ public class RecipeHack
         {
             Class<?> c = Class.forName("net.minecraft.item.crafting.CraftingManager");
             manager = c.getDeclaredMethod("getInstance").invoke(null);
-            addRecipe = c.getMethod("addRecipe", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class);
+
+            try
+            {
+                addRecipe = c.getMethod("addRecipe", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class); // 1st try
+            }
+            catch (ReflectiveOperationException ignore)
+            {
+                try
+                {
+                    addRecipe = c.getMethod("func_92103_a", ItemStack.of(ItemTypes.AIR, 1).getClass(), Object[].class); // 2nd try
+                }
+                catch (ReflectiveOperationException e)
+                {
+                    System.err.println("RecipeHack failed to find a way to add recipes");
+                    e.printStackTrace();
+                }
+            }
+
         }
         catch (ReflectiveOperationException e)
         {
-            System.err.println("RecipeHack failed");
+            System.err.println("RecipeHack failed finding the CraftingManager!");
             e.printStackTrace();
         }
     }
