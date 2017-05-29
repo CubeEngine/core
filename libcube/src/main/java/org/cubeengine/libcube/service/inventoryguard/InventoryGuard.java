@@ -167,6 +167,8 @@ public class InventoryGuard
         System.out.print("Event:\n");
         boolean cancel = false;
 
+        int upperSize = event.getTargetInventory().iterator().next().capacity();
+
         for (SlotTransaction transaction : event.getTransactions())
         {
             ItemStack origStack = transaction.getOriginal().createStack();
@@ -176,8 +178,10 @@ public class InventoryGuard
             System.out.print(origString + "->" + finalString + "\n");
 
             System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
-            boolean upper = !(transaction.getSlot().parent() instanceof PlayerInventory); // TODO this will not work when viewing another playerinventory
-           // Inventory next = event.getTargetInventory().iterator().next() == transaction.getSlot().parent().notify();
+
+            Integer affectedSlot = transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
+
+            boolean upper = affectedSlot != -1 && affectedSlot < upperSize;
 
             if (upper)
             {
