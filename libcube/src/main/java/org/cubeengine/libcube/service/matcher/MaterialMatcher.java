@@ -333,6 +333,10 @@ public class MaterialMatcher
         {
             try
             {
+                if (!blockState.getType().getItem().isPresent())
+                {
+                    continue;
+                }
                 ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
 
                 Builder state = BlockState.builder().blockType(item.getItem().getBlock().get());
