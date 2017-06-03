@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import org.cubeengine.dirigent.context.Arguments;
 import org.cubeengine.dirigent.context.Context;
-import org.cubeengine.dirigent.formatter.argument.Arguments;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
