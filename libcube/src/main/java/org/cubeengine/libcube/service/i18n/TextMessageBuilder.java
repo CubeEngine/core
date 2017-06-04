@@ -23,7 +23,6 @@ import java.util.Locale;
 import de.cubeisland.engine.i18n.I18nService;
 import org.cubeengine.dirigent.builder.MessageBuilder;
 import org.cubeengine.dirigent.context.Context;
-import org.cubeengine.dirigent.parser.InvalidMacro;
 import org.cubeengine.dirigent.parser.component.UnresolvableMacro;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.ClickComponent;
@@ -65,18 +64,7 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
     @Override
     public void buildText(org.cubeengine.dirigent.parser.component.TextComponent component, Text.Builder builder, Context context)
     {
-        LiteralText text = Text.of(component.getText());
-        if (component instanceof InvalidMacro)
-        {
-            Locale locale = context.get(LOCALE);
-            Text.Builder b = Text.builder();
-            b.onHover(showText(Text.of(i18n.translate(locale, "This part seemed to be a macro, but it's not!"))));
-            builder.append(b.build());
-        }
-        else
-        {
-            builder.append(text);
-        }
+        builder.append(Text.of(component.getText()));
     }
 
     @Override
