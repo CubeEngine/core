@@ -38,7 +38,7 @@ public class TextMacro extends ConstantFormatter
     }
 
     @Override
-    public Set<String> names()
+    public Set<String> getNames()
     {
         return this.names;
     }
