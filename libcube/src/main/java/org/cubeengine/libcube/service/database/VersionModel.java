@@ -17,13 +17,12 @@
  */
 package org.cubeengine.libcube.service.database;
 
-import java.sql.SQLException;
-import org.cubeengine.libcube.util.Version;
-import org.jooq.Record;
-import org.jooq.Table;
+import static org.cubeengine.libcube.service.database.TableVersion.TABLE_VERSION;
 
-public interface TableCreator<T extends Record> extends Table<T>
+public class VersionModel extends AsyncRecord<VersionModel>
 {
-    void createTable(Database db) throws SQLException;
-    Version getTableVersion();
+    public VersionModel()
+    {
+        super(TABLE_VERSION);
+    }
 }

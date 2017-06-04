@@ -17,6 +17,8 @@
  */
 package org.cubeengine.libcube.service.database.mysql;
 
+import static org.cubeengine.libcube.service.database.TableVersion.TABLE_VERSION;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
@@ -38,6 +40,7 @@ import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
 import de.cubeisland.engine.modularity.core.Modularity;
 import de.cubeisland.engine.modularity.core.ModularityHandler;
 import de.cubeisland.engine.modularity.core.marker.Disable;
+import org.cubeengine.libcube.service.database.TableVersion;
 import org.cubeengine.reflect.Reflector;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -147,42 +150,42 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
 
         this.logger.info("connected!");
 
+        this.registerTable(new TableVersion());
+
         modularity.registerHandler(this);
     }
 
     private boolean updateTableStructure(TableUpdateCreator updater)
     {
-        final String query = "SELECT table_name, table_comment FROM INFORMATION_SCHEMA.TABLES "
-            + "WHERE table_schema = ? AND table_name = ?";
-        try
+        Record1<String> result = getDSL().select(TABLE_VERSION.VERSION).from(TABLE_VERSION).where(TABLE_VERSION.NAME.eq(updater.getName())).fetchOne();
+        if (result != null)
         {
-            ResultSet resultSet = query(query, this.config.database, updater.getName()).get();
-            if (resultSet.next())
+            try
             {
-                Version dbVersion = Version.fromString(resultSet.getString("table_comment"));
+                Version dbVersion = Version.fromString(result.value1());
                 Version version = updater.getTableVersion();
                 if (dbVersion.isNewerThan(version))
                 {
                     logger.info("table-version is newer than expected! {}: {} expected version: {}", updater.getName(),
-                                dbVersion.toString(), version.toString());
+                            dbVersion.toString(), version.toString());
                 }
                 else if (dbVersion.isOlderThan(updater.getTableVersion()))
                 {
                     logger.info("table-version is too old! Updating {} from {} to {}", updater.getName(),
-                                dbVersion.toString(), version.toString());
+                            dbVersion.toString(), version.toString());
                     try (Connection connection = this.getConnection())
                     {
                         updater.update(connection, dbVersion);
                     }
+                    getDSL().mergeInto(TABLE_VERSION).values(updater.getName(), version.toString());
                     logger.info("{} got updated to {}", updater.getName(), version.toString());
-                    execute("ALTER TABLE " + updater.getName() + " COMMENT = ?", version.toString());
                 }
                 return true;
             }
-        }
-        catch (InterruptedException | ExecutionException | SQLException e)
-        {
-            logger.warn(e, "Could not execute structure update for the table {}", updater.getName());
+            catch (SQLException e)
+            {
+                logger.warn(e, "Could not execute structure update for the table {}", updater.getName());
+            }
         }
         return false;
     }
@@ -221,9 +224,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         }
         try
         {
-            Connection connection = this.getConnection();
-            table.createTable(connection);
-            connection.close();
+            table.createTable(this);
         }
         catch (SQLException ex)
         {
@@ -236,9 +237,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
     {
         try
         {
-            Constructor<? extends Table<?>> constructor = clazz.getDeclaredConstructor(String.class, Database.class);
-            Table<?> table = constructor.newInstance(this.config.tablePrefix, this);
-            this.registerTable(table);
+            this.registerTable(clazz.newInstance());
         }
         catch (ReflectiveOperationException e)
         {

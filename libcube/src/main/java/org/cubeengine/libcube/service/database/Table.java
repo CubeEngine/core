@@ -17,52 +17,46 @@
  */
 package org.cubeengine.libcube.service.database;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import de.cubeisland.engine.logscribe.Log;
-import org.cubeengine.libcube.util.Version;
+import static org.cubeengine.libcube.service.database.TableVersion.TABLE_VERSION;
+import static org.jooq.impl.DSL.constraint;
+
 import org.cubeengine.libcube.service.database.mysql.Keys;
+import org.cubeengine.libcube.util.Version;
+import org.jooq.CreateTableColumnStep;
+import org.jooq.DSLContext;
 import org.jooq.DataType;
 import org.jooq.ForeignKey;
 import org.jooq.Record;
-import org.jooq.SQLDialect;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
-import org.jooq.impl.DefaultDataType;
-import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.jooq.types.UInteger;
-import org.jooq.types.UShort;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public abstract class Table<R extends Record> extends TableImpl<R> implements TableCreator<R>
 {
-    public static final DataType<UInteger> U_INTEGER = new DefaultDataType<>(SQLDialect.MYSQL,
-                                                                             SQLDataType.INTEGERUNSIGNED,
-                                                                             "integer unsigned", "integer unsigned");
-    public static final DataType<UShort> U_SMALLINT = new DefaultDataType<>(SQLDialect.MYSQL,
-                                                                            SQLDataType.SMALLINTUNSIGNED,
-                                                                            "smallint unsigned", "smallint unsigned");
-    public static final DataType<UInteger> U_MEDIUMINT = new DefaultDataType<>(SQLDialect.MYSQL,
-                                                                               SQLDataType.INTEGERUNSIGNED,
-                                                                               "mediumint unsigned",
-                                                                               "mediumint unsigned");
-    public static final DataType<Boolean> BOOLEAN = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.BOOLEAN,
-                                                                          "boolean", "boolean");
-    public static final DataType<String> LONGTEXT = new DefaultDataType<>(SQLDialect.MYSQL, SQLDataType.CLOB,
-                                                                          "longtext", "longtext");
+    // This is not working because DataType#hasLength returns false for the converted type UUID
+    // jOOQ issue: https://github.com/jOOQ/jOOQ/issues/5807
+    // public static final DataType<UUID> UUID_TYPE = SQLDataType.VARCHAR(36).asConvertedDataType(new UUIDConverter());
+    public static final DataType<UUID> UUID_TYPE = new UUIDDataType(false);
 
-    public Table(String name, Version version, Database db)
+    public Table(Class<R> model, String name, Version version)
     {
         super(name);
+        this.model = model;
         this.version = version;
-        this.db = db;
     }
 
+    Table(Class<R> model, String name) // NonVersioned
+    {
+        this(model, name, null);
+    }
+
+    private Class<R> model;
     private final Version version;
-    private Database db;
     private UniqueKey<R> primaryKey;
     private final List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private final List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
@@ -71,25 +65,30 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
 
     private TableField<R, ?>[] fields;
 
-    public final void setPrimaryKey(TableField<R, ?>... fields)
+    protected final void setPrimaryKey(TableField<R, ?>... fields)
     {
         this.primaryKey = Keys.uniqueKey(this, fields);
         this.uniqueKeys.add(primaryKey);
     }
 
-    public final void addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
+    protected final void addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
     {
         this.foreignKeys.add(Keys.foreignKey(referencedKey, this, fields));
     }
 
-    public final void addUniqueKey(TableField<R, ?>... fields)
+    protected final void addUniqueKey(TableField<R, ?>... fields)
     {
         this.uniqueKeys.add(Keys.uniqueKey(this, fields));
     }
 
-    public final void addFields(TableField<R, ?>... fields)
+    protected final void addFields(TableField<R, ?>... fields)
     {
         this.fields = fields;
+    }
+
+    protected void addIndex(TableField<R, ?>... fields)
+    {
+        this.indices.add(fields);
     }
 
     @Override
@@ -111,7 +110,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     }
 
     @Override
-    public abstract Class<R> getRecordType();
+    public Class<R> getRecordType()
+    {
+        return model;
+    }
 
     @Override
     public final Version getTableVersion()
@@ -120,135 +122,58 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     }
 
     @Override
-    public void createTable(Connection connection) throws SQLException
+    public void createTable(Database db) throws SQLException
     {
+        DSLContext dsl = db.getDSL();
+
         if (this.fields == null)
         {
             throw new IllegalStateException("Add your fields to the table OR implement createTable yourself!");
         }
-        StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
-        sb.append(QUOTE).append(db.getTablePrefix() + this.getName()).append(QUOTE).append(" (\n");
-        boolean first = true;
-        for (TableField<R, ?> field : this.fields)
-        {
-            if (!first)
-            {
-                sb.append(",\n");
-            }
-            this.appendColumnDefinition(sb, field);
-            first = false;
-        }
+
+        CreateTableColumnStep tableCreator = dsl.createTableIfNotExists(this).columns(this.fields);
+
         if (this.primaryKey != null)
         {
-            sb.append(",\nPRIMARY KEY ");
-            this.appendFieldList(sb, primaryKey.getFields());
+            tableCreator.constraint(constraint().primaryKey(this.primaryKey.getFieldsArray()));
         }
-        for (TableField<R, ?>[] index : this.indices)
-        {
-            sb.append(",\nINDEX ");
-            // TODO index Key Name
-            this.appendFieldList(sb, Arrays.asList(index));
-        }
+
         for (UniqueKey<R> uniqueKey : this.uniqueKeys)
         {
-            if (uniqueKey == primaryKey)
-            {
-                continue;
-            }
-            sb.append(",\nUNIQUE KEY ");
-            // TODO unique Key Name
-            this.appendFieldList(sb, uniqueKey.getFields());
+            tableCreator.constraint(constraint().unique(uniqueKey.getFieldsArray()));
         }
+
         for (ForeignKey<R, ?> foreignKey : this.foreignKeys)
         {
-            sb.append(",\nFOREIGN KEY ");
-            // TODO foreign Key Name
-            this.appendFieldList(sb, foreignKey.getFields());
-            UniqueKey<? extends Record> key = foreignKey.getKey();
-            sb.append(" REFERENCES ").append(QUOTE).append(db.getTablePrefix() + key.getTable().getName()).append(QUOTE);
-            sb.append("(");
-            first = true;
-            for (TableField field : key.getFields())
+            TableField<R, ?>[] fields = foreignKey.getFieldsArray();
+            UniqueKey pKey = foreignKey.getKey();
+            if (fields.length == 1)
             {
-                if (!first)
-                {
-                    sb.append(",");
-                }
-                sb.append(QUOTE).append(field.getName()).append(QUOTE);
-                first = false;
-            }
-            sb.append(") ON UPDATE CASCADE ON DELETE CASCADE");
-        }
-        sb.append(")\n");
-        sb.append("ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci\n"); // TODO configurable?
-        sb.append("COMMENT='").append(this.version.toString()).append("'");
-
-        db.getLog().debug(sb.toString());
-        connection.prepareStatement(sb.toString()).execute();
-    }
-
-    private static final char QUOTE = '`';
-
-    private void appendFieldList(StringBuilder sb, List<TableField<R, ?>> fields)
-    {
-        sb.append("(");
-        boolean first = true;
-        for (TableField field : fields)
-        {
-            if (!first)
-            {
-                sb.append(",");
-            }
-            sb.append(QUOTE).append(field.getName()).append(QUOTE);
-            first = false;
-        }
-        sb.append(")");
-    }
-
-    protected void appendColumnDefinition(StringBuilder sb, TableField<R, ?> field)
-    {
-        sb.append(QUOTE).append(field.getName()).append(QUOTE).append(" ");
-        DataType<?> type = field.getDataType(db.getDSL().configuration());
-        String typeName = type.getTypeName();
-        boolean unsigned = typeName.contains("unsigned");
-        typeName = typeName.replace("unsigned", "");
-        sb.append(typeName);
-        if (type.length() != 0)
-        {
-            sb.append("(").append(type.length()).append(")");
-        }
-        else if (type.precision() != 0)
-        {
-            if (type.scale() != 0)
-            {
-                sb.append("(").append(type.precision()).append(", ").append(type.scale()).append(")");
+                tableCreator.constraint(
+                        constraint().foreignKey(fields[0])
+                                    .references(pKey.getTable(), pKey.getFieldsArray()[0])
+                                    .onDeleteCascade());
             }
             else
             {
-                sb.append("(").append(type.precision()).append(")");
+                tableCreator.constraint(
+                        constraint().foreignKey(fields)
+                                    .references(pKey.getTable(), pKey.getFieldsArray()));
             }
         }
-        if (unsigned)
-        {
-            sb.append(" unsigned");
-        }
-        if (field.getDataType().nullable())
-        {
-            sb.append(" DEFAULT NULL");
-        }
-        else
-        {
-            sb.append(" NOT NULL");
-        }
-    }
 
-    public void addIndex(TableField<R, ?>... fields)
-    {
-        this.indices.add(fields);
-    }
+        tableCreator.execute();
 
-    protected Log getLog()
-    {
-        return db.getLog();
+        int i = 0;
+        for (TableField<R, ?>[] index : this.indices)
+        {
+            i++;
+            dsl.createIndexIfNotExists("I" + i + "_" + this.getName()).on(this, index).execute();
+        }
+
+        if (this.version != null)
+        {
+            dsl.mergeInto(TABLE_VERSION).values(getName(), getTableVersion().toString()).execute();
+        }
     }
 }

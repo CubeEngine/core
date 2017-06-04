@@ -17,13 +17,35 @@
  */
 package org.cubeengine.libcube.service.database;
 
-import java.sql.SQLException;
-import org.cubeengine.libcube.util.Version;
-import org.jooq.Record;
-import org.jooq.Table;
+import org.jooq.impl.AbstractConverter;
 
-public interface TableCreator<T extends Record> extends Table<T>
+import java.util.UUID;
+
+
+public class UUIDConverter extends AbstractConverter<String, UUID>
 {
-    void createTable(Database db) throws SQLException;
-    Version getTableVersion();
+    public UUIDConverter()
+    {
+        super(String.class, UUID.class);
+    }
+
+    @Override
+    public UUID from(String databaseObject)
+    {
+        if (databaseObject == null)
+        {
+            return null;
+        }
+        return UUID.fromString(databaseObject);
+    }
+
+    @Override
+    public String to(UUID userObject)
+    {
+        if (userObject == null)
+        {
+            return null;
+        }
+        return userObject.toString();
+    }
 }

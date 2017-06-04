@@ -17,13 +17,21 @@
  */
 package org.cubeengine.libcube.service.database;
 
-import java.sql.SQLException;
-import org.cubeengine.libcube.util.Version;
-import org.jooq.Record;
-import org.jooq.Table;
+import org.jooq.TableField;
+import org.jooq.impl.SQLDataType;
 
-public interface TableCreator<T extends Record> extends Table<T>
+public class TableVersion extends Table<VersionModel>
 {
-    void createTable(Database db) throws SQLException;
-    Version getTableVersion();
+    public static TableVersion TABLE_VERSION;
+
+    public final TableField<VersionModel, String> NAME = createField("id", SQLDataType.VARCHAR(64).nullable(false), this);
+    public final TableField<VersionModel, String> VERSION = createField("version", SQLDataType.VARCHAR(64).nullable(false), this);
+
+    public TableVersion()
+    {
+        super(VersionModel.class, "cubeengine_version");
+        this.setPrimaryKey(NAME);
+        this.addFields(NAME, VERSION);
+        TABLE_VERSION = this;
+    }
 }
