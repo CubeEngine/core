@@ -29,7 +29,9 @@ import org.jooq.ForeignKey;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.spongepowered.api.entity.living.player.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     // This is not working because DataType#hasLength returns false for the converted type UUID
     // jOOQ issue: https://github.com/jOOQ/jOOQ/issues/5807
     // public static final DataType<UUID> UUID_TYPE = SQLDataType.VARCHAR(36).asConvertedDataType(new UUIDConverter());
+    public static final DataType<Player> PLAYER_TYPE = SQLDataType.VARCHAR(36).asConvertedDataType(new PlayerConverter());
     public static final DataType<UUID> UUID_TYPE = new UUIDDataType(false);
 
     public Table(Class<R> model, String name, Version version)
