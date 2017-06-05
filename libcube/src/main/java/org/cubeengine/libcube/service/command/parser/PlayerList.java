@@ -37,6 +37,8 @@ import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
 /**
  * Represents a list of online players
  * If it is all users the list is the currently online users
+ *
+ * TODO interface PlayerList {list() -> List<Player>} + impl SpecificPlayerList + impl AllPlayerList + impl SinglePlayerList(?)
  */
 public class PlayerList
 {

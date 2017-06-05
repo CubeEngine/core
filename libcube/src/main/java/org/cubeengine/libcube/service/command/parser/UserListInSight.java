@@ -17,7 +17,8 @@
  */
 package org.cubeengine.libcube.service.command.parser;
 
-import java.util.Arrays;
+import java.util.Collections;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.argument.DefaultValue;
 import org.spongepowered.api.entity.living.player.Player;
@@ -32,7 +33,7 @@ public class UserListInSight implements DefaultValue<PlayerList>
             Player player = getFirstPlayerInSight(((Player)invocation.getCommandSource()));
             if (player != null)
             {
-                return new PlayerList(Arrays.asList(player));
+                return new PlayerList(Collections.singletonList(player));
             }
         }
         return null;

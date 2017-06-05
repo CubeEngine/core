@@ -56,7 +56,7 @@ import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.i18n.formatter.BiomeFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.BooleanFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.ColorPostProcessor;
-import org.cubeengine.libcube.service.i18n.formatter.CommandSenderFormatter;
+import org.cubeengine.libcube.service.i18n.formatter.CommandSourceFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.ContextFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.NumberFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.StringFormatter;
@@ -144,7 +144,7 @@ public class I18n extends I18nTranslate implements ModularityHandler
         compositor.registerFormatter(new StringFormatter());
         compositor.registerFormatter(new BooleanFormatter(this.service));
         compositor.registerFormatter(new NumberFormatter());
-        compositor.registerFormatter(new CommandSenderFormatter());
+        compositor.registerFormatter(new CommandSourceFormatter(this.service));
         compositor.registerFormatter(new TextMacro());
         compositor.registerFormatter(new BiomeFormatter());
         compositor.registerFormatter(new VectorFormatter());
