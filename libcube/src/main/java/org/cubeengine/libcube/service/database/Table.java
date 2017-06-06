@@ -26,6 +26,7 @@ import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.DataType;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -45,7 +46,6 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     // public static final DataType<UUID> UUID_TYPE = SQLDataType.VARCHAR(36).asConvertedDataType(new UUIDConverter());
     public static final DataType<Player> PLAYER_TYPE = SQLDataType.VARCHAR(36).asConvertedDataType(new PlayerConverter());
     public static final DataType<UUID> UUID_TYPE = new UUIDDataType(false);
-
     public Table(Class<R> model, String name, Version version)
     {
         super(name);
@@ -59,8 +59,10 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     }
 
     private Class<R> model;
+
     private final Version version;
     private UniqueKey<R> primaryKey;
+    private Identity<R, ?> identity;
     private final List<ForeignKey<R, ?>> foreignKeys = new ArrayList<>();
     private final List<UniqueKey<R>> uniqueKeys = new ArrayList<>();
 
@@ -72,6 +74,14 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     {
         this.primaryKey = Keys.uniqueKey(this, fields);
         this.uniqueKeys.add(primaryKey);
+        if (fields.length == 1)
+        {
+            TableField<R, ?> key = fields[0];
+            if (key.getDataType().identity())
+            {
+                this.identity = Keys.identity(key.getTable(), key);
+            }
+        }
     }
 
     protected final void addForeignKey(UniqueKey<?> referencedKey, TableField<R, ?>... fields)
@@ -92,6 +102,13 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
     protected void addIndex(TableField<R, ?>... fields)
     {
         this.indices.add(fields);
+    }
+
+
+    @Override
+    public Identity<R, ?> getIdentity()
+    {
+        return identity;
     }
 
     @Override
