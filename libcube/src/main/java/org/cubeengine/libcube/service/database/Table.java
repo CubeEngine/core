@@ -30,6 +30,7 @@ import org.jooq.Identity;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import org.spongepowered.api.entity.living.player.Player;
@@ -188,7 +189,11 @@ public abstract class Table<R extends Record> extends TableImpl<R> implements Ta
         for (TableField<R, ?>[] index : this.indices)
         {
             i++;
-            dsl.createIndexIfNotExists("I" + i + "_" + this.getName()).on(this, index).execute();
+            try
+            {
+                dsl.createIndex("I" + i + "_" + this.getName()).on(this, index).execute();
+            }
+            catch (DataAccessException ignored) {}
         }
 
         if (this.version != null)
