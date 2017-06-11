@@ -116,11 +116,14 @@ public class TextMessageBuilder extends MessageBuilder<Text, Text.Builder>
         buildAny(hover.getComponent(), b, context);
 
         Object toHover = hover.getHover();
+        // TODO advancements
+        /*
         if (toHover instanceof Achievement)
         {
             b.onHover(showAchievement(((Achievement)toHover)));
         }
-        else if (toHover instanceof ItemStack)
+        else */
+        if (toHover instanceof ItemStack)
         {
             b.onHover(showItem(((ItemStack)toHover).createSnapshot()));
         }
