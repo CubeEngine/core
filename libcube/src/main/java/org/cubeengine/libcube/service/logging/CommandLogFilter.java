@@ -20,26 +20,19 @@ package org.cubeengine.libcube.service.logging;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 
-public class CommandLogFilter implements Filter
+public class CommandLogFilter extends AbstractFilter
 {
     private static final Object[] NO_ARGS = {};
     private static final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
 
-    @Override
-    public Result getOnMismatch()
+    public CommandLogFilter()
     {
-        return Result.DENY;
-    }
-
-    @Override
-    public Result getOnMatch()
-    {
-        return Result.NEUTRAL;
+        super(Result.NEUTRAL, Result.DENY);
     }
 
     @Override

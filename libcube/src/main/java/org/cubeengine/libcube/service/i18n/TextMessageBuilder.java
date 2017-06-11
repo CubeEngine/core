@@ -30,8 +30,6 @@ import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.TextComponent;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.statistic.achievement.Achievement;
-import org.spongepowered.api.text.LiteralText;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.HoverAction.ShowEntity;
 

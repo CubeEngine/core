@@ -25,6 +25,7 @@ import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.message.Message;
 
@@ -37,7 +38,7 @@ public class ExceptionAppender extends AbstractAppender
 
     public ExceptionAppender(Log exLog)
     {
-        super("ExceptionAppender", new ExceptionFilter(), PatternLayout.createLayout(null, null, null, null, null));
+        super("ExceptionAppender", new ExceptionFilter(), PatternLayout.newBuilder().build());
         this.exLog = exLog;
     }
 
@@ -57,18 +58,11 @@ public class ExceptionAppender extends AbstractAppender
         }
     }
 
-    private static class ExceptionFilter implements Filter
+    private static class ExceptionFilter extends AbstractFilter
     {
-        @Override
-        public Result getOnMismatch()
+        public ExceptionFilter()
         {
-            return Result.DENY;
-        }
-
-        @Override
-        public Result getOnMatch()
-        {
-            return Result.ACCEPT;
+            super(Result.ACCEPT, Result.DENY);
         }
 
         @Override

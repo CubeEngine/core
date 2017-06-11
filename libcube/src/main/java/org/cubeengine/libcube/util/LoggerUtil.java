@@ -68,7 +68,7 @@ public class LoggerUtil
 
         public CallbackAppender(LogCallback callback)
         {
-            super("cubeengine", null, PatternLayout.createLayout(null, null, null, null, null));
+            super("cubeengine", null, PatternLayout.newBuilder().build());
             this.callback = callback;
         }
 

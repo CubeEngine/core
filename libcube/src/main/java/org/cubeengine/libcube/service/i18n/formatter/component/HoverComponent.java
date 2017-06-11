@@ -21,7 +21,6 @@ import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.statistic.achievement.Achievement;
 import org.spongepowered.api.text.action.HoverAction;
 
 public class HoverComponent implements Component
@@ -50,10 +49,12 @@ public class HoverComponent implements Component
         return component;
     }
 
+    /*
     public static Component hoverAchievment(Achievement achievement, Component component)
     {
         return new HoverComponent(achievement, component);
     }
+    */
 
     public static Component hoverItem(ItemStack item, Component component)
     {
@@ -75,10 +76,12 @@ public class HoverComponent implements Component
         return new HoverComponent(org.spongepowered.api.text.Text.of(text), component);
     }
 
+    /*
     public static Component hoverAchievment(Achievement achievement, String component)
     {
         return new HoverComponent(achievement, component);
     }
+    */
 
     public static Component hoverItem(ItemStack item, String component)
     {
