@@ -35,6 +35,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 
+import com.google.common.collect.SetMultimap;
 import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.reflect.Reflector;
@@ -117,16 +118,9 @@ public class MaterialMatcher
         reflector.getDefaultConverterManager().registerConverter(new BlockTypeConverter(this), BlockType.class);
 
         // Read names from GameDictionary
-        try
+        for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().map(GameDictionary::getAll).map(SetMultimap::entries).orElse(Collections.emptySet()))
         {
-            for (Entry<String, GameDictionary.Entry> entry : Sponge.getGame().getGameDictionary().getAll().entries())
-            {
-                names.put(entry.getKey(), entry.getValue().getType());
-            }
-        }
-        catch (Exception e) // TODO remove when SpongeVanilla has it
-        {
-            System.err.println("Could not access GameDictionary! Material matching may not work as expected");
+            names.put(entry.getKey(), entry.getValue().getType());
         }
 
         Map<String, ItemType> defLocalizedName = new HashMap<>();
