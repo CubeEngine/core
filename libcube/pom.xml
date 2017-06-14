@@ -97,7 +97,6 @@
             <groupId>de.cubeisland.engine</groupId>
             <artifactId>i18n</artifactId>
             <version>1.0.2-SNAPSHOT</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.cubeengine</groupId>
