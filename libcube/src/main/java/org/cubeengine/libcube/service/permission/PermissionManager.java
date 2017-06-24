@@ -144,4 +144,8 @@ public class PermissionManager
         this.unregistered.clear();
         unregistered.forEach(this::register);
     }
+
+    public Map<String, Permission> getPermissions() {
+        return permissions;
+    }
 }
