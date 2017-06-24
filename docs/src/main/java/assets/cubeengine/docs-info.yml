@@ -1,0 +1,6 @@
+version: ${project.version}
+source-version: ${githead.branch}-${githead.commit}
+build-timestamp: "${timestamp}"
+features:
+  - Automatic generation of documentation for loaded modules!
+
