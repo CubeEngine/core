@@ -47,4 +47,10 @@ public class Permission
     {
         return explicitParents;
     }
+
+    @Override
+    public String toString()
+    {
+        return getId() + ": " + getDesc();
+    }
 }
