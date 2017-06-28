@@ -29,6 +29,7 @@
         <module>libcube</module>
         <module>bootstrap</module>
     <module>docs</module>
+    <module>processor</module>
   </modules>
 
     <build>
