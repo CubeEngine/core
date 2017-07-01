@@ -78,6 +78,7 @@ public abstract class CubeEnginePlugin {
                 }
             }
         }
-
     }
+
+    public abstract String sourceVersion();
 }

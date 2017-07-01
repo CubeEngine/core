@@ -23,6 +23,7 @@ import static org.cubeengine.processor.ModuleProcessor.PLUGIN_ANNOTATION;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +49,28 @@ public class ModuleProcessor extends AbstractProcessor {
     static final String PLUGIN_ANNOTATION = PACKAGE + "Module";
     static final String DEP_ANNOTATION = PACKAGE + "Dependency";
 
+    private static Dependency coreDep = new Dependency() {
+        @Override
+        public String value() {
+            return "cubeengine-core";
+        }
+
+        @Override
+        public String version() {
+            return "";
+        }
+
+        @Override
+        public boolean optional() {
+            return false;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return Dependency.class;
+        }
+    };
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
@@ -61,14 +84,25 @@ public class ModuleProcessor extends AbstractProcessor {
             Dependency[] deps = annotation.dependencies();
             Name packageName = ((PackageElement) element.getEnclosingElement()).getQualifiedName();
             String pluginName = "Plugin" + element.getSimpleName();
-            this.processingEnv.getMessager().printMessage(NOTE, "Generating Plugin for CubeEngine Module " + annotation.name() + "(" + annotation.id() + ")" + "...");
+            //this.processingEnv.getMessager().printMessage(NOTE, "Generating Plugin for CubeEngine Module " + annotation.name() + "(" + annotation.id() + ")" + "...");
             String moduleClass = packageName + "." + element.getSimpleName();
 
             List<Dependency> allDeps = new ArrayList<>(Arrays.asList(deps));
-            // TODO always add cubeengine-core
+            allDeps.add(coreDep);
 
-            String authors = Arrays.stream(annotation.authors()).map(a -> "\"" + a + "\"").collect(Collectors.joining(", "));
             String dependencies = allDeps.stream().map(d -> String.format("@Dependency(id = \"%s\", version = \"%s\", optional = %s)", d.value(), d.version(), d.optional())).collect(Collectors.joining(",\n"));
+            String sourceVersion = processingEnv.getOptions().getOrDefault("cubeengine.module.sourceversion","unknown");
+            if ("${githead.branch}-${githead.commit}".equals(sourceVersion))
+            {
+                sourceVersion = "unknown";
+            }
+            String version = processingEnv.getOptions().getOrDefault("cubeengine.module.version","unknown");
+            String id = "cubeengine-" + processingEnv.getOptions().getOrDefault("cubeengine.module.id",element.getSimpleName().toString().toLowerCase());
+            String name = "CubeEngine - " + processingEnv.getOptions().getOrDefault("cubeengine.module.name","unknown");
+            String description = processingEnv.getOptions().getOrDefault("cubeengine.module.description","unknown");
+            String team = processingEnv.getOptions().getOrDefault("cubeengine.module.team","unknown") + " Team";
+            String url = processingEnv.getOptions().getOrDefault("cubeengine.module.url","");
+
             try (BufferedWriter writer = newWriter(packageName, pluginName))
             {
                 writer.write("package " + packageName + ";\n");
@@ -81,19 +115,19 @@ public class ModuleProcessor extends AbstractProcessor {
                 writer.write("import org.spongepowered.api.Sponge;\n");
                 writer.write(String.format("import %s;\n", moduleClass));
                 writer.write("\n");
-                writer.write(String.format("@Plugin(id = \"cubeengine-%s\",\n"
-                                + "        name = \"CubeEngine - %s\",\n"
+                writer.write(String.format("@Plugin(id = \"%s\",\n"
+                                + "        name = \"%s\",\n"
                                 + "        version = \"%s\",\n"
                                 + "        description = \"%s\",\n"
                                 + "        url = \"%s\",\n"
-                                + "        authors = {%s},\n"
+                                + "        authors = \"%s\",\n"
                                 + "        dependencies = {%s})\n",
-                                annotation.id(),
-                                annotation.name(),
-                                annotation.version(),
-                                annotation.description(),
-                                annotation.url(),
-                                authors,
+                                id,
+                                name,
+                                version,
+                                description,
+                                url,
+                                team,
                                 dependencies));
                 writer.write(String.format(
                           "public class %s extends CubeEnginePlugin\n"
@@ -102,8 +136,13 @@ public class ModuleProcessor extends AbstractProcessor {
                         + "    {\n"
                         + "         super(%s.class);\n"
                         + "    }\n"
+                        + "\n"
+                        + "    public String sourceVersion()\n"
+                        + "    {\n"
+                        + "        return \"%s\";\n"
+                        + "    }\n"
                         + "}\n",
-                        pluginName, pluginName, element.getSimpleName()));
+                        pluginName, pluginName, element.getSimpleName(), sourceVersion));
             }
             catch (IOException e)
             {

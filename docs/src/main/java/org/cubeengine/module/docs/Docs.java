@@ -43,11 +43,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-@Module(id = "docs", name = "Docs", version = "1.0.0",
-        description = "Generate Documentation for CubeEngine on the fly",
-        dependencies = @Dependency("cubeengine-core"),
-        url = "http://cubeengine.org",
-        authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
+@Module
 public class Docs extends CubeEngineModule
 {
     @Inject private TaskManager tm;
