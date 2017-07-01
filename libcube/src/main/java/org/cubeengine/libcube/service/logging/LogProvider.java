@@ -17,81 +17,61 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ThreadFactory;
-import javax.inject.Inject;
 import de.cubeisland.engine.logscribe.Log;
 import de.cubeisland.engine.logscribe.LogFactory;
 import de.cubeisland.engine.logscribe.LogTarget;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.Provider;
-import de.cubeisland.engine.modularity.core.LifeCycle;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.ValueProvider;
-import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
-import de.cubeisland.engine.modularity.core.graph.meta.ServiceImplementationMetadata;
-import de.cubeisland.engine.modularity.core.graph.meta.ServiceProviderMetadata;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
-@Provider(Log.class)
-public class LogProvider implements ValueProvider<Log>
-{
-    @Inject private LogFactory logFactory;
-    @Inject private FileManager fm;
-    @Inject private ThreadFactory tf;
-    private Map<LifeCycle, Log> loggers = new HashMap<>();
+import java.util.HashMap;
+import java.util.Map;
 
-    @Override
-    public Log get(LifeCycle lifeCycle, Modularity modularity)
+import javax.inject.Inject;
+
+public class LogProvider
+{
+    private LogFactory logFactory;
+    private FileManager fm;
+    private ModuleManager mm;
+    private Map<String, Log> loggers = new HashMap<>();
+
+    @Inject
+    public LogProvider(LogFactory logFactory, FileManager fm, ModuleManager mm)
     {
-        Log logger = loggers.get(lifeCycle);
+        this.logFactory = logFactory;
+        this.fm = fm;
+        this.mm = mm;
+    }
+
+    public Log getLogger(Class owner, String name, boolean module)
+    {
+        String longName = owner.getName() + "#" + name;
+        Log logger = loggers.get(longName);
         if (logger != null)
         {
             return logger;
         }
         Log baseLogger = logFactory.getLog(LogFactory.class, "CubeEngine");
-        if (lifeCycle.getInformation() instanceof ModuleMetadata)
+        if (module)
         {
-            String name = ((ModuleMetadata)lifeCycle.getInformation()).getName();
-
-            logger = logFactory.getLog(LogFactory.class, name);
-
+            logger = logFactory.getLog(owner, name);
             logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, name),
-                                              LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), tf));
+                    LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), mm.getThreadFactory(owner)));
 
             LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
         }
         else
         {
-            String name = lifeCycle.getInformation().getIdentifier().name();
-            if (lifeCycle.getInformation() instanceof ServiceImplementationMetadata || lifeCycle.getInformation() instanceof ServiceProviderMetadata)
-            {
-                try
-                {
-                    name = Class.forName(lifeCycle.getInformation().getActualClass()).getSimpleName();
-                }
-                catch (ClassNotFoundException e)
-                {
-                    throw new IllegalStateException(e);
-                }
-            }
-            else
-            {
-                baseLogger.info("Logger created for {}", name);
-            }
-
-            logger = logFactory.getLog(LogFactory.class, name);
-
+            logger = logFactory.getLog(owner, name);
             LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
 
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
-
             // TODO manually add Target for non-modules
         }
-        loggers.put(lifeCycle, logger);
+        this.loggers.put(longName, logger);
         return logger;
     }
 }

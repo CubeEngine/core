@@ -24,17 +24,34 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import javax.inject.Inject;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.service.logging.LogProvider;
+import org.spongepowered.api.Sponge;
 
-@ServiceProvider(StringMatcher.class)
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class StringMatcher
 {
     private final DamerauLevenshteinAlgorithm editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
-    @Inject private Log logger;
+    private final Log logger;
+
+    @Inject
+    public StringMatcher(LogProvider logProvider)
+    {
+        if (logProvider == null) // TODO EntityDataChanger Call
+        {
+            this.logger = ((LibCube) Sponge.getPluginManager().getPlugin("cubeengine-core").get().getInstance().get()).getModuleManager().getLoggerFor(StringMatcher.class);
+        }
+        else
+        {
+            this.logger = logProvider.getLogger(StringMatcher.class, "StringMatcher", false);
+        }
+    }
 
     /**
      * Returns all matches with their editDistance, having an editDistance <= maxDistance

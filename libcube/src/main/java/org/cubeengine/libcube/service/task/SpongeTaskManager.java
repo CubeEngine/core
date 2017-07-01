@@ -17,35 +17,40 @@
  */
 package org.cubeengine.libcube.service.task;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Scheduler;
+import org.spongepowered.api.scheduler.Task;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.scheduler.Scheduler;
-import org.spongepowered.api.scheduler.Task;
+import javax.inject.Singleton;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
-@ServiceImpl(TaskManager.class)
-@Version(1)
+@Singleton
 public class SpongeTaskManager implements TaskManager
 {
-    private final Object plugin;
     private Scheduler scheduler;
     private final Map<Class, Set<UUID>> tasks;
+    private ModuleManager mm;
+    private PluginContainer plugin;
 
     @Inject
-    public SpongeTaskManager(Game game)
+    public SpongeTaskManager(ModuleManager mm)
     {
-        this.plugin = game.getPluginManager().getPlugin("cubeengine").get().getInstance().get();
-        this.scheduler = game.getScheduler();
+        this.mm = mm;
+        this.plugin = mm.getPlugin(LibCube.class).get();
+        this.scheduler = Sponge.getScheduler();
         this.tasks = new ConcurrentHashMap<>();
     }
 
@@ -76,7 +81,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).execute(runnable).submit(plugin));
+        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).execute(runnable).submit(getPlugin(owner)));
     }
 
     @Override
@@ -85,7 +90,17 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).intervalTicks(interval).execute(runnable).submit(plugin));
+        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).intervalTicks(interval).execute(runnable).submit(getPlugin(owner)));
+    }
+
+    private Object getPlugin(Class owner)
+    {
+        Optional<PluginContainer> pc = this.mm.getPlugin(owner);
+        if (pc.isPresent())
+        {
+            return pc.get().getInstance().get();
+        }
+        return this.plugin;
     }
 
     @Override
@@ -99,7 +114,7 @@ public class SpongeTaskManager implements TaskManager
     {
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
-        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(plugin));
+        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(getPlugin(owner)));
     }
 
     private UUID addTaskId(Class owner, Task task)
@@ -115,7 +130,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(plugin));
+        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(getPlugin(owner)));
     }
 
     @Override

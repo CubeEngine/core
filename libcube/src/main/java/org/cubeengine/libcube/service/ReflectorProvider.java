@@ -22,7 +22,6 @@ import javax.inject.Provider;
 import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConverterManager;
 import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.ContextConverter;
 import org.cubeengine.libcube.service.config.DataQueryConverter;
@@ -45,7 +44,6 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-@ServiceProvider(Reflector.class)
 public class ReflectorProvider implements Provider<Reflector>
 {
     private final Reflector reflector = new Reflector();

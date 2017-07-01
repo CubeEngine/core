@@ -18,29 +18,28 @@
 package org.cubeengine.libcube.service.matcher;
 
 import java.util.HashMap;
-import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.marker.Enable;
-import org.spongepowered.api.Game;
+
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.DyeColor;
 
-@ServiceProvider(MaterialDataMatcher.class)
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class MaterialDataMatcher
 {
-    @Inject private Game game;
     @Inject private StringMatcher stringMatcher;
     private HashMap<String, DyeColor> dyeColors;
 
-    @Enable
     public void onEnable()
     {
-        initDataValues(game);
+        initDataValues();
     }
 
-    private void initDataValues(Game game)
+    private void initDataValues()
     {
         this.dyeColors = new HashMap<>();
-        for (DyeColor dyeColor : game.getRegistry().getAllOf(DyeColor.class))
+        for (DyeColor dyeColor : Sponge.getRegistry().getAllOf(DyeColor.class))
         {
             dyeColors.put(dyeColor.getName(), dyeColor);
         }

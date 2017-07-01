@@ -17,17 +17,15 @@
  */
 package org.cubeengine.libcube.service.task;
 
+import com.google.inject.ImplementedBy;
+
 import java.util.UUID;
-import de.cubeisland.engine.modularity.asm.marker.Service;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Module;
 
 /**
  * This class provides methods to register and cancel tasks and the global
  * ScheduledExecutorService is provided by this class.
  */
-@Service
-@Version(1)
+@ImplementedBy(SpongeTaskManager.class)
 public interface TaskManager
 {
 

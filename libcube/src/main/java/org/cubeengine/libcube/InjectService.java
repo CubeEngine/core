@@ -15,30 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.event;
+package org.cubeengine.libcube;
 
-import de.cubeisland.engine.modularity.core.Module;
-import org.spongepowered.api.event.impl.AbstractEvent;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This class is a custom Event containing the core to allow easy access.
+ * Module Annotation for injecting Sponge services
  */
-public abstract class CubeEvent extends AbstractEvent
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface InjectService
 {
-    private final Module module;
-
-    public CubeEvent(Module module)
-    {
-        this.module = module;
-    }
-
-    /**
-     * Returns the CubeEngine-Core
-     *
-     * @return the core
-     */
-    public Module getModule()
-    {
-        return this.module;
-    }
 }
+
+

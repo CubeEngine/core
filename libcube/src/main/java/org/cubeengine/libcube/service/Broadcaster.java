@@ -19,8 +19,6 @@ package org.cubeengine.libcube.service;
 
 import java.util.Collection;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.asm.marker.Version;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -32,8 +30,6 @@ import org.spongepowered.api.text.format.TextFormat;
 import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NONE;
 import static org.spongepowered.api.text.format.TextColors.WHITE;
 
-@ServiceProvider(Broadcaster.class)
-@Version(1)
 public class Broadcaster
 {
     @Inject private I18n i18n;

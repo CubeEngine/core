@@ -19,7 +19,6 @@ package org.cubeengine.libcube.service.matcher;
 
 import java.util.HashMap;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.EnchantmentConverter;
 import org.spongepowered.api.Sponge;
@@ -33,7 +32,6 @@ import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENC
 /**
  * This Matcher provides methods to match Enchantments.
  */
-@ServiceProvider(EnchantMatcher.class)
 public class EnchantMatcher
 {
     private final HashMap<String, Enchantment> names = new HashMap<>();

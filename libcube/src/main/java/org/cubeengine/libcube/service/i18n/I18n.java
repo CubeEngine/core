@@ -17,21 +17,12 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import javax.inject.Inject;
+import static java.util.stream.Collectors.toList;
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+import static org.cubeengine.dirigent.context.Contexts.createContext;
+import static org.cubeengine.libcube.service.i18n.Properties.SOURCE;
+import static org.spongepowered.api.Sponge.getAssetManager;
+
 import de.cubeisland.engine.i18n.I18nService;
 import de.cubeisland.engine.i18n.I18nUtil;
 import de.cubeisland.engine.i18n.language.DefinitionLoadingException;
@@ -42,15 +33,10 @@ import de.cubeisland.engine.i18n.loader.GettextLoader;
 import de.cubeisland.engine.i18n.plural.PluralExpr;
 import de.cubeisland.engine.i18n.translation.TranslationLoadingException;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.ModularityClassLoader;
-import de.cubeisland.engine.modularity.core.ModularityHandler;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.marker.Enable;
-import org.cubeengine.dirigent.context.Context;
-import org.cubeengine.reflect.Reflector;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
+import org.cubeengine.dirigent.context.Context;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.filesystem.FileExtensionFilter;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.i18n.formatter.BiomeFormatter;
@@ -63,38 +49,62 @@ import org.cubeengine.libcube.service.i18n.formatter.StringFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.TextMacro;
 import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
+import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
+import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 
-import static java.util.stream.Collectors.toList;
-import static org.cubeengine.dirigent.context.Contexts.LOCALE;
-import static org.cubeengine.dirigent.context.Contexts.createContext;
-import static org.cubeengine.libcube.service.i18n.Properties.*;
-import static org.spongepowered.api.Sponge.getAssetManager;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
-@ServiceProvider(I18n.class)
-public class I18n extends I18nTranslate implements ModularityHandler
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
+public class I18n extends I18nTranslate
 {
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
     private BuilderDirigent<Text, Text.Builder> compositor;
-    private StringMatcher stringMatcher;
-    private I18nConfig config;
+    @Inject private StringMatcher stringMatcher;
+    private final I18nConfig config;
     private final Context defaultContext;
 
-    @Inject private Log log;
-    @Inject private PluginContainer plugin;
+    private final Log log;
+    private final LibCube plugin;
 
     @Inject
-    public I18n(FileManager fm, Reflector reflector, StringMatcher stringMatcher, Modularity modularity)
+    public I18n(FileManager fm, Reflector reflector, LogProvider logProvider, ModuleManager mm)
     {
-        modularity.registerHandler(this);
+        this.log = logProvider.getLogger(I18n.class, "I18n", false);
+        this.plugin = ((LibCube) mm.getModule(LibCube.class));
         this.config = reflector.load(I18nConfig.class, fm.getDataPath().resolve("i18n.yml").toFile());
-        this.stringMatcher = stringMatcher;
         reflector.getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
 
         this.addPoFilesFromDirectory(fm.getTranslationPath());
@@ -110,32 +120,30 @@ public class I18n extends I18nTranslate implements ModularityHandler
         this.service = new I18nService(SourceLanguage.EN_US, translationLoader, languageLoader, defaultLocale);
 
         // Search for languages on classPath
+        // TODO use Sponge assets?
         ClassLoader classLoader = getClass().getClassLoader();
-        if (!(classLoader instanceof ModularityClassLoader))
+        try
         {
-            try
+            for (URL url : ((URLClassLoader) classLoader).getURLs())
             {
-                for (URL url : ((URLClassLoader) classLoader).getURLs())
+                try
                 {
-                    try
+                    URI uri = url.toURI();
+                    if (uri.getScheme().equals("file"))
                     {
-                        URI uri = url.toURI();
-                        if (uri.getScheme().equals("file"))
-                        {
-                            languageLoader.loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, url));
-                            this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, url));
-                        }
-                    }
-                    catch (IOException ex)
-                    {
-                        log.error(ex, "Failed to load language configurations!");
+                        languageLoader.loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, url));
+                        this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, url));
                     }
                 }
+                catch (IOException ex)
+                {
+                    log.error(ex, "Failed to load language configurations!");
+                }
             }
-            catch (URISyntaxException e)
-            {
-                throw new IllegalStateException(e);
-            }
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IllegalStateException(e);
         }
 
         this.compositor = new BuilderDirigent<>(new TextMessageBuilder(service));
@@ -155,7 +163,6 @@ public class I18n extends I18nTranslate implements ModularityHandler
         defaultContext = createContext(LOCALE.with(defaultLocale));
     }
 
-    @Enable
     public void enable()
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
@@ -187,38 +194,17 @@ public class I18n extends I18nTranslate implements ModularityHandler
         }
     }
 
-    @Override
-    public void onEnable(Object o)
+    public void registerPlugin(PluginContainer plugin)
     {
-        if (o instanceof Module)
-        {
-            registerModule(((Module)o));
-        }
-    }
-
-    @Override
-    public void onDisable(Object o)
-    {
-
-    }
-
-    public void registerModule(Module module)
-    {
-        String name = module.getInformation().getName().toLowerCase();
+        String name = plugin.getName();
         for (Language language : getLanguages())
         {
             String lang = language.getLocale().getLanguage();
             String full = lang + "_ " + language.getLocale().getCountry();
-            Optional<Asset> asset = getAssetManager().getAsset(plugin.getInstance().get(), "translations/" + lang + "_" + name + ".po");
-            if (asset.isPresent())
-            {
-                poFiles.add(asset.get().getUrl());
-            }
-            asset = getAssetManager().getAsset(plugin.getInstance().get(), "translations/" + full + "_" + name + ".po");
-            if (asset.isPresent())
-            {
-                poFiles.add(asset.get().getUrl());
-            }
+            Optional<Asset> asset = getAssetManager().getAsset(plugin, "translations/" + lang + "_" + name + ".po");
+            asset.map(Asset::getUrl).ifPresent(poFiles::add);
+            asset = getAssetManager().getAsset(plugin, "translations/" + full + "_" + name + ".po");
+            asset.map(Asset::getUrl).ifPresent(poFiles::add);
         }
     }
 

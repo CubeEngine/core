@@ -17,6 +17,15 @@
  */
 package org.cubeengine.libcube.service.filesystem;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.nio.file.Files.createSymbolicLink;
+
+import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.libcube.ModuleManager;
+import org.cubeengine.reflect.ReflectedFile;
+import org.cubeengine.reflect.Reflector;
+import org.slf4j.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,34 +38,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.inject.Inject;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.LifeCycle;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.ModularityHandler;
-import org.cubeengine.reflect.ReflectedFile;
-import org.cubeengine.reflect.Reflector;
-import org.slf4j.Logger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.nio.file.Files.createSymbolicLink;
+import javax.inject.Inject;
 
 /**
  * Manages all the configurations of the CubeEngine.
  */
-@ServiceProvider(FileManager.class)
-public class FileManager implements ModularityHandler
+public class FileManager
 {
-    @Inject private Logger logger;
-    @Inject private Reflector reflector;
-    @Inject private Modularity modularity;
+    private ModuleManager mm;
     private File dataFolder;
+    private final Logger logger;
+    private final Reflector reflector;
 
     private Path languagePath;
     private Path logPath;
@@ -67,9 +67,12 @@ public class FileManager implements ModularityHandler
     private FileAttribute<?>[] folderCreateAttributes;
 
     @Inject
-    public FileManager(File dataFolder, Modularity modularity)
+    public FileManager(ModuleManager moduleManager, File dataFolder, Logger logger, Reflector reflector)
     {
+        this.mm = moduleManager;
         this.dataFolder = dataFolder;
+        this.logger = logger;
+        this.reflector = reflector;
         try
         {
             createSymbolicLink(Paths.get(System.getProperty("user.dir", "."), "CubeEngine"), dataFolder.toPath());
@@ -83,7 +86,7 @@ public class FileManager implements ModularityHandler
             if (Files.getFileAttributeView(dataPath.resolve("modules"), PosixFileAttributeView.class) != null)
             {
                 folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
-
+                Files.createDirectories(dataPath);
                 Files.setPosixFilePermissions(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
             }
             else
@@ -106,8 +109,6 @@ public class FileManager implements ModularityHandler
         {
             logger.info("Hiding the temp folder failed! This can be ignored!");
         }
-
-        modularity.registerHandler(this);
     }
 
     /**
@@ -280,15 +281,15 @@ public class FileManager implements ModularityHandler
         return this.getResourceStream(this.fileSources.get(file));
     }
 
-    public  <T extends ReflectedFile<?, ?, ?>> T loadConfig(Object instance, Class<T> clazz)
+    public <T extends ReflectedFile<?, ?, ?>> T loadConfig(Object instance, Class<T> clazz)
     {
         T config = reflector.create(clazz);
-        LifeCycle lifecycle = modularity.getLifecycle(instance.getClass());
-        Path path = (Path)modularity.getLifecycle(Path.class).getProvided(lifecycle);
+        Path path = mm.getPathFor(instance.getClass());
+        Log logger = mm.getLoggerFor(instance.getClass());
         config.setFile(path.resolve("config." + config.getCodec().getExtension()).toFile());
         if (config.reload(true))
         {
-            ((Log)modularity.getLifecycle(Log.class).getProvided(lifecycle)).info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+            logger.info("Saved new configuration file! config.{}", config.getCodec().getExtension());
         }
         return config;
     }
@@ -306,30 +307,20 @@ public class FileManager implements ModularityHandler
         return true;
     }
 
-    @Override
-    public void onEnable(Object instance)
+    public void injectConfig(Object instance, List<Field> fields)
     {
-        for (Field field : instance.getClass().getDeclaredFields())
+        for (Field field : fields)
         {
-            if (field.isAnnotationPresent(ModuleConfig.class))
+            ReflectedFile loaded = loadConfig(instance, (Class<? extends ReflectedFile>)field.getType());
+            field.setAccessible(true);
+            try
             {
-                ReflectedFile loaded = loadConfig(instance, (Class<? extends ReflectedFile>)field.getType());
-                field.setAccessible(true);
-                try
-                {
-                    field.set(instance, loaded);
-                }
-                catch (IllegalAccessException e)
-                {
-                    throw new IllegalStateException(e);
-                }
+                field.set(instance, loaded);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new IllegalStateException(e);
             }
         }
-    }
-
-    @Override
-    public void onDisable(Object instance)
-    {
-        // do nothing
     }
 }

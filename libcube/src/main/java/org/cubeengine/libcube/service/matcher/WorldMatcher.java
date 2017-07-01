@@ -20,27 +20,24 @@ package org.cubeengine.libcube.service.matcher;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.libcube.util.StringUtils;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 
 import static java.util.stream.Collectors.toList;
 
-@ServiceProvider(WorldMatcher.class)
 public class WorldMatcher
 {
-    @Inject private Game game;
     @Inject private StringMatcher stringMatcher;
 
     public World matchWorld(String name)
     {
-        String match = stringMatcher.matchString(name, game.getServer().getWorlds().stream().map(World::getName).collect(toList()));
+        String match = stringMatcher.matchString(name, Sponge.getServer().getWorlds().stream().map(World::getName).collect(toList()));
         if (match == null)
         {
             return null;
         }
-        return game.getServer().getWorld(match).get();
+        return Sponge.getServer().getWorld(match).get();
     }
 
     /**

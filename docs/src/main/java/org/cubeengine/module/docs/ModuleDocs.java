@@ -19,52 +19,52 @@ package org.cubeengine.module.docs;
 
 import static java.util.stream.Collectors.toMap;
 
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.StringUtils;
 import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.alias.AliasConfiguration;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.command.CubeDescriptor;
 import org.cubeengine.libcube.service.command.HelpCommand;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.cubeengine.reflect.Reflector;
+import org.spongepowered.api.plugin.PluginContainer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 public class ModuleDocs
 {
-    private final Module module;
+    private final PluginContainer pc;
+    private ModuleManager mm;
     private final String name;
     private final Info config;
     private final Permission basePermission;
     private final Set<Permission> permissions = new HashSet<>();
     private final Set<CommandBase> commands = new HashSet<>();
 
-    public ModuleDocs(Module module, Reflector reflector, PermissionManager pm, CommandManager cm)
+    public ModuleDocs(PluginContainer module, Reflector reflector, PermissionManager pm, CommandManager cm, ModuleManager mm)
     {
-        this.module = module;
-        this.name = module.getInformation().getName();
-        InputStream is = module.getClass().getResourceAsStream(module.getInformation().getName().toLowerCase() + "-info.yml");
+        this.pc = module;
+        this.mm = mm;
+        this.name = module.getName();
+        InputStream is = module.getClass().getResourceAsStream(module.getId() + "-info.yml");
         if (is == null)
         {
             this.config = reflector.create(Info.class);
@@ -114,7 +114,7 @@ public class ModuleDocs
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(this.name);
         sb.append("\n\n");
-        sb.append(this.module.getInformation().getDescription());
+        sb.append(pc.getDescription().orElse(""));
         sb.append("\n\n");
         if (this.config.features.isEmpty())
         {

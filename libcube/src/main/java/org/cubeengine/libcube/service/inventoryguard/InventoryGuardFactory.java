@@ -19,22 +19,16 @@ package org.cubeengine.libcube.service.inventoryguard;
 
 import static java.util.stream.Collectors.toList;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Module;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-@ServiceProvider(InventoryGuardFactory.class)
+import java.util.Arrays;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 public class InventoryGuardFactory
 {
     @Inject

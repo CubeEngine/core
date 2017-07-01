@@ -23,13 +23,11 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.libcube.util.StringUtils;
 
 /**
  * A Matcher for ingame time
  */
-@ServiceProvider(TimeMatcher.class)
 public class TimeMatcher
 {
     private Map<String, Long> times = new HashMap<>();

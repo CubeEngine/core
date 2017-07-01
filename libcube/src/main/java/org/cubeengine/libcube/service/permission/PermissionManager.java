@@ -24,11 +24,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.asm.marker.Version;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.graph.DependencyInformation;
-import de.cubeisland.engine.modularity.core.graph.meta.ModuleMetadata;
+import javax.inject.Singleton;
+
+import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
@@ -39,17 +37,14 @@ import org.spongepowered.api.text.Text;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Registers permissions to the server.
  */
-@ServiceProvider(PermissionManager.class)
-@Version(1)
+@Singleton
 public class PermissionManager
 {
-    @Inject private Modularity modularity;
+    @Inject private ModuleManager mm;
     private PluginContainer plugin;
 
     private final Map<Class, Permission> basePermission = new HashMap<>();
@@ -63,7 +58,7 @@ public class PermissionManager
     public PermissionManager(PluginContainer plugin)
     {
         this.plugin = plugin;
-        Sponge.getEventManager().registerListeners(plugin.getInstance().get(), this);
+        Sponge.getEventManager().registerListeners(plugin, this);
         rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", emptySet())); // TODO translatable
     }
 
@@ -109,9 +104,7 @@ public class PermissionManager
         Permission perm = basePermission.get(owner);
         if (perm == null)
         {
-            DependencyInformation info = modularity.getLifecycle(owner).getInformation();
-            String name = info instanceof ModuleMetadata ? ((ModuleMetadata)info).getName() : info.getClassName();
-
+            String name = mm.getModuleName(owner).orElse(owner.getSimpleName());
             perm = register(new Permission(permId(null, name.toLowerCase(), rootPermission), "Base Permission for " + name, emptySet())); // TODO translatable
             basePermission.put(owner, perm);
         }

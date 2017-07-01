@@ -17,41 +17,38 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
 import org.cubeengine.libcube.service.config.EntityTypeConverter;
-import org.cubeengine.libcube.service.config.ItemTypeConverter;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.Villager;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.monster.Monster;
 import org.spongepowered.api.entity.projectile.Projectile;
-import org.spongepowered.api.item.ItemType;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * This Matcher provides methods to match Entities.
  */
-@ServiceProvider(EntityMatcher.class)
 public class EntityMatcher
 {
     private final Map<String, EntityType> ids = new HashMap<>();
     private final Map<String, EntityType> translations = new HashMap<>();
     private final Map<Short, EntityType> legacyIds = new HashMap<>(); // TODO fill the map
-    private Game game;
     private StringMatcher stringMatcher;
 
     @Inject
-    public EntityMatcher(Game game, StringMatcher stringMatcher, Reflector reflector)
+    public EntityMatcher(StringMatcher stringMatcher, Reflector reflector)
     {
-        this.game = game;
         this.stringMatcher = stringMatcher;
-        for (EntityType type :  game.getRegistry().getAllOf(EntityType.class))
+        for (EntityType type : Sponge.getRegistry().getAllOf(EntityType.class))
         {
             ids.put(type.getName().toLowerCase(), type);
             translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
@@ -93,7 +90,7 @@ public class EntityMatcher
             name = "minecraft:item_frame";
         }
 
-        EntityType entity = game.getRegistry().getType(EntityType.class, name).orElse(null);
+        EntityType entity = Sponge.getRegistry().getType(EntityType.class, name).orElse(null);
         if (entity != null)
         {
             return entity;
@@ -117,7 +114,7 @@ public class EntityMatcher
         if (entity == null && locale != null)
         {
             Map<String, EntityType> translations = new HashMap<>();
-            for (EntityType type : game.getRegistry().getAllOf(EntityType.class))
+            for (EntityType type : Sponge.getRegistry().getAllOf(EntityType.class))
             {
                 translations.put(type.getTranslation().get(locale, type), type);
             }

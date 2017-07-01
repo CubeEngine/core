@@ -24,19 +24,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.modularity.asm.marker.Service;
-import de.cubeisland.engine.modularity.asm.marker.Version;
+import org.cubeengine.libcube.service.database.mysql.MySQLDatabase;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.ResultQuery;
+import org.spongepowered.api.util.annotation.eventgen.ImplementedBy;
+
+import javax.inject.Singleton;
 
 /**
  * The Database interface.
  */
-@Service
-@Version(1)
+@ImplementedBy(MySQLDatabase.class)
 public interface Database
 {
     /**

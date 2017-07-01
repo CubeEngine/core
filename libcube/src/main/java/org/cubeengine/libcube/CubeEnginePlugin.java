@@ -17,30 +17,67 @@
  */
 package org.cubeengine.libcube;
 
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
+import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.PluginContainer;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Optional;
 
 public abstract class CubeEnginePlugin {
 
-    private Injector injector;
+    @Inject PluginContainer plugin;
+    @Inject private Injector injector;
+    @ConfigDir(sharedRoot = false) @Inject File dataFolder;
     private PluginContainer lib;
     private Class<?> module;
+    private ModuleManager mm;
 
-    public CubeEnginePlugin(Injector injector, PluginContainer lib, Class module)
+    public CubeEnginePlugin(Class module)
     {
-        this.injector = injector;
-        this.lib = lib;
+        this.lib = Sponge.getPluginManager().getPlugin("cubeengine-core").get();
         this.module = module;
     }
 
     @Listener
-    public void onInit(GamePostInitializationEvent event)
+    public void onConstruction(GameConstructionEvent event)
     {
-        System.out.println("Created Module: " + module.getSimpleName());
-        Injector moduleInjector = injector.createChildInjector(((LibCube) lib.getInstance().get()).getGuiceModule());
-        Object instance = moduleInjector.getInstance(module);
-        // TODO do stuff with my module
+        LibCube libCube = (LibCube) lib.getInstance().get();
+        this.mm = libCube.getModuleManager();
+        this.mm.registerAndCreate(this.module, this.plugin, this.injector);
+        this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
+    }
+
+    @Listener
+    public void onInit(GameInitializationEvent event)
+    {
+        Object module = mm.getModule(this.module);
+        for (Field field : ModuleManager.getAnnotatedFields(module, InjectService.class))
+        {
+            Optional<?> provided = Sponge.getServiceManager().provide(field.getType());
+            if (!provided.isPresent())
+            {
+                mm.getLoggerFor(this.module).warn("Missing Service");
+            }
+            else
+            {
+                try
+                {
+                    field.setAccessible(true);
+                    field.set(module, provided.get());
+                }
+                catch (IllegalAccessException e)
+                {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
     }
 }

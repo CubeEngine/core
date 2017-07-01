@@ -17,41 +17,38 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import java.io.File;
-import java.util.concurrent.ThreadFactory;
-import javax.inject.Inject;
-import de.cubeisland.engine.logscribe.DefaultLogFactory;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.filter.PrefixFilter;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.marker.Disable;
-import de.cubeisland.engine.modularity.core.marker.Enable;
-import org.cubeengine.reflect.Reflector;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
-import org.cubeengine.libcube.service.command.CommandManager;
-import org.cubeengine.libcube.service.filesystem.FileManager;
-import org.cubeengine.libcube.service.task.ModuleThreadFactory;
-
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getCycler;
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getFileFormat;
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getLogFile;
 
-@ServiceProvider(LogFactory.class)
+import de.cubeisland.engine.logscribe.DefaultLogFactory;
+import de.cubeisland.engine.logscribe.Log;
+import de.cubeisland.engine.logscribe.LogFactory;
+import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.cubeengine.libcube.ModuleManager;
+import org.cubeengine.libcube.service.command.CommandManager;
+import org.cubeengine.libcube.service.filesystem.FileManager;
+import org.cubeengine.reflect.Reflector;
+
+import java.util.concurrent.ThreadFactory;
+
 public class SpongeLogFactory extends DefaultLogFactory
 {
     private final Log4jProxyTarget baseTarget;
     private final Log mainLogger;
     private final LoggerConfiguration config;
-    @Inject private Modularity modularity;
+    private final FileManager fm;
+    private ThreadFactory tf;
+    private ModuleManager mm;
 
-    @Inject
-    public SpongeLogFactory(Reflector reflector, File pluginPath)
+    public SpongeLogFactory(Reflector reflector, FileManager fm, ModuleManager mm)
     {
-        config = reflector.load(LoggerConfiguration.class, pluginPath.toPath().resolve("logger.yml").toFile());
+        this.fm = fm;
+        this.mm = mm;
+
+        config = reflector.load(LoggerConfiguration.class, mm.getBasePath().toPath().resolve("logger.yml").toFile());
 
         // configure console logger
         baseTarget = new Log4jProxyTarget((Logger)LogManager.getLogger("CubeEngine"));
@@ -62,12 +59,9 @@ public class SpongeLogFactory extends DefaultLogFactory
         mainLogger = getLog(LogFactory.class, "CubeEngine").addTarget(baseTarget);
     }
 
-    @Enable
-    public void onEnable()
+    public void init(ThreadFactory tf)
     {
-        FileManager fm = modularity.provide(FileManager.class);
-        ThreadFactory tf = new ModuleThreadFactory(new ThreadGroup("CubeEngine"), getLog(LogFactory.class, "ThreadFactory"));
-
+        this.tf = tf;
         // configure main file logger
         AsyncFileTarget mainFileTarget = new AsyncFileTarget(getLogFile(fm, "main"), getFileFormat(true, true), true, getCycler(), tf);
         mainFileTarget.setLevel(config.fileLevel);
@@ -89,7 +83,6 @@ public class SpongeLogFactory extends DefaultLogFactory
         }
     }
 
-    @Disable
     public void onDisable()
     {
         CommandLogging.reset();
@@ -100,10 +93,8 @@ public class SpongeLogFactory extends DefaultLogFactory
     {
         if (config.logCommands && clazz.equals(CommandManager.class))
         {
-            FileManager fm = modularity.provide(FileManager.class);
-            ThreadFactory tf = (ThreadFactory)modularity.getLifecycle(ThreadFactory.class).getProvided(modularity.getLifecycle(CommandManager.class));
             Log cmdLogger = super.getLog(clazz, id);
-            cmdLogger.addTarget(new AsyncFileTarget(getLogFile(fm, "Commands"), getFileFormat(true, false), true, getCycler(), tf));
+            cmdLogger.addTarget(new AsyncFileTarget(getLogFile(fm, "commands"), getFileFormat(true, false), true, getCycler(), this.tf));
             return cmdLogger;
         }
         return super.getLog(clazz, id);

@@ -27,6 +27,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
@@ -36,10 +38,7 @@ import de.cubeisland.engine.logscribe.LogLevel;
 import de.cubeisland.engine.logscribe.LogTarget;
 import de.cubeisland.engine.logscribe.filter.PrefixFilter;
 import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
-import de.cubeisland.engine.modularity.asm.marker.ServiceImpl;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.ModularityHandler;
-import de.cubeisland.engine.modularity.core.marker.Disable;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.database.TableVersion;
 import org.cubeengine.reflect.Reflector;
 import org.apache.logging.log4j.Level;
@@ -62,9 +61,8 @@ import org.jooq.conf.RenderMapping;
 import org.jooq.conf.Settings;
 import org.jooq.impl.*;
 
-@ServiceImpl(Database.class)
-@de.cubeisland.engine.modularity.asm.marker.Version(1)
-public class MySQLDatabase extends AbstractDatabase implements Database, ModularityHandler
+@Singleton
+public class MySQLDatabase extends AbstractDatabase implements Database
 {
     private final MySQLDatabaseConfiguration config;
     private final HikariDataSource dataSource;
@@ -75,15 +73,17 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
     private final JooqLogger jooqLogger = new JooqLogger(this);
 
     @Inject
-    public MySQLDatabase(Reflector reflector, File pluginFolder, Log logger, FileManager fm, LogFactory logFactory, Modularity modularity)
+    public MySQLDatabase(Reflector reflector, ModuleManager mm, FileManager fm, LogFactory logFactory)
     {
+        File pluginFolder = mm.getBasePath();
+
         // Disable HikariPool Debug ConsoleSpam
         ((Logger)LogManager.getLogger(HikariPool.class)).setLevel(Level.INFO);
         ((Logger)LogManager.getLogger("com.zaxxer.hikari.pool.PoolBase")).setLevel(Level.INFO); // really? now pkg-private
         ((Logger)LogManager.getLogger(HikariConfig.class)).setLevel(Level.INFO);
 
         // Setting up Logger...
-        this.logger = logger;
+        this.logger = mm.getLoggerFor(Database.class);
         AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Database"),
                                                      LoggingUtil.getFileFormat(true, false),
                                                      true, LoggingUtil.getCycler(), threadFactory);
@@ -151,8 +151,6 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         this.logger.info("connected!");
 
         this.registerTable(new TableVersion());
-
-        modularity.registerHandler(this);
     }
 
     private boolean updateTableStructure(TableUpdateCreator updater)
@@ -264,7 +262,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
     }
 
     @Override
-    @Disable
+    // TODO call on close
     public void shutdown()
     {
         super.shutdown();
@@ -295,7 +293,7 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
         return logger;
     }
 
-    @Override
+    // TODO register tables
     public void onEnable(Object module)
     {
         ModuleTables annotation = module.getClass().getAnnotation(ModuleTables.class);
@@ -306,11 +304,5 @@ public class MySQLDatabase extends AbstractDatabase implements Database, Modular
                 registerTable(tableClass);
             }
         }
-    }
-
-    @Override
-    public void onDisable(Object module)
-    {
-        // nothing here
     }
 }

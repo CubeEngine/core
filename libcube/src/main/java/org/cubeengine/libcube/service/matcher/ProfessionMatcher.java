@@ -21,20 +21,18 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.Profession;
 
-@ServiceProvider(ProfessionMatcher.class)
 public class ProfessionMatcher
 {
     private final Map<String, Profession> professions = new HashMap<>();
     @Inject private StringMatcher stringMatcher;
 
     @Inject
-    public ProfessionMatcher(Game game)
+    public ProfessionMatcher()
     {
-        for (Profession profession : game.getRegistry().getAllOf(Profession.class))
+        for (Profession profession : Sponge.getRegistry().getAllOf(Profession.class))
         {
             this.professions.put(profession.getName().toLowerCase(), profession);
         }

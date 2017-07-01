@@ -17,18 +17,20 @@
  */
 package org.cubeengine.libcube.service.event;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.inject.Inject;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.ModularityHandler;
-import de.cubeisland.engine.modularity.core.PostInjectionHandler;
-import org.spongepowered.api.Game;
+
+import com.google.inject.Injector;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -37,22 +39,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
  */
-@ServiceProvider(EventManager.class)
-public class EventManager implements ModularityHandler, PostInjectionHandler<ModuleListener>
+public class EventManager
 {
     private final ConcurrentMap<Class, Set<Object>> listenerMap;
     private final org.spongepowered.api.event.EventManager eventManager;
-    private final Object plugin;
+    private final PluginContainer plugin;
 
     @Inject
-    public EventManager(Game game, Modularity modularity)
+    public EventManager(ModuleManager mm)
     {
-        this.eventManager = game.getEventManager();
+        this.eventManager = Sponge.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = modularity.provide(PluginContainer.class).getInstance().get();
-
-        modularity.registerHandler(this);
-        modularity.registerPostInjectAnnotation(ModuleListener.class, this);
+        this.plugin = mm.getPlugin(LibCube.class).get();
     }
 
     /**
@@ -138,20 +136,22 @@ public class EventManager implements ModularityHandler, PostInjectionHandler<Mod
         return event;
     }
 
-    @Override
-    public void onEnable(Object instance)
+    public void injectListeners(Injector injector, Object instance, List<Field> fields)
     {
-    }
+        for (Field field : fields)
+        {
+            try
+            {
+                field.setAccessible(true);
+                Object listener = injector.getInstance(field.getType());
+                field.set(instance, listener);
+                this.registerListener(instance.getClass(), listener);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
 
-    @Override
-    public void handle(ModuleListener annotation, Object injected, Object owner)
-    {
-        registerListener(owner.getClass(), injected);
-    }
-
-    @Override
-    public void onDisable(Object instance)
-    {
-        removeListeners(instance.getClass());
     }
 }

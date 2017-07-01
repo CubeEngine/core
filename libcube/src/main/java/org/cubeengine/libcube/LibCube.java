@@ -17,9 +17,18 @@
  */
 package org.cubeengine.libcube;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
+import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+
+import java.io.File;
+import java.nio.file.Path;
+
+import javax.inject.Inject;
 
 @Plugin(id = "cubeengine-core", name = "LibCube", version = "1.0.0",
         description = "Core Library for CubeEngine plugins",
@@ -27,24 +36,26 @@ import org.spongepowered.api.plugin.Plugin;
         authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
 public class LibCube
 {
-    private Module guiceModule;
+    private final File path;
+    private final Logger pluginLogger;
+    private ModuleManager mm;
 
-    public LibCube()
+    @Inject
+    public LibCube(@ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
     {
-        this.guiceModule = new CubeEngineGuiceModule();
+        this.path = path.resolve("cubeengine").toFile();
+        this.pluginLogger = logger;
+        this.mm = new ModuleManager(this.path, logger, this, container, injector);
     }
 
-    public Module getGuiceModule()
+    @Listener
+    public void onConstructed(GamePreInitializationEvent event)
     {
-        return guiceModule;
+        this.mm.init();
     }
 
-    private class CubeEngineGuiceModule extends AbstractModule
+    public ModuleManager getModuleManager()
     {
-        @Override
-        protected void configure()
-        {
-            // TODO
-        }
+        return mm;
     }
 }

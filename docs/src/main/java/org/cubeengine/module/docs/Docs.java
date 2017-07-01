@@ -19,47 +19,63 @@ package org.cubeengine.module.docs;
 
 import static org.cubeengine.module.docs.DocType.MARKDOWN;
 
-import de.cubeisland.engine.modularity.asm.marker.ModuleInfo;
-import de.cubeisland.engine.modularity.core.LifeCycle;
-import de.cubeisland.engine.modularity.core.Module;
-import de.cubeisland.engine.modularity.core.marker.Enable;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
+import org.cubeengine.libcube.CubeEngineModule;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.cubeengine.libcube.service.task.TaskManager;
+import org.cubeengine.processor.Dependency;
+import org.cubeengine.processor.Module;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.plugin.PluginContainer;
 
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ModuleInfo(name = "docs", description = "Generate Documentation for CubeEngine on the fly.")
-public class Docs extends Module
+@Singleton
+@Module(id = "docs", name = "Docs", version = "1.0.0",
+        description = "Generate Documentation for CubeEngine on the fly",
+        dependencies = @Dependency("cubeengine-core"),
+        url = "http://cubeengine.org",
+        authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
+public class Docs extends CubeEngineModule
 {
     @Inject private TaskManager tm;
     @Inject private Reflector reflector;
     @Inject private PermissionManager pm;
     @Inject private CommandManager cm;
-    @Inject private Path modulePath;
+    private Path modulePath;
+    @Inject private ModuleManager mm;
 
-    @Enable
-    public void onEnable()
+    @Listener
+    public void onEnable(GamePreInitializationEvent event)
     {
-        tm.runTaskDelayed(Docs.class, this::generateDocumentation, 20);
+        this.modulePath = mm.getPathFor(Docs.class);
         cm.addCommands(this, this);
+    }
+
+    @Listener
+    public void onEnable(GameStartedServerEvent event)
+    {
+        this.generateDocumentation();
     }
 
     private void generateDocumentation()
     {
         Map<String, ModuleDocs> docs = new HashMap<>();
-        for (LifeCycle lifeCycle : getModularity().getModules())
+        for (PluginContainer container : mm.getModulePlugins())
         {
-            Module instance = (Module) lifeCycle.getInstance();
-            docs.put(instance.getInformation().getName().toLowerCase(), new ModuleDocs(instance, reflector, pm, cm));
+            docs.put(container.getId(), new ModuleDocs(container, reflector, pm, cm, mm));
         }
 
         System.out.println("Generating Module Docs...");

@@ -17,38 +17,35 @@
  */
 package org.cubeengine.libcube.service.command.conversation;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import de.cubeisland.engine.modularity.core.Modularity;
-import de.cubeisland.engine.modularity.core.Module;
+import static org.spongepowered.api.text.format.TextColors.DARK_PURPLE;
+import static org.spongepowered.api.text.format.TextColors.WHITE;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.command.ContainerCommand;
 import org.cubeengine.libcube.service.command.property.RawPermission;
 import org.cubeengine.libcube.service.event.EventManager;
-import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.TabCompleteEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
 
-import static org.spongepowered.api.text.format.TextColors.DARK_PURPLE;
-import static org.spongepowered.api.text.format.TextColors.WHITE;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public abstract class ConversationCommand extends ContainerCommand
 {
     private final Set<UUID> usersInMode = new HashSet<>();
 
-    protected ConversationCommand(Modularity modularity, CommandManager base, Class owner)
+    protected ConversationCommand(EventManager em, CommandManager base, Class owner)
     {
         super(base, owner);
-        modularity.provide(EventManager.class).registerListener(getDescriptor().getOwner(), this);
+        em.registerListener(getDescriptor().getOwner(), this);
         RawPermission permission = getDescriptor().getPermission();
         permission.registerPermission(getDescriptor().getOwner(), base.getPermissionManager(), null);
         this.registerSubCommands();

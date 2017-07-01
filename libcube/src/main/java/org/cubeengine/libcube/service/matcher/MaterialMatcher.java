@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.google.common.collect.SetMultimap;
-import de.cubeisland.engine.modularity.asm.marker.ServiceProvider;
-import de.cubeisland.engine.modularity.core.marker.Enable;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.BlockTypeConverter;
 import org.cubeengine.libcube.service.config.ItemStackConverter;
@@ -61,10 +61,9 @@ import static org.spongepowered.api.item.ItemTypes.*;
 /**
  * This Matcher provides methods to match Material or Items.
  */
-@ServiceProvider(MaterialMatcher.class)
 public class MaterialMatcher
 {
-    @Inject private PluginContainer plugin;
+    private PluginContainer plugin;
 
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<Integer, ItemType> legacyIds = new HashMap<>(); // TODO fill legacy map
@@ -110,8 +109,9 @@ public class MaterialMatcher
     private Map<String, BlockState> blockStateItems;
 
     @Inject
-    public MaterialMatcher(Reflector reflector)
+    public MaterialMatcher(ModuleManager mm, Reflector reflector)
     {
+        this.plugin = mm.getPlugin(LibCube.class).get();
         reflector.getDefaultConverterManager().registerConverter(new SimpleItemStackConverter(this));
         reflector.getDefaultConverterManager().registerConverter(new ItemStackConverter(), ItemStack.class);
         reflector.getDefaultConverterManager().registerConverter(new ItemTypeConverter(this), ItemType.class);
@@ -130,7 +130,6 @@ public class MaterialMatcher
         buildLocalizedNames(defLocalizedName, localizedName);
     }
 
-    @Enable
     public void onEnable()
     {
         Sponge.getScheduler().createTaskBuilder().delayTicks(0).execute(() -> {

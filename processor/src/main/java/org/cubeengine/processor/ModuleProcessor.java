@@ -81,8 +81,8 @@ public class ModuleProcessor extends AbstractProcessor {
                 writer.write("import org.spongepowered.api.Sponge;\n");
                 writer.write(String.format("import %s;\n", moduleClass));
                 writer.write("\n");
-                writer.write(String.format("@Plugin(id = \"%s\",\n"
-                                + "        name = \"%s\",\n"
+                writer.write(String.format("@Plugin(id = \"cubeengine-%s\",\n"
+                                + "        name = \"CubeEngine - %s\",\n"
                                 + "        version = \"%s\",\n"
                                 + "        description = \"%s\",\n"
                                 + "        url = \"%s\",\n"
@@ -98,10 +98,9 @@ public class ModuleProcessor extends AbstractProcessor {
                 writer.write(String.format(
                           "public class %s extends CubeEnginePlugin\n"
                         + "{\n"
-                        + "    @Inject\n"
-                        + "    public %s(Injector injector)\n"
+                        + "    public %s()\n"
                         + "    {\n"
-                        + "         super(injector, Sponge.getPluginManager().getPlugin(\"cubeengine-core\").get(), %s.class);\n"
+                        + "         super(%s.class);\n"
                         + "    }\n"
                         + "}\n",
                         pluginName, pluginName, element.getSimpleName()));
