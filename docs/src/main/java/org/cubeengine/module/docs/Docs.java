@@ -25,7 +25,6 @@ import org.cubeengine.libcube.CubeEngineModule;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.PermissionManager;
-import org.cubeengine.libcube.service.task.TaskManager;
 import org.cubeengine.processor.Dependency;
 import org.cubeengine.processor.Module;
 import org.cubeengine.reflect.Reflector;
@@ -46,7 +45,6 @@ import javax.inject.Singleton;
 @Module
 public class Docs extends CubeEngineModule
 {
-    @Inject private TaskManager tm;
     @Inject private Reflector reflector;
     @Inject private PermissionManager pm;
     @Inject private CommandManager cm;
@@ -54,14 +52,14 @@ public class Docs extends CubeEngineModule
     @Inject private ModuleManager mm;
 
     @Listener
-    public void onEnable(GamePreInitializationEvent event)
+    public void onPreInitialization(GamePreInitializationEvent event)
     {
         this.modulePath = mm.getPathFor(Docs.class);
         cm.addCommands(this, this);
     }
 
     @Listener
-    public void onEnable(GameStartedServerEvent event)
+    public void onStartedServer(GameStartedServerEvent event)
     {
         this.generateDocumentation();
     }
@@ -71,13 +69,13 @@ public class Docs extends CubeEngineModule
         Map<String, ModuleDocs> docs = new HashMap<>();
         for (PluginContainer container : mm.getModulePlugins())
         {
-            docs.put(container.getId(), new ModuleDocs(container, reflector, pm, cm, mm));
+            docs.put(container.getId(), new ModuleDocs(container, reflector, pm, cm));
         }
 
         System.out.println("Generating Module Docs...");
         for (Map.Entry<String, ModuleDocs> entry : docs.entrySet())
         {
-            entry.getValue().generate(modulePath, MARKDOWN);
+            entry.getValue().generate(modulePath, MARKDOWN, mm.getLoggerFor(getClass()));
         }
         System.out.println("Done Generating Module Docs!");
     }

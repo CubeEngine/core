@@ -23,5 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Info extends ReflectedYaml {
+    public boolean workInProgress = false;
     public List<String> features = new ArrayList<>();
 }

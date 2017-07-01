@@ -17,6 +17,26 @@
  */
 package org.cubeengine.module.docs;
 
-public enum DocType {
-    MARKDOWN
+public enum DocType
+{
+    MARKDOWN(new MarkdownGenerator(), ".md");
+
+    private final Generator generator;
+    private final String fileExtension;
+
+    DocType(Generator generator, String fileExtension)
+    {
+        this.generator = generator;
+        this.fileExtension = fileExtension;
+    }
+
+    public Generator getGenerator()
+    {
+        return generator;
+    }
+
+    public String getFileExtension()
+    {
+        return fileExtension;
+    }
 }
