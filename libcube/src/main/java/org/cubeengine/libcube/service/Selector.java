@@ -58,7 +58,7 @@ public interface Selector
      */
     default Location<World> getFirstPoint(Player user)
     {
-        return this.getPoint(user, 1);
+        return this.getPoint(user, 0);
     }
 
     /**
