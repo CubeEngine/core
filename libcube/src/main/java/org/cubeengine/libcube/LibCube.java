@@ -33,7 +33,7 @@ import javax.inject.Inject;
 @Plugin(id = "cubeengine-core", name = "LibCube", version = "1.0.0",
         description = "Core Library for CubeEngine plugins",
         url = "http://cubeengine.org",
-        authors = {"Anselm 'Faithcaio' Brehme", "Phillip Schichtel"})
+        authors = "CubeEngine Team")
 public class LibCube
 {
     private final File path;
