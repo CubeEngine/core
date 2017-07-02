@@ -105,6 +105,10 @@ public class PermissionManager
         if (perm == null)
         {
             String name = mm.getModuleName(owner).orElse(owner.getSimpleName());
+            if (name.startsWith("cubeengine-"))
+            {
+                name = name.substring("cubeengine-".length());
+            }
             perm = register(new Permission(permId(null, name.toLowerCase(), rootPermission), "Base Permission for " + name, emptySet())); // TODO translatable
             basePermission.put(owner, perm);
         }
