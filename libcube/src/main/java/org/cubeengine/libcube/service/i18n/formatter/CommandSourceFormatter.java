@@ -36,7 +36,7 @@ import static org.spongepowered.api.text.Text.builder;
 import static org.spongepowered.api.text.Text.of;
 import static org.spongepowered.api.text.format.TextColors.*;
 
-@Names({"user","sender","tamer"})
+@Names({"player", "user","sender","tamer"})
 public class CommandSourceFormatter extends ReflectedFormatter
 {
     private final I18nService i18n;
@@ -65,6 +65,7 @@ public class CommandSourceFormatter extends ReflectedFormatter
         }
         return this.format(sender.getName());
     }
+
     @Format
     public Component format(User user)
     {
