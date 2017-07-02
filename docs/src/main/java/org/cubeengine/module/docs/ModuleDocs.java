@@ -43,11 +43,11 @@ public class ModuleDocs
     private final Set<Permission> permissions = new HashSet<>();
     private final Set<CommandBase> commands = new HashSet<>();
 
-    public ModuleDocs(PluginContainer module, Reflector reflector, PermissionManager pm, CommandManager cm)
+    public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, CommandManager cm)
     {
-        this.pc = module;
-        this.name = module.getName();
-        InputStream is = module.getClass().getResourceAsStream(module.getId() + "-info.yml");
+        this.pc = plugin;
+        this.name = plugin.getName();
+        InputStream is = plugin.getClass().getResourceAsStream(plugin.getId() + "-info.yml");
         if (is == null)
         {
             this.config = reflector.create(Info.class);
@@ -56,7 +56,7 @@ public class ModuleDocs
         {
             this.config = reflector.load(Info.class, new InputStreamReader(is));
         }
-        Permission basePermission = pm.getBasePermission(module.getClass());
+        Permission basePermission = pm.getBasePermission(module);
         for (Map.Entry<String, Permission> entry : pm.getPermissions().entrySet())
         {
             if (entry.getKey().startsWith(basePermission.getId()))
@@ -66,7 +66,8 @@ public class ModuleDocs
         }
         for (CommandBase base : cm.getCommands())
         {
-            if (base.getDescriptor().getOwner().equals(module.getClass()))
+
+            if (base.getDescriptor().getOwner().equals(module))
             {
                 this.commands.add(base);
             }
