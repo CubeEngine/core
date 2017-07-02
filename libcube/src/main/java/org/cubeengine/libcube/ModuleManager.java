@@ -54,6 +54,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +128,7 @@ public class ModuleManager
 
     public Collection<PluginContainer> getModulePlugins()
     {
-        return modulePlugins.values();
+        return Collections.unmodifiableCollection(modulePlugins.values());
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
