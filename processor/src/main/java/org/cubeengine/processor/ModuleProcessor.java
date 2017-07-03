@@ -17,7 +17,7 @@
  */
 package org.cubeengine.processor;
 
-import static javax.tools.Diagnostic.Kind.NOTE;
+import static javax.tools.StandardLocation.CLASS_OUTPUT;
 import static org.cubeengine.processor.ModuleProcessor.DEP_ANNOTATION;
 import static org.cubeengine.processor.ModuleProcessor.PLUGIN_ANNOTATION;
 
@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -41,15 +42,18 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 
+@SupportedOptions({"cubeengine.module.version", "cubeengine.module.id", "cubeengine.module.name", "cubeengine.module.description", "cubeengine.module.team", "cubeengine.module.url"})
 @SupportedAnnotationTypes({ PLUGIN_ANNOTATION, DEP_ANNOTATION })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-public class ModuleProcessor extends AbstractProcessor {
+public class ModuleProcessor extends AbstractProcessor
+{
 
     private static final String PACKAGE = "org.cubeengine.processor.";
     static final String PLUGIN_ANNOTATION = PACKAGE + "Module";
     static final String DEP_ANNOTATION = PACKAGE + "Dependency";
 
-    private static Dependency coreDep = new Dependency() {
+    private static Dependency coreDep = new Dependency()
+    {
         @Override
         public String value() {
             return "cubeengine-core";
@@ -72,12 +76,15 @@ public class ModuleProcessor extends AbstractProcessor {
     };
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (roundEnv.processingOver()) {
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+    {
+        if (roundEnv.processingOver())
+        {
             return false;
         }
 
-        for (Element el : roundEnv.getElementsAnnotatedWith(Module.class)) {
+        for (Element el : roundEnv.getElementsAnnotatedWith(Module.class))
+        {
             final TypeElement element = (TypeElement) el;
 
             Module annotation = element.getAnnotation(Module.class);
@@ -103,7 +110,7 @@ public class ModuleProcessor extends AbstractProcessor {
             String team = processingEnv.getOptions().getOrDefault("cubeengine.module.team","unknown") + " Team";
             String url = processingEnv.getOptions().getOrDefault("cubeengine.module.url","");
 
-            try (BufferedWriter writer = newWriter(packageName, pluginName))
+            try (BufferedWriter writer = newSourceFile(packageName, pluginName))
             {
                 writer.write("package " + packageName + ";\n");
                 writer.write("import javax.inject.Inject;\n");
@@ -148,14 +155,28 @@ public class ModuleProcessor extends AbstractProcessor {
             {
                 throw new IllegalStateException(e);
             }
+
+            try (BufferedWriter writer = newResourceFile("assets", id + "/lang/en_us.lang"))
+            {
+            }
+            catch (IOException e)
+            {
+                throw new IllegalStateException(e);
+            }
         }
 
         return false;
     }
 
-    private BufferedWriter newWriter(Name packageName, String pluginName) throws IOException
+    private BufferedWriter newSourceFile(Name packageName, String pluginName) throws IOException
     {
         FileObject obj = this.processingEnv.getFiler().createSourceFile(packageName + "." + pluginName);
+        return new BufferedWriter(obj.openWriter());
+    }
+
+    private BufferedWriter newResourceFile(String packageName, String fileName) throws IOException
+    {
+        FileObject obj = this.processingEnv.getFiler().createResource(CLASS_OUTPUT, packageName, fileName);
         return new BufferedWriter(obj.openWriter());
     }
 }
