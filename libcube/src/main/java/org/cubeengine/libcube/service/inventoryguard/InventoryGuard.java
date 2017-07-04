@@ -236,7 +236,7 @@ public class InventoryGuard
         }
         else
         {
-            if (!this.hasDenyOut(origStack))
+            if (this.hasDenyOut(origStack))
             {
                 event.setCancelled(true);
                 return true;
@@ -257,7 +257,7 @@ public class InventoryGuard
         }
         else
         {
-            if (!this.hasDenyIn(finalStack))
+            if (this.hasDenyIn(finalStack))
             {
                 event.setCancelled(true);
                 return true;
