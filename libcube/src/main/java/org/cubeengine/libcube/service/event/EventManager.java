@@ -44,10 +44,12 @@ public class EventManager
     private final ConcurrentMap<Class, Set<Object>> listenerMap;
     private final org.spongepowered.api.event.EventManager eventManager;
     private final PluginContainer plugin;
+    private ModuleManager mm;
 
     @Inject
     public EventManager(ModuleManager mm)
     {
+        this.mm = mm;
         this.eventManager = Sponge.getEventManager();
         this.listenerMap = new ConcurrentHashMap<>();
         this.plugin = mm.getPlugin(LibCube.class).get();
@@ -62,14 +64,8 @@ public class EventManager
      */
     public EventManager registerListener(Class owner, Object listener)
     {
-        Set<Object> listeners = this.listenerMap.get(owner);
-        if (listeners == null)
-        {
-            this.listenerMap.put(owner, listeners = new HashSet<>());
-        }
-        listeners.add(listener);
-
-        eventManager.registerListeners(plugin, listener);
+        this.listenerMap.computeIfAbsent(owner, k -> new HashSet<>()).add(listener);
+        this.eventManager.registerListeners(this.mm.getPlugin(owner).orElse(this.plugin), listener);
         return this;
     }
 
