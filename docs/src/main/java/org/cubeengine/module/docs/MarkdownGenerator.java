@@ -52,7 +52,7 @@ public class MarkdownGenerator implements Generator {
         }
         else
         {
-            sb.append("## Features:\n");
+            sb.append("## Features:\n\n");
             for (String feature : info.features)
             {
                 sb.append(" - ").append(feature).append("\n");
@@ -62,7 +62,7 @@ public class MarkdownGenerator implements Generator {
         TreeMap<String, Permission> addPerms = new TreeMap<>(permissions.stream().collect(toMap(Permission::getId, p -> p)));
         if (!commands.isEmpty())
         {
-            sb.append("\n\n").append("## Commands").append("\n");
+            sb.append("## Commands").append("\n\n");
             for (CommandBase command : commands)
             {
                 generateCommandDocs(sb, addPerms, command, new Stack<>());
@@ -72,7 +72,7 @@ public class MarkdownGenerator implements Generator {
 
         if (!addPerms.values().isEmpty())
         {
-            sb.append("\n## Additional Permissions\n");
+            sb.append("## Additional Permissions\n\n");
 
             for (Permission perm : addPerms.values())
             {
@@ -91,7 +91,7 @@ public class MarkdownGenerator implements Generator {
             return;
         }
         commandStack.push(command.getDescriptor().getName());
-        sb.append("\n#### ").append(StringUtils.join(" ", commandStack)).append("\n");
+        sb.append("#### ").append(StringUtils.join(" ", commandStack)).append("\n\n");
         sb.append(command.getDescriptor().getDescription()).append("\n\n");
         sb.append("Usage: `").append(command.getDescriptor().getUsage(null)).append("`");
 
@@ -117,7 +117,7 @@ public class MarkdownGenerator implements Generator {
         if (command.getDescriptor() instanceof CubeDescriptor)
         {
             Permission perm = ((CubeDescriptor) command.getDescriptor()).getPermission().getRegistered();
-            sb.append("Permission: `").append(perm.getId()).append("`\n");
+            sb.append("Permission: `").append(perm.getId()).append("`\n\n");
             addPerms.remove(perm.getId());
 
             // TODO parameter permission?
@@ -140,7 +140,7 @@ public class MarkdownGenerator implements Generator {
 
             if (subBuilder.length() != 0)
             {
-                sb.append("\nChild Commands:").append(subBuilder.toString());
+                sb.append("Child Commands:").append(subBuilder.toString()).append("\n\n");
             }
 
             for (CommandBase sub : subCommands)
