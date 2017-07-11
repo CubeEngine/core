@@ -19,6 +19,7 @@ package org.cubeengine.module.docs;
 
 import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.CommandBase;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
@@ -42,12 +43,15 @@ public class ModuleDocs
     private final Info config;
     private final Set<Permission> permissions = new HashSet<>();
     private final Set<CommandBase> commands = new HashSet<>();
+    private final String id;
+    private final Permission basePermission;
 
-    public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, CommandManager cm)
+    public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, CommandManager cm, ModuleManager mm)
     {
         this.pc = plugin;
         this.name = plugin.getName();
-        InputStream is = plugin.getClass().getResourceAsStream(plugin.getId() + "-info.yml");
+        this.id = plugin.getId();
+        InputStream is = plugin.getClass().getResourceAsStream(mm.getModuleID(module) + "-info.yml");
         if (is == null)
         {
             this.config = reflector.create(Info.class);
@@ -56,7 +60,7 @@ public class ModuleDocs
         {
             this.config = reflector.load(Info.class, new InputStreamReader(is));
         }
-        Permission basePermission = pm.getBasePermission(module);
+        this.basePermission = pm.getBasePermission(module);
         for (Map.Entry<String, Permission> entry : pm.getPermissions().entrySet())
         {
             if (entry.getKey().startsWith(basePermission.getId()))
@@ -77,9 +81,9 @@ public class ModuleDocs
     public void generate(Path modulePath, DocType docType, Log log)
     {
         String generated = docType.getGenerator()
-                .generate(log, this.name, this.pc, this.config, this.permissions, this.commands);
+                .generate(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
 
-        Path file = modulePath.resolve(this.name + docType.getFileExtension());
+        Path file = modulePath.resolve(this.id + docType.getFileExtension());
         try
         {
             Files.write(file, generated.getBytes(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);

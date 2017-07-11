@@ -26,5 +26,5 @@ import java.util.Set;
 
 public interface Generator
 {
-    String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands);
+    String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission);
 }

@@ -69,7 +69,7 @@ public class Docs extends CubeEngineModule
         Map<String, ModuleDocs> docs = new HashMap<>();
         for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
         {
-            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm));
+            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
         }
 
         System.out.println("Generating Module Docs...");
