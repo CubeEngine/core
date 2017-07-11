@@ -49,7 +49,7 @@ public class MarkdownGenerator implements Generator {
         sb.append("\n");
         if (info.features.isEmpty())
         {
-            log.warn("Missing Features for " + name + "!");
+            log.warn("Missing Features for " + name + "(" + pc.getId() + ")!");
         }
         else
         {

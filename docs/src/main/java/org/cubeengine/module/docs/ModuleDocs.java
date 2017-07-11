@@ -51,7 +51,7 @@ public class ModuleDocs
         this.pc = plugin;
         this.name = plugin.getName();
         this.id = plugin.getId();
-        InputStream is = plugin.getClass().getResourceAsStream(mm.getModuleID(module) + "-info.yml");
+        InputStream is = plugin.getClass().getResourceAsStream("/assets/cubeengine/"+mm.getModuleID(module).get() + "-info.yml");
         if (is == null)
         {
             this.config = reflector.create(Info.class);
