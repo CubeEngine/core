@@ -53,7 +53,7 @@ public class MarkdownGenerator implements Generator {
         }
         else
         {
-            sb.append("## Features:\n");
+            sb.append("\n## Features:\n");
             for (String feature : info.features)
             {
                 sb.append(" - ").append(feature).append("\n");
@@ -63,7 +63,7 @@ public class MarkdownGenerator implements Generator {
         Set<PluginDependency> plugDep = pc.getDependencies();
         if (plugDep.size() > 2) // ignore cubeengine-core and spongeapi
         {
-            sb.append("## Dependencies:\n");
+            sb.append("\n## Dependencies:\n");
             for (PluginDependency dep : plugDep)
             {
                 if (dep.getId().equals("cubeengine-core") || dep.getId().equals("spongeapi"))
@@ -79,7 +79,7 @@ public class MarkdownGenerator implements Generator {
         TreeMap<String, Permission> addPerms = new TreeMap<>(permissions.stream().collect(toMap(Permission::getId, p -> p)));
         if (!commands.isEmpty())
         {
-            sb.append("## Commands").append("\n");
+            sb.append("\n## Commands:").append("\n\n");
 
             sb.append("| Command | Description | Permission<br>`").append(basePermission.getId()).append(".command.<perm>`").append(" |\n");
             sb.append("| --- | --- | --- |\n");
@@ -97,7 +97,7 @@ public class MarkdownGenerator implements Generator {
 
         if (!addPerms.values().isEmpty())
         {
-            sb.append("## Additional Permissions\n\n");
+            sb.append("\n## Additional Permissions:\n\n");
             sb.append("| Permission | Description |\n");
             sb.append("| --- | --- |\n");
             for (Permission perm : addPerms.values())
@@ -139,7 +139,7 @@ public class MarkdownGenerator implements Generator {
         {
             commandStack.push(command.getDescriptor().getName());
             String fullCmd = StringUtils.join(" ", commandStack);
-            sb.append("#### ").append(fullCmd).append("  \n");
+            sb.append("\n#### ").append(fullCmd).append("  \n");
             sb.append(command.getDescriptor().getDescription()).append("  \n");
             sb.append("**Usage:** `").append(command.getDescriptor().getUsage(null)).append("`  \n");
 

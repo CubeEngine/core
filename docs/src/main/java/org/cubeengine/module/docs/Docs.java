@@ -25,7 +25,6 @@ import org.cubeengine.libcube.CubeEngineModule;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.PermissionManager;
-import org.cubeengine.processor.Dependency;
 import org.cubeengine.processor.Module;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.command.CommandSource;
@@ -34,7 +33,10 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,18 +68,44 @@ public class Docs extends CubeEngineModule
 
     private void generateDocumentation()
     {
-        Map<String, ModuleDocs> docs = new HashMap<>();
-        for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
+        try
         {
-            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
-        }
+            Path moduleDocsPath = modulePath.resolve("modules");
 
-        System.out.println("Generating Module Docs...");
-        for (Map.Entry<String, ModuleDocs> entry : docs.entrySet())
-        {
-            entry.getValue().generate(modulePath, MARKDOWN, mm.getLoggerFor(getClass()));
+            Files.walk(moduleDocsPath).sorted(Comparator.reverseOrder()).forEach(Docs::deleteFile);
+
+            Map<String, ModuleDocs> docs = new HashMap<>();
+            for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
+            {
+                docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
+            }
+
+            Files.createDirectories(moduleDocsPath);
+            System.out.println("Generating Module Docs...");
+            // TODO generate file with links
+            for (Map.Entry<String, ModuleDocs> entry : docs.entrySet())
+            {
+                entry.getValue().generate(moduleDocsPath, MARKDOWN, mm.getLoggerFor(getClass()));
+            }
+            System.out.println("Done Generating Module Docs!");
+
         }
-        System.out.println("Done Generating Module Docs!");
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static void deleteFile(Path path)
+    {
+        try
+        {
+            Files.delete(path);
+        }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
     }
 
     @Alias("gd")
