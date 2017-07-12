@@ -41,7 +41,7 @@ public class UserListInSight implements DefaultValue<PlayerList>
 
     private Player getFirstPlayerInSight(Player source)
     {
-        // TODO wait for https://github.com/SpongePowered/SpongeAPI/issues/797
-        return null;
+        throw new UnsupportedOperationException("not implemented yet");
+        // TODO https://github.com/SpongePowered/SpongeAPI/issues/797 is done use it!
     }
 }

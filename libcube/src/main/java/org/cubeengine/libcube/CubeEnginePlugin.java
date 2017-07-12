@@ -58,6 +58,11 @@ public abstract class CubeEnginePlugin {
     public void onInit(GameInitializationEvent event)
     {
         Object module = mm.getModule(this.module);
+        if (module == null)
+        {
+            mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getId());
+            return;
+        }
         for (Field field : ModuleManager.getAnnotatedFields(module, InjectService.class))
         {
             Optional<?> provided = Sponge.getServiceManager().provide(field.getType());
