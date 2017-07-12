@@ -71,8 +71,10 @@ public class Docs extends CubeEngineModule
         try
         {
             Path moduleDocsPath = modulePath.resolve("modules");
-
-            Files.walk(moduleDocsPath).sorted(Comparator.reverseOrder()).forEach(Docs::deleteFile);
+            if (Files.exists(moduleDocsPath))
+            {
+                Files.walk(moduleDocsPath).sorted(Comparator.reverseOrder()).forEach(Docs::deleteFile);
+            }
 
             Map<String, ModuleDocs> docs = new HashMap<>();
             for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
@@ -81,6 +83,7 @@ public class Docs extends CubeEngineModule
             }
 
             Files.createDirectories(moduleDocsPath);
+
             System.out.println("Generating Module Docs...");
             // TODO generate file with links
             for (Map.Entry<String, ModuleDocs> entry : docs.entrySet())
