@@ -127,7 +127,7 @@ public class MarkdownGenerator implements Generator {
             String fullCmd = StringUtils.join(" ", commandStack);
             sb.append("| [").append(fullCmd).append("]")
               .append("(#").append(fullCmd.replace("*", "").replace(" ", "-").toLowerCase()).append(") | ");
-            sb.append(command.getDescriptor().getDescription()).append(" | ");
+            sb.append(command.getDescriptor().getDescription().replace("\n", "<br>")).append(" | ");
             Permission perm = ((CubeDescriptor) command.getDescriptor()).getPermission().getRegistered();
             sb.append("`").append(perm.getId().replace(id, "")).append("` |\n");
 
