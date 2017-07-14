@@ -23,19 +23,49 @@ import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.StringUtils;
 import org.cubeengine.butler.alias.AliasCommand;
 import org.cubeengine.butler.alias.AliasConfiguration;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CubeDescriptor;
 import org.cubeengine.libcube.service.command.HelpCommand;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.plugin.meta.PluginDependency;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static org.cubeengine.module.docs.DocType.MARKDOWN;
 
 public class MarkdownGenerator implements Generator {
 
-    public String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission)
+
+    @Override
+    public String generateList(Map<String, ModuleDocs> modules, Path modulePath, ModuleManager mm)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("# CubeEngine Documentation\n\n");
+        sb.append("## Modules\n\n");
+
+        ModuleDocs doc = modules.get("cubeengine-core");
+        sb.append(" - [").append(doc.getModuleName()).append("](modules/").append(doc.getId()).append(".md)\n");
+
+        for (ModuleDocs module : modules.values())
+        {
+            if (module == doc)
+            {
+                continue;
+            }
+            sb.append(" - [").append(module.getName()).append("](modules/").append(module.getId()).append(".md)\n");
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public String generateList(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(name);

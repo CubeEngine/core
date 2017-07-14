@@ -45,11 +45,28 @@ public class ModuleDocs
     private final Set<CommandBase> commands = new HashSet<>();
     private final String id;
     private final Permission basePermission;
+    private final String moduleName;
+
+    public String getModuleName()
+    {
+        return moduleName;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
 
     public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, CommandManager cm, ModuleManager mm)
     {
         this.pc = plugin;
         this.name = plugin.getName();
+        this.moduleName = mm.getModuleName(module).get();
         this.id = plugin.getId();
         InputStream is = plugin.getClass().getResourceAsStream("/assets/cubeengine/"+mm.getModuleID(module).get() + "-info.yml");
         if (is == null)
@@ -81,7 +98,7 @@ public class ModuleDocs
     public void generate(Path modulePath, DocType docType, Log log)
     {
         String generated = docType.getGenerator()
-                .generate(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
+                .generateList(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
 
         Path file = modulePath.resolve(this.id + docType.getFileExtension());
         try

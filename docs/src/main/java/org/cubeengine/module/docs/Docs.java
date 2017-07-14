@@ -19,6 +19,7 @@ package org.cubeengine.module.docs;
 
 import static org.cubeengine.module.docs.DocType.MARKDOWN;
 
+import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.libcube.CubeEngineModule;
@@ -36,9 +37,11 @@ import org.spongepowered.api.plugin.PluginContainer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -68,35 +71,50 @@ public class Docs extends CubeEngineModule
 
     private void generateDocumentation()
     {
+        Log log = mm.getLoggerFor(Docs.class);
+        Map<String, ModuleDocs> docs = new TreeMap<>();
+        for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
+        {
+            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
+        }
+
+        log.info("Generating Module Docs...");
+
         try
         {
+            String generated = MARKDOWN.getGenerator().generateList(docs, modulePath, mm);
+
+            Path file = modulePath.resolve("README" + MARKDOWN.getFileExtension());
+            try
+            {
+                Files.write(file, generated.getBytes(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
             Path moduleDocsPath = modulePath.resolve("modules");
             if (Files.exists(moduleDocsPath))
             {
                 Files.walk(moduleDocsPath).sorted(Comparator.reverseOrder()).forEach(Docs::deleteFile);
             }
 
-            Map<String, ModuleDocs> docs = new HashMap<>();
-            for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
-            {
-                docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
-            }
-
             Files.createDirectories(moduleDocsPath);
 
-            System.out.println("Generating Module Docs...");
-            // TODO generate file with links
+
             for (Map.Entry<String, ModuleDocs> entry : docs.entrySet())
             {
                 entry.getValue().generate(moduleDocsPath, MARKDOWN, mm.getLoggerFor(getClass()));
             }
-            System.out.println("Done Generating Module Docs!");
-
         }
         catch (IOException e)
         {
             throw new IllegalStateException(e);
         }
+
+
+        log.info("Done Generating Module Docs!");
     }
 
     private static void deleteFile(Path path)
