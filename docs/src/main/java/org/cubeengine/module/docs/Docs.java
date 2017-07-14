@@ -28,6 +28,7 @@ import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.cubeengine.processor.Module;
 import org.cubeengine.reflect.Reflector;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -67,6 +68,10 @@ public class Docs extends CubeEngineModule
     public void onStartedServer(GameStartedServerEvent event)
     {
         this.generateDocumentation();
+        if ("true".equals(System.getenv("CUBEENGINE_DOCS_SHUTDOWN")))
+        {
+            Sponge.getServer().shutdown();
+        }
     }
 
     private void generateDocumentation()
