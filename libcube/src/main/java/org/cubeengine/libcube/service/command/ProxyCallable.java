@@ -106,7 +106,7 @@ public class ProxyCallable implements CommandCallable
             RawPermission permission = ((CubeCommandDescriptor)descriptor).getPermission();
             if (permission != null)
             {
-                source.hasPermission(permission.getName());
+                return source.hasPermission(permission.getName());
             }
         }
         return true;
