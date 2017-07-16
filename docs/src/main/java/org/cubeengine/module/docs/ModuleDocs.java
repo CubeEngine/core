@@ -110,4 +110,8 @@ public class ModuleDocs
             e.printStackTrace();
         }
     }
+
+    public boolean isWIP() {
+        return this.config.workInProgress;
+    }
 }

@@ -58,7 +58,12 @@ public class MarkdownGenerator implements Generator {
             {
                 continue;
             }
-            sb.append(" - [").append(module.getModuleName()).append("](modules/").append(module.getId()).append(".md)\n");
+            sb.append(" - [").append(module.getModuleName()).append("](modules/").append(module.getId()).append(".md)");
+            if (module.isWIP())
+            {
+                sb.append(" - [WIP]");
+            }
+            sb.append("\n");
         }
 
         return sb.toString();
