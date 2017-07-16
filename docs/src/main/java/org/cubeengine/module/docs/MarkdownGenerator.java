@@ -156,7 +156,7 @@ public class MarkdownGenerator implements Generator {
         if (overview)
         {
             commandStack.push("*" + command.getDescriptor().getName() + "*");
-            String fullCmd = StringUtils.join(" ", commandStack);
+            String fullCmd = StringUtils.join("&nbsp;", commandStack);
             sb.append("| [").append(fullCmd).append("]")
               .append("(#").append(fullCmd.replace("*", "").replace(" ", "-").toLowerCase()).append(") | ");
             sb.append(command.getDescriptor().getDescription().replace("\n", "<br>")).append(" | ");
@@ -170,7 +170,7 @@ public class MarkdownGenerator implements Generator {
         else
         {
             commandStack.push(command.getDescriptor().getName());
-            String fullCmd = StringUtils.join(" ", commandStack);
+            String fullCmd = StringUtils.join("&nbsp;", commandStack);
             sb.append("\n#### ").append(fullCmd).append("  \n");
             sb.append(command.getDescriptor().getDescription()).append("  \n");
             sb.append("**Usage:** `").append(command.getDescriptor().getUsage(null)).append("`  \n");
