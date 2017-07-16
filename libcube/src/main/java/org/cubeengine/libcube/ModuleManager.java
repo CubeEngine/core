@@ -249,7 +249,7 @@ public class ModuleManager
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())
         {
-            String name = container.get().getId();
+            String name = container.get().getName();
             if (name.startsWith("CubeEngine - "))
             {
                 name = name.substring("CubeEngine - ".length());
