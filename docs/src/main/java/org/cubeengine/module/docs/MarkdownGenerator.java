@@ -65,7 +65,7 @@ public class MarkdownGenerator implements Generator {
     }
 
     @Override
-    public String generateList(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission)
+    public String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(name);
@@ -109,16 +109,18 @@ public class MarkdownGenerator implements Generator {
         TreeMap<String, Permission> addPerms = new TreeMap<>(permissions.stream().collect(toMap(Permission::getId, p -> p)));
         if (!commands.isEmpty())
         {
+            List<CommandBase> cmds = new ArrayList<>(commands);
+            cmds.sort(Comparator.comparing(o -> o.getDescriptor().getName()));
             sb.append("\n## Commands:").append("\n\n");
 
             sb.append("| Command | Description | Permission<br>`").append(basePermission.getId()).append(".command.<perm>`").append(" |\n");
             sb.append("| --- | --- | --- |\n");
-            for (CommandBase command : commands)
+            for (CommandBase command : cmds)
             {
                 generateCommandDocs(sb, addPerms, command, new Stack<>(), basePermission, true);
             }
 
-            for (CommandBase command : commands)
+            for (CommandBase command : cmds)
             {
                 generateCommandDocs(sb, addPerms, command, new Stack<>(), basePermission, false);
             }

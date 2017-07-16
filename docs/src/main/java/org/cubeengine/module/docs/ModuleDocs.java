@@ -98,7 +98,7 @@ public class ModuleDocs
     public void generate(Path modulePath, DocType docType, Log log)
     {
         String generated = docType.getGenerator()
-                .generateList(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
+                .generate(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
 
         Path file = modulePath.resolve(this.id + docType.getFileExtension());
         try
