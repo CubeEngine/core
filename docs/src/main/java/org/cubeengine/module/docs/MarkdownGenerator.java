@@ -50,7 +50,7 @@ public class MarkdownGenerator implements Generator {
         sb.append("## Modules\n\n");
 
         ModuleDocs doc = modules.get("cubeengine-core");
-        sb.append(" - [").append(doc.getModuleName()).append("](modules/").append(doc.getId()).append(".md)\n");
+        sb.append(" - [").append("Core").append("](modules/").append(doc.getId()).append(".md)\n");
 
         for (ModuleDocs module : modules.values())
         {
@@ -58,7 +58,7 @@ public class MarkdownGenerator implements Generator {
             {
                 continue;
             }
-            sb.append(" - [").append(module.getName()).append("](modules/").append(module.getId()).append(".md)\n");
+            sb.append(" - [").append(module.getModuleName()).append("](modules/").append(module.getId()).append(".md)\n");
         }
 
         return sb.toString();
