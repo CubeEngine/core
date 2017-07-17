@@ -25,6 +25,8 @@ import org.cubeengine.libcube.service.permission.Permission;
 import org.cubeengine.libcube.service.permission.PermissionManager;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.service.permission.PermissionService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +43,7 @@ public class ModuleDocs
     private final PluginContainer pc;
     private final String name;
     private final Info config;
-    private final Set<Permission> permissions = new HashSet<>();
+    private final Set<PermissionDescription> permissions = new HashSet<>();
     private final Set<CommandBase> commands = new HashSet<>();
     private final String id;
     private final Permission basePermission;
@@ -62,7 +64,7 @@ public class ModuleDocs
         return id;
     }
 
-    public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, CommandManager cm, ModuleManager mm)
+    public ModuleDocs(PluginContainer plugin, Class module, Reflector reflector, PermissionManager pm, PermissionService ps, CommandManager cm, ModuleManager mm)
     {
         this.pc = plugin;
         this.name = plugin.getName();
@@ -78,17 +80,16 @@ public class ModuleDocs
             this.config = reflector.load(Info.class, new InputStreamReader(is));
         }
         this.basePermission = pm.getBasePermission(module);
-        this.permissions.add(this.basePermission);
-        for (Map.Entry<String, Permission> entry : pm.getPermissions().entrySet())
+        for (PermissionDescription perm : ps.getDescriptions())
         {
-            if (entry.getKey().startsWith(basePermission.getId() + "."))
+            if (perm.getId().startsWith(basePermission.getId() + ".") || perm.getId().equals(basePermission.getId()))
             {
-                this.permissions.add(entry.getValue());
+                this.permissions.add(perm);
             }
         }
+
         for (CommandBase base : cm.getCommands())
         {
-
             if (base.getDescriptor().getOwner().equals(module))
             {
                 this.commands.add(base);

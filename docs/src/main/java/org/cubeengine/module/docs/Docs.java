@@ -23,6 +23,7 @@ import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.libcube.CubeEngineModule;
+import org.cubeengine.libcube.InjectService;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.permission.PermissionManager;
@@ -34,6 +35,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.permission.PermissionService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -52,8 +54,9 @@ import javax.inject.Singleton;
 public class Docs extends CubeEngineModule
 {
     @Inject private Reflector reflector;
-    @Inject private PermissionManager pm;
+    @InjectService private PermissionService ps;
     @Inject private CommandManager cm;
+    @Inject private PermissionManager pm;
     private Path modulePath;
     @Inject private ModuleManager mm;
 
@@ -80,7 +83,7 @@ public class Docs extends CubeEngineModule
         Map<String, ModuleDocs> docs = new TreeMap<>();
         for (Map.Entry<Class, PluginContainer> entry : mm.getModulePlugins().entrySet())
         {
-            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, cm, mm));
+            docs.put(entry.getValue().getId(), new ModuleDocs(entry.getValue(), entry.getKey(), reflector, pm, ps, cm, mm));
         }
 
         log.info("Generating Module Docs...");

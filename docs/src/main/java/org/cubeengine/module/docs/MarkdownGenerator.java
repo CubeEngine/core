@@ -28,6 +28,7 @@ import org.cubeengine.libcube.service.command.CubeDescriptor;
 import org.cubeengine.libcube.service.command.HelpCommand;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.plugin.meta.PluginDependency;
 
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class MarkdownGenerator implements Generator
     }
 
     @Override
-    public String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions,
+    public String generate(Log log, String name, PluginContainer pc, Info info, Set<PermissionDescription> permissions,
                            Set<CommandBase> commands, Permission basePermission)
     {
         StringBuilder sb = new StringBuilder();
@@ -114,8 +115,8 @@ public class MarkdownGenerator implements Generator
             sb.append("\n");
         }
 
-        TreeMap<String, Permission> addPerms = new TreeMap<>(
-            permissions.stream().collect(toMap(Permission::getId, p -> p)));
+        TreeMap<String, PermissionDescription> addPerms = new TreeMap<>(
+            permissions.stream().collect(toMap(PermissionDescription::getId, p -> p)));
         if (!commands.isEmpty())
         {
             List<CommandBase> cmds = new ArrayList<>(commands);
@@ -141,19 +142,18 @@ public class MarkdownGenerator implements Generator
             sb.append("\n## Additional Permissions:\n\n");
             sb.append("| Permission | Description |\n");
             sb.append("| --- | --- |\n");
-            for (Permission perm : addPerms.values())
+            for (PermissionDescription perm : addPerms.values())
             {
-                sb.append("| `").append(perm.getId()).append("` | ").append(perm.getDesc()).append(" |");
+                sb.append("| `").append(perm.getId()).append("` | ").append(perm.getDescription().toPlain()).append(" |\n");
             }
         }
 
         return sb.toString();
     }
 
-    private void generateCommandDocs(StringBuilder sb, Map<String, Permission> addPerms, CommandBase command,
+    private void generateCommandDocs(StringBuilder sb, Map<String, PermissionDescription> addPerms, CommandBase command,
                                      Stack<String> commandStack, Permission basePermission, boolean overview)
     {
-
         if (command instanceof AliasCommand || command instanceof HelpCommand)
         {
             return;
