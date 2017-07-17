@@ -38,8 +38,10 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 import static org.cubeengine.module.docs.DocType.MARKDOWN;
 
-public class MarkdownGenerator implements Generator {
+public class MarkdownGenerator implements Generator
+{
 
+    private static final String WHITESPACE = "&nbsp;";
 
     @Override
     public String generateList(Map<String, ModuleDocs> modules, Path modulePath, ModuleManager mm)
@@ -70,7 +72,8 @@ public class MarkdownGenerator implements Generator {
     }
 
     @Override
-    public String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions, Set<CommandBase> commands, Permission basePermission)
+    public String generate(Log log, String name, PluginContainer pc, Info info, Set<Permission> permissions,
+                           Set<CommandBase> commands, Permission basePermission)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(name);
@@ -111,14 +114,16 @@ public class MarkdownGenerator implements Generator {
             sb.append("\n");
         }
 
-        TreeMap<String, Permission> addPerms = new TreeMap<>(permissions.stream().collect(toMap(Permission::getId, p -> p)));
+        TreeMap<String, Permission> addPerms = new TreeMap<>(
+            permissions.stream().collect(toMap(Permission::getId, p -> p)));
         if (!commands.isEmpty())
         {
             List<CommandBase> cmds = new ArrayList<>(commands);
             cmds.sort(Comparator.comparing(o -> o.getDescriptor().getName()));
             sb.append("\n## Commands:").append("\n\n");
 
-            sb.append("| Command | Description | Permission<br>`").append(basePermission.getId()).append(".command.<perm>`").append(" |\n");
+            sb.append("| Command | Description | Permission<br>`").append(basePermission.getId()).append(
+                ".command.<perm>`").append(" |\n");
             sb.append("| --- | --- | --- |\n");
             for (CommandBase command : cmds)
             {
@@ -129,7 +134,6 @@ public class MarkdownGenerator implements Generator {
             {
                 generateCommandDocs(sb, addPerms, command, new Stack<>(), basePermission, false);
             }
-
         }
 
         if (!addPerms.values().isEmpty())
@@ -146,7 +150,8 @@ public class MarkdownGenerator implements Generator {
         return sb.toString();
     }
 
-    private void generateCommandDocs(StringBuilder sb, Map<String, Permission> addPerms, CommandBase command, Stack<String> commandStack, Permission basePermission, boolean overview)
+    private void generateCommandDocs(StringBuilder sb, Map<String, Permission> addPerms, CommandBase command,
+                                     Stack<String> commandStack, Permission basePermission, boolean overview)
     {
 
         if (command instanceof AliasCommand || command instanceof HelpCommand)
@@ -155,27 +160,28 @@ public class MarkdownGenerator implements Generator {
         }
         String id = basePermission.getId() + ".command.";
 
-        List<CommandBase> subCommands = command instanceof Dispatcher ? new ArrayList<>(((Dispatcher) command).getCommands()) : Collections.emptyList();
+        List<CommandBase> subCommands = command instanceof Dispatcher ? new ArrayList<>(
+            ((Dispatcher)command).getCommands()) : Collections.emptyList();
         subCommands.sort(Comparator.comparing(o -> o.getDescriptor().getName()));
 
         if (overview)
         {
             commandStack.push("*" + command.getDescriptor().getName() + "*");
-            String fullCmd = StringUtils.join("&nbsp;", commandStack);
-            sb.append("| [").append(fullCmd).append("]")
-              .append("(#").append(fullCmd.replace("*", "").replace(" ", "-").toLowerCase()).append(") | ");
+            String fullCmd = StringUtils.join(WHITESPACE, commandStack);
+            sb.append("| [").append(fullCmd).append("]").append("(#").append(fullCmd.replace("*", "").replace(" ",
+                                                                                                              "-").replace(
+                WHITESPACE, "").toLowerCase()).append(") | ");
             sb.append(command.getDescriptor().getDescription().replace("\n", "<br>")).append(" | ");
-            Permission perm = ((CubeDescriptor) command.getDescriptor()).getPermission().getRegistered();
+            Permission perm = ((CubeDescriptor)command.getDescriptor()).getPermission().getRegistered();
             sb.append("`").append(perm.getId().replace(id, "")).append("` |\n");
 
             commandStack.pop();
             commandStack.push("**" + command.getDescriptor().getName() + "**");
-
         }
         else
         {
             commandStack.push(command.getDescriptor().getName());
-            String fullCmd = StringUtils.join("&nbsp;", commandStack);
+            String fullCmd = StringUtils.join(WHITESPACE, commandStack);
             sb.append("\n#### ").append(fullCmd).append("  \n");
             sb.append(command.getDescriptor().getDescription()).append("  \n");
             sb.append("**Usage:** `").append(command.getDescriptor().getUsage(null)).append("`  \n");
@@ -192,7 +198,7 @@ public class MarkdownGenerator implements Generator {
                         labels.add(alias.getName()); // local alias
                     }
                     else
-                        {
+                    {
                         labels.addAll(Arrays.asList(alias.getDispatcher()));
                         labels.add(alias.getName());
                         labels.set(0, "/" + labels.get(0));
@@ -204,7 +210,7 @@ public class MarkdownGenerator implements Generator {
 
             if (command.getDescriptor() instanceof CubeDescriptor)
             {
-                Permission perm = ((CubeDescriptor) command.getDescriptor()).getPermission().getRegistered();
+                Permission perm = ((CubeDescriptor)command.getDescriptor()).getPermission().getRegistered();
                 sb.append("**Permission:** `").append(perm.getId()).append("`  \n");
                 addPerms.remove(perm.getId());
 
