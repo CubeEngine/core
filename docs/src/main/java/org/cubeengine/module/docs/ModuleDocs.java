@@ -78,9 +78,10 @@ public class ModuleDocs
             this.config = reflector.load(Info.class, new InputStreamReader(is));
         }
         this.basePermission = pm.getBasePermission(module);
+        this.permissions.add(this.basePermission);
         for (Map.Entry<String, Permission> entry : pm.getPermissions().entrySet())
         {
-            if (entry.getKey().startsWith(basePermission.getId()))
+            if (entry.getKey().startsWith(basePermission.getId() + "."))
             {
                 this.permissions.add(entry.getValue());
             }
