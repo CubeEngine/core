@@ -25,6 +25,7 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
@@ -118,25 +119,25 @@ public abstract class AbstractCommandSource implements CommandSource
     }
 
     @Override
-    public boolean isChildOf(Subject parent)
+    public boolean isChildOf(SubjectReference parent)
     {
         return internalSubject().isChildOf(parent);
     }
 
     @Override
-    public boolean isChildOf(Set<Context> contexts, Subject parent)
+    public boolean isChildOf(Set<Context> contexts, SubjectReference parent)
     {
         return internalSubject().isChildOf(contexts, parent);
     }
 
     @Override
-    public List<Subject> getParents()
+    public List<SubjectReference> getParents()
     {
         return internalSubject().getParents();
     }
 
     @Override
-    public List<Subject> getParents(Set<Context> contexts)
+    public List<SubjectReference> getParents(Set<Context> contexts)
     {
         return internalSubject().getParents(contexts);
     }

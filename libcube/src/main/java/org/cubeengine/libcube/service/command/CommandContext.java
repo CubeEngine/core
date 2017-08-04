@@ -76,7 +76,8 @@ public class CommandContext extends ParameterizedContext
                 return;
             }
         }
-        throw new PermissionDeniedException(new RawPermission(permission.getId(), permission.getDescription().toPlain()));
+        throw new PermissionDeniedException(new RawPermission(permission.getId(),
+                permission.getDescription().orElse(Text.EMPTY).toPlain()));
     }
 
     public Locale getLocale()

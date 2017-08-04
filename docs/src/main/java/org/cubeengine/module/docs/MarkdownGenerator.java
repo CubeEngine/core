@@ -29,6 +29,7 @@ import org.cubeengine.libcube.service.command.HelpCommand;
 import org.cubeengine.libcube.service.permission.Permission;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.plugin.meta.PluginDependency;
 
 import java.io.IOException;
@@ -144,7 +145,7 @@ public class MarkdownGenerator implements Generator
             sb.append("| --- | --- |\n");
             for (PermissionDescription perm : addPerms.values())
             {
-                sb.append("| `").append(perm.getId()).append("` | ").append(perm.getDescription().toPlain()).append(" |\n");
+                sb.append("| `").append(perm.getId()).append("` | ").append(perm.getDescription().orElse(Text.EMPTY).toPlain()).append(" |\n");
             }
         }
 

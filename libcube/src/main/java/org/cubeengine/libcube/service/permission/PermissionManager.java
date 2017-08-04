@@ -85,17 +85,14 @@ public class PermissionManager
             unregistered.add(permission);
             return permission;
         }
-        Optional<Builder> builder = permissionService.newDescriptionBuilder(plugin.getInstance().get());
-        if (builder.isPresent())
+        Builder builder = permissionService.newDescriptionBuilder(plugin.getInstance().get());
+        builder.id(permission.getId());
+        if (permission.getDesc() != null)
         {
-            Builder build = builder.get().id(permission.getId());
-            if (permission.getDesc() != null)
-            {
-                build.description(Text.of(permission.getDesc()));
-            }
-            permission.getExplicitParents().forEach(s -> build.assign(s, true));
-            build.register();
+            builder.description(Text.of(permission.getDesc()));
         }
+        permission.getExplicitParents().forEach(s -> builder.assign(s, true));
+        builder.register();
         return permission;
     }
 
