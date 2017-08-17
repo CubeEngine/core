@@ -100,11 +100,11 @@ public class MySQLDatabase extends AbstractDatabase implements Database
 
         HikariConfig dsConf = new HikariDataSource();
         dsConf.setPoolName("CubeEngine");
-        dsConf.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        //dsConf.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        dsConf.setJdbcUrl("jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
 
         dsConf.addDataSourceProperty("user", config.user);
         dsConf.addDataSourceProperty("password", config.password);
-        dsConf.addDataSourceProperty("url", "jdbc:mysql://" + config.host + ":" + config.port + "/" + config.database);
         dsConf.addDataSourceProperty("databaseName", config.database);
         dsConf.addDataSourceProperty("cachePrepStmts", "true");
         dsConf.addDataSourceProperty("prepStmtCacheSize", "250");
