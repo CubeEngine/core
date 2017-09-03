@@ -32,7 +32,7 @@ import java.text.NumberFormat;
 
 import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 
-@Names({"amount", "integer", "long", "short", "decimal"})
+@Names({"amount", "integer", "long", "short", "decimal", "number"})
 public class NumberFormatter extends ReflectedFormatter {
 
     @Format
