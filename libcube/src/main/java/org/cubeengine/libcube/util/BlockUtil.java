@@ -394,9 +394,9 @@ public class BlockUtil
                     for (; x <= xMax; x++)
                     {
                         i++;
-                        at.getExtent().setBlock(at.getBlockX() + x, at.getBlockY() + y, at.getBlockZ() + z, volume.getBlock(x,y,z), BlockChangeFlag.NONE, cause);
+                        at.getExtent().setBlock(at.getBlockX() + x, at.getBlockY() + y, at.getBlockZ() + z, volume.getBlock(x,y,z), BlockChangeFlag.NONE);
                         Optional<TileEntityArchetype> te = volume.getTileEntityArchetype(x, y, z);
-                        te.ifPresent(tileEntityArchetype -> tileEntityArchetype.apply(at.add(x, y, z), cause));
+                        te.ifPresent(tileEntityArchetype -> tileEntityArchetype.apply(at.add(x, y, z)));
                         if (i % 100 == 0)
                         {
                             if ((System.currentTimeMillis() - start) > msLimit)

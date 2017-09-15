@@ -23,7 +23,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
@@ -31,7 +31,6 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
@@ -87,7 +86,7 @@ public class InventoryGuard
                 Optional<Player> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
-                    this.container = player.get().openInventory(this.inventory, Cause.of(NamedCause.source(player))).orElse(null);
+                    this.container = player.get().openInventory(this.inventory).orElse(null);
                     // TODO check if not opened
                 }
             }
