@@ -301,7 +301,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         {
             if ((alias.getDispatcher() == null || (alias.getDispatcher() != null && alias.getDispatcher().length == 0)))
             {
-                aliasList.add(alias.getName());
+                aliasList.add(alias.getName().toLowerCase());
             }
         }
         PluginContainer plugin = mm.getPlugin(descriptor.getOwner()).orElse(mm.getPlugin(LibCube.class).get());
