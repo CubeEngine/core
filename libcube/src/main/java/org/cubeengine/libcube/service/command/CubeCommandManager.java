@@ -296,7 +296,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     private Optional<CommandMapping> registerSpongeCommand(CommandDescriptor descriptor)
     {
         ArrayList<String> aliasList = new ArrayList<>();
-        aliasList.add(descriptor.getName());
+        aliasList.add(descriptor.getName().toLowerCase());
         for (AliasConfiguration alias : descriptor.getAliases())
         {
             if ((alias.getDispatcher() == null || (alias.getDispatcher() != null && alias.getDispatcher().length == 0)))
