@@ -69,7 +69,16 @@ public class UserMatcher
         }
 
         UserStorageService storage = game.getServiceManager().provideUnchecked(UserStorageService.class);
-        Optional<User> directMatchOffline = storage.get(name);
+
+        Optional<User> directMatchOffline;
+        try
+        {
+            directMatchOffline = storage.get(name);
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            return Optional.empty();
+        }
         if (directMatchOffline.isPresent())
         {
             return directMatchOffline;
