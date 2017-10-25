@@ -65,8 +65,8 @@ public enum ChatFormat
     private static final Pattern STRIP_FORMATS = Pattern.compile(BASE_CHAR + "[" + FORMAT_CHARS_STRING + "]");
     private static final Pattern STRIP_REDUNDANT_FORMATS = Pattern.compile("(?:[&§][0-9a-fk-r])+([&§][0-9a-fk-r])");
     public static final String SPLIT_COLOR_KEEP = "((?<=&[0123456789aAbBcCdDeEfFgkKlLmMnNoOrR])|(?=&[0123456789aAbBcCdDeEfFgkKlLmMnNoOrR]))";
-    public static final String COLORS = "&[0123456789aAbBcCdDeEfFg]";
-    public static final String STYLES = "&[kKlLmMnNoOrR]";
+    public static final String COLORS = "&[0123456789aAbBcCdDeEfFgrR]";
+    public static final String STYLES = "&[kKlLmMnNoO]";
     public static final String SPLIT_PARAM_KEEP = "((?<=\\{[A-Z_]{0,50}\\})|(?=\\{[A-Z_]{0,50}\\}))";
 
     private final char formatChar;
