@@ -28,7 +28,9 @@ import org.spongepowered.api.data.DataQuery;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class DataContainerConverter implements ClassedConverter<DataContainer>
@@ -46,28 +48,43 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
         for (Entry<String, Node> entry : ((MapNode) node).getValue().entrySet())
         {
             DataQuery key = DataQuery.of('_', ((MapNode) node).getOriginalKey(entry.getKey()));
-            Object value;
-            if (entry.getValue() instanceof ListNode)
-            {
-                value = toList(((ListNode) entry.getValue()));
-            }
-            else
-            {
-                Type vType = entry.getValue() instanceof MapNode ? DataContainer.class : entry.getValue().getValue().getClass();
-                value = manager.convertFromNode(entry.getValue(), vType);
-            }
-            data.set(key, value);
+            data.set(key, toObject(entry.getValue(), manager));
         }
         return data;
     }
 
-    private List toList(ListNode value)
+    public Object toObject(Node node, ConverterManager manager) throws ConversionException
+    {
+        if (node instanceof ListNode)
+        {
+            return toList(((ListNode) node), manager);
+        }
+        if (node instanceof MapNode)
+        {
+            return toMap(((MapNode) node), manager);
+        }
+        Type vType = node.getValue().getClass();
+        return manager.convertFromNode(node, vType);
+    }
+
+    private List toList(ListNode node, ConverterManager manager) throws ConversionException
     {
         List<Object> list = new ArrayList<>();
-        for (Node node : value.getValue())
+        for (Node element : node.getValue())
         {
-            list.add(node.getValue());
+            list.add(toObject(element, manager));
         }
         return list;
+    }
+
+    private Map toMap(MapNode node, ConverterManager manager) throws ConversionException
+    {
+        Map<DataQuery, Object> map = new HashMap<>();
+        for (Entry<String, Node> entry : node.getMappedNodes().entrySet())
+        {
+            DataQuery key = DataQuery.of('_', node.getOriginalKey(entry.getKey()));
+            map.put(key, toObject(entry.getValue(), manager));
+        }
+        return map;
     }
 }
