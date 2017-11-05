@@ -156,7 +156,8 @@ public class InventoryGuard
     @Listener
     public void onInventoryInteract(ClickInventoryEvent event)
     {
-        if (!event.getTargetInventory().equals(this.container) && !event.getTargetInventory().first().parent().equals(this.inventory))
+        if (!event.getTargetInventory().equals(this.container)
+                && !((Slot) event.getTargetInventory().slots().iterator().next()).transform().parent().equals(this.inventory))
         {
             return;
         }
