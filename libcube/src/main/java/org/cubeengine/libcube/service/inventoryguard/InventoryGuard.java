@@ -156,18 +156,9 @@ public class InventoryGuard
     @Listener
     public void onInventoryInteract(ClickInventoryEvent event)
     {
-        Inventory compareInv = this.inventory;
-        if (this.inventory instanceof Chest) {
-            compareInv = ((Chest) this.inventory).getDoubleChestInventory().orElse(this.inventory);
-        }
-        Inventory parent = ((Slot) event.getTargetInventory().slots().iterator().next()).transform().parent();
         if (!event.getTargetInventory().equals(this.container) && !event.getTargetInventory().first().parent().equals(this.inventory))
         {
             return;
-        }
-        if (parent instanceof TileEntity && this.inventory instanceof TileEntity) {
-            System.out.println(((TileEntity) this.inventory).getLocation().getPosition());
-            System.out.println(((TileEntity) parent).getLocation().getPosition());
         }
 
         if (!blockAllIn && !blockAllOut && blockIn.isEmpty() && blockOut.isEmpty())
