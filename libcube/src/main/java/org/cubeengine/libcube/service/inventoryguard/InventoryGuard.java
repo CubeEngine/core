@@ -20,10 +20,10 @@ package org.cubeengine.libcube.service.inventoryguard;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.tileentity.TileEntity;
+import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
@@ -31,6 +31,7 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
@@ -155,15 +156,25 @@ public class InventoryGuard
     @Listener
     public void onInventoryInteract(ClickInventoryEvent event)
     {
+        Inventory compareInv = this.inventory;
+        if (this.inventory instanceof Chest) {
+            compareInv = ((Chest) this.inventory).getDoubleChestInventory().orElse(this.inventory);
+        }
+        Inventory parent = ((Slot) event.getTargetInventory().slots().iterator().next()).transform().parent();
         if (!event.getTargetInventory().equals(this.container) && !event.getTargetInventory().first().parent().equals(this.inventory))
         {
             return;
         }
+        if (parent instanceof TileEntity && this.inventory instanceof TileEntity) {
+            System.out.println(((TileEntity) this.inventory).getLocation().getPosition());
+            System.out.println(((TileEntity) parent).getLocation().getPosition());
+        }
+
         if (!blockAllIn && !blockAllOut && blockIn.isEmpty() && blockOut.isEmpty())
         {
             return;
         }
-        System.out.print("Event:\n");
+        //System.out.print("Event:\n");
         boolean cancel = false;
 
         int upperSize = event.getTargetInventory().iterator().next().capacity();
@@ -174,9 +185,9 @@ public class InventoryGuard
             ItemStack finalStack = transaction.getFinal().createStack();
             String origString = origStack.getType().equals(ItemTypes.NONE) ? origStack.getType().getId() :origStack.getType().getId() + " " + origStack.getQuantity();
             String finalString = finalStack.getType().equals(ItemTypes.NONE) ? finalStack.getType().getId() :finalStack.getType().getId() + " " + finalStack.getQuantity();
-            System.out.print(origString + "->" + finalString + "\n");
+            //System.out.print(origString + "->" + finalString + "\n");
 
-            System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
+            //System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
 
             Integer affectedSlot = transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
 
@@ -197,9 +208,8 @@ public class InventoryGuard
         }
         if (cancel)
         {
-            System.out.print("Cancelled\n");
+            //System.out.print("Cancelled\n");
         }
-        System.out.print("\n");
     }
 
     private boolean checkTransaction(ClickInventoryEvent event, SlotTransaction transaction, ItemStack origStack, ItemStack finalStack)
