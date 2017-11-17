@@ -128,6 +128,7 @@ public class MaterialMatcher
         localizedNames.put(Locale.getDefault(), defLocalizedName);
         localizedNames.put(Locale.US, localizedName);
         buildLocalizedNames(defLocalizedName, localizedName);
+        onEnable();
     }
 
     public void onEnable()
@@ -424,7 +425,7 @@ public class MaterialMatcher
         }
 
         String[] parts = name.toLowerCase(Locale.ENGLISH).split("=");
-        String[] typeName = parts[0].split(":");
+        String[] typeName = parts[0].split("=");
         ItemType type = material(typeName[0], locale);
         if (type == null)
         {
