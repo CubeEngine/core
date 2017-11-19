@@ -71,18 +71,36 @@ public abstract class I18nTranslate
         return getI18nService().translate(locale, message);
     }
 
+    public String getTranslationN(Locale locale, int n, String singular, String plural)
+    {
+        return getI18nService().translateN(locale, singular, plural, n);
+    }
+
     // Simple with CommandSource
     public String getTranslation(CommandSource commandSource, String message)
     {
         return getI18nService().translate(commandSource.getLocale(), message);
     }
 
-    public String getTranslationN(Locale locale, int n, String singular, String plural)
+    // TextFormat and Locale
+    public Text translate(Locale locale, TextFormat format, String message, Object... args)
     {
-        return getI18nService().translateN(locale, singular, plural, n);
+        return translate(contextFromLocale(locale), format, message, args);
     }
 
-    // TextFormat and Locale
+    public Text translateN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
+    {
+        if (locale == null)
+        {
+            throw new NullPointerException("The language must not be null!");
+        }
+        if (singular == null || plural == null)
+        {
+            return null;
+        }
+        return composeMessage(locale, format, getTranslationN(locale, n, singular, plural), args);
+    }
+
     public Text translate(Context context, TextFormat format, String message, Object... args)
     {
         Objects.requireNonNull(context, "context");
@@ -101,24 +119,6 @@ public abstract class I18nTranslate
             return null;
         }
         return composeMessage(context, format, getTranslationN(context.get(LOCALE), n, singular, plural), args);
-    }
-
-    public Text translate(Locale locale, TextFormat format, String message, Object... args)
-    {
-        return translate(contextFromLocale(locale), format, message, args);
-    }
-
-    public Text translateN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        if (locale == null)
-        {
-            throw new NullPointerException("The language must not be null!");
-        }
-        if (singular == null || plural == null)
-        {
-            return null;
-        }
-        return composeMessage(locale, format, getTranslationN(locale, n, singular, plural), args);
     }
 
     // Get from Object with TextFormat
