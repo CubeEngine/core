@@ -39,6 +39,7 @@ import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.logging.SpongeLogFactory;
+import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
 import org.cubeengine.libcube.service.task.SpongeTaskManager;
 import org.cubeengine.libcube.service.task.TaskManager;
@@ -75,6 +76,7 @@ public class ModuleManager
     private Map<Class, PluginContainer> modulePlugins = new HashMap<>();
     private Map<Class, Object> modules = new HashMap<>();
     private LogProvider logProvider;
+    private MaterialMatcher mm;
     private CubeCommandManager cm;
     private I18n i18n;
     private Injector injector;
@@ -91,6 +93,7 @@ public class ModuleManager
         this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
         this.logProvider = new LogProvider(this.logFactory, this.fm, this);
         this.logFactory.init(tf);
+        this.mm = new MaterialMatcher(this, reflector);
 
         this.injector = injector.createChildInjector(guiceModule);
         this.i18n = new I18n(fm, reflector, logProvider, this);
@@ -142,6 +145,7 @@ public class ModuleManager
             this.bind(Reflector.class).toInstance(reflector);
             this.bind(LogFactory.class).toInstance(logFactory);
             this.bind(LogProvider.class).toInstance(logProvider);
+            this.bind(MaterialMatcher.class).toInstance(mm);
 
             this.bind(TaskManager.class).toProvider(() -> injector.getInstance(SpongeTaskManager.class));
             this.bind(I18n.class).toProvider(() -> i18n);

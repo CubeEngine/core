@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.common.collect.SetMultimap;
 import org.cubeengine.libcube.LibCube;
@@ -61,6 +62,7 @@ import static org.spongepowered.api.item.ItemTypes.*;
 /**
  * This Matcher provides methods to match Material or Items.
  */
+@Singleton
 public class MaterialMatcher
 {
     private PluginContainer plugin;
@@ -142,20 +144,12 @@ public class MaterialMatcher
 
             for (Entry<Locale, Map<String, ItemType>> entry : localizedNames.entrySet())
             {
-                Map<String, ItemStack> map = localizedStackMap.get(entry.getKey());
-                if (map == null)
-                {
-                    localizedStackMap.put(entry.getKey(), map = new HashMap<>());
-                }
+                Map<String, ItemStack> map = localizedStackMap.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
                 buildLocalizedStackMapFromType(entry.getValue(), map);
             }
             for (Entry<Locale, Map<String, BlockState>> entry : localizedVariantMap.entrySet())
             {
-                Map<String, ItemStack> map = localizedStackMap.get(entry.getKey());
-                if (map == null)
-                {
-                    localizedStackMap.put(entry.getKey(), map = new HashMap<>());
-                }
+                Map<String, ItemStack> map = localizedStackMap.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
                 buildLocalizedStackMapFromState(entry.getValue(), map);
             }
         }).submit(plugin);
@@ -225,12 +219,7 @@ public class MaterialMatcher
         {
             BlockType itemType = entry.getValue().getType();
 
-            Map<String, BlockState> itemTypes = blockStateItemsByType.get(itemType);
-            if (itemTypes == null)
-            {
-                itemTypes = new HashMap<>();
-                blockStateItemsByType.put(itemType, itemTypes);
-            }
+            Map<String, BlockState> itemTypes = blockStateItemsByType.computeIfAbsent(itemType, k -> new HashMap<>());
             itemTypes.put(entry.getKey(), entry.getValue());
         }
 
@@ -248,12 +237,7 @@ public class MaterialMatcher
                 for (String variantEntry : split)
                 {
                     String[] variantEntryPart = variantEntry.split("=");
-                    Set<String> variantValues = variantNames.get(variantEntryPart[0]);
-                    if (variantValues == null)
-                    {
-                        variantValues = new HashSet<>();
-                        variantNames.put(variantEntryPart[0], variantValues);
-                    }
+                    Set<String> variantValues = variantNames.computeIfAbsent(variantEntryPart[0], k -> new HashSet<>());
                     variantValues.add(variantEntryPart[1]);
                 }
             }
