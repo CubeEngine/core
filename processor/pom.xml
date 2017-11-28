@@ -11,7 +11,7 @@
   <groupId>org.cubeengine</groupId>
   <artifactId>processor</artifactId>
   <name>processor</name>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <description>Make Modules be Plugins</description>
 
   <build>
