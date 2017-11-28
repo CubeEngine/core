@@ -30,7 +30,8 @@ import java.util.Set;
 
 public interface Generator
 {
-    String generate(Log log, String name, PluginContainer pc, Info info, Set<PermissionDescription> permissions, Set<CommandBase> commands, Permission basePermission);
+    String generate(Log log, String id, String name, PluginContainer pc, Info info, Set<PermissionDescription> permissions, Set<CommandBase> commands,
+            Permission basePermission);
 
     String generateList(Map<String, ModuleDocs> docs, Path modulePath, ModuleManager mm);
 }

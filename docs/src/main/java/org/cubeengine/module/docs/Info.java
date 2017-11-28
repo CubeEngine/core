@@ -20,10 +20,13 @@ package org.cubeengine.module.docs;
 import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Info extends ReflectedYaml {
     public String onOre;
     public boolean workInProgress = false;
     public List<String> features = new ArrayList<>();
+    public Map<String, String> pages = new HashMap<>();
 }

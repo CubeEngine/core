@@ -82,8 +82,8 @@ public class MarkdownGenerator implements Generator
     }
 
     @Override
-    public String generate(Log log, String name, PluginContainer pc, Info info, Set<PermissionDescription> permissions,
-                           Set<CommandBase> commands, Permission basePermission)
+    public String generate(Log log, String id, String name, PluginContainer pc, Info info, Set<PermissionDescription> permissions,
+            Set<CommandBase> commands, Permission basePermission)
     {
         StringBuilder sb = new StringBuilder();
         sb.append("# ").append(name);
@@ -122,6 +122,15 @@ public class MarkdownGenerator implements Generator
                 sb.append(" `").append(dep.getId()).append("`");
             }
             sb.append("\n");
+        }
+
+        if (!info.pages.isEmpty())
+        {
+            sb.append("\n## Pages:\n");
+            for (Map.Entry<String, String> entry : info.pages.entrySet())
+            {
+                sb.append(" - [").append(entry.getKey()).append("]").append("(modules/").append(id).append("-").append(entry.getValue()).append(".md)\n");
+            }
         }
 
         TreeMap<String, PermissionDescription> addPerms = new TreeMap<>(

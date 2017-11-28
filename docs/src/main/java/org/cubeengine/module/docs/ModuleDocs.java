@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class ModuleDocs
@@ -48,6 +47,7 @@ public class ModuleDocs
     private final String id;
     private final Permission basePermission;
     private final String moduleName;
+    private final String moduleId;
 
     public String getModuleName()
     {
@@ -70,7 +70,8 @@ public class ModuleDocs
         this.name = plugin.getName();
         this.moduleName = mm.getModuleName(module).get();
         this.id = plugin.getId();
-        InputStream is = plugin.getClass().getResourceAsStream("/assets/cubeengine/"+mm.getModuleID(module).get() + "-info.yml");
+        this.moduleId = mm.getModuleID(module).get();
+        InputStream is = plugin.getClass().getResourceAsStream("/assets/cubeengine/"+ moduleId + "-info.yml");
         if (is == null)
         {
             this.config = reflector.create(Info.class);
@@ -100,12 +101,20 @@ public class ModuleDocs
     public void generate(Path modulePath, DocType docType, Log log)
     {
         String generated = docType.getGenerator()
-                .generate(log, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
+                .generate(log, this.id, this.name, this.pc, this.config, this.permissions, this.commands, this.basePermission);
 
         Path file = modulePath.resolve(this.id + docType.getFileExtension());
         try
         {
             Files.write(file, generated.getBytes(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+
+            // Copy Markdown pages
+            for (String pageName : this.config.pages.values())
+            {
+                InputStream is = this.pc.getClass().getResourceAsStream("/assets/cubeengine/" + this.moduleId + "-" + pageName + ".md");
+                Path pageFileTarget = modulePath.resolve(this.id + "-" + pageName + ".md");
+                Files.copy(is, pageFileTarget);
+            }
         }
         catch (IOException e)
         {
