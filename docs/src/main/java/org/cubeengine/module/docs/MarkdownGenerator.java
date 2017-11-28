@@ -17,6 +17,8 @@
  */
 package org.cubeengine.module.docs;
 
+import static java.util.stream.Collectors.toMap;
+
 import de.cubeisland.engine.logscribe.Log;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.Dispatcher;
@@ -32,13 +34,16 @@ import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.plugin.meta.PluginDependency;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-
-import static java.util.stream.Collectors.toMap;
-import static org.cubeengine.module.docs.DocType.MARKDOWN;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeMap;
 
 public class MarkdownGenerator implements Generator
 {
@@ -56,7 +61,10 @@ public class MarkdownGenerator implements Generator
         ModuleDocs doc = modules.get("cubeengine-core");
         sb.append(" - [").append("Core").append("](modules/").append(doc.getId()).append(".md)\n");
 
-        for (ModuleDocs module : modules.values())
+
+        List<ModuleDocs> list = new ArrayList<>(modules.values());
+        list.sort((a, b) -> Boolean.compare(b.isOnOre(), a.isOnOre()));
+        for (ModuleDocs module : list)
         {
             if (module == doc)
             {
@@ -147,6 +155,11 @@ public class MarkdownGenerator implements Generator
             {
                 sb.append("| `").append(perm.getId()).append("` | ").append(perm.getDescription().orElse(Text.EMPTY).toPlain()).append(" |\n");
             }
+        }
+
+        if (info.onOre != null)
+        {
+            sb.append("## [Download on Ore](https://ore.spongepowered.org/CubeEngine/").append(info.onOre).append(")");
         }
 
         return sb.toString();

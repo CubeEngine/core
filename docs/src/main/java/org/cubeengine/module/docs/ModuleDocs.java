@@ -116,4 +116,9 @@ public class ModuleDocs
     public boolean isWIP() {
         return this.config.workInProgress;
     }
+
+    public boolean isOnOre()
+    {
+        return this.config.onOre != null;
+    }
 }
