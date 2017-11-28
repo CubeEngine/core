@@ -168,7 +168,7 @@ public class MarkdownGenerator implements Generator
 
         if (info.onOre != null)
         {
-            sb.append("## [Download on Ore](https://ore.spongepowered.org/CubeEngine/").append(info.onOre).append(")");
+            sb.append("\n## [Download on Ore](https://ore.spongepowered.org/CubeEngine/").append(info.onOre).append(")\n\n");
         }
 
         return sb.toString();
