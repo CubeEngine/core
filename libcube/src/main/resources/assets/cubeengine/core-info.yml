@@ -1,2 +1,7 @@
 features:
-  - Library for CubeEngine Plugins
+ - Annotation Commands
+ - Easy configurations
+ - Database Abstraction Layer using jOOQ
+ - Gettext Translation
+ - CubeEngine Modules
+ - Various Utilities
