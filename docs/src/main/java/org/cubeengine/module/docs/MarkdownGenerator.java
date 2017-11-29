@@ -129,7 +129,7 @@ public class MarkdownGenerator implements Generator
             sb.append("\n## Pages:\n");
             for (Map.Entry<String, String> entry : info.pages.entrySet())
             {
-                sb.append(" - [").append(entry.getKey()).append("]").append("(modules/").append(id).append("-").append(entry.getValue()).append(".md)\n");
+                sb.append(" - [").append(entry.getKey()).append("]").append("(").append(id).append("-").append(entry.getValue()).append(".md)\n");
             }
         }
 
