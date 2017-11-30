@@ -17,6 +17,15 @@
  */
 package org.cubeengine.libcube.service.permission;
 
+import org.cubeengine.libcube.service.i18n.I18n;
+import org.cubeengine.libcube.service.i18n.formatter.MessageType;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
+import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.text.chat.ChatTypes;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -46,6 +55,38 @@ public class Permission
     public Set<String> getExplicitParents()
     {
         return explicitParents;
+    }
+
+    /**
+     * Checks a permission
+     *
+     * @param subject the subject
+     *
+     * @return true if the subject has this permission.
+     */
+    public boolean check(Subject subject)
+    {
+        return subject.hasPermission(this.getId());
+    }
+
+    /**
+     * Checks a permission and informs if the permission is not set.
+     *
+     * @param checkOn the Subject to check the permission and send message to
+     * @param i18n the I18n Service
+     * @param <T> MessageReceiver and Subject Type
+     *
+     * @return true if the subject has this permission.
+     */
+    public <T extends MessageReceiver & Subject> boolean check(T checkOn, I18n i18n)
+    {
+        boolean hasPerm = checkOn.hasPermission(this.getId());
+        if (!hasPerm)
+        {
+            Text perm = Text.of(this.id).toBuilder().onHover(TextActions.showText(Text.of(this.desc))).build();
+            i18n.send(checkOn, MessageType.NEGATIVE, "You are missing the permission {txt}.", perm);
+        }
+        return hasPerm;
     }
 
     @Override

@@ -121,6 +121,17 @@ public abstract class I18nTranslate
         return composeMessage(context, format, getTranslationN(context.get(LOCALE), n, singular, plural), args);
     }
 
+    // Translate to Text
+    public Text translate(MessageReceiver mr, String message, Object... args)
+    {
+        return this.translate(mr, TextFormat.NONE, message, args);
+    }
+
+    public Text translateN(MessageReceiver mr, int n, String singular, String plural, Object... args)
+    {
+        return this.translateN(mr, TextFormat.NONE, n, singular, plural, args);
+    }
+
     // Get from Object with TextFormat
 
     public Text translate(Player source, TextFormat format, String message, Object... args)
