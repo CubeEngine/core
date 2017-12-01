@@ -23,7 +23,6 @@ import static org.cubeengine.libcube.service.i18n.formatter.MessageType.POSITIVE
 import static org.spongepowered.api.text.action.TextActions.showText;
 import static org.spongepowered.api.text.format.TextColors.YELLOW;
 
-import com.sun.org.apache.bcel.internal.generic.RET;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.exception.SilentException;
 import org.cubeengine.butler.parameter.TooFewArgumentsException;
@@ -39,16 +38,15 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultValue<Enchantment>, Completer
+public class EnchantmentParser implements ArgumentParser<EnchantmentType>, DefaultValue<EnchantmentType>, Completer
 {
     private GameRegistry registry;
     private EnchantMatcher enchantMatcher;
@@ -63,7 +61,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
 
     public static Text getPossibleEnchantments(ItemStack item)
     {
-        List<Text> enchantments = Sponge.getRegistry().getAllOf(Enchantment.class).stream()
+        List<Text> enchantments = Sponge.getRegistry().getAllOf(EnchantmentType.class).stream()
                                           .filter(e -> item == null || e.canBeAppliedToStack(item))
                                           .map(e -> Text.of(YELLOW, e.getTranslation().get().replace(" ", "")).toBuilder() // TODO getTranslation
                                                     .onHover(showText(Text.of(YELLOW, e.getId()))).build())
@@ -76,10 +74,10 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
     }
 
     @Override
-    public Enchantment parse(Class type, CommandInvocation invocation) throws ParserException
+    public EnchantmentType parse(Class type, CommandInvocation invocation) throws ParserException
     {
         String token = invocation.consume(1);
-        Enchantment enchantment = enchantMatcher.enchantment(token);
+        EnchantmentType enchantment = enchantMatcher.enchantment(token);
         if (enchantment == null)
         {
             CommandSource sender = (CommandSource)invocation.getCommandSource();
@@ -101,7 +99,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
     }
 
     @Override
-    public Enchantment provide(CommandInvocation invocation)
+    public EnchantmentType provide(CommandInvocation invocation)
     {
         CommandSource sender = (CommandSource)invocation.getCommandSource();
         i18n.send(sender, POSITIVE, "Following Enchantments are availiable:");
@@ -116,7 +114,7 @@ public class EnchantmentParser implements ArgumentParser<Enchantment>, DefaultVa
         ItemStack item = sender instanceof Player ? ((Player) sender).getItemInHand(HandTypes.MAIN_HAND).orElse(null) : null;
         String token = invocation.currentToken();
 
-        return Sponge.getRegistry().getAllOf(Enchantment.class).stream()
+        return Sponge.getRegistry().getAllOf(EnchantmentType.class).stream()
                 .filter(e -> item == null || e.canBeAppliedToStack(item))
                 .map(e -> e.getTranslation().get().replace(" ", ""))
                 .filter(name -> name.toLowerCase().startsWith(token.toLowerCase()))

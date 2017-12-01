@@ -22,9 +22,9 @@ import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
-import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 
-public class EnchantmentConverter extends SimpleConverter<Enchantment>
+public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
 {
     private EnchantMatcher enchantMatcher;
 
@@ -34,13 +34,13 @@ public class EnchantmentConverter extends SimpleConverter<Enchantment>
     }
 
     @Override
-    public Node toNode(Enchantment object) throws ConversionException
+    public Node toNode(EnchantmentType object) throws ConversionException
     {
         return StringNode.of(object.getName());
     }
 
     @Override
-    public Enchantment fromNode(Node node) throws ConversionException
+    public EnchantmentType fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {

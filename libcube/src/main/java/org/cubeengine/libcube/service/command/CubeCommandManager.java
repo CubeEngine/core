@@ -102,8 +102,8 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.context.Context;
@@ -195,7 +195,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         providers.register(CommandManager.class, new DoubleParser(i18n), Double.class, double.class);
 
         providers.register(CommandManager.class, new BooleanParser(i18n), Boolean.class, boolean.class);
-        providers.register(CommandManager.class, new EnchantmentParser(enchantMatcher, getGame(), i18n), Enchantment.class);
+        providers.register(CommandManager.class, new EnchantmentParser(enchantMatcher, getGame(), i18n), EnchantmentType.class);
         providers.register(CommandManager.class, new ItemStackParser(materialMatcher, i18n), ItemStack.class);
         providers.register(CommandManager.class, new ItemTypeParser(i18n), ItemType.class);
         providers.register(CommandManager.class, new BlockTypeParser(i18n), BlockType.class);

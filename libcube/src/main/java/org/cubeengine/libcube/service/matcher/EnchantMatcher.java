@@ -17,25 +17,27 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
-import java.util.HashMap;
-import javax.inject.Inject;
-import org.cubeengine.reflect.Reflector;
+import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENCHANTMENT_DATA;
+
 import org.cubeengine.libcube.service.config.EnchantmentConverter;
+import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
-import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.enchantment.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENCHANTMENT_DATA;
+import java.util.HashMap;
+
+import javax.inject.Inject;
 
 /**
  * This Matcher provides methods to match Enchantments.
  */
 public class EnchantMatcher
 {
-    private final HashMap<String, Enchantment> names = new HashMap<>();
-    private final HashMap<String, Enchantment> ids = new HashMap<>();
+    private final HashMap<String, EnchantmentType> names = new HashMap<>();
+    private final HashMap<String, EnchantmentType> ids = new HashMap<>();
     private StringMatcher sm;
 
     @Inject
@@ -44,7 +46,7 @@ public class EnchantMatcher
         reflector.getDefaultConverterManager().registerConverter(new EnchantmentConverter(this), Enchantment.class);
 
         this.sm = stringMatcher;
-        for (Enchantment enchantment : Sponge.getRegistry().getAllOf(Enchantment.class))
+        for (EnchantmentType enchantment : Sponge.getRegistry().getAllOf(EnchantmentType.class))
         {
             this.ids.put(enchantment.getName(), enchantment);
             if (enchantment.getName().startsWith("minecraft:"))
@@ -62,7 +64,7 @@ public class EnchantMatcher
      * @param s the string to match
      * @return the found Enchantment
      */
-    public Enchantment enchantment(String s)
+    public EnchantmentType enchantment(String s)
     {
         String match = sm.matchString(s, names.keySet());
         if (match != null)
@@ -74,14 +76,14 @@ public class EnchantMatcher
 
     public boolean applyMatchedEnchantment(ItemStack item, String enchName, int enchStrength, boolean force)
     {
-        Enchantment ench = this.enchantment(enchName);
+        EnchantmentType ench = this.enchantment(enchName);
         if (ench == null)
             return false;
         if (enchStrength == 0)
         {
             enchStrength = ench.getMaximumLevel();
         }
-        ItemEnchantment enchantment= new ItemEnchantment(ench, enchStrength);
+        Enchantment enchantment= Enchantment.builder().type(ench).level(enchStrength).build();
         if (force)
         {
             EnchantmentData data = item.getOrCreate(ENCHANTMENT_DATA).get();
