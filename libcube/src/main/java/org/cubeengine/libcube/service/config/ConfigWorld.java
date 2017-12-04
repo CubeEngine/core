@@ -45,7 +45,7 @@ public class ConfigWorld
     {
         if (this.world == null || !this.world.getName().equals(this.name))
         {
-            this.world = Sponge.getServer().getWorld(name).orElse(null);
+            this.world = Sponge.getServer().getWorld(name).orElse(Sponge.getServer().loadWorld(name).orElse(null));
         }
         return this.world;
     }
