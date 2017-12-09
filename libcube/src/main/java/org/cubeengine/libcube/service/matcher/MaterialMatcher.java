@@ -306,7 +306,7 @@ public class MaterialMatcher
     private Map<String, BlockState> buildBlockStateItems() {
         Map<String, BlockState> blockStateItems = new HashMap<>();
         Collection<BlockState> blocks = Sponge.getRegistry().getAllOf(BlockState.class);
-        System.out.println("Loading Names for " + blocks.size() + " Blockstates");
+        //System.out.println("Loading Names for " + blocks.size() + " Blockstates");
         for (BlockState blockState : blocks)
         {
             try
