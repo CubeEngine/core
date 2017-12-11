@@ -95,7 +95,7 @@ import org.spongepowered.api.data.type.PortionTypes;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.Direction;
-import org.spongepowered.api.world.BlockChangeFlag;
+import org.spongepowered.api.world.BlockChangeFlags;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -394,7 +394,7 @@ public class BlockUtil
                     for (; x <= xMax; x++)
                     {
                         i++;
-                        at.getExtent().setBlock(at.getBlockX() + x, at.getBlockY() + y, at.getBlockZ() + z, volume.getBlock(x,y,z), BlockChangeFlag.NONE);
+                        at.getExtent().setBlock(at.getBlockX() + x, at.getBlockY() + y, at.getBlockZ() + z, volume.getBlock(x,y,z), BlockChangeFlags.NONE);
                         Optional<TileEntityArchetype> te = volume.getTileEntityArchetype(x, y, z);
                         te.ifPresent(tileEntityArchetype -> tileEntityArchetype.apply(at.add(x, y, z)));
                         if (i % 100 == 0)
