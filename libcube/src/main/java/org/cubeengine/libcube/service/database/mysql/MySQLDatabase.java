@@ -32,12 +32,12 @@ import javax.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.logscribe.LogTarget;
-import de.cubeisland.engine.logscribe.filter.PrefixFilter;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogFactory;
+import org.cubeengine.logscribe.LogLevel;
+import org.cubeengine.logscribe.LogTarget;
+import org.cubeengine.logscribe.filter.PrefixFilter;
+import org.cubeengine.logscribe.target.file.AsyncFileTarget;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.database.TableVersion;
 import org.cubeengine.reflect.Reflector;
@@ -84,9 +84,11 @@ public class MySQLDatabase extends AbstractDatabase implements Database
 
         // Setting up Logger...
         this.logger = mm.getLoggerFor(Database.class);
-        AsyncFileTarget target = new AsyncFileTarget(LoggingUtil.getLogFile(fm, "Database"),
-                                                     LoggingUtil.getFileFormat(true, false),
-                                                     true, LoggingUtil.getCycler(), threadFactory);
+        AsyncFileTarget target =
+                new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, "Database").toPath(),
+                        LoggingUtil.getFileFormat(true, false)
+                ).setAppend(true).setCycler(LoggingUtil.getCycler()).setThreadFactory(threadFactory).build();
+
         target.setLevel(LogLevel.DEBUG);
         logger.addTarget(target);
 

@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.service.task.thread;
 
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogLevel;
 
 public final class LoggingThread extends TrackedThread
 {

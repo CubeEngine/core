@@ -19,7 +19,7 @@ package org.cubeengine.module.docs;
 
 import static org.cubeengine.module.docs.DocType.MARKDOWN;
 
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.butler.alias.Alias;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.libcube.CubeEngineModule;

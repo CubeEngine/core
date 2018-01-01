@@ -22,7 +22,7 @@ import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.BooleanNode;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.LogLevel;
 
 public class LevelConverter extends SimpleConverter<LogLevel>
 {

@@ -21,10 +21,10 @@ import static org.cubeengine.libcube.service.logging.LoggingUtil.getCycler;
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getFileFormat;
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getLogFile;
 
-import de.cubeisland.engine.logscribe.DefaultLogFactory;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import org.cubeengine.logscribe.DefaultLogFactory;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogFactory;
+import org.cubeengine.logscribe.target.file.AsyncFileTarget;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
 import org.cubeengine.libcube.ModuleManager;
@@ -63,13 +63,19 @@ public class SpongeLogFactory extends DefaultLogFactory
     {
         this.tf = tf;
         // configure main file logger
-        AsyncFileTarget mainFileTarget = new AsyncFileTarget(getLogFile(fm, "main"), getFileFormat(true, true), true, getCycler(), tf);
+        AsyncFileTarget mainFileTarget =
+                new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, "main").toPath(),
+                        LoggingUtil.getFileFormat(true, true)
+                ).setAppend(true).setCycler(getCycler()).setThreadFactory(tf).build();
         mainFileTarget.setLevel(config.fileLevel);
         mainLogger.addTarget(mainFileTarget);
 
         // configure exception logger
         Log exLog = getLog(LogFactory.class, "Exceptions");
-        exLog.addTarget(new AsyncFileTarget(getLogFile(fm, "Exceptions"), getFileFormat(true, false), true, getCycler(), tf));
+        exLog.addTarget(
+                new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, "Exceptions").toPath(),
+                        LoggingUtil.getFileFormat(true, false)
+                ).setAppend(true).setCycler(getCycler()).setThreadFactory(tf).build());
 
         // hook into Minecraft Console Logger
         ExceptionAppender exceptionAppender = new ExceptionAppender(exLog);
@@ -94,7 +100,10 @@ public class SpongeLogFactory extends DefaultLogFactory
         if (config.logCommands && clazz.equals(CommandManager.class))
         {
             Log cmdLogger = super.getLog(clazz, id);
-            cmdLogger.addTarget(new AsyncFileTarget(getLogFile(fm, "commands"), getFileFormat(true, false), true, getCycler(), this.tf));
+            cmdLogger.addTarget(
+                    new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, "commands").toPath(),
+                            LoggingUtil.getFileFormat(true, false)
+                    ).setAppend(true).setCycler(getCycler()).setThreadFactory(tf).build());
             return cmdLogger;
         }
         return super.getLog(clazz, id);

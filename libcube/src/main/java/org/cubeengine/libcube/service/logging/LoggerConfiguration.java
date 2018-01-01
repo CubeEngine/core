@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.reflect.annotations.Comment;
 import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 

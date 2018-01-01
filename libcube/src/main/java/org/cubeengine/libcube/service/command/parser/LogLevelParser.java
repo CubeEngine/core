@@ -18,7 +18,7 @@
 package org.cubeengine.libcube.service.command.parser;
 
 import java.util.Locale;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.argument.ArgumentParser;
 import org.cubeengine.butler.parameter.argument.ParserException;

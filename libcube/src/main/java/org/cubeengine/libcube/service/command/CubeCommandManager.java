@@ -31,9 +31,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.inject.Injector;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogFactory;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.butler.alias.AliasConfiguration;
 import org.cubeengine.butler.alias.AliasDescriptor;
 import org.cubeengine.libcube.LibCube;

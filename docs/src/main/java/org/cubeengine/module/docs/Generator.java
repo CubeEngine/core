@@ -17,7 +17,7 @@
  */
 package org.cubeengine.module.docs;
 
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.permission.Permission;

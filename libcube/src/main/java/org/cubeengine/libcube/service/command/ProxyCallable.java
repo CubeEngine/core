@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.libcube.service.command.property.RawPermission;

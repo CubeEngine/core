@@ -20,7 +20,7 @@ package org.cubeengine.libcube.service.filesystem;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.file.Files.createSymbolicLink;
 
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.reflect.ReflectedFile;
 import org.cubeengine.reflect.Reflector;

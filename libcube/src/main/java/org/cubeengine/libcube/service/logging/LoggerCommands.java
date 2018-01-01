@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.butler.parametric.Command;
 import org.cubeengine.butler.parametric.Optional;
 import org.spongepowered.api.command.CommandSource;

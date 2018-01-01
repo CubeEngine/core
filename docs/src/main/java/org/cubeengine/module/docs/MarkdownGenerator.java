@@ -19,7 +19,7 @@ package org.cubeengine.module.docs;
 
 import static java.util.stream.Collectors.toMap;
 
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.butler.CommandBase;
 import org.cubeengine.butler.Dispatcher;
 import org.cubeengine.butler.StringUtils;

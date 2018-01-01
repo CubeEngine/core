@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.task;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.libcube.service.task.thread.BaseThreadFactory;
 import org.cubeengine.libcube.service.task.thread.LoggingThread;
 

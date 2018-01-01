@@ -19,10 +19,11 @@ package org.cubeengine.libcube.service.logging;
 
 import java.util.HashMap;
 import java.util.Map;
-import de.cubeisland.engine.logscribe.LogEntry;
-import de.cubeisland.engine.logscribe.LogLevel;
-import de.cubeisland.engine.logscribe.target.format.DefaultFormat;
-import de.cubeisland.engine.logscribe.target.proxy.ProxyTarget;
+import org.cubeengine.logscribe.LogEntry;
+import org.cubeengine.logscribe.LogLevel;
+import org.cubeengine.logscribe.MacroProcessor;
+import org.cubeengine.logscribe.target.format.DefaultFormat;
+import org.cubeengine.logscribe.target.proxy.ProxyTarget;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 
@@ -55,7 +56,8 @@ public class Log4jProxyTarget extends ProxyTarget<Logger>
         {
             level = Level.INFO;
         }
-        this.handle.log(level, DefaultFormat.parseArgs(entry.getMessage(), entry.getArgs()), entry.getThrowable());
+
+        this.handle.log(level, MacroProcessor.processSimpleMacros(entry.getMessage(), entry.getArgs()), entry.getThrowable());
     }
 
     @Override

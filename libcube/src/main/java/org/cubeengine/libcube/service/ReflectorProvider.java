@@ -21,7 +21,7 @@ import javax.inject.Provider;
 
 import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConverterManager;
-import de.cubeisland.engine.logscribe.LogLevel;
+import org.cubeengine.logscribe.LogLevel;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.config.ContextConverter;
 import org.cubeengine.libcube.service.config.DataQueryConverter;

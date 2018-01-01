@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
-import de.cubeisland.engine.logscribe.Log;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.service.logging.LogProvider;
 import org.spongepowered.api.Sponge;

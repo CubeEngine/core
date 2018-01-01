@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import de.cubeisland.engine.logscribe.Log;
-import de.cubeisland.engine.logscribe.LogFactory;
-import de.cubeisland.engine.logscribe.LogTarget;
-import de.cubeisland.engine.logscribe.filter.PrefixFilter;
-import de.cubeisland.engine.logscribe.target.file.AsyncFileTarget;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogFactory;
+import org.cubeengine.logscribe.LogTarget;
+import org.cubeengine.logscribe.filter.PrefixFilter;
+import org.cubeengine.logscribe.target.file.AsyncFileTarget;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
@@ -57,8 +57,10 @@ public class LogProvider
         if (module)
         {
             logger = logFactory.getLog(owner, name);
-            logger.addTarget(new AsyncFileTarget(LoggingUtil.getLogFile(fm, name),
-                    LoggingUtil.getFileFormat(true, true), true, LoggingUtil.getCycler(), mm.getThreadFactory(owner)));
+            logger.addTarget(
+                    new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, name).toPath(),
+                            LoggingUtil.getFileFormat(true, true)
+                    ).setAppend(true).setCycler(LoggingUtil.getCycler()).setThreadFactory(mm.getThreadFactory(owner)).build());
 
             LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
             parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));

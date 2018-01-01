@@ -19,14 +19,16 @@ package org.cubeengine.libcube.service.logging;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import de.cubeisland.engine.logscribe.target.file.cycler.FilesizeCycler;
-import de.cubeisland.engine.logscribe.target.file.format.FileFormat;
-import de.cubeisland.engine.logscribe.target.file.format.LogFileFormat;
+import java.time.format.DateTimeFormatter;
+
+import org.cubeengine.logscribe.target.file.cycler.FilesizeCycler;
+import org.cubeengine.logscribe.target.file.format.FileFormat;
+import org.cubeengine.logscribe.target.file.format.LogFileFormat;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
 public class LoggingUtil
 {
-    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static File getLogFile(FileManager fm, String name)
     {
@@ -58,6 +60,6 @@ public class LoggingUtil
 
     public static FilesizeCycler getCycler()
     {
-        return new FilesizeCycler(20000000L, "{name}/{name}_{date}{_i}{ending}");
+        return new FilesizeCycler(20000000L, "{name}/{name}_{date}{_i}{ending}", sdf);
     }
 }
