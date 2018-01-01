@@ -36,7 +36,7 @@ public class UserListInSight implements DefaultValue<PlayerList>
                 return new PlayerList(Collections.singletonList(player));
             }
         }
-        return null;
+        return null; // TODO exception
     }
 
     private Player getFirstPlayerInSight(Player source)
