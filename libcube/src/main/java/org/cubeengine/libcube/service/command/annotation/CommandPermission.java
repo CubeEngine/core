@@ -34,7 +34,7 @@ public @interface CommandPermission
     boolean checkPermission() default true;
     /**
      * Use this permission node instead of the automatically generated one.
-     * 'cubeengine.<module>.command' will be prepended to this.
+     * {@code 'cubeengine.<module>.command'} will be prepended to this.
      */
     String value() default "";
 

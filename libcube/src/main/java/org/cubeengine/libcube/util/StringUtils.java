@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class contains some utillities to work with Strings.
+ * This class contains some utilities to work with Strings.
  */
 public final class StringUtils
 {
@@ -178,7 +178,7 @@ public final class StringUtils
     /**
      * Decodes the percent encoding scheme.
      *
-     * For example: "an+example%20string" -> "an example string"
+     * For example: {@code "an+example%20string" -> "an example string"}
      */
     public static String urlDecode(String string)
     {

@@ -54,7 +54,7 @@ public class StringMatcher
     }
 
     /**
-     * Returns all matches with their editDistance, having an editDistance <= maxDistance
+     * Returns all matches with their editDistance, having an editDistance less or equal to maxDistance
      *
      * @param search the String to search for
      * @param in the Strings to match in

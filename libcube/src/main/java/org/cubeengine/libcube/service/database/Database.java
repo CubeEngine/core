@@ -83,7 +83,6 @@ public interface Database
      * @param query  the query
      * @param params the params
      * @return true if it succeeded
-     * @throws SQLException
      */
     CompletableFuture<Boolean> execute(String query, Object... params);
 
@@ -95,7 +94,6 @@ public interface Database
      * @param query  the query
      * @param params the params
      * @return the affected rows
-     * @throws SQLException
      */
     CompletableFuture<Integer> update(String query, Object... params);
 
