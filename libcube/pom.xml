@@ -17,6 +17,12 @@
         <minecraftVersion>1.11.2</minecraftVersion>
     </properties>
 
+    <scm>
+        <url>scm:git:https://github.com/CubeEngine/core</url>
+        <connection>scm:git:https://github.com/CubeEngine/core.git</connection>
+        <developerConnection>scm:git:git@github.com:CubeEngine/core.git</developerConnection>
+    </scm>
+
     <repositories>
         <repository>
             <id>cubeisland-repo</id>
@@ -231,8 +237,4 @@
             </plugin>
         </plugins>
     </build>
-
-  <scm>
-    <tag>libcube-1.1.0</tag>
-  </scm>
 </project>
