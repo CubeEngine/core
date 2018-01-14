@@ -26,10 +26,10 @@
     </distributionManagement>
 
     <modules>
-        <module>libcube</module>
-        <module>docs</module>
         <module>processor</module>
+        <module>libcube</module>
         <module>module-parent</module>
+        <module>docs</module>
     </modules>
 
     <build>
