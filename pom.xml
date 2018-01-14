@@ -29,6 +29,7 @@
         <module>libcube</module>
         <module>docs</module>
         <module>processor</module>
+        <module>module-parent</module>
     </modules>
 
     <build>
