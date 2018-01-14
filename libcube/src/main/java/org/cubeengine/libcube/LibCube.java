@@ -30,7 +30,7 @@ import java.nio.file.Path;
 
 import javax.inject.Inject;
 
-@Plugin(id = "cubeengine-core", name = "LibCube", version = "1.1.2-SNAPSHOT",
+@Plugin(id = "cubeengine-core", name = "LibCube", version = "1.1.3-SNAPSHOT",
         description = "Core Library for CubeEngine plugins",
         url = "http://cubeengine.org",
         authors = "CubeEngine Team")
