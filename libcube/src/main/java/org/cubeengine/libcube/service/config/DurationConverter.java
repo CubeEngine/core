@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class DurationConverter extends SimpleConverter<Duration>
 {
-    private Pattern pattern = Pattern.compile("([0-9]*D)?(([0-9]*H)?([0-9]*M)?([0-9]*S)?)");
+    private Pattern pattern = Pattern.compile("([0-9]*D)?((?:[0-9]*H)?(?:[0-9]*M)?(?:[0-9]*S)?)");
 
     @Override
     public Node toNode(Duration d) throws ConversionException
@@ -51,7 +51,7 @@ public class DurationConverter extends SimpleConverter<Duration>
                 return Duration.ofMillis(((IntNode)node).getValue().longValue());
             }
             Matcher matcher = pattern.matcher(node.asText().toUpperCase());
-            String text = matcher.replaceAll("P$1T$2");
+            String text = matcher.replaceFirst("P$1T$2");
             return Duration.parse(text);
         }
         catch (Exception e)
