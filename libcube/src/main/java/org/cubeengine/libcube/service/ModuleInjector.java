@@ -15,19 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.database;
-import org.cubeengine.libcube.service.task.thread.BaseThreadFactory;
+package org.cubeengine.libcube.service;
 
-public class DatabaseThreadFactory extends BaseThreadFactory
-{
-    public DatabaseThreadFactory()
-    {
-        super("CubeEngine" + " - " + Database.class.getSimpleName(), Database.class.getPackage().getName());
-    }
+import com.google.inject.Injector;
 
-    @Override
-    protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
-    {
-        return new Thread(threadGroup, r, name);
-    }
+import java.lang.annotation.Annotation;
+
+public interface ModuleInjector<T extends Annotation> {
+    void inject(Injector moduleInjector, Object instance, T annotation);
 }

@@ -20,6 +20,8 @@ package org.cubeengine.libcube.service.filesystem;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.file.Files.createSymbolicLink;
 
+import com.google.inject.Injector;
+import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.reflect.ReflectedFile;

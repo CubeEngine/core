@@ -17,6 +17,8 @@
  */
 package org.cubeengine.libcube.service.inventoryguard;
 
+import static org.spongepowered.api.item.inventory.query.QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY;
+
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.Sponge;
@@ -33,6 +35,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 import java.util.Arrays;
@@ -304,14 +307,13 @@ public class InventoryGuard
             if (guardedItem.isSimilar(itemStackToGoIn, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = this.inventory.query(itemStackAtPosition).totalItems();
+                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY.of(itemStackAtPosition)).totalItems();
                 System.out.print("AllowInCheck: " + amountIn + "\n");
                 return amountIn <= guardedItem.amount;
             }
         }
         return false;
     }
-
 
     private boolean hasAllowOut(ItemStack itemStackToOut, ItemStack item)
     {
@@ -320,7 +322,7 @@ public class InventoryGuard
             if (guardedItem.isSimilar(itemStackToOut, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = this.inventory.query(itemStackToOut).totalItems();
+                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY.of(item)).totalItems();
                 System.out.print("AllowOutCheck: " + amountIn + "\n");
                 return amountIn >= guardedItem.amount;
             }

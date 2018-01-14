@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import com.google.inject.Injector;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
+import org.cubeengine.libcube.service.ModuleInjector;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.plugin.PluginContainer;

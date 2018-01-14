@@ -22,16 +22,13 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
+import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.libcube.service.ReflectorProvider;
 import org.cubeengine.libcube.service.command.CommandManager;
 import org.cubeengine.libcube.service.command.CubeCommandManager;
 import org.cubeengine.libcube.service.command.ModuleCommand;
-import org.cubeengine.libcube.service.database.Database;
-import org.cubeengine.libcube.service.database.ModuleTables;
-import org.cubeengine.libcube.service.database.Table;
-import org.cubeengine.libcube.service.database.mysql.MySQLDatabase;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.event.ModuleListener;
 import org.cubeengine.libcube.service.filesystem.FileManager;
@@ -81,6 +78,8 @@ public class ModuleManager
     private I18n i18n;
     private Injector injector;
 
+    private Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
+
     public ModuleManager(File path, Logger logger, LibCube libCube, PluginContainer container, Injector injector)
     {
         this.reflector = new ReflectorProvider().get();
@@ -111,15 +110,15 @@ public class ModuleManager
 
         this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class));
         this.i18n.registerPlugin(plugin);
+
         this.cm.injectCommands(moduleInjector, instance, getAnnotatedFields(instance, ModuleCommand.class));
         this.em.injectListeners(moduleInjector, instance, getAnnotatedFields(instance, ModuleListener.class));
         this.em.registerListener(module, instance); // TODO is this working for modules without listener?
 
-        if (module.isAnnotationPresent(ModuleTables.class))
-        {
-            for (Class<? extends Table<?>> table : module.getAnnotation(ModuleTables.class).value())
-            {
-                this.injector.getInstance(Database.class).registerTable(table);
+        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet()) {
+
+            if (module.isAnnotationPresent(entry.getKey())) {
+                injectClassAnnot(moduleInjector, instance, module.getAnnotation(entry.getKey()), entry.getValue());
             }
         }
 
@@ -128,9 +127,17 @@ public class ModuleManager
         return instance;
     }
 
+    private void injectClassAnnot(Injector moduleInjector, Object instance, Annotation annotation, ModuleInjector injector) {
+        injector.inject(moduleInjector, instance, annotation);
+    }
+
     public Map<Class, PluginContainer> getModulePlugins()
     {
         return Collections.unmodifiableMap(modulePlugins);
+    }
+
+    public <A extends Annotation> void registerClassInjector(Class<A> annot, ModuleInjector<A> injector) {
+        this.injectors.put(annot, injector);
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
@@ -150,7 +157,6 @@ public class ModuleManager
             this.bind(TaskManager.class).toProvider(() -> injector.getInstance(SpongeTaskManager.class));
             this.bind(I18n.class).toProvider(() -> i18n);
             this.bind(CommandManager.class).toProvider(() -> injector.getInstance(CubeCommandManager.class));
-            this.bind(Database.class).toProvider(() -> injector.getInstance(MySQLDatabase.class));
         }
     }
 

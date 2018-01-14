@@ -46,9 +46,9 @@ public class SimpleItemStackConverter extends SimpleConverter<ItemStack>
         Optional<DurabilityData> dura = object.get(DurabilityData.class);
         if (dura.isPresent())
         {
-            return StringNode.of(object.getItem().getName() + ":" + dura.get().durability());
+            return StringNode.of(object.getType().getName() + ":" + dura.get().durability());
         }
-        return StringNode.of(object.getItem().getName());
+        return StringNode.of(object.getType().getName());
     }
 
     @Override

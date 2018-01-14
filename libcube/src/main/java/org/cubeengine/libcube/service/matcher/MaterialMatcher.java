@@ -317,7 +317,7 @@ public class MaterialMatcher
                 }
                 ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
 
-                Builder state = BlockState.builder().blockType(item.getItem().getBlock().get());
+                Builder state = BlockState.builder().blockType(item.getType().getBlock().get());
 
                 blockState.getKeys().stream().map(Key.class::cast).forEach(
                     k -> {
@@ -534,7 +534,7 @@ public class MaterialMatcher
      */
     public boolean repairable(ItemStack item)
     {
-        return item != null && this.repairableMaterials.contains(item.getItem());
+        return item != null && this.repairableMaterials.contains(item.getType());
     }
 
     /**
@@ -545,7 +545,7 @@ public class MaterialMatcher
      */
     public String getNameFor(ItemStack item)
     {
-        return item.getItem().getTranslation().get();
+        return item.getType().getTranslation().get();
     }
 
     private static class ItemStackComparator implements Comparator<Entry<ItemStack, Double>>
