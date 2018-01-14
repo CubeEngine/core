@@ -52,6 +52,7 @@ public class SpongeTaskManager implements TaskManager
         this.plugin = mm.getPlugin(LibCube.class).get();
         this.scheduler = Sponge.getScheduler();
         this.tasks = new ConcurrentHashMap<>();
+        mm.registerBinding(TaskManager.class, this);
     }
 
     private Set<UUID> getTaskIDs(Class owner)

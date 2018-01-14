@@ -72,6 +72,7 @@ public class ModuleManager
     private Module guiceModule = new CubeEngineGuiceModule();
     private Map<Class, PluginContainer> modulePlugins = new HashMap<>();
     private Map<Class, Object> modules = new HashMap<>();
+    private Map<Class, Object> bindings = new HashMap<>();
     private LogProvider logProvider;
     private MaterialMatcher mm;
     private CubeCommandManager cm;
@@ -115,20 +116,24 @@ public class ModuleManager
         this.em.injectListeners(moduleInjector, instance, getAnnotatedFields(instance, ModuleListener.class));
         this.em.registerListener(module, instance); // TODO is this working for modules without listener?
 
-        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet()) {
-
-            if (module.isAnnotationPresent(entry.getKey())) {
-                injectClassAnnot(moduleInjector, instance, module.getAnnotation(entry.getKey()), entry.getValue());
-            }
-        }
+        injectClassAnnots(module, instance);
 
         // TODO do stuff with my module
 
         return instance;
     }
 
-    private void injectClassAnnot(Injector moduleInjector, Object instance, Annotation annotation, ModuleInjector injector) {
-        injector.inject(moduleInjector, instance, annotation);
+    public void injectClassAnnots(Class<?> module, Object instance) {
+        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet()) {
+
+            if (module.isAnnotationPresent(entry.getKey())) {
+                injectClassAnnot(instance, module.getAnnotation(entry.getKey()), entry.getValue());
+            }
+        }
+    }
+
+    private void injectClassAnnot(Object instance, Annotation annotation, ModuleInjector injector) {
+        injector.inject(instance, annotation);
     }
 
     public Map<Class, PluginContainer> getModulePlugins()
@@ -138,6 +143,16 @@ public class ModuleManager
 
     public <A extends Annotation> void registerClassInjector(Class<A> annot, ModuleInjector<A> injector) {
         this.injectors.put(annot, injector);
+
+        for (Map.Entry<Class, Object> moduleEntry : this.modules.entrySet()) {
+            Class module = moduleEntry.getKey();
+            injectClassAnnots(module, moduleEntry.getValue());
+        }
+
+    }
+
+    public <T> void registerBinding(Class<T> clazz, T db) {
+        this.bindings.put(clazz, db);
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
@@ -154,9 +169,12 @@ public class ModuleManager
             this.bind(LogProvider.class).toInstance(logProvider);
             this.bind(MaterialMatcher.class).toInstance(mm);
 
-            this.bind(TaskManager.class).toProvider(() -> injector.getInstance(SpongeTaskManager.class));
             this.bind(I18n.class).toProvider(() -> i18n);
-            this.bind(CommandManager.class).toProvider(() -> injector.getInstance(CubeCommandManager.class));
+
+            for (Map.Entry<Class, Object> entry : bindings.entrySet()) {
+                this.bind(entry.getKey()).toInstance(entry.getValue());
+            }
+
         }
     }
 

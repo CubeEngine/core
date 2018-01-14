@@ -155,9 +155,10 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     private Map<CommandBase, CommandMapping> mappings = new HashMap<>();
 
     @Inject
-    public CubeCommandManager()
+    public CubeCommandManager(ModuleManager mm)
     {
         super(new CommandManagerDescriptor());
+        mm.registerBinding(CommandManager.class, this);
     }
 
     public Object getPlugin()

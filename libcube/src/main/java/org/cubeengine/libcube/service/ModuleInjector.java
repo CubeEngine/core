@@ -17,10 +17,8 @@
  */
 package org.cubeengine.libcube.service;
 
-import com.google.inject.Injector;
-
 import java.lang.annotation.Annotation;
 
 public interface ModuleInjector<T extends Annotation> {
-    void inject(Injector moduleInjector, Object instance, T annotation);
+    void inject(Object instance, T annotation);
 }
