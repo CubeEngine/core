@@ -199,13 +199,14 @@
                             <exclude>com.google.code.findbugs:*</exclude>
                             <exclude>com.google.inject:*</exclude>
                             <exclude>ninja.leaping.configurate:*</exclude>
-                            <exclude>com.flowpowered.math:*</exclude>
-                            <exclude>com.flowpowered.noise:*</exclude>
+                            <exclude>com.flowpowered:flow-math</exclude>
+                            <exclude>com.flowpowered:flow-noise</exclude>
                             <exclude>org.ow2.asm:*</exclude>
                             <exclude>org.spongepowered:*</exclude>
                             <exclude>javax.persistence:*</exclude>
                             <exclude>org.scala-lang:*</exclude>
                             <exclude>com.typesafe:config</exclude>
+                            <exclude>com.github.ben-manes.caffeine:*</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
