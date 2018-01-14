@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.cubeengine</groupId>
         <artifactId>parent</artifactId>
-        <version>4</version>
+        <version>5</version>
     </parent>
 
     <artifactId>libcube</artifactId>
