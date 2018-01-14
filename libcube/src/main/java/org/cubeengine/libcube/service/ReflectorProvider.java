@@ -37,12 +37,13 @@ import org.cubeengine.libcube.service.config.WorldTransformConverter;
 import org.cubeengine.libcube.service.config.ConfigWorld;
 import org.cubeengine.libcube.service.config.ConfigWorldConverter;
 import org.cubeengine.libcube.service.config.WorldTransform;
-import org.joda.time.Duration;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+
+import java.time.Duration;
 
 public class ReflectorProvider implements Provider<Reflector>
 {

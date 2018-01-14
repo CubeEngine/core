@@ -22,29 +22,23 @@ import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.IntNode;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
-import org.joda.time.Duration;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
+
+import java.time.Duration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DurationConverter extends SimpleConverter<Duration>
 {
-    private final PeriodFormatter formatter;
-
-    public DurationConverter()
-    {
-        this.formatter = new PeriodFormatterBuilder()
-        .appendWeeks().appendSuffix("w").appendSeparator(" ")
-        .appendDays().appendSuffix("d").appendSeparator(" ")
-        .appendHours().appendSuffix("h").appendSeparator(" ")
-        .appendMinutes().appendSuffix("m").appendSeparator(" ")
-        .appendSeconds().appendSuffix("s").appendSeparator(".")
-        .appendMillis().toFormatter();
-    }
+    private Pattern pattern = Pattern.compile("([0-9]*D)?(([0-9]*H)?([0-9]*M)?([0-9]*S)?)");
 
     @Override
-    public Node toNode(Duration object) throws ConversionException
+    public Node toNode(Duration d) throws ConversionException
     {
-        return StringNode.of(this.formatter.print(object.toPeriod()));
+        long days = d.toDays();
+        long hours = d.minusDays(days).toHours();
+        long minutes = d.minusDays(days).minusHours(hours).toMinutes();
+        long seconds = d.minusDays(days).minusHours(hours).minusMinutes(minutes).toMillis() / 1000;
+        return StringNode.of(days + "D" + hours + "H" + minutes + "M" + seconds + "S");
     }
 
     @Override
@@ -54,9 +48,11 @@ public class DurationConverter extends SimpleConverter<Duration>
         {
             if (node instanceof IntNode)
             {
-                return new Duration(((IntNode)node).getValue().longValue());
+                return Duration.ofMillis(((IntNode)node).getValue().longValue());
             }
-            return this.formatter.parsePeriod(node.asText()).toStandardDuration();
+            Matcher matcher = pattern.matcher(node.asText().toUpperCase());
+            String text = matcher.replaceAll("P$1T$2");
+            return Duration.parse(text);
         }
         catch (Exception e)
         {

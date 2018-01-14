@@ -17,8 +17,11 @@
  */
 package org.cubeengine.libcube.util;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Locale;
+
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
