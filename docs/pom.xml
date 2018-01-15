@@ -7,14 +7,6 @@
     <version>2-SNAPSHOT</version>
   </parent>
 
-  <repositories>
-    <repository>
-      <id>cubeengine-repo</id>
-      <name>CubeEngine Public Repository</name>
-      <url>http://repo.cubeengine.org/</url>
-    </repository>
-  </repositories>
-
   <artifactId>docs</artifactId>
   <name>Docs</name>
   <version>1.0.0-SNAPSHOT</version>
