@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.cubeengine</groupId>
+    <artifactId>parent</artifactId>
+    <version>5</version>
+  </parent>
+
+  <groupId>org.cubeengine.main-module</groupId>
+  <artifactId>parent</artifactId>
+  <version>1</version>
+
+  <name>CubeEngine Main Module Parent</name>
+  <description>Parent for CubeEngine Modules</description>
+  <url>http://cubeengine.org</url>
+  <inceptionYear>2012</inceptionYear>
+
+  <scm>
+    <url>scm:git:https://github.com/CubeEngine/modules-main</url>
+    <connection>scm:git:https://github.com/CubeEngine/modules-main.git</connection>
+    <developerConnection>scm:git:git@github.com:CubeEngine/modules-main.git</developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>sponge-maven-repo</id>
+      <name>Sponge maven repo</name>
+      <url>https://repo.spongepowered.org/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>

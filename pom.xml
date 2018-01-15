@@ -28,8 +28,8 @@
     <modules>
         <module>processor</module>
         <module>libcube</module>
-        <module>module-parent</module>
-        <module>docs</module>
+        <module>main-module-parent</module>
+        <module>extra-module-parent</module>
     </modules>
 
     <build>
