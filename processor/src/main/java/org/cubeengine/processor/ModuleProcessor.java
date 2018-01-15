@@ -42,7 +42,7 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.FileObject;
 
-@SupportedOptions({"cubeengine.module.version", "cubeengine.module.id", "cubeengine.module.name", "cubeengine.module.description", "cubeengine.module.team", "cubeengine.module.url"})
+@SupportedOptions({"cubeengine.module.version", "cubeengine.module.id", "cubeengine.module.name", "cubeengine.module.description", "cubeengine.module.team", "cubeengine.module.url", "cubeengine.module.libcube.version", "cubeengine.module.sponge.version"})
 @SupportedAnnotationTypes({ PLUGIN_ANNOTATION, DEP_ANNOTATION })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ModuleProcessor extends AbstractProcessor
@@ -51,29 +51,6 @@ public class ModuleProcessor extends AbstractProcessor
     private static final String PACKAGE = "org.cubeengine.processor.";
     static final String PLUGIN_ANNOTATION = PACKAGE + "Module";
     static final String DEP_ANNOTATION = PACKAGE + "Dependency";
-
-    private static Dependency coreDep = new Dependency()
-    {
-        @Override
-        public String value() {
-            return "cubeengine-core";
-        }
-
-        @Override
-        public String version() {
-            return "";
-        }
-
-        @Override
-        public boolean optional() {
-            return false;
-        }
-
-        @Override
-        public Class<? extends Annotation> annotationType() {
-            return Dependency.class;
-        }
-    };
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
@@ -93,6 +70,8 @@ public class ModuleProcessor extends AbstractProcessor
             String pluginName = "Plugin" + element.getSimpleName();
             //this.processingEnv.getMessager().printMessage(NOTE, "Generating Plugin for CubeEngine Module " + annotation.name() + "(" + annotation.id() + ")" + "...");
             String moduleClass = packageName + "." + element.getSimpleName();
+
+            Dependency coreDep = getCoreDep();
 
             List<Dependency> allDeps = new ArrayList<>(Arrays.asList(deps));
             allDeps.add(coreDep);
@@ -166,6 +145,30 @@ public class ModuleProcessor extends AbstractProcessor
         }
 
         return false;
+    }
+
+    public Dependency getCoreDep() {
+        return new Dependency() {
+            @Override
+            public String value() {
+                return "cubeengine-core";
+            }
+
+            @Override
+            public String version() {
+                return processingEnv.getOptions().getOrDefault("cubeengine.module.libcube.version", "unknown");
+            }
+
+            @Override
+            public boolean optional() {
+                return false;
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return Dependency.class;
+            }
+        };
     }
 
     private BufferedWriter newSourceFile(Name packageName, String pluginName) throws IOException
