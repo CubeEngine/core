@@ -12,4 +12,12 @@
   <version>1.0.0-SNAPSHOT</version>
   <description>Generate Documentation for CubeEngine on the fly.</description>
 
+  <repositories>
+    <repository>
+      <id>cubeengine-repo</id>
+      <name>CubeEngine Public Repository</name>
+      <url>http://repo.cubeengine.org/</url>
+    </repository>
+  </repositories>
+
 </project>
