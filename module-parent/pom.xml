@@ -11,7 +11,7 @@
 
   <groupId>org.cubeengine.module</groupId>
   <artifactId>parent</artifactId>
-  <version>7.0.0-1.2.0</version>
+  <version>7.1.0-1.2.1-DEV</version>
 
   <name>CubeEngine Module Parent</name>
   <description>Parent for CubeEngine Modules</description>
@@ -19,8 +19,8 @@
   <inceptionYear>2012</inceptionYear>
 
   <properties>
-    <spongeapi.version>7.0.0</spongeapi.version>
-    <libcube.version>1.2.0</libcube.version>
+    <spongeapi.version>7.1.0-SNAPSHOT</spongeapi.version>
+    <libcube.version>1.2.1-SNAPSHOT</libcube.version>
   </properties>
 
   <scm>
