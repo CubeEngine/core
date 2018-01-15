@@ -10,7 +10,7 @@
     <artifactId>libcube</artifactId>
     <name>LibCube</name>
     <description>Such Cube Very Lib Much Util Wow</description>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
