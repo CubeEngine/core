@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.cubeengine</groupId>
         <artifactId>parent</artifactId>
-        <version>5</version>
+        <version>6</version>
     </parent>
 
     <artifactId>libcube</artifactId>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.cubeengine</groupId>
             <artifactId>processor</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.cubeengine</groupId>
