@@ -19,9 +19,9 @@
   <inceptionYear>2012</inceptionYear>
 
   <scm>
-    <url>scm:git:https://github.com/CubeEngine/extra-main</url>
-    <connection>scm:git:https://github.com/CubeEngine/extra-main.git</connection>
-    <developerConnection>scm:git:git@github.com:CubeEngine/extra-main.git</developerConnection>
+    <url>scm:git:https://github.com/CubeEngine/modules-extra</url>
+    <connection>scm:git:https://github.com/CubeEngine/modules-extra.git</connection>
+    <developerConnection>scm:git:git@github.com:CubeEngine/modules-extra.git</developerConnection>
   </scm>
 
   <repositories>
