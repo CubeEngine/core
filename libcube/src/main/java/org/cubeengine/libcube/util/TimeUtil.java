@@ -17,12 +17,13 @@
  */
 package org.cubeengine.libcube.util;
 
-import java.util.Date;
-import java.util.Locale;
-
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.units.JustNow;
 import org.ocpsoft.prettytime.units.Millisecond;
+
+import java.time.Duration;
+import java.util.Date;
+import java.util.Locale;
 
 public class TimeUtil
 {
@@ -31,6 +32,33 @@ public class TimeUtil
         PrettyTime format = new PrettyTime(locale);
         format.getUnit(JustNow.class).setMaxQuantity(1000L);
         return format.format(format.calculatePreciseDuration(new Date(duration + System.currentTimeMillis())));
+    }
+
+    public static String formatDuration(long time)
+    {
+        Duration d = Duration.ofMillis(time);
+        long days = d.toDays();
+        long hours = d.minusDays(days).toHours();
+        long minutes = d.minusDays(days).minusHours(hours).toMinutes();
+        long seconds = d.minusDays(days).minusHours(hours).minusMinutes(minutes).toMillis() / 1000;
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) {
+            sb.append(days).append(" d");
+        }
+        if (hours > 0) {
+            sb.append(hours).append(" h");
+        }
+        if (minutes > 0) {
+            sb.append(minutes).append(" m");
+        }
+        if (seconds > 0) {
+            sb.append(seconds).append(" s");
+        }
+        String result = sb.toString();
+        if (result.isEmpty()) {
+            result = "0";
+        }
+        return result;
     }
 
     public static String format(Locale locale, Date timeFromNow)
