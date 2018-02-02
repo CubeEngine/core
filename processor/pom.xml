@@ -5,10 +5,9 @@
   <parent>
     <groupId>org.cubeengine</groupId>
     <artifactId>parent</artifactId>
-    <version>5</version>
+    <version>6</version>
   </parent>
 
-  <groupId>org.cubeengine</groupId>
   <artifactId>processor</artifactId>
   <name>processor</name>
   <version>1.0.1-SNAPSHOT</version>
