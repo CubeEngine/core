@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.cubeengine</groupId>
+        <groupId>org.cubeengine.module</groupId>
         <artifactId>parent</artifactId>
-        <version>6</version>
+        <version>1</version>
     </parent>
 
     <artifactId>libcube</artifactId>
@@ -14,29 +14,15 @@
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
-        <minecraftVersion>1.11.2</minecraftVersion>
+        <minecraftVersion>1.12.2</minecraftVersion>
     </properties>
 
     <scm>
         <url>scm:git:https://github.com/CubeEngine/core</url>
         <connection>scm:git:https://github.com/CubeEngine/core.git</connection>
         <developerConnection>scm:git:git@github.com:CubeEngine/core.git</developerConnection>
-        <tag>libcube-1.2.0</tag>
+        <tag>HEAD</tag>
     </scm>
-
-    <repositories>
-        <repository>
-            <id>cubeisland-repo</id>
-            <url>https://repo.cubeengine.org</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!-- Sponge Dependencies -->
@@ -44,8 +30,6 @@
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
             <version>7.0.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
