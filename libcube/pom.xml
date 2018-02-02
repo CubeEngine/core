@@ -21,8 +21,8 @@
         <url>scm:git:https://github.com/CubeEngine/core</url>
         <connection>scm:git:https://github.com/CubeEngine/core.git</connection>
         <developerConnection>scm:git:git@github.com:CubeEngine/core.git</developerConnection>
-      <tag>libcube-1.2.0</tag>
-  </scm>
+        <tag>libcube-1.2.0</tag>
+    </scm>
 
     <repositories>
         <repository>
@@ -34,17 +34,6 @@
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sponge-maven-repo</id>
-            <name>Sponge maven repo</name>
-            <url>https://repo.spongepowered.org/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
