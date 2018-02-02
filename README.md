@@ -5,7 +5,7 @@ CubeEngine Minecraft module framework
 
 Website
 -------
-https://cubeisland.de/engine \[[Downloads](https://cubeisland.de/engine/download)\]
+https://cubeengine.org
 
 Related repositories:
 * [Core](http://github.com/CubeEngine/core)
@@ -22,8 +22,7 @@ Bug Tracking
 
 Downloads
 ---------
-Go to http://goo.gl/JRD4bv (or http://adf.ly/ohD9B if you want to support us) and download either
-the complete package or single jar files.
+Download all stable modules at [Sponge Ore](https://ore.spongepowered.org/cubeengine).
 
 Chat
 ----
