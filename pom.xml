@@ -1,77 +1,214 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.cubeengine</groupId>
+        <artifactId>parent</artifactId>
+        <version>6</version>
+    </parent>
 
-    <groupId>org.cubeengine.module</groupId>
-    <artifactId>core-aggregator</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>CubeEngine-Core Aggregator</name>
-    <packaging>pom</packaging>
+    <artifactId>libcube</artifactId>
+    <name>LibCube</name>
+    <description>Such Cube Very Lib Much Util Wow</description>
+    <version>1.2.1-SNAPSHOT</version>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
+        <minecraftVersion>1.11.2</minecraftVersion>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>cubeengine-repo</id>
-            <name>Release</name>
-            <url>http://maven.cubyte.org/repository/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>cubeengine-repo</id>
-            <name>Snapshot</name>
-            <url>http://maven.cubyte.org/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <scm>
+        <url>scm:git:https://github.com/CubeEngine/core</url>
+        <connection>scm:git:https://github.com/CubeEngine/core.git</connection>
+        <developerConnection>scm:git:git@github.com:CubeEngine/core.git</developerConnection>
+        <tag>libcube-1.2.0</tag>
+    </scm>
 
-    <modules>
-        <module>processor</module>
-        <module>libcube</module>
-    </modules>
+    <repositories>
+        <repository>
+            <id>cubeisland-repo</id>
+            <url>https://repo.cubeengine.org</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Sponge Dependencies -->
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>7.0.0</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.5.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- InHouse Libraries -->
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>processor</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>reflect-yaml</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>reflect-nbt</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>logscribe-core</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.cubeisland.engine</groupId>
+            <artifactId>i18n</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>dirigent</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.cubeengine</groupId>
+            <artifactId>butler</artifactId>
+            <version>0.1.3</version>
+        </dependency>
+        <!-- Other Libraries -->
+       <!--
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.43</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.ocpsoft.prettytime</groupId>
+            <artifactId>prettytime</artifactId>
+            <version>4.0.1.Final</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.6.6</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.6.6</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
-        <defaultGoal>clean install</defaultGoal>
+        <finalName>LibCube</finalName>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/java/</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <directory>${basedir}/src/main/resources/</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <targetPath>./resources</targetPath>
+                <directory>${basedir}/src/main/resources/resources/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.6</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.9</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>3.0</version>
+                <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <strictCheck>true</strictCheck>
-                    <header>header.txt</header>
-                    <includes>
-                        <include>**/*.java</include>
-                    </includes>
-                    <mapping>
-                        <java>SLASHSTAR_STYLE</java>
-                    </mapping>
+                    <artifactSet>
+                        <excludes>
+                            <exclude>org.slf4j:*</exclude>
+                            <exclude>org.apache.commons:*</exclude>
+                            <exclude>javax.persistence:*</exclude>
+                        </excludes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>io.netty</pattern>
+                            <shadedPattern>${externalPackage}.netty</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.fusesource</pattern>
+                            <shadedPattern>${externalPackage}.jansi</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.ocpsoft.prettytime</pattern>
+                            <shadedPattern>${externalPackage}.prettytime</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

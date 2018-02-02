@@ -1,8 +1,0 @@
-[main]
-host = https://www.transifex.com
-type = PO
-
-[cubeengine.core]
-file_filter = src/main/resources/translations/<lang>.po
-source_file = src/main/resources/translations/messages.pot
-source_lang = en_US
