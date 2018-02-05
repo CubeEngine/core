@@ -180,6 +180,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.cubeengine.maven.plugins</groupId>
+                <artifactId>ore-deploy-maven-plugin</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>ore-deploy</id>
+                        <configuration>
+                            <pluginId>cubeengine-core</pluginId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
 </project>
