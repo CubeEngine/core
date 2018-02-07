@@ -11,7 +11,7 @@
     <artifactId>libcube</artifactId>
     <name>LibCube</name>
     <description>Such Cube Very Lib Much Util Wow</description>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1</version>
 
     <properties>
         <projectBase>${project.basedir}</projectBase>
@@ -22,7 +22,7 @@
         <url>scm:git:https://github.com/CubeEngine/core</url>
         <connection>scm:git:https://github.com/CubeEngine/core.git</connection>
         <developerConnection>scm:git:git@github.com:CubeEngine/core.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>libcube-1.2.1</tag>
     </scm>
 
     <dependencies>
