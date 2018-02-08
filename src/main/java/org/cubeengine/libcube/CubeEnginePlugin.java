@@ -48,8 +48,8 @@ public abstract class CubeEnginePlugin {
     @Listener
     public void onConstruction(GameConstructionEvent event)
     {
-        LibCube libCube = (LibCube) lib.getInstance().get();
-        this.mm = libCube.getModuleManager();
+        PluginLibCube libCube = (PluginLibCube) lib.getInstance().get();
+        this.mm = libCube.getCore().getModuleManager();
         this.mm.registerAndCreate(this.module, this.plugin, this.injector);
         this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
     }
