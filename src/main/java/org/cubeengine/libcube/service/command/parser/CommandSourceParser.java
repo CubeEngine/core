@@ -37,7 +37,8 @@ public class CommandSourceParser implements ArgumentParser<CommandSource>, Defau
     public CommandSource parse(Class type, CommandInvocation invocation) throws ParserException
     {
         String token = invocation.currentToken();
-        if ("console".equalsIgnoreCase(token))
+
+        if (type == CommandSource.class && "console".equalsIgnoreCase(token))
         {
             invocation.consume(1);
             return Sponge.getServer().getConsole();
@@ -69,7 +70,7 @@ public class CommandSourceParser implements ArgumentParser<CommandSource>, Defau
         String token = invocation.currentToken().toLowerCase();
         list.addAll(Sponge.getServer().getOnlinePlayers().stream().map(Player::getName)
                           .filter(p -> StringUtils.startsWithIgnoreCase(p, token)).collect(Collectors.toList()));
-        if ("console".startsWith(token))
+        if (type == CommandSource.class && "console".startsWith(token))
         {
             list.add("console");
         }
