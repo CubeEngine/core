@@ -104,7 +104,7 @@ final class ShapeIterator implements Iterator<Vector3d>
             {
                 return false;
             }
-            if( this.shape.contains( this.x + this.cuboidPoint.getX(), this.y + this.cuboidPoint.getZ(), this.z + this.cuboidPoint.getZ()) )
+            if( this.shape.contains( this.x + this.cuboidPoint.getX(), this.y + this.cuboidPoint.getY(), this.z + this.cuboidPoint.getZ()) )
             {
                 return true;
             }
