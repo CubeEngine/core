@@ -193,12 +193,12 @@ public class Cuboid implements Shape
     {
         return 
         (
-            this.getPoint().getY() + this.getHeight() > other.getPoint().getY() + other.getHeight() &&    // this.top > other.top
-            this.getPoint().getY() < other.getPoint().getY() &&                                           // this.bottom < other.bottom
-            this.getPoint().getX() < other.getPoint().getX() &&                                           // this.left < other.left
-            this.getPoint().getX() + this.getWidth() > other.getPoint().getX() + other.getWidth() &&      // this.right > other.right
-            this.getPoint().getZ() < other.getPoint().getZ() &&                                           // this.front < other.front
-            this.getPoint().getZ() + this.getDepth() > other.getPoint().getZ() + other.getDepth()         // this.back > other.back
+            this.getPoint().getY() + this.getHeight() >= other.getPoint().getY() + other.getHeight() &&    // this.top > other.top
+            this.getPoint().getY() <= other.getPoint().getY() &&                                           // this.bottom < other.bottom
+            this.getPoint().getX() <= other.getPoint().getX() &&                                           // this.left < other.left
+            this.getPoint().getX() + this.getWidth() >= other.getPoint().getX() + other.getWidth() &&      // this.right > other.right
+            this.getPoint().getZ() <= other.getPoint().getZ() &&                                           // this.front < other.front
+            this.getPoint().getZ() + this.getDepth() >= other.getPoint().getZ() + other.getDepth()         // this.back > other.back
         );
     }
     
