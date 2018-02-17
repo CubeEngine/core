@@ -19,10 +19,9 @@ package org.cubeengine.libcube.util.math.shape;
 
 import java.util.Iterator;
 
+import com.flowpowered.math.matrix.Matrix3d;
 import com.flowpowered.math.vector.Vector3d;
 import org.cubeengine.libcube.util.math.MathHelper;
-import org.cubeengine.libcube.util.math.SquareMatrix3;
-
 
 final class ShapeIterator implements Iterator<Vector3d>
 {
@@ -33,8 +32,8 @@ final class ShapeIterator implements Iterator<Vector3d>
     private final double cuboidHeight;
     private final double cuboidDepth;
     
-    private SquareMatrix3 multMatrix;
-    
+    private Matrix3d multMatrix;
+
     private double x;
     private double y;
     private double z;
@@ -48,15 +47,15 @@ final class ShapeIterator implements Iterator<Vector3d>
         this.cuboidWidth = cuboid.getWidth();
         this.cuboidHeight = cuboid.getHeight();
         this.cuboidDepth = cuboid.getDepth();
-        
-        this.multMatrix = new SquareMatrix3( 1, 0, 0, 0, 1, 0, 0, 0, 1 );   // identity matrix
+
+        this.multMatrix = Matrix3d.IDENTITY;
 
         Vector3d rotAngle = shape.getRotationAngle();
 
         if( rotAngle.getX() != 0 )
         {
             double angle = MathHelper.degreeToRadians(rotAngle.getX());
-            this.multMatrix = new SquareMatrix3
+            this.multMatrix = new Matrix3d
             (
                 1, 0, 0,
                 0, Math.cos( angle ), Math.sin( angle ),
@@ -66,9 +65,9 @@ final class ShapeIterator implements Iterator<Vector3d>
         if( rotAngle.getY() != 0 )
         {
             double angle = MathHelper.degreeToRadians( rotAngle.getY() );
-            this.multMatrix = this.multMatrix.multiply
+            this.multMatrix = this.multMatrix.mul
             (
-                new SquareMatrix3
+                new Matrix3d
                 (
                     Math.cos( angle ), 0, Math.sin( angle ),
                     0, 1, 0,
@@ -79,9 +78,9 @@ final class ShapeIterator implements Iterator<Vector3d>
         if( rotAngle.getZ() != 0 )
         {
             double angle = MathHelper.degreeToRadians( rotAngle.getZ() );
-            this.multMatrix = this.multMatrix.multiply
+            this.multMatrix = this.multMatrix.mul
             ( 
-                new SquareMatrix3
+                new Matrix3d
                 (
                     Math.cos( angle ), Math.sin( -angle ), 0,
                     Math.sin( angle ), Math.cos( angle ), 0,
@@ -145,7 +144,7 @@ final class ShapeIterator implements Iterator<Vector3d>
         double diffy = this.cuboidPoint.getY() - this.shape.getCenterOfRotation().getY();
         double diffz = this.cuboidPoint.getZ() - this.shape.getCenterOfRotation().getZ();
 
-        Vector3d point = this.multMatrix.multiply(this.x + diffx, this.y + diffy, this.z + diffz);
+        Vector3d point = this.multMatrix.transform(this.x + diffx, this.y + diffy, this.z + diffz);
 
         return new Vector3d( point.getX() + this.cuboidPoint.getX() - diffx, point.getY() + this.cuboidPoint.getY() - diffy, point.getZ() + this.cuboidPoint.getZ() -diffz );
     }
