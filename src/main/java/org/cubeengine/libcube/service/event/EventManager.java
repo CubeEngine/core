@@ -71,33 +71,8 @@ public class EventManager
         return this;
     }
 
-    public <T extends Event> EventManager listenOnce(Class owner, Class<T> eventClass, Predicate<T> filter, EventListener<? super T> listener) {
-        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, event -> {
-            if (filter.test(event))
-            {
-                try
-                {
-                    listener.handle(event);
-                }
-                finally
-                {
-                    eventManager.unregisterListeners(this);
-                }
-            }
-        });
-        return this;
-    }
-
     public <T extends Event> EventManager listenUntil(Class owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
-        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, event -> {
-            if (filter.test(event))
-            {
-                if (listener.test(event))
-                {
-                    eventManager.unregisterListeners(this);
-                }
-            }
-        });
+        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, new UntilEventListener<>(filter, listener));
         return this;
     }
 
@@ -181,5 +156,25 @@ public class EventManager
             }
         }
 
+    }
+
+    private class UntilEventListener<T extends Event> implements EventListener<T> {
+
+        private final Predicate<T> filter;
+        private final Predicate<? super T> listener;
+
+        public UntilEventListener(Predicate<T> filter, Predicate<? super T> listener) {
+            this.filter = filter;
+            this.listener = listener;
+        }
+
+        @Override
+        public void handle(T event) {
+            if (filter.test(event)) {
+                if (listener.test(event)) {
+                    eventManager.unregisterListeners(this);
+                }
+            }
+        }
     }
 }
