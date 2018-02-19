@@ -17,6 +17,15 @@
  */
 package org.cubeengine.libcube.service.event;
 
+import com.google.inject.Injector;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.Event;
+import org.spongepowered.api.event.EventListener;
+import org.spongepowered.api.plugin.PluginContainer;
+
+import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,15 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import javax.inject.Inject;
-
-import com.google.inject.Injector;
-import org.cubeengine.libcube.LibCube;
-import org.cubeengine.libcube.ModuleManager;
-import org.cubeengine.libcube.service.ModuleInjector;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.Event;
-import org.spongepowered.api.plugin.PluginContainer;
+import java.util.function.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -67,6 +68,36 @@ public class EventManager
     {
         this.listenerMap.computeIfAbsent(owner, k -> new HashSet<>()).add(listener);
         this.eventManager.registerListeners(this.mm.getPlugin(owner).orElse(this.plugin), listener);
+        return this;
+    }
+
+    public <T extends Event> EventManager listenOnce(Class owner, Class<T> eventClass, Predicate<T> filter, EventListener<? super T> listener) {
+        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, event -> {
+            if (filter.test(event))
+            {
+                try
+                {
+                    listener.handle(event);
+                }
+                finally
+                {
+                    eventManager.unregisterListeners(this);
+                }
+            }
+        });
+        return this;
+    }
+
+    public <T extends Event> EventManager listenUntil(Class owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
+        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, event -> {
+            if (filter.test(event))
+            {
+                if (listener.test(event))
+                {
+                    eventManager.unregisterListeners(this);
+                }
+            }
+        });
         return this;
     }
 
