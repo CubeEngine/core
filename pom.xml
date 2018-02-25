@@ -96,7 +96,14 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-
+        <!-- Monitoring -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>0.2.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
