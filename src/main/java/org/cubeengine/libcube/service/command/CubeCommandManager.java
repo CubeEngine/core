@@ -27,11 +27,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.inject.Injector;
+import io.prometheus.client.Summary;
 import org.cubeengine.libcube.service.ModuleInjector;
+import org.cubeengine.libcube.service.MonitoringService;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.logscribe.LogLevel;
@@ -120,6 +123,11 @@ import static org.spongepowered.api.Sponge.getGame;
 @Singleton
 public class CubeCommandManager extends DispatcherCommand implements CommandManager
 {
+    private static final Summary commandTime = Summary.build()
+            .name("ce_command_time")
+            .help("Time a command took.")
+            .create();
+
     private static Thread mainThread = Thread.currentThread();
     public static boolean isMainThread()
     {
@@ -131,21 +139,22 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     private Providers providers;
     private org.spongepowered.api.command.CommandManager baseDispatcher;
 
-    @Inject private I18n i18n;
+    private I18n i18n;
 
-    @Inject private ModuleManager mm;
-    @Inject private FileManager fm;
-    @Inject private PermissionManager pm;
-    @Inject private Reflector reflector;
+    private ModuleManager mm;
+    private FileManager fm;
+    private PermissionManager pm;
+    private Reflector reflector;
 
-    @Inject private MaterialDataMatcher materialDataMatcher;
-    @Inject private EnchantMatcher enchantMatcher;
-    @Inject private MaterialMatcher materialMatcher;
-    @Inject private ProfessionMatcher professionMatcher;
-    @Inject private EntityMatcher entityMatcher;
-    @Inject private StringMatcher stringMatcher;
-    @Inject private UserMatcher um;
-    @Inject private LogFactory lf;
+    private MaterialDataMatcher materialDataMatcher;
+    private EnchantMatcher enchantMatcher;
+    private MaterialMatcher materialMatcher;
+    private ProfessionMatcher professionMatcher;
+    private EntityMatcher entityMatcher;
+    private StringMatcher stringMatcher;
+    private UserMatcher um;
+    private LogFactory lf;
+    private MonitoringService monitoring;
 
     private Log logger;
 
@@ -155,10 +164,30 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     private Map<CommandBase, CommandMapping> mappings = new HashMap<>();
 
     @Inject
-    public CubeCommandManager(ModuleManager mm)
+    public CubeCommandManager(ModuleManager mm, FileManager fm, PermissionManager pm,
+                              Reflector reflector, MaterialDataMatcher materialDataMatcher,
+                              EntityMatcher entityMatcher, MaterialMatcher materialMatcher,
+                              ProfessionMatcher professionMatcher, I18n i18n,
+                              StringMatcher stringMatcher, UserMatcher um, LogFactory lf,
+                              MonitoringService monitoring)
     {
         super(new CommandManagerDescriptor());
+        this.mm = mm;
+        this.fm = fm;
+        this.pm = pm;
+        this.reflector = reflector;
+        this.materialDataMatcher = materialDataMatcher;
+        this.entityMatcher = entityMatcher;
+        this.materialMatcher = materialMatcher;
+        this.professionMatcher = professionMatcher;
+        this.i18n = i18n;
+        this.stringMatcher = stringMatcher;
+        this.um = um;
+        this.lf = lf;
+        this.monitoring = monitoring;
         mm.registerBinding(CommandManager.class, this);
+
+        this.init();
     }
 
     public Object getPlugin()
@@ -166,8 +195,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         return mm.getPlugin(LibCube.class).get();
     }
 
-    @Inject
-    public void init()
+    private void init()
     {
         this.logger = mm.getLoggerFor(CommandManager.class);
         this.baseDispatcher = getGame().getCommandManager();
@@ -220,6 +248,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
 
         providers.register(CommandManager.class, new ContextParser(), Context.class);
 
+        monitoring.register(commandTime);
 
         Sponge.getEventManager().registerListeners(mm.getPlugin(LibCube.class).get(), new PreCommandListener(i18n, stringMatcher));
     }
@@ -307,7 +336,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
             }
         }
         PluginContainer plugin = mm.getPlugin(descriptor.getOwner()).orElse(mm.getPlugin(LibCube.class).get());
-        return baseDispatcher.register(plugin, new ProxyCallable(this, descriptor.getName(), logger), aliasList);
+        return baseDispatcher.register(plugin, new ProxyCallable(this, commandTime, descriptor.getName(), logger), aliasList);
     }
 
     @Override

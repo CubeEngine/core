@@ -17,16 +17,14 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
-import org.cubeengine.logscribe.Log;
+import io.prometheus.client.Summary;
 import org.cubeengine.butler.CommandDescriptor;
 import org.cubeengine.butler.CommandInvocation;
+import org.cubeengine.libcube.service.MonitoringService;
 import org.cubeengine.libcube.service.command.property.RawPermission;
+import org.cubeengine.logscribe.Log;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -36,16 +34,21 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class ProxyCallable implements CommandCallable
 {
     private final CubeCommandManager manager;
+    private final Summary commandTimeSummary;
     private final String alias;
     private Log logger;
 
-    public ProxyCallable(CubeCommandManager manager, String alias, Log logger)
+    public ProxyCallable(CubeCommandManager manager, Summary commandTimeSummary, String alias, Log logger)
     {
         this.manager = manager;
+        this.commandTimeSummary = commandTimeSummary;
         this.alias = alias;
         this.logger = logger;
     }
@@ -60,7 +63,10 @@ public class ProxyCallable implements CommandCallable
 
             long delta = System.currentTimeMillis();
             boolean ran;
-            try (Timing timing = Timings.ofStart(manager.getPlugin(), "CE Command Execute " + alias))
+            try (
+                    Timing timing = Timings.ofStart(manager.getPlugin(), "CE Command Execute " + alias);
+                    Summary.Timer t = commandTimeSummary.startTimer()
+            )
             {
                 ran = manager.execute(invocation);
             }

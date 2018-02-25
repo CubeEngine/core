@@ -17,15 +17,19 @@
  */
 package org.cubeengine.libcube.service;
 
+import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashSet;
+import java.util.Set;
 
 @Singleton
 public class MonitoringService
 {
     private final CollectorRegistry registry;
+    private final Set<Collector> registeredCollectors = new HashSet<>();
 
     @Inject
     public MonitoringService()
@@ -36,5 +40,16 @@ public class MonitoringService
     public CollectorRegistry getRegistry()
     {
         return registry;
+    }
+
+    public boolean register(Collector collector)
+    {
+        if (registeredCollectors.contains(collector))
+        {
+            return false;
+        }
+        this.registry.register(collector);
+        this.registeredCollectors.add(collector);
+        return true;
     }
 }

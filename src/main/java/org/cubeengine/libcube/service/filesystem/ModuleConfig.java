@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * Any Module using a default config file named config with its appropriate file ending can use this to load the Config automatically
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 public @interface ModuleConfig
 {
 }
