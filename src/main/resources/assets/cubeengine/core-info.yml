@@ -7,6 +7,5 @@ features:
  - Various Utilities
 config:
   - org.cubeengine.libcube.service.command.CommandConfiguration
-  - org.cubeengine.libcube.service.i18n.formatter.ColorConfiguration
   - org.cubeengine.libcube.service.i18n.I18nConfig
   - org.cubeengine.libcube.service.logging.LoggerConfiguration
