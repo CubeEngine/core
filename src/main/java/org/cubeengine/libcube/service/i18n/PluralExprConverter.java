@@ -22,11 +22,11 @@ import java.util.Map;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
-import de.cubeisland.engine.i18n.plural.ComplexExpr;
-import de.cubeisland.engine.i18n.plural.GreaterThanOneExpr;
-import de.cubeisland.engine.i18n.plural.NotOneExpr;
-import de.cubeisland.engine.i18n.plural.PluralExpr;
-import de.cubeisland.engine.i18n.plural.ZeroExpr;
+import org.cubeengine.i18n.plural.ComplexExpr;
+import org.cubeengine.i18n.plural.GreaterThanOneExpr;
+import org.cubeengine.i18n.plural.NotOneExpr;
+import org.cubeengine.i18n.plural.PluralExpr;
+import org.cubeengine.i18n.plural.ZeroExpr;
 
 public class PluralExprConverter extends SimpleConverter<PluralExpr>
 {

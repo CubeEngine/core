@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.i18n;
 
 import java.util.Locale;
-import de.cubeisland.engine.i18n.language.LanguageDefinition;
-import de.cubeisland.engine.i18n.plural.PluralExpr;
+import org.cubeengine.i18n.language.LanguageDefinition;
+import org.cubeengine.i18n.plural.PluralExpr;
 import org.cubeengine.reflect.codec.yaml.ReflectedYaml;
 
 /**

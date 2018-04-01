@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import de.cubeisland.engine.i18n.I18nService;
+import org.cubeengine.i18n.I18nService;
 import org.cubeengine.dirigent.context.Arguments;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;

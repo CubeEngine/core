@@ -17,7 +17,7 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
-import de.cubeisland.engine.i18n.I18nService;
+import org.cubeengine.i18n.I18nService;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.context.Context;
 import org.spongepowered.api.command.CommandSource;
