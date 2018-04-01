@@ -107,7 +107,7 @@
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
-            <version>0.2.0</version>
+            <version>${prometheusVersion}</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
