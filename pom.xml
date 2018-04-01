@@ -162,20 +162,37 @@
                             <exclude>org.slf4j:*</exclude>
                             <exclude>org.apache.commons:*</exclude>
                             <exclude>javax.persistence:*</exclude>
+                            <exclude>org.yaml:*</exclude>
                         </excludes>
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>io.netty</pattern>
-                            <shadedPattern>${externalPackage}.netty</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.fusesource</pattern>
-                            <shadedPattern>${externalPackage}.jansi</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>org.ocpsoft.prettytime</pattern>
                             <shadedPattern>${externalPackage}.prettytime</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.prometheus</pattern>
+                            <shadedPattern>${externalPackage}.prometheus</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.flowpowered.nbt</pattern>
+                            <shadedPattern>${externalPackage}.flowpowered.nbt</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.codehaus</pattern>
+                            <shadedPattern>${externalPackage}.codehaus</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.codehaus</pattern>
+                            <shadedPattern>${externalPackage}.codehaus</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.fedorahosted</pattern>
+                            <shadedPattern>${externalPackage}.fedorahosted</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>antlr</pattern>
+                            <shadedPattern>${externalPackage}.antlr</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
