@@ -88,7 +88,7 @@ public class ModuleManager
         this.modules.put(LibCube.class, libCube);
         this.path = path;
         this.plugin = libCube;
-        this.fm = new FileManager(this, path, logger, reflector);
+        this.fm = new FileManager(this, path, reflector);
         this.logFactory = new SpongeLogFactory(this.reflector, this.fm, this);
         this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
         this.logProvider = new LogProvider(this.logFactory, this.fm, this);
