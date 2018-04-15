@@ -167,6 +167,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
     public CubeCommandManager(ModuleManager mm, FileManager fm, PermissionManager pm,
                               Reflector reflector, MaterialDataMatcher materialDataMatcher,
                               EntityMatcher entityMatcher, MaterialMatcher materialMatcher,
+                              EnchantMatcher enchantMatcher,
                               ProfessionMatcher professionMatcher, I18n i18n,
                               StringMatcher stringMatcher, UserMatcher um, LogFactory lf,
                               MonitoringService monitoring)
@@ -180,6 +181,7 @@ public class CubeCommandManager extends DispatcherCommand implements CommandMana
         this.entityMatcher = entityMatcher;
         this.materialMatcher = materialMatcher;
         this.professionMatcher = professionMatcher;
+        this.enchantMatcher = enchantMatcher;
         this.i18n = i18n;
         this.stringMatcher = stringMatcher;
         this.um = um;
