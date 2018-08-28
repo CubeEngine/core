@@ -66,18 +66,13 @@
         </dependency>
         <dependency>
             <groupId>org.cubeengine</groupId>
-            <artifactId>reflect-nbt</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.cubeengine</groupId>
             <artifactId>logscribe-core</artifactId>
             <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.cubeengine</groupId>
             <artifactId>i18n</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
