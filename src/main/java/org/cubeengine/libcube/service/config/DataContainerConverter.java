@@ -77,14 +77,14 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
         return list;
     }
 
-    private Map toMap(MapNode node, ConverterManager manager) throws ConversionException
+    private DataContainer toMap(MapNode node, ConverterManager manager) throws ConversionException
     {
-        Map<DataQuery, Object> map = new HashMap<>();
+        DataContainer dc = DataContainer.createNew();
         for (Entry<String, Node> entry : node.getMappedNodes().entrySet())
         {
             DataQuery key = DataQuery.of('_', node.getOriginalKey(entry.getKey()));
-            map.put(key, toObject(entry.getValue(), manager));
+            dc.set(key, toObject(entry.getValue(), manager));
         }
-        return map;
+        return dc;
     }
 }
