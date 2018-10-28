@@ -30,7 +30,7 @@ import static org.spongepowered.api.service.context.Context.WORLD_KEY;
 public class ContextConverter extends SimpleConverter<Context>
 {
     @Override
-    public Node toNode(Context object) throws ConversionException
+    public Node toNode(Context object)
     {
         return StringNode.of(object.getValue().isEmpty() ? object.getKey() : object.getKey() + "|" + object.getValue());
     }
@@ -47,15 +47,7 @@ public class ContextConverter extends SimpleConverter<Context>
         if (token.contains("|"))
         {
             String[] parts = token.split("\\|", 2);
-            if (!WORLD_KEY.equals(parts[0]))
-            {
-                return new Context(parts[0], parts[1]);
-            }
-            if (!isValidWorld(parts[1]))
-            {
-                throw ConversionException.of(this, node, "Unknown context: " + token);
-            }
-            checkToken = parts[1];
+            return new Context(parts[0], parts[1]);
         }
         if (isValidWorld(checkToken)) // try for world
         {
@@ -66,6 +58,6 @@ public class ContextConverter extends SimpleConverter<Context>
 
     private boolean isValidWorld(String token)
     {
-        return Sponge.getServer().getWorld(token).isPresent();
+        return Sponge.getServer().getWorldProperties(token).isPresent();
     }
 }
