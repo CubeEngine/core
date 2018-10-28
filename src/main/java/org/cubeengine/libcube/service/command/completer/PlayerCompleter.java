@@ -17,15 +17,17 @@
  */
 package org.cubeengine.libcube.service.command.completer;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
+
 import org.cubeengine.butler.CommandInvocation;
 import org.cubeengine.butler.parameter.argument.Completer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 
-import static org.cubeengine.libcube.util.StringUtils.startsWithIgnoreCase;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A PlayerCompleter for the other online users but not the user sending the command
@@ -45,11 +47,19 @@ public class PlayerCompleter implements Completer
         Object sender = invocation.getCommandSource();
         boolean isCmdSource = sender instanceof CommandSource;
         String token = invocation.currentToken();
-        return Sponge.getServer().getOnlinePlayers().stream()
-              .filter(p ->!isCmdSource || canSee(((CommandSource)sender), p)) // Filter can see ; no cmdsource can see everyone
-              .filter(p -> sender != p) // Filter self out
-              .map(Player::getName) // get Names
-              .filter(p -> startsWithIgnoreCase(p, token)) // Filter starting with token
-              .collect(Collectors.toList());
+        List<String> collect = Sponge.getServer().getOnlinePlayers().stream()
+                .filter(p -> !isCmdSource || canSee(((CommandSource) sender), p)) // Filter can see ; no cmdsource can see everyone
+                .filter(p -> sender != p) // Filter self out
+                .map(Player::getName) // get Names
+                .filter(p -> startsWithIgnoreCase(p, token)) // Filter starting with token
+                .collect(Collectors.toList());
+        if (collect.isEmpty() && sender instanceof Player)
+        {
+            if (startsWithIgnoreCase(((Player) sender).getName(), token))
+            {
+                return Collections.singletonList(((Player) sender).getName());
+            }
+        }
+        return collect;
     }
 }
