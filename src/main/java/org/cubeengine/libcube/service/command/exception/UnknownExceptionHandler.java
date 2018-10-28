@@ -53,21 +53,35 @@ public class UnknownExceptionHandler implements PriorityExceptionHandler
         CommandSource sender = (CommandSource) invocation.getCommandSource();
 
         logger.error(r, "Unexpected Command Exception: " + r.getMessage()
-                + " - " + invocation.getCommandLine());
+                + "\n" + invocation.getCommandLine());
         Text.Builder stackTrace = Text.builder();
         for (StackTraceElement element : r.getStackTrace())
         {
             String[] parts = element.toString().split("\\(");
             parts[1] = parts[1].replace(")", "");
-            boolean our = parts[0].startsWith("de.cubeisland") || parts[0].startsWith("org.cubeengine");
+            String firstPart = parts[0];
+
+            if (firstPart.startsWith("org.spongepowered.common.command.SpongeCommandManager")) {
+                break;
+            }
+
+            boolean our = firstPart.startsWith("de.cubeisland") || firstPart.startsWith("org.cubeengine");
             String[] lineParts = parts[1].split(":");
+            firstPart = firstPart.replace("org.cubeengine.butler", "BUTLER");
+            firstPart = firstPart.replace("org.cubeengine.reflect", "REFLECT");
+            firstPart = firstPart.replace("org.cubeengine.converter", "CONVERTER");
+            firstPart = firstPart.replace("org.cubeengine.module", "MODULE");
+            firstPart = firstPart.replace("org.cubeengine.libcube", "LIBCUBE");
+            firstPart = firstPart.replace("de.cubeisland", "CI");
+            firstPart = firstPart.replace("org.spongepowered", "SPONGE");
+            firstPart = firstPart.replace("net.minecraft", "MC");
             Text.Builder lineBuilder = Text.builder().append(Text.of(our ? GOLD : GRAY, lineParts[0]));
             if (lineParts.length == 2)
             {
                 lineBuilder.append(Text.of(WHITE, ":", AQUA, lineParts[1]));
             }
             Text line = Text.of(YELLOW, "(", lineBuilder.build(), YELLOW, ")");
-            stackTrace.append(Text.of(DARK_GRAY, "at ", Text.of(our ? GOLD : GRAY, parts[0], line), "\n"));
+            stackTrace.append(Text.of(DARK_GRAY, "at ", Text.of(our ? GOLD : GRAY, firstPart, line), "\n"));
         }
         Text hover = Text.builder().append(Text.of(GRAY, r.getClass().getName(), ": ", r.getMessage())).onHover(showText(stackTrace.build())).build();
         sender.sendMessage(Text.of(Text.of(i18n.translate(sender, CRITICAL, "Unexpected command failure:")), " ", hover));
