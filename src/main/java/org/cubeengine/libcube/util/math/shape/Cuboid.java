@@ -17,8 +17,9 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import java.util.Iterator;
 import com.flowpowered.math.vector.Vector3d;
+
+import java.util.Iterator;
 
 public class Cuboid implements Shape
 {

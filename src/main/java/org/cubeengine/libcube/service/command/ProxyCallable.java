@@ -64,8 +64,8 @@ public class ProxyCallable implements CommandCallable
             long delta = System.currentTimeMillis();
             boolean ran;
             try (
-                    Timing timing = Timings.ofStart(manager.getPlugin(), "CE Command Execute " + alias);
-                    Summary.Timer t = commandTimeSummary.startTimer()
+                Timing timing = Timings.ofStart(manager.getPlugin(), "CE Command Execute " + alias);
+                Summary.Timer t = commandTimeSummary.startTimer()
             )
             {
                 ran = manager.execute(invocation);
