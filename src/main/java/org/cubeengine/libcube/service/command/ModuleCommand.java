@@ -21,7 +21,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 /**
  * Module Annotation for Commands
  *
@@ -31,7 +30,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ModuleCommand
 {
-    Class<? extends ContainerCommand> value() default ContainerCommand.class;
 }
 
 

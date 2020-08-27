@@ -17,25 +17,27 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.SingleClassConverter;
 import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.ServerLocation;
+import org.spongepowered.api.world.server.ServerWorld;
 
-public class LocationConverter extends SingleClassConverter<Location<World>>
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class LocationConverter extends SingleClassConverter<ServerLocation>
 {
     @Override
-    public Node toNode(Location<World> location, ConverterManager manager) throws ConversionException
+    public Node toNode(ServerLocation location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("world", location.getExtent().getName());
+        loc.put("world", location.getWorldKey().asString());
         loc.put("x", location.getX());
         loc.put("y", location.getY());
         loc.put("z", location.getZ());
@@ -46,18 +48,18 @@ public class LocationConverter extends SingleClassConverter<Location<World>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Location<World> fromNode(Node node, ConverterManager manager) throws ConversionException
+    public ServerLocation fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getValue();
-            World world = Sponge.getServer().getWorld(((StringNode)input.get("world")).getValue()).get();
+            ServerWorld world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.resolve(((StringNode)input.get("world")).getValue())).get();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);
             //double yaw = manager.convertFromNode(input.get("yaw"), double.class);
             //double pitch = manager.convertFromNode(input.get("pitch"), double.class);
-            return new Location(world, x, y, z); // TODO Location + Direction
+            return ServerLocation.of(world, x, y, z); // TODO Location + Direction
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

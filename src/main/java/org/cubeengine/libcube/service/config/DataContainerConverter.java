@@ -23,14 +23,12 @@ import org.cubeengine.converter.converter.ClassedConverter;
 import org.cubeengine.converter.node.ListNode;
 import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.data.persistence.DataContainer;
+import org.spongepowered.api.data.persistence.DataQuery;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class DataContainerConverter implements ClassedConverter<DataContainer>

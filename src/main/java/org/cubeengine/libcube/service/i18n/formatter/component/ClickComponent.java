@@ -17,27 +17,24 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
-import java.net.URL;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 
+import java.net.URL;
+
 public class ClickComponent implements Component
 {
-    private final Object click;
+    private final ClickEvent click;
     private final Component component;
 
-    private ClickComponent(Object hover, Component component)
+    private ClickComponent(ClickEvent click, Component component)
     {
-        this.click = hover;
+        this.click = click;
         this.component = component;
     }
 
-    public ClickComponent(Object hover, String text)
-    {
-        this(hover, new Text(text));
-    }
-
-    public Object getClick()
+    public ClickEvent getClick()
     {
         return click;
     }
@@ -49,22 +46,22 @@ public class ClickComponent implements Component
 
     public static Component openURL(URL url, Component component)
     {
-        return new ClickComponent(url, component);
+        return new ClickComponent(ClickEvent.openUrl(url.toString()), component);
     }
 
     public static Component runCommand(String command, Component component)
     {
-        return new ClickComponent(command, component);
+        return new ClickComponent(ClickEvent.runCommand(command), component);
     }
 
     public static Component openURL(URL url, String text)
     {
-        return new ClickComponent(url, text);
+        return openURL(url, new Text(text));
     }
 
     public static Component runCommand(String command, String text)
     {
-        return new ClickComponent(command, text);
+        return runCommand(command, new Text(text));
     }
 
 }

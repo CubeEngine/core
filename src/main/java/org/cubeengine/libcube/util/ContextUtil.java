@@ -17,11 +17,12 @@
  */
 package org.cubeengine.libcube.util;
 
-import java.util.Collections;
-import java.util.Set;
+import static org.spongepowered.api.service.permission.SubjectData.GLOBAL_CONTEXT;
+
 import org.spongepowered.api.service.context.Context;
 
-import static org.spongepowered.api.service.permission.SubjectData.GLOBAL_CONTEXT;
+import java.util.Collections;
+import java.util.Set;
 
 public class ContextUtil
 {
@@ -29,6 +30,6 @@ public class ContextUtil
 
     public static Set<Context> toSet(Context context)
     {
-        return GLOBAL.getType().equals(context.getType()) ? GLOBAL_CONTEXT : Collections.singleton(context);
+        return GLOBAL.getKey().equals(context.getKey()) ? GLOBAL_CONTEXT : Collections.singleton(context);
     }
 }

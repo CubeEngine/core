@@ -17,55 +17,65 @@
  */
 package org.cubeengine.libcube.service;
 
-import javax.inject.Provider;
-
-import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConverterManager;
-import org.cubeengine.logscribe.LogLevel;
-import org.cubeengine.reflect.Reflector;
-import org.cubeengine.libcube.service.config.ContextConverter;
-import org.cubeengine.libcube.service.config.DataQueryConverter;
-import org.cubeengine.libcube.util.Version;
-import org.cubeengine.libcube.service.config.Vector3iConverter;
-import org.cubeengine.libcube.service.config.DataContainerConverter;
-import org.cubeengine.libcube.service.config.DurationConverter;
-import org.cubeengine.libcube.service.config.LevelConverter;
-import org.cubeengine.libcube.service.config.LocationConverter;
-import org.cubeengine.libcube.service.config.VersionConverter;
-import org.cubeengine.libcube.service.config.WorldConverter;
-import org.cubeengine.libcube.service.config.WorldTransformConverter;
+import org.cubeengine.libcube.service.config.BlockTypeConverter;
 import org.cubeengine.libcube.service.config.ConfigWorld;
 import org.cubeengine.libcube.service.config.ConfigWorldConverter;
-import org.cubeengine.libcube.service.config.WorldTransform;
-import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.DataQuery;
+import org.cubeengine.libcube.service.config.ContextConverter;
+import org.cubeengine.libcube.service.config.DataContainerConverter;
+import org.cubeengine.libcube.service.config.DataQueryConverter;
+import org.cubeengine.libcube.service.config.DurationConverter;
+import org.cubeengine.libcube.service.config.EnchantmentConverter;
+import org.cubeengine.libcube.service.config.ItemStackConverter;
+import org.cubeengine.libcube.service.config.ItemTypeConverter;
+import org.cubeengine.libcube.service.config.LevelConverter;
+import org.cubeengine.libcube.service.config.LocationConverter;
+import org.cubeengine.libcube.service.config.TransformConverter;
+import org.cubeengine.libcube.service.config.Vector3iConverter;
+import org.cubeengine.libcube.service.config.VersionConverter;
+import org.cubeengine.libcube.service.config.WorldConverter;
+import org.cubeengine.libcube.util.Version;
+import org.cubeengine.logscribe.LogLevel;
+import org.cubeengine.reflect.Reflector;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.data.persistence.DataContainer;
+import org.spongepowered.api.data.persistence.DataQuery;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.enchantment.Enchantment;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.util.Transform;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.math.vector.Vector3i;
 
 import java.time.Duration;
 
-public class ReflectorProvider implements Provider<Reflector>
+public class ReflectorProvider
 {
     private final Reflector reflector = new Reflector();
 
     public ReflectorProvider()
     {
         ConverterManager manager = reflector.getDefaultConverterManager();
-        manager.registerConverter(new WorldTransformConverter(), WorldTransform.class);
+        manager.registerConverter(new TransformConverter(), Transform.class);
         manager.registerConverter(new Vector3iConverter(), Vector3i.class);
         manager.registerConverter(new DurationConverter(), Duration.class);
         manager.registerConverter(new VersionConverter(), Version.class);
         manager.registerConverter(new LevelConverter(), LogLevel.class);
-        manager.registerConverter(new WorldConverter(), World.class);
+        manager.registerConverter(new WorldConverter(), ServerWorld.class);
         manager.registerConverter(new ConfigWorldConverter(), ConfigWorld.class);
         manager.registerConverter(new LocationConverter(), Location.class);
         manager.registerConverter(new DataContainerConverter(), DataContainer.class);
         manager.registerConverter(new DataQueryConverter(), DataQuery.class);
         manager.registerConverter(new ContextConverter(), Context.class);
+        manager.registerConverter(new ItemStackConverter(), ItemStack.class);
+        manager.registerConverter(new ItemTypeConverter(), ItemType.class);
+        manager.registerConverter(new BlockTypeConverter(), BlockType.class);
+        manager.registerConverter(new EnchantmentConverter(), Enchantment.class);
+
     }
 
-    @Override
     public Reflector get()
     {
         return reflector;

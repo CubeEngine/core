@@ -17,31 +17,28 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.action.HoverAction;
 
 public class HoverComponent implements Component
 {
-    private final Object hover;
+    private final HoverEvent<?> hoverEvent;
     private final Component component;
 
-    private HoverComponent(Object hover, Component component)
+    private HoverComponent(HoverEvent<?> hover, Component component)
     {
-        this.hover = hover;
+        this.hoverEvent = hover;
         this.component = component;
     }
 
-    public HoverComponent(Object hover, String text)
+    public HoverEvent<?> getHoverEvent()
     {
-        this(hover, new Text(text));
-    }
-
-    public Object getHover()
-    {
-        return hover;
+        return hoverEvent;
     }
 
     public Component getComponent()
@@ -55,27 +52,6 @@ public class HoverComponent implements Component
         return new HoverComponent(achievement, component);
     }
     */
-
-    public static Component hoverItem(ItemStack item, Component component)
-    {
-        return new HoverComponent(item, component);
-    }
-
-    public static Component hoverEntity(Entity entity, String name, Component component)
-    {
-        return new HoverComponent(new HoverAction.ShowEntity.Ref(entity, name), component);
-    }
-
-    public static Component hoverText(org.spongepowered.api.text.Text text, Component component)
-    {
-        return new HoverComponent(text, component);
-    }
-
-    public static Component hoverText(String text, Component component)
-    {
-        return new HoverComponent(org.spongepowered.api.text.Text.of(text), component);
-    }
-
     /*
     public static Component hoverAchievment(Achievement achievement, String component)
     {
@@ -83,23 +59,46 @@ public class HoverComponent implements Component
     }
     */
 
+    public static Component hoverItem(ItemStack item, Component component)
+    {
+        final Key itemKey = Key.of(item.getType().getKey().asString());
+        final HoverEvent.ShowItem showItem = new HoverEvent.ShowItem(itemKey, item.getQuantity()); // TODO NBT?
+        return new HoverComponent(HoverEvent.showItem(showItem), component);
+    }
     public static Component hoverItem(ItemStack item, String component)
     {
-        return new HoverComponent(item, component);
+        return hoverItem(item, new Text(component));
+    }
+
+    public static Component hoverEntity(Entity entity, String name, Component component)
+    {
+        final Key entityKey = Key.of(entity.getType().getKey().asString());
+        final HoverEvent.ShowEntity showEntity = new HoverEvent.ShowEntity(entityKey, entity.getUniqueId(), TextComponent.of(name));
+        return new HoverComponent(HoverEvent.showEntity(showEntity), component);
     }
 
     public static Component hoverEntity(Entity entity, String name, String component)
     {
-        return new HoverComponent(new HoverAction.ShowEntity.Ref(entity, name), component);
+        return hoverEntity(entity, name, new Text(component));
     }
 
-    public static Component hoverText(org.spongepowered.api.text.Text text, String component)
+    public static Component hoverText(net.kyori.adventure.text.Component text, Component component)
     {
-        return new HoverComponent(text, component);
+        return new HoverComponent(HoverEvent.showText(text), component);
+    }
+
+    public static Component hoverText(String text, Component component)
+    {
+        return hoverText(TextComponent.of(text), component);
+    }
+
+    public static Component hoverText(net.kyori.adventure.text.Component text, String component)
+    {
+        return hoverText(text, new Text(component));
     }
 
     public static Component hoverText(String text, String component)
     {
-        return new HoverComponent(org.spongepowered.api.text.Text.of(text), component);
+        return hoverText(TextComponent.of(text), new Text(component));
     }
 }

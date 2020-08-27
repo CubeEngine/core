@@ -23,6 +23,13 @@ import static org.cubeengine.dirigent.context.Contexts.createContext;
 import static org.cubeengine.libcube.service.i18n.Properties.SOURCE;
 import static org.spongepowered.api.Sponge.getAssetManager;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import org.cubeengine.dirigent.builder.BuilderDirigent;
+import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.i18n.I18nService;
 import org.cubeengine.i18n.I18nUtil;
 import org.cubeengine.i18n.language.DefinitionLoadingException;
@@ -32,9 +39,6 @@ import org.cubeengine.i18n.language.SourceLanguage;
 import org.cubeengine.i18n.loader.GettextLoader;
 import org.cubeengine.i18n.plural.PluralExpr;
 import org.cubeengine.i18n.translation.TranslationLoadingException;
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.dirigent.builder.BuilderDirigent;
-import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.libcube.service.filesystem.FileExtensionFilter;
@@ -51,18 +55,17 @@ import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
 import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
+import org.cubeengine.logscribe.Log;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.asset.Asset;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.util.locale.LocaleSource;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -82,8 +85,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class I18n extends I18nTranslate
@@ -91,7 +92,7 @@ public class I18n extends I18nTranslate
     private final I18nService service;
     private List<URL> poFiles = new LinkedList<>();
     private Map<String, Language> languageLookupMap = new HashMap<>();
-    private BuilderDirigent<Text, Text.Builder> compositor;
+    private BuilderDirigent<Component, TextComponent.Builder> compositor;
     @Inject private StringMatcher stringMatcher;
     private final I18nConfig config;
     private final Context defaultContext;
@@ -122,29 +123,30 @@ public class I18n extends I18nTranslate
         // Search for languages on classPath
         // TODO use Sponge assets?
         ClassLoader classLoader = getClass().getClassLoader();
-        try
-        {
-            for (URL url : ((URLClassLoader) classLoader).getURLs())
-            {
-                try
-                {
-                    URI uri = url.toURI();
-                    if (uri.getScheme().equals("file"))
-                    {
-                        languageLoader.loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, url));
-                        this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, url));
-                    }
-                }
-                catch (IOException ex)
-                {
-                    log.error(ex, "Failed to load language configurations!");
-                }
-            }
-        }
-        catch (URISyntaxException e)
-        {
-            throw new IllegalStateException(e);
-        }
+// TODO find language/translation files
+//        try
+//        {
+//            for (URL url : ((URLClassLoader) classLoader).getURLs())
+//            {
+//                try
+//                {
+//                    URI uri = url.toURI();
+//                    if (uri.getScheme().equals("file"))
+//                    {
+//                        languageLoader.loadLanguages(I18n.getFilesFromURL("languages/", ".yml", classLoader, url));
+//                        this.poFiles.addAll(getFilesFromURL("translations/", ".po", classLoader, url));
+//                    }
+//                }
+//                catch (IOException ex)
+//                {
+//                    log.error(ex, "Failed to load language configurations!");
+//                }
+//            }
+//        }
+//        catch (URISyntaxException e)
+//        {
+//            throw new IllegalStateException(e);
+//        }
 
         this.compositor = new BuilderDirigent<>(new TextMessageBuilder(service));
 
@@ -166,13 +168,13 @@ public class I18n extends I18nTranslate
     public void enable()
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
-        Asset langs = getAssetManager().getAsset(plugin, "languages/languages.yml").get();
+        Asset langs = getAssetManager().getAsset(plugin.getContainer(), "languages/languages.yml").get();
         try
         {
             List<URL> urls = new ArrayList<>();
             for (String lang : langs.readLines())
             {
-                Optional<Asset> langAsset = getAssetManager().getAsset(plugin, "languages/" + lang + ".yml");
+                Optional<Asset> langAsset = getAssetManager().getAsset(plugin.getContainer(), "languages/" + lang + ".yml");
                 if (langAsset.isPresent())
                 {
                     urls.add(langAsset.get().getUrl());
@@ -196,7 +198,7 @@ public class I18n extends I18nTranslate
 
     public void registerPlugin(PluginContainer plugin)
     {
-        String name = plugin.getName();
+        String name = plugin.getMetadata().getName().orElse(plugin.getMetadata().getId());
         for (Language language : getLanguages())
         {
             String lang = language.getLocale().getLanguage();
@@ -215,15 +217,20 @@ public class I18n extends I18nTranslate
 
     Context contextFromReceiver(Object receiver)
     {
-        if (receiver instanceof CommandSource)
+        if (receiver instanceof CommandCause)
         {
-            CommandSource source = (CommandSource) receiver;
-            return defaultContext.set(LOCALE.with(source.getLocale()), SOURCE.with(source));
+            final Audience audience = ((CommandCause) receiver).getAudience();
+            if (audience instanceof LocaleSource) {
+                defaultContext.set(LOCALE.with(((LocaleSource) audience).getLocale()));
+            }
+
+            return defaultContext.set(SOURCE.with(((CommandCause) receiver)));
         }
+
         return defaultContext;
     }
 
-    public BuilderDirigent<Text, Text.Builder> getCompositor()
+    public BuilderDirigent<Component, TextComponent.Builder> getCompositor()
     {
         return compositor;
     }

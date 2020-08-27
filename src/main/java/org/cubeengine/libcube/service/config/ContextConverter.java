@@ -17,15 +17,16 @@
  */
 package org.cubeengine.libcube.service.config;
 
+import static org.cubeengine.libcube.util.ContextUtil.GLOBAL;
+import static org.spongepowered.api.service.context.Context.WORLD_KEY;
+
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.context.Context;
-
-import static org.cubeengine.libcube.util.ContextUtil.GLOBAL;
-import static org.spongepowered.api.service.context.Context.WORLD_KEY;
 
 public class ContextConverter extends SimpleConverter<Context>
 {
@@ -40,7 +41,7 @@ public class ContextConverter extends SimpleConverter<Context>
     {
         String token = node.asText();
         String checkToken = token.toLowerCase();
-        if (GLOBAL.getType().equalsIgnoreCase(token))
+        if (GLOBAL.getKey().equalsIgnoreCase(token))
         {
             return GLOBAL;
         }
@@ -58,6 +59,6 @@ public class ContextConverter extends SimpleConverter<Context>
 
     private boolean isValidWorld(String token)
     {
-        return Sponge.getServer().getWorldProperties(token).isPresent();
+        return Sponge.getServer().getWorldManager().getProperties(ResourceKey.sponge(token)).isPresent();
     }
 }

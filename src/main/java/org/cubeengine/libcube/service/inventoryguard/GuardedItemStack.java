@@ -38,6 +38,6 @@ public class GuardedItemStack
             // TODO repair data
             // set this itemstacks repair data to data of other then do normal compare
         }
-        return ItemStackComparators.TYPE.compare(item, other) == 0;
+        return ItemStackComparators.TYPE.get().compare(item, other) == 0;
     }
 }

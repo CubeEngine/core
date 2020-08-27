@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.service.config;
 
+import net.kyori.adventure.key.Key;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
-import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.EntityType;
 
@@ -32,7 +32,7 @@ public class EntityTypeConverter extends SimpleConverter<EntityType>
     @Override
     public Node toNode(EntityType object) throws ConversionException
     {
-        return StringNode.of(object.getId());
+        return StringNode.of(object.getKey().asString());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class EntityTypeConverter extends SimpleConverter<EntityType>
     {
         if (node instanceof StringNode)
         {
-            Optional<EntityType> type = Sponge.getRegistry().getType(EntityType.class, node.getValue().toString());
+            Optional<EntityType> type = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.of(node.getValue().toString()));
             if (type.isPresent())
             {
                 return type.get();

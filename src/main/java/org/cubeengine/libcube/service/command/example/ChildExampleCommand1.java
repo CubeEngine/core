@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.parser;
+package org.cubeengine.libcube.service.command.example;
 
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
+import org.cubeengine.libcube.service.command.Command;
+import org.cubeengine.libcube.service.command.DispatcherCommand;
+import org.spongepowered.api.command.CommandCause;
 
-public class DimensionTypeParser extends DefaultedCatalogTypeParser<DimensionType>
-{
-    public DimensionTypeParser()
-    {
-        super(DimensionType.class, DimensionTypes.OVERWORLD);
+@Command(name = "sub1", desc = "child command 1")
+public class ChildExampleCommand1 extends DispatcherCommand {
+
+    @Command(desc = "Does a foo")
+    public void foo(CommandCause cause, String firstParam) {
+
     }
 }

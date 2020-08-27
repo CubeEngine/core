@@ -17,19 +17,18 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
-import org.spongepowered.api.text.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 
 public class TextComponent implements Component
 {
-    private final Text text;
+    private final net.kyori.adventure.text.Component text;
 
-    public TextComponent(Text text)
+    public TextComponent(net.kyori.adventure.text.Component text)
     {
         this.text = text;
     }
 
-    public Text getText()
+    public net.kyori.adventure.text.Component getText()
     {
         return text;
     }

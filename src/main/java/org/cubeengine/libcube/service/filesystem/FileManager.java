@@ -19,11 +19,11 @@ package org.cubeengine.libcube.service.filesystem;
 
 import static java.nio.file.Files.createSymbolicLink;
 
+import com.google.inject.Inject;
 import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.reflect.ReflectedFile;
 import org.cubeengine.reflect.Reflector;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +35,6 @@ import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * Manages all the configurations of the CubeEngine.

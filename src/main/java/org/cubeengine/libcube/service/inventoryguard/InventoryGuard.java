@@ -17,25 +17,21 @@
  */
 package org.cubeengine.libcube.service.inventoryguard;
 
-import static org.spongepowered.api.item.inventory.query.QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY;
+import static org.spongepowered.api.item.inventory.query.QueryTypes.ITEM_STACK_IGNORE_QUANTITY;
 
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.tileentity.TileEntity;
-import org.spongepowered.api.block.tileentity.carrier.Chest;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
-import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.event.item.inventory.container.ClickContainerEvent;
+import org.spongepowered.api.event.item.inventory.container.InteractContainerEvent;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.Slot;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
-import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 import java.util.Arrays;
@@ -69,7 +65,7 @@ public class InventoryGuard
     {
         this.em = em;
         this.tm = tm;
-        this.inventory = inventory instanceof Container ? inventory.first().parent() : inventory;
+        this.inventory = inventory instanceof Container ? (((Container)inventory)).getViewed().get(0) : inventory;
         this.container = inventory instanceof Container ? (Container) inventory : null;
         this.users = new HashSet<>(Arrays.asList(users));
     }
@@ -87,7 +83,7 @@ public class InventoryGuard
         {
             for (UUID user : users)
             {
-                Optional<Player> player = Sponge.getServer().getPlayer(user);
+                Optional<ServerPlayer> player = Sponge.getServer().getPlayer(user);
                 if (player.isPresent())
                 {
                     this.container = player.get().openInventory(this.inventory).orElse(null);
@@ -140,9 +136,9 @@ public class InventoryGuard
     }
 
     @Listener
-    public void onInventoryClose(InteractInventoryEvent.Close event, @First Player player)
+    public void onInventoryClose(InteractContainerEvent.Close event, @First Player player)
     {
-        if ((event.getTargetInventory().equals(this.container)))
+        if ((event.getContainer().equals(this.container)))
         {
             if (this.users.contains(player.getUniqueId()))
             {
@@ -157,10 +153,10 @@ public class InventoryGuard
     }
 
     @Listener
-    public void onInventoryInteract(ClickInventoryEvent event)
+    public void onInventoryInteract(ClickContainerEvent event)
     {
-        if (!event.getTargetInventory().equals(this.container)
-                && !((Slot) event.getTargetInventory().slots().iterator().next()).transform().parent().equals(this.inventory))
+        if (!event.getContainer().equals(this.container)
+                && !event.getContainer().getSlot(0).get().viewedSlot().parent().equals(this.inventory))
         {
             return;
         }
@@ -172,19 +168,19 @@ public class InventoryGuard
         //System.out.print("Event:\n");
         boolean cancel = false;
 
-        int upperSize = event.getTargetInventory().iterator().next().capacity();
+        int upperSize = event.getContainer().getViewed().get(0).capacity();
 
         for (SlotTransaction transaction : event.getTransactions())
         {
             ItemStack origStack = transaction.getOriginal().createStack();
             ItemStack finalStack = transaction.getFinal().createStack();
-            String origString = origStack.getType().equals(ItemTypes.NONE) ? origStack.getType().getId() :origStack.getType().getId() + " " + origStack.getQuantity();
-            String finalString = finalStack.getType().equals(ItemTypes.NONE) ? finalStack.getType().getId() :finalStack.getType().getId() + " " + finalStack.getQuantity();
+            String origString = origStack.isEmpty() ? origStack.getType().getKey().asString() : origStack.getType().getKey().asString() + " " + origStack.getQuantity();
+            String finalString = finalStack.isEmpty() ? finalStack.getType().getKey().asString() : finalStack.getType().getKey().asString() + " " + finalStack.getQuantity();
             //System.out.print(origString + "->" + finalString + "\n");
 
             //System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
 
-            Integer affectedSlot = transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(SlotIndex::getValue).orElse(-1);
+            int affectedSlot = transaction.getSlot().get(Keys.SLOT_INDEX).orElse(-1);
 
             boolean upper = affectedSlot != -1 && affectedSlot < upperSize;
 
@@ -207,15 +203,15 @@ public class InventoryGuard
         }
     }
 
-    private boolean checkTransaction(ClickInventoryEvent event, SlotTransaction transaction, ItemStack origStack, ItemStack finalStack)
+    private boolean checkTransaction(ClickContainerEvent event, SlotTransaction transaction, ItemStack origStack, ItemStack finalStack)
     {
         if (!transaction.getOriginal().equals(transaction.getFinal()))
         {
-            if (ItemTypes.NONE.equals(transaction.getOriginal().getType())) // Putting Item in Top Inventory
+            if (transaction.getOriginal().isEmpty()) // Putting Item in Top Inventory
             {
                 if (hasBlockIn(event, origStack, finalStack)) return true;
             }
-            else if (ItemTypes.NONE.equals(transaction.getFinal().getType())) // Taking Item out of Top Inventory
+            else if (transaction.getFinal().isEmpty()) // Taking Item out of Top Inventory
             {
                 if (hasBlockOut(event, origStack, finalStack)) return true;
             }
@@ -228,7 +224,7 @@ public class InventoryGuard
         return false;
     }
 
-    private boolean hasBlockOut(ClickInventoryEvent event, ItemStack origStack, ItemStack finalStack)
+    private boolean hasBlockOut(ClickContainerEvent event, ItemStack origStack, ItemStack finalStack)
     {
         if (blockAllOut)
         {
@@ -249,7 +245,7 @@ public class InventoryGuard
         return false;
     }
 
-    private boolean hasBlockIn(ClickInventoryEvent event, ItemStack origStack, ItemStack finalStack)
+    private boolean hasBlockIn(ClickContainerEvent event, ItemStack origStack, ItemStack finalStack)
     {
         if (blockAllIn)
         {
@@ -307,7 +303,7 @@ public class InventoryGuard
             if (guardedItem.isSimilar(itemStackToGoIn, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY.of(itemStackAtPosition)).totalItems();
+                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY, itemStackAtPosition).totalQuantity();
                 System.out.print("AllowInCheck: " + amountIn + "\n");
                 return amountIn <= guardedItem.amount;
             }
@@ -322,7 +318,7 @@ public class InventoryGuard
             if (guardedItem.isSimilar(itemStackToOut, this.ignoreRepaircost))
             {
                 if (guardedItem.amount == 0) return true;
-                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY.of(item)).totalItems();
+                int amountIn = this.inventory.query(ITEM_STACK_IGNORE_QUANTITY, item).totalQuantity();
                 System.out.print("AllowOutCheck: " + amountIn + "\n");
                 return amountIn >= guardedItem.amount;
             }

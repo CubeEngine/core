@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.logging;
 
+import com.google.inject.Inject;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.logscribe.LogTarget;
@@ -27,8 +28,6 @@ import org.cubeengine.libcube.service.filesystem.FileManager;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 public class LogProvider
 {

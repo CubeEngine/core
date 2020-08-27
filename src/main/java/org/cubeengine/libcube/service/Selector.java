@@ -19,8 +19,7 @@ package org.cubeengine.libcube.service;
 
 import org.cubeengine.libcube.util.math.shape.Shape;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.ServerLocation;
 
 public interface Selector
 {
@@ -56,7 +55,7 @@ public interface Selector
      * @param user the user
      * @return the first selected position
      */
-    default Location<World> getFirstPoint(Player user)
+    default ServerLocation getFirstPoint(Player user)
     {
         return this.getPoint(user, 0);
     }
@@ -67,7 +66,7 @@ public interface Selector
      * @param user the user
      * @return the second selected position
      */
-    default Location<World> getSecondPoint(Player user)
+    default ServerLocation getSecondPoint(Player user)
     {
         return this.getPoint(user, 1);
     }
@@ -79,16 +78,16 @@ public interface Selector
      * @param index the index
      * @return the Location
      */
-    Location<World> getPoint(Player user, int index);
+    ServerLocation getPoint(Player user, int index);
 
-    default void setFirstPoint(Player user, Location<World> loc)
+    default void setFirstPoint(Player user, ServerLocation loc)
     {
         setPoint(user, 0, loc);
     }
-    default void setSecondPoint(Player user, Location<World> loc)
+    default void setSecondPoint(Player user, ServerLocation loc)
     {
         setPoint(user, 1, loc);
     }
 
-    void setPoint(Player user, int index, Location<World> loc);
+    void setPoint(Player user, int index, ServerLocation loc);
 }

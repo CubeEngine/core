@@ -19,12 +19,13 @@ package org.cubeengine.libcube;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
+import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -46,26 +47,26 @@ public abstract class CubeEnginePlugin {
     }
 
     @Listener
-    public void onConstruction(GameConstructionEvent event)
+    public void onConstruction(StartedEngineEvent<Server> event)
     {
-        PluginLibCube libCube = (PluginLibCube) lib.getInstance().get();
+        PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
         this.mm.registerAndCreate(this.module, this.plugin, this.injector);
         this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
     }
 
     @Listener
-    public void onInit(GameInitializationEvent event)
+    public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
         if (module == null)
         {
-            mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getId());
+            mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());
             return;
         }
         for (Field field : ModuleManager.getAnnotatedFields(module, InjectService.class))
         {
-            Optional<?> provided = Sponge.getServiceManager().provide(field.getType());
+            Optional<?> provided = Sponge.getServiceProvider().provide(field.getType());
             if (!provided.isPresent())
             {
                 mm.getLoggerFor(this.module).warn("Missing Service");

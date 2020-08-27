@@ -17,36 +17,41 @@
  */
 package org.cubeengine.libcube;
 
+import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.cubeengine.libcube.service.command.ModuleCommand;
+import org.cubeengine.libcube.service.command.example.ParentExampleCommand;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.cubeengine.processor.Core;
+import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.nio.file.Path;
-
-import javax.inject.Inject;
 
 @Core
 public class LibCube
 {
     private final File path;
     private final Logger pluginLogger;
+    private PluginContainer container;
     private ModuleManager mm;
+
+    @ModuleCommand private ParentExampleCommand cmd;
 
     @Inject
     public LibCube(@ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
     {
         this.path = path.resolve("cubeengine").toFile();
         this.pluginLogger = logger;
+        this.container = container;
         this.mm = new ModuleManager(this.path, logger, this, container, injector);
     }
 
     @Listener
-    public void onConstructed(GamePreInitializationEvent event)
+    public void onConstructed(LoadedGameEvent event)
     {
         this.mm.init();
     }
@@ -54,5 +59,9 @@ public class LibCube
     public ModuleManager getModuleManager()
     {
         return mm;
+    }
+
+    public PluginContainer getContainer() {
+        return container;
     }
 }

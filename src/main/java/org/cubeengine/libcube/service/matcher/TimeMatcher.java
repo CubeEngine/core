@@ -17,13 +17,14 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
+import com.google.inject.Inject;
+import org.cubeengine.libcube.util.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
-import org.cubeengine.libcube.util.StringUtils;
 
 /**
  * A Matcher for ingame time

@@ -18,8 +18,13 @@
 package org.cubeengine.libcube;
 
 import com.google.inject.Injector;
-import org.slf4j.Logger;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.nio.file.Path;
 
@@ -34,5 +39,11 @@ public abstract class CorePlugin
 
     public LibCube getCore() {
         return libCube;
+    }
+
+    @Listener
+    public void onRegisterCommand(final RegisterCommandEvent<Command.Parameterized> event)
+    {
+        this.libCube.getModuleManager().registerCommands(event, this.libCube.getContainer(), this.libCube);
     }
 }

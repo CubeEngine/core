@@ -17,8 +17,8 @@
  */
 package org.cubeengine.libcube.util.math;
 
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import org.spongepowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3i;
 
 /**
  * This class provides some utility methods for maths.

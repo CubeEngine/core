@@ -17,26 +17,21 @@
  */
 package org.cubeengine.libcube.service.config;
 
+import net.kyori.adventure.key.Key;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
 import org.cubeengine.libcube.service.matcher.EnchantMatcher;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 
 public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
 {
-    private EnchantMatcher enchantMatcher;
-
-    public EnchantmentConverter(EnchantMatcher enchantMatcher)
-    {
-        this.enchantMatcher = enchantMatcher;
-    }
-
     @Override
     public Node toNode(EnchantmentType object) throws ConversionException
     {
-        return StringNode.of(object.getName());
+        return StringNode.of(object.getKey().asString());
     }
 
     @Override
@@ -44,7 +39,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     {
         if (node instanceof StringNode)
         {
-            return enchantMatcher.enchantment(((StringNode)node).getValue());
+            return Sponge.getRegistry().getCatalogRegistry().get(EnchantmentType.class, Key.of(((StringNode)node).getValue())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

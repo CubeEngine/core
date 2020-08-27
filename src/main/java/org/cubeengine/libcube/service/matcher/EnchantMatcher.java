@@ -17,19 +17,16 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
-import static org.spongepowered.api.data.manipulator.catalog.CatalogItemData.ENCHANTMENT_DATA;
-
-import org.cubeengine.libcube.service.config.EnchantmentConverter;
-import org.cubeengine.reflect.Reflector;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.item.enchantment.Enchantment;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.inject.Inject;
+import java.util.List;
 
 /**
  * This Matcher provides methods to match Enchantments.
@@ -41,19 +38,17 @@ public class EnchantMatcher
     private StringMatcher sm;
 
     @Inject
-    public EnchantMatcher(Reflector reflector, StringMatcher stringMatcher)
+    public EnchantMatcher(StringMatcher stringMatcher)
     {
-        reflector.getDefaultConverterManager().registerConverter(new EnchantmentConverter(this), Enchantment.class);
-
         this.sm = stringMatcher;
-        for (EnchantmentType enchantment : Sponge.getRegistry().getAllOf(EnchantmentType.class))
+        for (EnchantmentType enchantment : Sponge.getRegistry().getCatalogRegistry().getAllOf(EnchantmentType.class))
         {
-            this.ids.put(enchantment.getName(), enchantment);
-            if (enchantment.getName().startsWith("minecraft:"))
+            this.ids.put(enchantment.getKey().asString(), enchantment);
+            if ("minecraft".equals(enchantment.getKey().getNamespace()))
             {
-                this.ids.put(enchantment.getName().substring(9), enchantment);
+                this.ids.put(enchantment.getKey().getValue(), enchantment);
             }
-            this.names.put(enchantment.getTranslation().get(), enchantment);
+// TODO            this.names.put(enchantment.getTranslation().get(), enchantment);
         }
 
     }
@@ -86,16 +81,17 @@ public class EnchantMatcher
         Enchantment enchantment= Enchantment.builder().type(ench).level(enchStrength).build();
         if (force)
         {
-            EnchantmentData data = item.getOrCreate(ENCHANTMENT_DATA).get();
-            data.enchantments().add(enchantment);
-            item.offer(data);
+            final List<Enchantment> data = item.getOrElse(Keys.APPLIED_ENCHANTMENTS, new ArrayList<>());
+            data.add(enchantment);
+            item.offer(Keys.APPLIED_ENCHANTMENTS, data);
             return true;
         }
         try
         {
-            EnchantmentData data = item.getOrCreate(EnchantmentData.class).get();
-            data.enchantments().add(enchantment);
-            item.offer(data);
+            // TODO check if enchantment is allowed
+            final List<Enchantment> data = item.getOrElse(Keys.APPLIED_ENCHANTMENTS, new ArrayList<>());
+            data.add(enchantment);
+            item.offer(Keys.APPLIED_ENCHANTMENTS, data);
             return true;
         }
         catch (IllegalArgumentException ignored)

@@ -17,19 +17,18 @@
  */
 package org.cubeengine.libcube.util;
 
-import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.ServerLocation;
 
 public class SpawnUtil
 {
-    public static void spawnItem(ItemStack item, Location<World> at)
+    public static void spawnItem(ItemStack item, ServerLocation at)
     {
-        Entity entity = at.getExtent().createEntityNaturally(EntityTypes.ITEM, at.getPosition());
-        entity.offer(Keys.REPRESENTED_ITEM, item.createSnapshot());
-        at.getExtent().spawnEntity(entity);
+        Entity entity = at.getWorld().createEntityNaturally(EntityTypes.ITEM.get(), at.getPosition());
+        entity.offer(Keys.ITEM_STACK_SNAPSHOT, item.createSnapshot());
+        at.getWorld().spawnEntity(entity);
     }
 }

@@ -17,18 +17,17 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextFormat;
-import org.spongepowered.api.text.format.TextStyle;
 
 public class StyledComponent implements Component
 {
-    private final TextFormat format;
+    private final Style format;
     private final Component component;
 
-    public StyledComponent(TextFormat format, Component component)
+    public StyledComponent(Style format, Component component)
     {
         this.format = format;
         this.component = component;
@@ -36,35 +35,23 @@ public class StyledComponent implements Component
 
     public StyledComponent(TextColor format, Component component)
     {
-        this.format = TextFormat.NONE.color(format);
+        this.format = Style.empty().color(format);
         this.component = component;
-    }
-
-    public StyledComponent(TextStyle format, Component component)
-    {
-        this.format = TextFormat.NONE.style(format);
-        this.component = component;
-    }
-
-    public StyledComponent(TextFormat format, String text)
-    {
-        this(format, new Text(text));
     }
 
     public StyledComponent(TextColor format, String text)
     {
-        this.format = TextFormat.NONE.color(format);
+        this.format = Style.empty().color(format);
         this.component = new Text(text);
     }
 
-    public StyledComponent(TextStyle format, String text)
+    public StyledComponent(Style format, String text)
     {
-        this.format = TextFormat.NONE.style(format);
+        this.format = format;
         this.component = new Text(text);
     }
 
-
-    public TextFormat getFormat()
+    public Style getFormat()
     {
         return format;
     }
@@ -79,7 +66,7 @@ public class StyledComponent implements Component
         return new StyledComponent(color, component);
     }
 
-    public static Component styled(TextStyle style, Component component)
+    public static Component styled(Style style, Component component)
     {
         return new StyledComponent(style, component);
     }
@@ -89,7 +76,7 @@ public class StyledComponent implements Component
         return new StyledComponent(color, text);
     }
 
-    public static Component styled(TextStyle style, String text)
+    public static Component styled(Style style, String text)
     {
         return new StyledComponent(style, text);
     }

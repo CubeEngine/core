@@ -19,7 +19,7 @@ package org.cubeengine.libcube.util.math.shape;
 
 import java.util.Iterator;
 import org.cubeengine.libcube.util.math.MathHelper;
-import com.flowpowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3d;
 
 public class Cylinder implements Shape
 {

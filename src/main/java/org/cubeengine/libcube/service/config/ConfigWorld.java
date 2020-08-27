@@ -17,12 +17,13 @@
  */
 package org.cubeengine.libcube.service.config;
 
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerWorld;
 
 public class ConfigWorld
 {
-    private World world;
+    private ServerWorld world;
     private String name;
 
     public ConfigWorld(String world)
@@ -30,9 +31,9 @@ public class ConfigWorld
         this.name = world;
     }
 
-    public ConfigWorld(World world)
+    public ConfigWorld(ServerWorld world)
     {
-        this.name = world.getName();
+        this.name = world.getKey().asString();
         this.world = world;
     }
 
@@ -41,11 +42,12 @@ public class ConfigWorld
         return this.name;
     }
 
-    public World getWorld()
+    public ServerWorld getWorld()
     {
-        if (this.world == null || !this.world.getName().equals(this.name))
+        if (this.world == null || !this.world.getKey().asString().equals(this.name))
         {
-            this.world = Sponge.getServer().getWorld(name).orElse(Sponge.getServer().loadWorld(name).orElse(null));
+            final ResourceKey key = ResourceKey.resolve(name);
+            this.world = Sponge.getServer().getWorldManager().getWorld(key).orElse(Sponge.getServer().getWorldManager().loadWorld(key).join());
         }
         return this.world;
     }

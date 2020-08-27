@@ -23,11 +23,8 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
 import org.cubeengine.libcube.service.ModuleInjector;
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.libcube.service.ReflectorProvider;
-import org.cubeengine.libcube.service.command.CommandManager;
-import org.cubeengine.libcube.service.command.CubeCommandManager;
+import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
 import org.cubeengine.libcube.service.command.ModuleCommand;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.event.ModuleListener;
@@ -38,11 +35,13 @@ import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.logging.SpongeLogFactory;
 import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
-import org.cubeengine.libcube.service.task.SpongeTaskManager;
-import org.cubeengine.libcube.service.task.TaskManager;
+import org.cubeengine.logscribe.Log;
+import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
-import org.slf4j.Logger;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +74,7 @@ public class ModuleManager
     private Map<Class, Object> bindings = new HashMap<>();
     private LogProvider logProvider;
     private MaterialMatcher mm;
-    private CubeCommandManager cm;
+    private AnnotationCommandBuilder cm;
     private I18n i18n;
     private Injector injector;
 
@@ -93,12 +92,12 @@ public class ModuleManager
         this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
         this.logProvider = new LogProvider(this.logFactory, this.fm, this);
         this.logFactory.init(tf);
-        this.mm = new MaterialMatcher(this, reflector);
+        this.mm = new MaterialMatcher(this);
+        this.i18n = new I18n(fm, reflector, logProvider, this);
 
         this.injector = injector.createChildInjector(guiceModule);
-        this.i18n = new I18n(fm, reflector, logProvider, this);
         this.injector.injectMembers(this.i18n);
-        this.cm = this.injector.getInstance(CubeCommandManager.class);
+        this.cm = this.injector.getInstance(AnnotationCommandBuilder.class);
         this.em = this.injector.getInstance(EventManager.class);
     }
 
@@ -122,6 +121,8 @@ public class ModuleManager
 
         return instance;
     }
+
+
 
     public void injectClassAnnots(Class<?> module, Object instance) {
         for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet()) {
@@ -155,6 +156,15 @@ public class ModuleManager
         this.bindings.put(clazz, db);
     }
 
+    public void registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module)
+    {
+        final List<Field> commands = getAnnotatedFields(module, ModuleCommand.class);
+        if (module == this.plugin) {
+            this.cm.injectCommands(this.injector, module, commands);
+        }
+        this.cm.registerModuleCommands(event, container, module, commands);
+    }
+
     public class CubeEngineGuiceModule extends AbstractModule
     {
 
@@ -169,7 +179,7 @@ public class ModuleManager
             this.bind(LogProvider.class).toInstance(logProvider);
             this.bind(MaterialMatcher.class).toInstance(mm);
 
-            this.bind(I18n.class).toProvider(() -> i18n);
+            this.bind(I18n.class).toInstance(i18n);
 
             for (Map.Entry<Class, Object> entry : bindings.entrySet()) {
                 this.bind(entry.getKey()).toInstance(entry.getValue());
@@ -230,7 +240,7 @@ public class ModuleManager
         }
         else
         {
-            name = container.getName();
+            name = container.getMetadata().getName().orElse(container.getMetadata().getId());
             if (name.startsWith("CubeEngine - "))
             {
                 name = name.substring("CubeEngine - ".length());
@@ -262,7 +272,7 @@ public class ModuleManager
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())
         {
-            String id = container.get().getId();
+            String id = container.get().getMetadata().getId();
             if (id.startsWith("cubeengine-"))
             {
                 id = id.substring("cubeengine-".length());
@@ -277,7 +287,7 @@ public class ModuleManager
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())
         {
-            String name = container.get().getName();
+            String name = container.get().getMetadata().getName().orElse(container.get().getMetadata().getId());
             if (name.startsWith("CubeEngine - "))
             {
                 name = name.substring("CubeEngine - ".length());
@@ -286,4 +296,6 @@ public class ModuleManager
         }
         return Optional.empty();
     }
+
+
 }

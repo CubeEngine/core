@@ -15,16 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command;
+package org.cubeengine.libcube.service.command.example;
 
-import org.cubeengine.butler.SimpleCommandDescriptor;
-import org.cubeengine.butler.parameter.ParameterUsageGenerator;
+import com.google.inject.Inject;
+import org.cubeengine.libcube.service.command.Command;
+import org.cubeengine.libcube.service.command.DispatcherCommand;
+import org.spongepowered.api.command.CommandCause;
 
-public class CommandManagerDescriptor extends SimpleCommandDescriptor
-{
-    public CommandManagerDescriptor()
-    {
-        this.setName("Base CommandDispatcher for CubeEngine");
-        this.setUsageGenerator(new ParameterUsageGenerator());
+@Command(name = "example", desc = "base command")
+public class ParentExampleCommand extends DispatcherCommand {
+
+    @Inject
+    public ParentExampleCommand(ChildExampleCommand1 cmd1, ChildExampleCommand2 cmd2) {
+        super(cmd1, cmd2);
+    }
+
+    @Command(desc = "Does a thing")
+    public void myCommand(CommandCause cause, String firstParam) {
+
     }
 }

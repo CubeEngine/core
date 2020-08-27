@@ -17,45 +17,47 @@
  */
 package org.cubeengine.libcube.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColor;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyle;
-import org.spongepowered.api.text.format.TextStyles;
 
 /**
  * This enum contains all of Minecraft's chat format codes and some utility methods to parse them.
  */
 public enum ChatFormat
 {
-    BLACK('0', () -> TextColors.BLACK),
-    DARK_BLUE('1', () -> TextColors.DARK_BLUE),
-    DARK_GREEN('2', () -> TextColors.DARK_GREEN),
-    DARK_AQUA('3', () -> TextColors.DARK_AQUA),
-    DARK_RED('4', () -> TextColors.DARK_RED),
-    PURPLE('5', () -> TextColors.DARK_PURPLE),
-    GOLD('6', () -> TextColors.GOLD),
-    GREY('7', () -> TextColors.GRAY),
-    DARK_GREY('8', () -> TextColors.DARK_GRAY),
-    INDIGO('9', () -> TextColors.BLUE),
-    BRIGHT_GREEN('a', () -> TextColors.GREEN),
-    AQUA('b', () -> TextColors.AQUA),
-    RED('c', () -> TextColors.RED),
-    PINK('d', () -> TextColors.LIGHT_PURPLE),
-    YELLOW('e', () -> TextColors.YELLOW),
-    WHITE('f', () -> TextColors.WHITE),
+    BLACK('0', () -> NamedTextColor.BLACK),
+    DARK_BLUE('1', () -> NamedTextColor.DARK_BLUE),
+    DARK_GREEN('2', () -> NamedTextColor.DARK_GREEN),
+    DARK_AQUA('3', () -> NamedTextColor.DARK_AQUA),
+    DARK_RED('4', () -> NamedTextColor.DARK_RED),
+    PURPLE('5', () -> NamedTextColor.DARK_PURPLE),
+    GOLD('6', () -> NamedTextColor.GOLD),
+    GREY('7', () -> NamedTextColor.GRAY),
+    DARK_GREY('8', () -> NamedTextColor.DARK_GRAY),
+    INDIGO('9', () -> NamedTextColor.BLUE),
+    BRIGHT_GREEN('a', () -> NamedTextColor.GREEN),
+    AQUA('b', () -> NamedTextColor.AQUA),
+    RED('c', () -> NamedTextColor.RED),
+    PINK('d', () -> NamedTextColor.LIGHT_PURPLE),
+    YELLOW('e', () -> NamedTextColor.YELLOW),
+    WHITE('f', () -> NamedTextColor.WHITE),
 
-    RESET('r', () -> TextColors.RESET),
+    RESET('r', () -> (TextColor) null),
 
-    MAGIC('k', () -> TextStyles.OBFUSCATED),
-    BOLD('l', () -> TextStyles.BOLD),
-    STRIKE('m', () -> TextStyles.STRIKETHROUGH),
-    UNDERLINE('n', () -> TextStyles.UNDERLINE),
-    ITALIC('o', () -> TextStyles.ITALIC)
+    MAGIC('k', () -> TextDecoration.OBFUSCATED),
+    BOLD('l', () -> TextDecoration.BOLD),
+    STRIKE('m', () -> TextDecoration.STRIKETHROUGH),
+    UNDERLINE('n', () -> TextDecoration.UNDERLINED),
+    ITALIC('o', () -> TextDecoration.ITALIC)
     ;
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
@@ -71,7 +73,7 @@ public enum ChatFormat
 
     private final char formatChar;
     private ColorProvider color;
-    private StyleProvider style;
+    private DecorationProvider style;
     private final String string;
 
     ChatFormat(char formatChar, ColorProvider base)
@@ -83,7 +85,7 @@ public enum ChatFormat
         });
     }
 
-    ChatFormat(char formatChar, StyleProvider base)
+    ChatFormat(char formatChar, DecorationProvider base)
     {
         this.formatChar = formatChar;
         this.style = base;
@@ -92,12 +94,12 @@ public enum ChatFormat
         });
     }
 
-    public static Text fromLegacy(String string, Map<String, Text> replacements, char formatChar)
+    public static Component fromLegacy(String string, Map<String, Component> replacements, char formatChar)
     {
         String[] parts = string.split(SPLIT_COLOR_KEEP.replace('&', formatChar));
-        Text.Builder builder = Text.builder();
+        TextComponent.Builder builder = TextComponent.builder();
         TextColor nextColor = null;
-        TextStyle nextStyle = null;
+        Style nextStyle = null;
         for (String part : parts)
         {
             if (part.matches(COLORS.replace('&', formatChar)))
@@ -107,36 +109,38 @@ public enum ChatFormat
             }
             if (part.matches(STYLES.replace('&', formatChar)))
             {
-                TextStyle newStyle = getByChar(part.charAt(1)).style.getColor();
+                final TextDecoration decoration = getByChar(part.charAt(1)).style.getColor();
                 if (nextStyle == null)
                 {
-                    nextStyle = newStyle;
+                    nextStyle = Style.of(decoration);
                 }
                 else
                 {
-                    nextStyle = nextStyle.and(newStyle);
+                    nextStyle = nextStyle.decorate(decoration);
                 }
                 continue;
             }
 
-            Text.Builder partBuilder = Text.builder();
+            TextComponent.Builder partBuilder = TextComponent.builder();
             String[] toReplace = part.split(SPLIT_PARAM_KEEP.replace('&', formatChar));
             for (String r : toReplace)
             {
-                Text text = replacements.get(r);
+                Component text = replacements.get(r);
                 if (text != null)
                 {
                     partBuilder.append(text);
                 }
                 else// if (!r.matches("\\{.+\\}"))
                 {
-                    partBuilder.append(Text.of(r));
+                    partBuilder.append(TextComponent.of(r));
                 }
             }
             if (nextColor != null)
             {
                 partBuilder.color(nextColor);
                 nextColor = null;
+            } else {
+                partBuilder.resetStyle();
             }
             if (nextStyle != null)
             {
@@ -149,7 +153,7 @@ public enum ChatFormat
         return builder.build();
     }
 
-    public static Text fromLegacy(String string, char formatchar)
+    public static Component fromLegacy(String string, char formatchar)
     {
         return fromLegacy(string, Collections.emptyMap(), formatchar);
     }
@@ -164,9 +168,9 @@ public enum ChatFormat
         TextColor getColor();
     }
 
-    public interface StyleProvider
+    public interface DecorationProvider
     {
-        TextStyle getColor();
+        TextDecoration getColor();
     }
 
     /**

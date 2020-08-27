@@ -17,6 +17,9 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.cubeengine.dirigent.context.Arguments;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
@@ -25,12 +28,9 @@ import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-
-import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 
 @Names({"amount", "integer", "long", "short", "decimal", "number"})
 public class NumberFormatter extends ReflectedFormatter {
@@ -38,19 +38,19 @@ public class NumberFormatter extends ReflectedFormatter {
     @Format
     public Component format(Integer i)
     {
-        return new StyledComponent(TextColors.GOLD, String.valueOf(i));
+        return new StyledComponent(NamedTextColor.GOLD, String.valueOf(i));
     }
 
     @Format
     public Component format(Long l)
     {
-        return new StyledComponent(TextColors.GOLD, String.valueOf(l));
+        return new StyledComponent(NamedTextColor.GOLD, String.valueOf(l));
     }
 
     @Format
     public Component format(Short s)
     {
-        return new StyledComponent(TextColors.GOLD, String.valueOf(s));
+        return new StyledComponent(NamedTextColor.GOLD, String.valueOf(s));
     }
 
     @Format

@@ -17,12 +17,9 @@
  */
 package org.cubeengine.libcube.util;
 
+import net.kyori.adventure.text.Component;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageReceiver;
-
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NONE;
 
 public enum Direction
 {
@@ -54,26 +51,26 @@ public enum Direction
         return Direction.NORTH;
     }
 
-    public Text translated(Player sender, I18n i18n)
+    public Component translated(Player sender, I18n i18n)
     {
         switch (this)
         {
             case NORTH:
-                return i18n.translate(sender, NONE, "north");
+                return i18n.translate(sender, "north");
             case NORTH_EAST:
-                return i18n.translate(sender, NONE, "north-east");
+                return i18n.translate(sender, "north-east");
             case EAST:
-                return i18n.translate(sender, NONE, "east");
+                return i18n.translate(sender, "east");
             case SOUTH_EAST:
-                return i18n.translate(sender, NONE, "south-east");
+                return i18n.translate(sender, "south-east");
             case SOUTH:
-                return i18n.translate(sender, NONE, "south");
+                return i18n.translate(sender, "south");
             case SOUTH_WEST:
-                return i18n.translate(sender, NONE, "south-west");
+                return i18n.translate(sender, "south-west");
             case WEST:
-                return i18n.translate(sender, NONE, "west");
+                return i18n.translate(sender, "west");
             case NORTH_WEST:
-                return i18n.translate(sender, NONE, "north-west");
+                return i18n.translate(sender, "north-west");
             default:
                 throw new IllegalStateException();
         }

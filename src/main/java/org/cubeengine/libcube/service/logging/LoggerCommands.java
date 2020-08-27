@@ -17,12 +17,6 @@
  */
 package org.cubeengine.libcube.service.logging;
 
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.logscribe.LogLevel;
-import org.cubeengine.butler.parametric.Command;
-import org.cubeengine.butler.parametric.Optional;
-import org.spongepowered.api.command.CommandSource;
-
 public class LoggerCommands
 {
     /* TODO

@@ -19,6 +19,7 @@ package org.cubeengine.libcube.service.inventoryguard;
 
 import static java.util.stream.Collectors.toList;
 
+import com.google.inject.Inject;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -26,8 +27,6 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.UUID;
-
-import javax.inject.Inject;
 
 public class InventoryGuardFactory
 {

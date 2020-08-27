@@ -21,7 +21,7 @@ import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.ClassedConverter;
 import org.cubeengine.converter.node.Node;
-import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.persistence.DataContainer;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 public class ItemStackConverter implements ClassedConverter<ItemStack>

@@ -15,23 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command;
+package org.cubeengine.libcube.service.command.example;
 
-import org.cubeengine.butler.parameter.argument.ParserException;
-import org.spongepowered.api.text.Text;
+import org.cubeengine.libcube.service.command.Command;
+import org.cubeengine.libcube.service.command.DispatcherCommand;
+import org.spongepowered.api.command.CommandCause;
 
-public class TranslatedParserException extends ParserException
-{
-    private Text text;
+public class ChildExampleCommand2 extends DispatcherCommand {
 
-    public TranslatedParserException(Text text)
-    {
-        super(text.toPlain());
-        this.text = text;
-    }
+    @Command(desc = "Does a bar")
+    public void bar(CommandCause cause, String firstParam) {
 
-    public Text getText()
-    {
-        return text;
     }
 }

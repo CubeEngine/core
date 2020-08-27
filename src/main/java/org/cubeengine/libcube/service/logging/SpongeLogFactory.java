@@ -18,18 +18,16 @@
 package org.cubeengine.libcube.service.logging;
 
 import static org.cubeengine.libcube.service.logging.LoggingUtil.getCycler;
-import static org.cubeengine.libcube.service.logging.LoggingUtil.getFileFormat;
-import static org.cubeengine.libcube.service.logging.LoggingUtil.getLogFile;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.cubeengine.libcube.ModuleManager;
+import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
+import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.logscribe.DefaultLogFactory;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.logscribe.target.file.AsyncFileTarget;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
-import org.cubeengine.libcube.ModuleManager;
-import org.cubeengine.libcube.service.command.CommandManager;
-import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.reflect.Reflector;
 
 import java.util.concurrent.ThreadFactory;
@@ -97,7 +95,7 @@ public class SpongeLogFactory extends DefaultLogFactory
     @Override
     public Log getLog(Class<?> clazz, String id)
     {
-        if (config.logCommands && clazz.equals(CommandManager.class))
+        if (config.logCommands && clazz.equals(AnnotationCommandBuilder.class)) // TODO command logging
         {
             Log cmdLogger = super.getLog(clazz, id);
             cmdLogger.addTarget(

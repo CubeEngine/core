@@ -21,16 +21,19 @@ import static java.util.stream.Collectors.toList;
 import static org.spongepowered.api.util.Direction.UP;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.property.block.PassableProperty;
+import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.extra.fluid.FluidType;
-import org.spongepowered.api.util.blockray.BlockRay;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.fluid.FluidState;
+import org.spongepowered.api.fluid.FluidType;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.ServerLocation;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -57,12 +60,13 @@ public class LocationUtil
         return ((long)chunkX << 32) | chunkZ & 0xFFFFFFFFL;
     }
 
-    public static Optional<Location<World>> getBlockBehindWall(Player player, int maxRange, int maxWallThickness)
+    public static Optional<ServerLocation> getBlockBehindWall(ServerPlayer player, int maxRange, int maxWallThickness)
     {
-        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(maxRange + maxWallThickness).iterator();
+        Iterator<BlockRayHit> it = Collections.emptyIterator(); // TODO BlockRays?
+                //BlockRayHit.from(player).distanceLimit(maxRange + maxWallThickness).iterator();
         boolean wallHit = false;
         int blocks = 0;
-        Location<World> loc = null;
+        ServerLocation loc = null;
         while (it.hasNext())
         {
             blocks++;
@@ -70,8 +74,8 @@ public class LocationUtil
             {
                 break;
             }
-            BlockRayHit<World> hit = it.next();
-            Location<World> curLoc = hit.getLocation();
+            BlockRayHit hit = it.next();
+            ServerLocation curLoc = hit.getLocation();
             BlockType blockType = curLoc.getBlockType();
             if (!wallHit)
             {
@@ -82,7 +86,7 @@ public class LocationUtil
             }
             else
             {
-                if (canPass(blockType) && canPass(curLoc.getRelative(UP).getBlockType()))
+                if (canPass(blockType) && canPass(curLoc.add(UP.asBlockOffset()).getBlockType()))
                 {
                     loc = curLoc;
                     break;
@@ -101,18 +105,19 @@ public class LocationUtil
      * @param player the looking player
      * @return the block in sight
      */
-    public static Location<World> getBlockInSight(Player player)
+    public static ServerLocation getBlockInSight(Player player)
     {
-        BlockType headIn = player.getLocation().getRelative(UP).getBlockType();
-        List<BlockType> fluidBlocks = Sponge.getRegistry().getAllOf(FluidType.class).stream()
-                .map(FluidType::getBlockTypeBase)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        BlockType headIn = player.getLocation().add(UP.asBlockOffset()).getBlockType();
+        List<BlockType> fluidBlocks = Sponge.getRegistry().getCatalogRegistry().getAllOf(FluidType.class).stream()
+                .map(FluidType::getDefaultState)
+                .map(FluidState::getBlock)
+                .map(BlockState::getType)
                 .collect(toList());
 
         boolean headInFluid = fluidBlocks.contains(headIn);
-        Iterator<BlockRayHit<World>> it = BlockRay.from(player).distanceLimit(500).iterator();
-        BlockRayHit<World> next = null;
+        Iterator<BlockRayHit> it = Collections.emptyIterator();
+                // TODO BlockRay.from(player).distanceLimit(500).iterator();
+        BlockRayHit next = null;
         while (it.hasNext())
         {
             next = it.next();
@@ -141,7 +146,7 @@ public class LocationUtil
 
     public static boolean canPass(BlockType type)
     {
-        return type.getProperty(PassableProperty.class).map(PassableProperty::getValue).orElse(false);
+        return type.getDefaultState().get(Keys.IS_PASSABLE).orElse(false);
     }
 
     /**
@@ -150,17 +155,17 @@ public class LocationUtil
      * @param loc the location to start the search at
      * @return the next non-obstructed location up
      */
-    public static Location<World> getLocationUp(Location<World> loc)
+    public static ServerLocation getLocationUp(ServerLocation loc)
     {
         if (!canPass(loc.getBlockType()))
         {
-            loc = loc.getRelative(UP);
+            loc = loc.add(UP.asBlockOffset());
         }
-        int maxHeight = loc.getExtent().getDimension().getBuildHeight();
-        while (!(canPass(loc.getBlockType()) && canPass(loc.getRelative(UP).getBlockType())) && loc.getY() < maxHeight)
+        int maxHeight = 256; // TODO loc.getWorld().getDimension().getBuildHeight();
+        while (!(canPass(loc.getBlockType()) && canPass(loc.add(UP.asBlockOffset()).getBlockType())) && loc.getY() < maxHeight)
         {
             // TODO half block gaps
-            Location<World> rel = loc.getRelative(UP);
+            ServerLocation rel = loc.add(UP.asBlockOffset());
             if (rel.getY() == 0)
             {
                 break;

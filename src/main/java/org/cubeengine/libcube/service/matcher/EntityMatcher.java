@@ -17,22 +17,24 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
+import com.google.inject.Inject;
+import net.kyori.adventure.key.Key;
 import org.cubeengine.libcube.service.config.EntityTypeConverter;
 import org.cubeengine.reflect.Reflector;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
-import org.spongepowered.api.entity.living.Villager;
+import org.spongepowered.api.entity.living.Monster;
 import org.spongepowered.api.entity.living.animal.Animal;
-import org.spongepowered.api.entity.living.monster.Monster;
+import org.spongepowered.api.entity.living.trader.Villager;
 import org.spongepowered.api.entity.projectile.Projectile;
+import org.spongepowered.math.vector.Vector3d;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 /**
  * This Matcher provides methods to match Entities.
@@ -48,22 +50,22 @@ public class EntityMatcher
     public EntityMatcher(StringMatcher stringMatcher, Reflector reflector)
     {
         this.stringMatcher = stringMatcher;
-        for (EntityType type : Sponge.getRegistry().getAllOf(EntityType.class))
+        for (EntityType<?> type : Sponge.getRegistry().getCatalogRegistry().getAllOf(EntityType.class))
         {
-            ids.put(type.getName().toLowerCase(), type);
-            translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
+            ids.put(type.getKey().asString(), type);
+// TODO translactions            translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
         }
         reflector.getDefaultConverterManager().registerConverter(new EntityTypeConverter(), EntityType.class);
     }
 
     /**
-     * Tries to match an EntityType for given string
+     * Tries to match an EntityType<?> for given string
      *
      * @param name the name to match
      *
      * @return the found EntityType
      */
-    public EntityType any(String name, Locale locale)
+    public EntityType<?> any(String name, Locale locale)
     {
         if (name == null)
         {
@@ -90,7 +92,7 @@ public class EntityMatcher
             name = "minecraft:item_frame";
         }
 
-        EntityType entity = Sponge.getRegistry().getType(EntityType.class, name).orElse(null);
+        EntityType<?> entity = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.of(name)).orElse(null);
         if (entity != null)
         {
             return entity;
@@ -114,9 +116,9 @@ public class EntityMatcher
         if (entity == null && locale != null)
         {
             Map<String, EntityType> translations = new HashMap<>();
-            for (EntityType type : Sponge.getRegistry().getAllOf(EntityType.class))
+            for (EntityType<?> type : Sponge.getRegistry().getCatalogRegistry().getAllOf(EntityType.class))
             {
-                translations.put(type.getTranslation().get(locale, type), type);
+// TODO translation                translations.put(type.getTranslation().get(locale, type), type);
             }
             entity = anyFromMap(name, translations); // Use Language Translations
         }
@@ -124,9 +126,9 @@ public class EntityMatcher
         return entity;
     }
 
-    private EntityType anyFromMap(String name, Map<String, EntityType> entities)
+    private EntityType<?> anyFromMap(String name, Map<String, EntityType> entities)
     {
-        EntityType entity = entities.get(name);
+        EntityType<?> entity = entities.get(name);
         if (entity == null)
         {
             String t_key = stringMatcher.matchString(name, entities.keySet());
@@ -139,32 +141,38 @@ public class EntityMatcher
     }
 
     /**
-     * Tries to match an EntityType that is a Mob for given string
+     * Tries to match an EntityType<?> that is a Mob for given string
      *
      * @param s the string to match
      *
      * @return the found Mob
      */
-    public EntityType mob(String s, Locale locale)
+    public EntityType<?> mob(String s, Locale locale)
     {
-        EntityType type = this.any(s, locale);
-        if (type != null && Living.class.isAssignableFrom(type.getEntityClass()))
+        EntityType<?> type = this.any(s, locale);
+        final Entity entity = this.getEntity(type);
+        if (type != null && entity instanceof Living)
         {
             return type;
         }
         return null;
     }
 
+    public Entity getEntity(EntityType<?> type) {
+        final ResourceKey defKey = Sponge.getServer().getWorldManager().getDefaultPropertiesKey();
+        return Sponge.getServer().getWorldManager().getWorld(defKey).get().createEntity(type, Vector3d.ZERO);
+    }
+
     /**
-     * Tries to match an EntityType that is a Mob that can be spawned by spawneggs for given string
+     * Tries to match an EntityType<?> that is a Mob that can be spawned by spawneggs for given string
      *
      * @param s the string to match
      *
      * @return the found Mob
      */
-    public EntityType spawnEggMob(String s, Locale locale)
+    public EntityType<?> spawnEggMob(String s, Locale locale)
     {
-        EntityType type = this.mob(s, locale);
+        EntityType<?> type = this.mob(s, locale);
         if (type != null && this.canBeSpawnedBySpawnEgg(type))
         {
             return type;
@@ -173,15 +181,15 @@ public class EntityMatcher
     }
 
     /**
-     * Tries to match an EntityType that is a Monster for given string
+     * Tries to match an EntityType<?> that is a Monster for given string
      *
      * @param s the string to match
      *
      * @return the found Monster
      */
-    public EntityType monster(String s, Locale locale)
+    public EntityType<?> monster(String s, Locale locale)
     {
-        EntityType type = this.any(s, locale);
+        EntityType<?> type = this.any(s, locale);
         if (type != null && this.isMonster(type))
         {
             return type;
@@ -190,15 +198,15 @@ public class EntityMatcher
     }
 
     /**
-     * Tries to match an EntityType that is a friendly Mob for given string
+     * Tries to match an EntityType<?> that is a friendly Mob for given string
      *
      * @param s the string to match
      *
      * @return the found friendly Mob
      */
-    public EntityType friendlyMob(String s, Locale locale)
+    public EntityType<?> friendlyMob(String s, Locale locale)
     {
-        EntityType type = this.any(s, locale);
+        EntityType<?> type = this.any(s, locale);
         if (type != null && this.isFriendly(type))
         {
             return type;
@@ -207,15 +215,15 @@ public class EntityMatcher
     }
 
     /**
-     * Tries to match an EntityType that is a Projectile for given string
+     * Tries to match an EntityType<?> that is a Projectile for given string
      *
      * @param s the string to match
      *
      * @return the found Projectile
      */
-    public EntityType projectile(String s, Locale locale)
+    public EntityType<?> projectile(String s, Locale locale)
     {
-        EntityType type = this.any(s, locale);
+        EntityType<?> type = this.any(s, locale);
         if (type != null && this.isProjectile(type))
         {
             return type;
@@ -224,9 +232,9 @@ public class EntityMatcher
     }
 
     /**
-     * Returns if this EntityType can be spawned via SpawnEgg.
+     * Returns if this EntityType<?> can be spawned via SpawnEgg.
      */
-    public boolean canBeSpawnedBySpawnEgg(EntityType entityType)
+    public boolean canBeSpawnedBySpawnEgg(EntityType<?> entityType)
     {
         // TODO return EntityTypes.eggInfo.containsKey(entityType.getTypeId());
         return true;
@@ -237,9 +245,9 @@ public class EntityMatcher
      *
      * @return true if this type is an monster
      */
-    public boolean isMonster(EntityType entityType)
+    public boolean isMonster(EntityType<?> entityType)
     {
-        return Monster.class.isAssignableFrom(entityType.getEntityClass());
+        return this.getEntity(entityType) instanceof Monster;
     }
 
     /**
@@ -247,9 +255,9 @@ public class EntityMatcher
      *
      * @return true if this type is an friendly entity
      */
-    public boolean isFriendly(EntityType entityType)
+    public boolean isFriendly(EntityType<?> entityType)
     {
-        return this.isAnimal(entityType) || Villager.class.isAssignableFrom(entityType.getEntityClass());
+        return this.isAnimal(entityType) || this.getEntity(entityType) instanceof Villager;
     }
 
     /**
@@ -257,9 +265,9 @@ public class EntityMatcher
      *
      * @return true if this type is an animal
      */
-    public boolean isAnimal(EntityType entityType)
+    public boolean isAnimal(EntityType<?> entityType)
     {
-        return Animal.class.isAssignableFrom(entityType.getEntityClass());
+        return this.getEntity(entityType) instanceof Animal;
     }
 
     /**
@@ -267,8 +275,8 @@ public class EntityMatcher
      *
      * @return true if this type is an projectile
      */
-    public boolean isProjectile(EntityType entityType)
+    public boolean isProjectile(EntityType<?> entityType)
     {
-        return Projectile.class.isAssignableFrom(entityType.getEntityClass());
+        return this.getEntity(entityType) instanceof Projectile;
     }
 }

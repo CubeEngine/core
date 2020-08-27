@@ -17,32 +17,35 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.SingleClassConverter;
 import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
+import org.spongepowered.api.util.Transform;
+import org.spongepowered.math.vector.Vector3d;
 
-public class WorldTransformConverter extends SingleClassConverter<WorldTransform>
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class TransformConverter extends SingleClassConverter<Transform>
 {
     @Override
-    public Node toNode(WorldTransform transform, ConverterManager manager) throws ConversionException
+    public Node toNode(Transform transform, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("x", transform.x);
-        loc.put("y", transform.y);
-        loc.put("z", transform.z);
-        loc.put("rx", transform.rx);
-        loc.put("ry", transform.ry);
-        loc.put("rz", transform.rz);
+        loc.put("x", transform.getPosition().getX());
+        loc.put("y", transform.getPosition().getY());
+        loc.put("z", transform.getPosition().getZ());
+        loc.put("rx", transform.getRotation().getX());
+        loc.put("ry", transform.getRotation().getY());
+        loc.put("rz", transform.getRotation().getZ());
         return manager.convertToNode(loc);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public WorldTransform fromNode(Node node, ConverterManager manager) throws ConversionException
+    public Transform fromNode(Node node, ConverterManager manager) throws ConversionException
     {
         if (node instanceof MapNode)
         {
@@ -53,7 +56,7 @@ public class WorldTransformConverter extends SingleClassConverter<WorldTransform
             double rx = manager.convertFromNode(input.get("rx"), double.class);
             double ry = manager.convertFromNode(input.get("ry"), double.class);
             double rz = manager.convertFromNode(input.get("rz"), double.class);
-            return new WorldTransform(x, y, z, rx, ry, rz);
+            return Transform.of(new Vector3d(x, y, z), new Vector3d(ry, ry, rz));
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

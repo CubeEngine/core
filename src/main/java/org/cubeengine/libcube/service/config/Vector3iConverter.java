@@ -17,13 +17,13 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import com.flowpowered.math.vector.Vector3i;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.SingleClassConverter;
 import org.cubeengine.converter.node.IntNode;
 import org.cubeengine.converter.node.MapNode;
 import org.cubeengine.converter.node.Node;
+import org.spongepowered.math.vector.Vector3i;
 
 public class Vector3iConverter extends SingleClassConverter<Vector3i>
 {

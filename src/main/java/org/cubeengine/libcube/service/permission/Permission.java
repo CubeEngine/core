@@ -17,14 +17,13 @@
  */
 package org.cubeengine.libcube.service.permission;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.chat.ChatTypes;
 
 import java.util.Collections;
 import java.util.Set;
@@ -78,12 +77,12 @@ public class Permission
      *
      * @return true if the subject has this permission.
      */
-    public <T extends MessageReceiver & Subject> boolean check(T checkOn, I18n i18n)
+    public <T extends Audience & Subject> boolean check(T checkOn, I18n i18n)
     {
         boolean hasPerm = checkOn.hasPermission(this.getId());
         if (!hasPerm)
         {
-            Text perm = Text.of(this.id).toBuilder().onHover(TextActions.showText(Text.of(this.desc))).build();
+            Component perm = TextComponent.of(this.id).hoverEvent(HoverEvent.showText(TextComponent.of(this.desc)));
             i18n.send(checkOn, MessageType.NEGATIVE, "You are missing the permission {txt}.", perm);
         }
         return hasPerm;

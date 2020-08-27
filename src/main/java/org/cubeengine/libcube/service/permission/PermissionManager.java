@@ -17,26 +17,26 @@
  */
 package org.cubeengine.libcube.service.permission;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import net.kyori.adventure.text.TextComponent;
+import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Server;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
+import org.spongepowered.api.service.permission.PermissionDescription.Builder;
+import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.plugin.PluginContainer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.cubeengine.libcube.ModuleManager;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.service.ChangeServiceProviderEvent;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.service.permission.PermissionDescription.Builder;
-import org.spongepowered.api.service.permission.PermissionService;
-import org.spongepowered.api.text.Text;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
 
 /**
  * Registers permissions to the server.
@@ -85,11 +85,11 @@ public class PermissionManager
             unregistered.add(permission);
             return permission;
         }
-        Builder builder = permissionService.newDescriptionBuilder(plugin.getInstance().get());
+        Builder builder = permissionService.newDescriptionBuilder(plugin);
         builder.id(permission.getId());
         if (permission.getDesc() != null)
         {
-            builder.description(Text.of(permission.getDesc()));
+            builder.description(TextComponent.of(permission.getDesc()));
         }
         permission.getExplicitParents().forEach(s -> builder.assign(s, true));
         builder.register();
@@ -120,12 +120,9 @@ public class PermissionManager
     }
 
     @Listener
-    public void onRegisterService(ChangeServiceProviderEvent event)
+    public void onRegisterService(StartedEngineEvent<Server> event)
     {
-        if (event.getService() == PermissionService.class)
-        {
-            register((PermissionService)event.getNewProvider());
-        }
+        this.register(Sponge.getServiceProvider().permissionService());
     }
 
     private void register(PermissionService service)

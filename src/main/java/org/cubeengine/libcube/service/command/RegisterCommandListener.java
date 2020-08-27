@@ -15,11 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.annotation;
+package org.cubeengine.libcube.service.command;
 
-public @interface ParameterPermission
-{
-    String value() default "";
+import org.spongepowered.api.command.Command;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 
-    String desc() default "";
+public class RegisterCommandListener {
+
+    @Listener
+    public void onRegister(final RegisterCommandEvent<Command.Parameterized> event) {
+
+    }
 }

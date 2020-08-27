@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import java.util.Iterator;
-
-import com.flowpowered.math.matrix.Matrix3d;
-import com.flowpowered.math.vector.Vector3d;
 import org.cubeengine.libcube.util.math.MathHelper;
+import org.spongepowered.math.matrix.Matrix3d;
+import org.spongepowered.math.vector.Vector3d;
+
+import java.util.Iterator;
 
 final class ShapeIterator implements Iterator<Vector3d>
 {

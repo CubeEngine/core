@@ -17,6 +17,15 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
+import com.google.common.base.Functions;
+import com.google.common.collect.Ordering;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.cubeengine.libcube.LibCube;
+import org.cubeengine.libcube.service.logging.LogProvider;
+import org.cubeengine.logscribe.Log;
+import org.spongepowered.api.Sponge;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,15 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import com.google.common.base.Functions;
-import com.google.common.collect.Ordering;
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.libcube.LibCube;
-import org.cubeengine.libcube.service.logging.LogProvider;
-import org.spongepowered.api.Sponge;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class StringMatcher
@@ -45,7 +45,7 @@ public class StringMatcher
     {
         if (logProvider == null) // TODO EntityDataChanger Call
         {
-            this.logger = ((LibCube) Sponge.getPluginManager().getPlugin("cubeengine-core").get().getInstance().get()).getModuleManager().getLoggerFor(StringMatcher.class);
+            this.logger = ((LibCube) Sponge.getPluginManager().getPlugin("cubeengine-core").get().getInstance()).getModuleManager().getLoggerFor(StringMatcher.class);
         }
         else
         {

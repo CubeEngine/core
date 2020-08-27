@@ -17,15 +17,17 @@
  */
 package org.cubeengine.libcube.service.event;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.plugin.PluginContainer;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,8 +37,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.

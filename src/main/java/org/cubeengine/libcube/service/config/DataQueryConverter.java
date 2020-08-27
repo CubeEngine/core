@@ -22,7 +22,7 @@ import org.cubeengine.converter.ConverterManager;
 import org.cubeengine.converter.converter.ClassedConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
-import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.data.persistence.DataQuery;
 
 public class DataQueryConverter implements ClassedConverter<DataQuery>
 {

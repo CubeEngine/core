@@ -17,7 +17,8 @@
  */
 package org.cubeengine.libcube.util.math.shape;
 
-import com.flowpowered.math.vector.Vector3d;
+
+import org.spongepowered.math.vector.Vector3d;
 
 public interface Shape extends Iterable<Vector3d>
 {

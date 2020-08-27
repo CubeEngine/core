@@ -17,14 +17,13 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextFormat;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 
 public class MessageType
 {
-    public final static TextFormat POSITIVE = TextFormat.NONE.color(TextColors.GREEN);
-    public final static TextFormat NEUTRAL = TextFormat.NONE.color(TextColors.YELLOW);
-    public final static TextFormat NEGATIVE = TextFormat.NONE.color(TextColors.RED);
-    public final static TextFormat CRITICAL = TextFormat.NONE.color(TextColors.DARK_RED);
-    public final static TextFormat NONE = TextFormat.NONE.color(TextColors.RESET);
+    public final static Style POSITIVE = Style.empty().color(NamedTextColor.GREEN);
+    public final static Style NEUTRAL = Style.empty().color(NamedTextColor.YELLOW);
+    public final static Style NEGATIVE = Style.empty().color(NamedTextColor.RED);
+    public final static Style CRITICAL = Style.empty().color(NamedTextColor.DARK_RED);
 }

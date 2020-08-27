@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.i18n.formatter;
 
 
+import net.kyori.adventure.text.TranslatableComponent;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
@@ -25,11 +26,8 @@ import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.TextComponent;
-import org.spongepowered.api.text.translation.Translation;
 
-import static org.cubeengine.dirigent.context.Contexts.LOCALE;
-
-@Names({"name","input","message", "txt"})
+@Names({"name", "input", "message", "txt"})
 public class StringFormatter extends ReflectedFormatter
 {
     @Format
@@ -39,13 +37,13 @@ public class StringFormatter extends ReflectedFormatter
     }
 
     @Format
-    public Component format(Translation translation, Context context)
+    public Component format(TranslatableComponent translation, Context context)
     {
-        return new Text(translation.get(context.get(LOCALE)));
+        return new TextComponent(translation);
     }
 
     @Format
-    public Component format(org.spongepowered.api.text.Text text)
+    public Component format(net.kyori.adventure.text.Component text)
     {
         return new TextComponent(text);
     }

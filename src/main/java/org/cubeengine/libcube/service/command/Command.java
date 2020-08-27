@@ -17,22 +17,34 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import org.cubeengine.butler.CommandInvocation;
-import org.cubeengine.butler.ContextValue;
-import org.cubeengine.libcube.service.i18n.I18n;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class CommandContextValue implements ContextValue
-{
-    private I18n i18n;
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface Command {
+    /**
+     * Returns the name of the command
+     *
+     * @return the name of the command
+     */
+    String name() default "";
 
-    public CommandContextValue(I18n i18n)
-    {
-        this.i18n = i18n;
-    }
+    /**
+     * Returns the aliases of the command
+     *
+     * @return the aliases of the command
+     */
+    String[] alias() default {};
 
-    @Override
-    public Object getContext(CommandInvocation invocation, Class<?> clazz)
-    {
-        return new CommandContext(invocation, i18n);
-    }
+    /**
+     * Returns the description of the command
+     *
+     * @return the description of the command
+     */
+    String desc();
 }

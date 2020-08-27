@@ -20,12 +20,15 @@ package org.cubeengine.libcube.service.task;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -33,9 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class SpongeTaskManager implements TaskManager
@@ -50,7 +50,7 @@ public class SpongeTaskManager implements TaskManager
     {
         this.mm = mm;
         this.plugin = mm.getPlugin(LibCube.class).get();
-        this.scheduler = Sponge.getScheduler();
+        this.scheduler = Sponge.getServer().getScheduler();
         this.tasks = new ConcurrentHashMap<>();
         mm.registerBinding(TaskManager.class, this);
     }
@@ -82,7 +82,8 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).execute(runnable).submit(getPlugin(owner)));
+        final Task task = Task.builder().delayTicks(delay).execute(runnable).plugin(getPlugin(owner)).build();
+        return addTaskId(owner, scheduler.submit(task));
     }
 
     @Override
@@ -91,17 +92,13 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().delayTicks(delay).intervalTicks(interval).execute(runnable).submit(getPlugin(owner)));
+        final Task task = Task.builder().delayTicks(delay).intervalTicks(interval).execute(runnable).plugin(getPlugin(owner)).build();
+        return addTaskId(owner, scheduler.submit(task));
     }
 
-    private Object getPlugin(Class owner)
+    private PluginContainer getPlugin(Class owner)
     {
-        Optional<PluginContainer> pc = this.mm.getPlugin(owner);
-        if (pc.isPresent())
-        {
-            return pc.get().getInstance().get();
-        }
-        return this.plugin;
+        return this.mm.getPlugin(owner).orElse(this.plugin);
     }
 
     @Override
@@ -115,10 +112,11 @@ public class SpongeTaskManager implements TaskManager
     {
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
-        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).execute(runnable).submit(getPlugin(owner)));
+        final Task task = Task.builder().delay(delay * 50, MILLISECONDS).execute(runnable).plugin(getPlugin(owner)).build();
+        return addTaskId(owner, Sponge.getAsyncScheduler().submit(task));
     }
 
-    private UUID addTaskId(Class owner, Task task)
+    private UUID addTaskId(Class owner, ScheduledTask task)
     {
         final Set<UUID> tasks = this.getTaskIDs(owner);
         tasks.add(task.getUniqueId());
@@ -131,17 +129,15 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        return addTaskId(owner, scheduler.createTaskBuilder().async().delay(delay * 50, MILLISECONDS).interval(interval * 50, MILLISECONDS).execute(runnable).submit(getPlugin(owner)));
+        final Task task = Task.builder().delay(delay * 50, MILLISECONDS).execute(runnable).interval(interval * 50, MILLISECONDS).plugin(getPlugin(owner)).build();
+        return addTaskId(owner, Sponge.getAsyncScheduler().submit(task));
     }
 
     @Override
     public void cancelTask(Class owner, UUID uuid)
     {
-        Optional<Task> task = scheduler.getTaskById(uuid);
-        if (task.isPresent())
-        {
-            task.get().cancel();
-        }
+        Optional<ScheduledTask> task = scheduler.getTaskById(uuid);
+        task.ifPresent(ScheduledTask::cancel);
 
         Set<UUID> ownerIds = getTaskIDs(owner);
         if (ownerIds != null)
@@ -169,23 +165,4 @@ public class SpongeTaskManager implements TaskManager
         this.cancelTasks(owner);
     }
 
-    private class CETask implements Runnable
-    {
-        protected int taskID;
-        private final Runnable task;
-        private final Set<Integer> taskIDs;
-
-        public CETask(Runnable task, Set<Integer> taskIDs)
-        {
-            this.task = task;
-            this.taskIDs = taskIDs;
-        }
-
-        @Override
-        public void run()
-        {
-            this.task.run();
-            this.taskIDs.remove(this.taskID);
-        }
-    }
 }

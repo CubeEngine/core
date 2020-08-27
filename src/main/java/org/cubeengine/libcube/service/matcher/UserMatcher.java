@@ -17,20 +17,20 @@
  */
 package org.cubeengine.libcube.service.matcher;
 
+import static java.util.stream.Collectors.toList;
+
+import com.google.inject.Inject;
+import org.cubeengine.libcube.service.config.UserConverter;
+import org.cubeengine.reflect.Reflector;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.user.UserManager;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.inject.Inject;
-import org.cubeengine.reflect.Reflector;
-import org.cubeengine.libcube.service.config.UserConverter;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.profile.GameProfile;
-import org.spongepowered.api.service.user.UserStorageService;
-
-import static java.util.stream.Collectors.toList;
 
 public class UserMatcher
 {
@@ -44,36 +44,35 @@ public class UserMatcher
 
     public Optional<User> match(String name, boolean searchOffline)
     {
-        Game game = Sponge.getGame();
         if (name == null)
         {
             return null;
         }
         // Direct Match Online Players:
-        Optional<Player> player = game.getServer().getPlayer(name);
+        Optional<ServerPlayer> player = Sponge.getServer().getPlayer(name);
         if (player.isPresent())
         {
-            return Optional.of(player.get());
+            return Optional.of(player.get().getUser());
         }
 
         // Find Online Players with similar name
-        Map<String, Player> onlinePlayerMap = new HashMap<>();
-        for (Player onlineUser : game.getServer().getOnlinePlayers())
+        Map<String, ServerPlayer> onlinePlayerMap = new HashMap<>();
+        for (ServerPlayer onlineUser : Sponge.getServer().getOnlinePlayers())
         {
             onlinePlayerMap.put(onlineUser.getName(), onlineUser);
         }
         String foundUser = sm.matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
-            return Optional.of(onlinePlayerMap.get(foundUser));
+            return Optional.of(onlinePlayerMap.get(foundUser).getUser());
         }
 
-        UserStorageService storage = game.getServiceManager().provideUnchecked(UserStorageService.class);
+        final UserManager userManager = Sponge.getServer().getUserManager();
 
         Optional<User> directMatchOffline;
         try
         {
-            directMatchOffline = storage.get(name);
+            directMatchOffline = userManager.get(name);
         }
         catch (IllegalArgumentException ignore)
         {
@@ -86,11 +85,11 @@ public class UserMatcher
 
         if (searchOffline)
         {
-            String match = sm.matchString(name, storage.getAll().stream().map(GameProfile::getName)
+            String match = sm.matchString(name, userManager.getAll().stream().map(GameProfile::getName)
                                                        .filter(Optional::isPresent).map(Optional::get).collect(toList()));
             if (match != null)
             {
-                return storage.get(match);
+                return userManager.get(match);
             }
         }
 

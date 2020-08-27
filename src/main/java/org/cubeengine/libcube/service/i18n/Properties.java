@@ -18,8 +18,8 @@
 package org.cubeengine.libcube.service.i18n;
 
 import org.cubeengine.dirigent.context.ContextProperty;
-import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.CommandCause;
 
 public class Properties {
-    public static final ContextProperty<CommandSource> SOURCE = new ContextProperty<>();
+    public static final ContextProperty<CommandCause> SOURCE = new ContextProperty<>();
 }

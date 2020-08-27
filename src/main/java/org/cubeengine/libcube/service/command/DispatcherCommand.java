@@ -15,8 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube;
+package org.cubeengine.libcube.service.command;
 
-public abstract class CubeEngineModule
-{
+import java.util.Arrays;
+import java.util.List;
+
+public abstract class DispatcherCommand {
+
+    private List<Object> subCommands;
+
+    public DispatcherCommand(Object... subCommands) {
+        this.subCommands = Arrays.asList(subCommands);
+    }
+
+    public List<Object> getSubCommands() {
+        return subCommands;
+    }
 }

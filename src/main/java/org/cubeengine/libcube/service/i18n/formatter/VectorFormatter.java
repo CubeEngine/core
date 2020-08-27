@@ -17,9 +17,11 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import com.flowpowered.math.vector.Vector2i;
-import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
+import static java.util.Arrays.asList;
+import static net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA;
+import static net.kyori.adventure.text.format.NamedTextColor.GOLD;
+import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
+
 import org.cubeengine.dirigent.context.Arguments;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
@@ -27,9 +29,9 @@ import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.dirigent.parser.component.ComponentGroup;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
-
-import static java.util.Arrays.asList;
-import static org.spongepowered.api.text.format.TextColors.*;
+import org.spongepowered.math.vector.Vector2i;
+import org.spongepowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3i;
 
 @Names("vector")
 public class VectorFormatter extends ReflectedFormatter

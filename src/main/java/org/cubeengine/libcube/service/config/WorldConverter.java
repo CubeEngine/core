@@ -17,39 +17,41 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import java.util.Optional;
-import java.util.UUID;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.server.ServerWorld;
 
-public class WorldConverter extends SimpleConverter<World>
+import java.util.Optional;
+import java.util.UUID;
+
+public class WorldConverter extends SimpleConverter<ServerWorld>
 {
     @Override
-    public Node toNode(World object) throws ConversionException
+    public Node toNode(ServerWorld object) throws ConversionException
     {
-        return StringNode.of(object.getName() + "(" + object.getUniqueId().toString() + ")");
+        return StringNode.of(object.getKey().asString());
     }
 
     @Override
-    public World fromNode(Node node) throws ConversionException
+    public ServerWorld fromNode(Node node) throws ConversionException
     {
         if (node instanceof StringNode)
         {
             String string = ((StringNode)node).getValue();
-            Optional<World> world = Optional.empty();
+            Optional<ServerWorld> world = Optional.empty();
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));
-                world = Sponge.getServer().getWorld(uid);
+                world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.sponge(uid.toString()));
                 string = string.substring(0, string.indexOf('('));
             }
             if (!world.isPresent())
             {
-                world = Sponge.getServer().getWorld(string);
+                world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.sponge(string));
             }
             if (world.isPresent())
             {

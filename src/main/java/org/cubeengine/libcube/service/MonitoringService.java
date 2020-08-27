@@ -17,11 +17,11 @@
  */
 package org.cubeengine.libcube.service;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Set;
 

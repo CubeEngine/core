@@ -17,42 +17,49 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
-import org.cubeengine.i18n.I18nService;
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.Style;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.context.Context;
-import org.spongepowered.api.command.CommandSource;
+import org.cubeengine.i18n.I18nService;
+import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.ChatTypeMessageReceiver;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.chat.ChatType;
-import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.util.locale.LocaleSource;
 
 import java.util.Locale;
 import java.util.Objects;
-
-import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+import java.util.function.BiConsumer;
 
 public abstract class I18nTranslate
 {
-    abstract BuilderDirigent<Text, Text.Builder> getCompositor();
+    abstract BuilderDirigent<Component, TextComponent.Builder> getCompositor();
     abstract I18nService getI18nService();
     abstract Context contextFromLocale(Locale locale);
     abstract Context contextFromReceiver(Object receiver);
 
-    public Text composeMessage(Locale locale, TextFormat format, String message, Object... args)
+    public Component composeMessage(Locale locale, Style style, String message, Object... args)
     {
-        return composeMessage(contextFromLocale(locale), format, message, args);
+        return composeMessage(contextFromLocale(locale), style, message, args);
     }
 
-    public Text composeMessage(MessageReceiver receiver, TextFormat format, String message, Object... args)
+    public Component composeMessage(CommandCause receiver, Style style, String message, Object... args)
     {
-        return getCompositor().compose(contextFromReceiver(receiver), message, args).toBuilder().format(format).build();
+        return getCompositor().compose(contextFromReceiver(receiver), message, args).style(style);
     }
 
-    public Text composeMessage(Context context, TextFormat format, String message, Object... args)
+    public Component composeMessage(Audience receiver, Style style, String message, Object... args)
     {
-        return getCompositor().compose(context, message, args).toBuilder().format(format).build();
+        return getCompositor().compose(contextFromReceiver(receiver), message, args).style(style);
+    }
+
+    public Component composeMessage(Context context, Style style, String message, Object... args)
+    {
+        return getCompositor().compose(context, message, args).style(style);
     }
 
     public String getTranslation(String message)
@@ -77,18 +84,21 @@ public abstract class I18nTranslate
     }
 
     // Simple with CommandSource
-    public String getTranslation(CommandSource commandSource, String message)
+    public String getTranslation(Audience audience, String message)
     {
-        return getI18nService().translate(commandSource.getLocale(), message);
+        if (audience instanceof LocaleSource) {
+            return getI18nService().translate(((LocaleSource) audience).getLocale(), message);
+        }
+        return getI18nService().translate(message);
     }
 
     // TextFormat and Locale
-    public Text translate(Locale locale, TextFormat format, String message, Object... args)
+    public Component translate(Locale locale, Style style, String message, Object... args)
     {
-        return translate(contextFromLocale(locale), format, message, args);
+        return translate(contextFromLocale(locale), style, message, args);
     }
 
-    public Text translateN(Locale locale, TextFormat format, int n, String singular, String plural, Object... args)
+    public Component translateN(Locale locale, Style style, int n, String singular, String plural, Object... args)
     {
         if (locale == null)
         {
@@ -98,93 +108,99 @@ public abstract class I18nTranslate
         {
             return null;
         }
-        return composeMessage(locale, format, getTranslationN(locale, n, singular, plural), args);
+        return composeMessage(locale, style, getTranslationN(locale, n, singular, plural), args);
     }
 
-    public Text translate(Context context, TextFormat format, String message, Object... args)
+    public Component translate(Context context, Style style, String message, Object... args)
     {
         Objects.requireNonNull(context, "context");
         if (message == null)
         {
-            return Text.of("null");
+            return TextComponent.of("null");
         }
-        return composeMessage(context, format, this.getTranslation(context.get(LOCALE), message), args);
+        return composeMessage(context, style, this.getTranslation(context.get(LOCALE), message), args);
     }
 
-    public Text translateN(Context context, TextFormat format, int n, String singular, String plural, Object... args)
+    public Component translateN(Context context, Style style, int n, String singular, String plural, Object... args)
     {
         Objects.requireNonNull(context, "context");
         if (singular == null || plural == null)
         {
             return null;
         }
-        return composeMessage(context, format, getTranslationN(context.get(LOCALE), n, singular, plural), args);
+        return composeMessage(context, style, getTranslationN(context.get(LOCALE), n, singular, plural), args);
     }
 
-    // Translate to Text
-    public Text translate(MessageReceiver mr, String message, Object... args)
+    // Translate to Component
+    public Component translate(Audience mr, String message, Object... args)
     {
-        return this.translate(mr, TextFormat.NONE, message, args);
+        return this.translate(mr, null, message, args);
     }
 
-    public Text translateN(MessageReceiver mr, int n, String singular, String plural, Object... args)
+    public Component translateN(Audience mr, int n, String singular, String plural, Object... args)
     {
-        return this.translateN(mr, TextFormat.NONE, n, singular, plural, args);
+        return this.translateN(mr, null, n, singular, plural, args);
     }
 
     // Get from Object with TextFormat
 
-    public Text translate(Player source, TextFormat format, String message, Object... args)
+    public Component translate(Player source, Style style, String message, Object... args)
     {
-        return translate(contextFromReceiver(source), format, message, args);
+        return translate(contextFromReceiver(source), style, message, args);
     }
 
-    public Text translateN(Player source, TextFormat format, int n, String singular, String plural, Object... args)
+    public Component translateN(Player source, Style style, int n, String singular, String plural, Object... args)
     {
-        return translateN(contextFromReceiver(source), format, n, singular, plural, args);
+        return translateN(contextFromReceiver(source), style, n, singular, plural, args);
     }
 
-    public Text translate(MessageReceiver source, TextFormat format, String message, Object... args)
+    public Component translate(Audience source, Style style, String message, Object... args)
     {
-        return translate(contextFromReceiver(source), format, message, args);
+        return translate(contextFromReceiver(source), style, message, args);
     }
 
-    public Text translateN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
+    public Component translateN(Audience source, Style style, int n, String singular, String plural, Object... args)
     {
-        return translateN(contextFromReceiver(source), format, n, singular, plural, args);
-    }
-
-    public Text translate(ChatTypeMessageReceiver source, TextFormat format, String message, Object... args)
-    {
-        return translate(contextFromReceiver(source), format, message, args);
-    }
-
-    public Text translateN(ChatTypeMessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
-    {
-        return translateN(contextFromReceiver(source), format, n, singular, plural, args);
+        return translateN(contextFromReceiver(source), style, n, singular, plural, args);
     }
 
     // Send to MessageReceiver with TextFormat
 
-    public void send(MessageReceiver source, TextFormat format, String message, Object... args)
+    public void send(Audience source, Style style, String message, Object... args)
     {
-        source.sendMessage(translate(source, format, message, args));
+        source.sendMessage(translate(source, style, message, args));
     }
 
-    public void sendN(MessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
+    public void sendN(Audience source, Style style, int n, String singular, String plural, Object... args)
     {
-        source.sendMessage(translateN(source, format, n, singular, plural, args));
+        source.sendMessage(translateN(source, style, n, singular, plural, args));
     }
 
     // Send to ChatTypeMessageReceiver with TextFormat
 
-    public void send(ChatType type, ChatTypeMessageReceiver source, TextFormat format, String message, Object... args)
+    public void send(ChatType type, Audience source, Style style, String message, Object... args)
     {
-        source.sendMessage(type, this.translate(source, format, message, args));
+        type.sendTo(source, this.translate(source, style, message, args));
     }
 
-    public void sendN(ChatType type, ChatTypeMessageReceiver source, TextFormat format, int n, String singular, String plural, Object... args)
+    public void sendN(ChatType type, Audience source, Style style, int n, String singular, String plural, Object... args)
     {
-        source.sendMessage(type, this.translateN(source, format, n, singular, plural, args));
+        type.sendTo(source, this.translateN(source, style, n, singular, plural, args));
+    }
+
+    public enum ChatType {
+        CHAT(Audience::sendMessage),
+        SYSTEM((a, c) -> a.sendMessage(c, MessageType.SYSTEM)),
+        ACTION_BAR(Audience::sendActionBar);
+
+        private BiConsumer<Audience, Component> biConsumer;
+
+        ChatType(BiConsumer<Audience, Component> biConsumer) {
+            this.biConsumer = biConsumer;
+        }
+
+        public void sendTo(Audience audience, Component component) {
+            this.biConsumer.accept(audience, component);
+        }
     }
 }

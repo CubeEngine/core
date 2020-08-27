@@ -17,35 +17,37 @@
  */
 package org.cubeengine.libcube.service;
 
-import java.util.Collection;
-import javax.inject.Inject;
+
+import com.google.inject.Inject;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.adventure.Audiences;
+import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.format.TextFormat;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NONE;
-import static org.spongepowered.api.text.format.TextColors.WHITE;
+import java.util.Collection;
+
 
 public class Broadcaster
 {
     @Inject private I18n i18n;
 
-    private Collection<MessageReceiver> getAll()
+    private Audience getAll()
     {
-        return MessageChannel.TO_ALL.getMembers();
+        return Sponge.getServer().getBroadcastAudience();
     }
 
-    private Collection<Player> getOnlinePlayers()
+    private Collection<ServerPlayer> getOnlinePlayers()
     {
         return Sponge.getServer().getOnlinePlayers();
     }
 
 
-    public void broadcastTranslatedWithPerm(TextFormat format, String message, String perm, Object... params)
+    public void broadcastTranslatedWithPerm(Style format, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
@@ -53,15 +55,17 @@ public class Broadcaster
         }
         if (perm == null)
         {
-            MessageChannel.TO_ALL.getMembers().forEach(s -> i18n.send(s, format, message, params));
+            i18n.send(Audiences.server(), format, message, params);
         }
         else
         {
-            MessageChannel.permission(perm).getMembers().forEach(s -> i18n.send(s, format, message, params));
+            // TODO Audiences.withPermission
+            i18n.send(Audiences.system(), format, message, params);
+            getOnlinePlayers().stream().filter(p -> p.hasPermission(perm)).forEach(p -> i18n.send(p, format, message, params));
         }
     }
 
-    public void broadcastMessageWithPerm(TextFormat format, String message, String perm, Object... params)
+    public void broadcastMessageWithPerm(Style format, String message, String perm, Object... params)
     {
         if (message.isEmpty())
         {
@@ -69,52 +73,57 @@ public class Broadcaster
         }
         if (perm == null)
         {
-            MessageChannel.TO_ALL.getMembers()
-                    .forEach(s -> s.sendMessage(i18n.composeMessage(s, format, message, params)));
+            final Audience audience = Audiences.server();
+            audience.sendMessage(i18n.composeMessage(audience, format, message, params));
         }
         else
         {
-            MessageChannel.permission(perm).getMembers()
-                    .forEach(s -> s.sendMessage(i18n.composeMessage(s, format, message, params)));
+            final Audience audience = Audiences.system();
+            audience.sendMessage(i18n.composeMessage(audience, format, message, params));
+
+            getOnlinePlayers().stream().filter(p -> p.hasPermission(perm)).forEach(p ->
+                    p.sendMessage(i18n.composeMessage(p, format, message, params)));
         }
 
     }
 
-    public void broadcastTranslated(TextFormat format, String message, Object... params)
+    public void broadcastTranslated(Style format, String message, Object... params)
     {
         this.broadcastTranslatedWithPerm(format, message, null, params);
     }
 
-    public void broadcastMessage(TextFormat format, String message, Object... params)
+    public void broadcastMessage(Style format, String message, Object... params)
     {
         this.broadcastMessageWithPerm(format, message, null, params);
     }
 
-    public void broadcastStatus(TextFormat starColor, String message, CommandSource sender, Object... params)
+    public void broadcastStatus(Style starColor, String message, CommandCause sender, Object... params)
     {
+        final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
         for (Player user : this.getOnlinePlayers())
         {
             user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {input#message:color=WHITE}",
-                                                 sender.getName(), message, params));
+                    causeName, message, params));
         }
     }
 
-    public void broadcastTranslatedStatus(TextFormat starColor, String message, CommandSource sender, Object... params)
+    public void broadcastTranslatedStatus(Style starColor, String message, CommandCause sender, Object... params)
     {
+        final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
         for (Player user : this.getOnlinePlayers())
         {
-            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {txt#message:color=WHITE}", sender.getName(),
-                                                 i18n.translate(user, NONE, message, params)));
+            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {txt#message:color=WHITE}", causeName,
+                                                 i18n.translate(user, message, params)));
         }
     }
 
-    public void broadcastStatus(String message, CommandSource sender, Object... params)
+    public void broadcastStatus(String message, CommandCause sender, Object... params)
     {
-        this.broadcastStatus(NONE.color(WHITE), message, sender, params);
+        this.broadcastStatus(Style.of(NamedTextColor.WHITE), message, sender, params);
     }
 
     public synchronized void kickAll(String message)
     {
-        getOnlinePlayers().forEach(p -> p.kick(i18n.translate(p, NONE, message)));
+        getOnlinePlayers().forEach(p -> p.kick(i18n.translate(p, message)));
     }
 }
