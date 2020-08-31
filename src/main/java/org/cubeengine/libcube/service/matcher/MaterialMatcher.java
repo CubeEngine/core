@@ -136,7 +136,7 @@ public class MaterialMatcher
         {
             final ResourceKey id = itemType.getKey();
             ids.put(id.asString(), itemType);
-            if ("minecraft:".equals(id.getNamespace()))
+            if ("minecraft".equals(id.getNamespace()))
             {
                 ids.put(id.getValue(), itemType);
             }

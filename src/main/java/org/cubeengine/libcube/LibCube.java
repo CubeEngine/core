@@ -30,7 +30,25 @@ import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.nio.file.Path;
+/*
+Sponge gripes
 
+commands: add currently executing command to context
+commands: support for handling incomplete commands
+createEntity with Provider
+world.getName/asComponent
+world docs for converting old uuids to keys
+BlockRay is gone
+translations for various types (TranslationTextComponent LanguageMap)
+enchantment data allowed?
+Entity class from EntityType?
+Adventure: Audience with permissions
+Adventure: Sponge managed Callbacks
+Location#getRelative(Direction) (workaround location.add(direction.asBlockOffset()))
+AbstractAttackEntityEvent init exception
+Keys.IS_REPAIRABLE
+check for valid enchantments?
+ */
 @Core
 public class LibCube
 {
