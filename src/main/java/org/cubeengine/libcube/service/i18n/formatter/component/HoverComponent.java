@@ -62,7 +62,7 @@ public class HoverComponent implements Component
     public static Component hoverItem(ItemStack item, Component component)
     {
         final Key itemKey = Key.of(item.getType().getKey().asString());
-        final HoverEvent.ShowItem showItem = new HoverEvent.ShowItem(itemKey, item.getQuantity()); // TODO NBT?
+        final HoverEvent.ShowItem showItem = HoverEvent.ShowItem.of(itemKey, item.getQuantity()); // TODO NBT?
         return new HoverComponent(HoverEvent.showItem(showItem), component);
     }
     public static Component hoverItem(ItemStack item, String component)
@@ -73,7 +73,7 @@ public class HoverComponent implements Component
     public static Component hoverEntity(Entity entity, String name, Component component)
     {
         final Key entityKey = Key.of(entity.getType().getKey().asString());
-        final HoverEvent.ShowEntity showEntity = new HoverEvent.ShowEntity(entityKey, entity.getUniqueId(), TextComponent.of(name));
+        final HoverEvent.ShowEntity showEntity = HoverEvent.ShowEntity.of(entityKey, entity.getUniqueId(), TextComponent.of(name));
         return new HoverComponent(HoverEvent.showEntity(showEntity), component);
     }
 

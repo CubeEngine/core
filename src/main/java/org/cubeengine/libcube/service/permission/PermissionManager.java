@@ -122,7 +122,7 @@ public class PermissionManager
     @Listener
     public void onRegisterService(StartedEngineEvent<Server> event)
     {
-        this.register(Sponge.getServiceProvider().permissionService());
+        this.register(Sponge.getServer().getServiceProvider().permissionService());
     }
 
     private void register(PermissionService service)

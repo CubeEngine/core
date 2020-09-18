@@ -23,19 +23,21 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public abstract class CubeEnginePlugin {
 
     @Inject PluginContainer plugin;
     @Inject private Injector injector;
-    @ConfigDir(sharedRoot = false) @Inject File dataFolder;
+    @ConfigDir(sharedRoot = false) @Inject Path dataFolder;
     private PluginContainer lib;
     private Class<?> module;
     private ModuleManager mm;
@@ -47,7 +49,7 @@ public abstract class CubeEnginePlugin {
     }
 
     @Listener
-    public void onConstruction(StartedEngineEvent<Server> event)
+    public void onConstruction(ConstructPluginEvent event)
     {
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
