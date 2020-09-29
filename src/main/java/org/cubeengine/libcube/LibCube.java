@@ -52,7 +52,6 @@ check for valid enchantments?
 InteractBlockEvent has no World/Location
 ReloadEvent?
 BlockType etc. is(Provider<BlockType>...):boolean?
-Ingredient.of(Provider variant)
  */
 @Core
 public class LibCube
