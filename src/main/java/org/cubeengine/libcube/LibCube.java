@@ -50,8 +50,9 @@ Keys.IS_REPAIRABLE
 check for valid enchantments?
 
 InteractBlockEvent has no World/Location
-ReloadEvent?
-BlockType etc. is(Provider<BlockType>...):boolean?
+   HitVector is not always the block that was hit
+
+plugin ReloadEvent and its command?
  */
 @Core
 public class LibCube

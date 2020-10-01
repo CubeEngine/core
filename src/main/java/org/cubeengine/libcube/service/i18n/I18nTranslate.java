@@ -134,12 +134,12 @@ public abstract class I18nTranslate
     // Translate to Component
     public Component translate(Audience mr, String message, Object... args)
     {
-        return this.translate(mr, null, message, args);
+        return this.translate(mr, Style.empty(), message, args);
     }
 
     public Component translateN(Audience mr, int n, String singular, String plural, Object... args)
     {
-        return this.translateN(mr, null, n, singular, plural, args);
+        return this.translateN(mr, Style.empty(), n, singular, plural, args);
     }
 
     // Get from Object with TextFormat
