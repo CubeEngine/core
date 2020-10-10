@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.command.example;
 
+import net.kyori.adventure.text.Component;
 import org.cubeengine.libcube.service.command.Command;
 import org.cubeengine.libcube.service.command.DispatcherCommand;
 import org.spongepowered.api.command.CommandCause;
@@ -26,6 +27,6 @@ public class ChildExampleCommand1 extends DispatcherCommand {
 
     @Command(desc = "Does a foo")
     public void foo(CommandCause cause, String firstParam) {
-
+        cause.sendMessage(Component.text(firstParam));
     }
 }

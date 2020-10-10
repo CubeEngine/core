@@ -61,6 +61,7 @@ public abstract class CubeEnginePlugin {
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
+        this.mm.loadConfigs(this.module); // TODO too late when recipes use the config
         if (module == null)
         {
             mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());

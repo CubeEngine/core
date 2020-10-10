@@ -108,7 +108,6 @@ public class ModuleManager
         Object instance = moduleInjector.getInstance(module);
         this.modules.put(module, instance);
 
-        this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class));
         this.i18n.registerPlugin(plugin);
 
         this.cm.injectCommands(moduleInjector, instance, getAnnotatedFields(instance, ModuleCommand.class));
@@ -163,6 +162,11 @@ public class ModuleManager
             this.cm.injectCommands(this.injector, module, commands);
         }
         this.cm.registerModuleCommands(event, container, module, commands);
+    }
+
+    public void loadConfigs(Class<?> module) {
+        Object instance = modules.get(module);
+        this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class));
     }
 
     public class CubeEngineGuiceModule extends AbstractModule

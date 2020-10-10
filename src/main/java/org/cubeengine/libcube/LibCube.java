@@ -33,8 +33,14 @@ import java.nio.file.Path;
 /*
 Sponge gripes
 
-commands: add currently executing command to context
 commands: support for handling incomplete commands
+commands: getUsage starts with "command"
+commands: getUsage excluding sub-cmds?
+commands: and/or custom usage generator?
+commands: EventContextKeys.COMMAND is missing?
+commands: parent command? could probably get it with event context though
+commands: permission to check is unavailable
+
 createEntity with Provider
 world.getName/asComponent
 world docs for converting old uuids to keys
