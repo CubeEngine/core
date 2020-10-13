@@ -40,7 +40,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class SpongeTaskManager implements TaskManager
 {
-    private Scheduler scheduler;
     private final Map<Class, Set<UUID>> tasks;
     private ModuleManager mm;
     private PluginContainer plugin;
@@ -50,7 +49,6 @@ public class SpongeTaskManager implements TaskManager
     {
         this.mm = mm;
         this.plugin = mm.getPlugin(LibCube.class).get();
-        this.scheduler = Sponge.getServer().getScheduler();
         this.tasks = new ConcurrentHashMap<>();
         mm.registerBinding(TaskManager.class, this);
     }
@@ -83,7 +81,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(runnable, "The runnable must not be null!");
 
         final Task task = Task.builder().delayTicks(delay).execute(runnable).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, scheduler.submit(task));
+        return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
     }
 
     @Override
@@ -93,7 +91,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(runnable, "The runnable must not be null!");
 
         final Task task = Task.builder().delayTicks(delay).intervalTicks(interval).execute(runnable).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, scheduler.submit(task));
+        return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
     }
 
     private PluginContainer getPlugin(Class owner)
@@ -136,7 +134,7 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public void cancelTask(Class owner, UUID uuid)
     {
-        Optional<ScheduledTask> task = scheduler.getTaskById(uuid);
+        Optional<ScheduledTask> task = Sponge.getServer().getScheduler().getTaskById(uuid);
         task.ifPresent(ScheduledTask::cancel);
 
         Set<UUID> ownerIds = getTaskIDs(owner);

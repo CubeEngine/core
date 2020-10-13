@@ -20,15 +20,18 @@ package org.cubeengine.libcube.service.command;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class DispatcherCommand {
+public abstract class DispatcherCommand
+{
 
     private List<Object> subCommands;
 
-    public DispatcherCommand(Object... subCommands) {
+    public DispatcherCommand(Object... subCommands)
+    {
         this.subCommands = Arrays.asList(subCommands);
     }
 
-    public List<Object> getSubCommands() {
+    public List<Object> getSubCommands()
+    {
         return subCommands;
     }
 }

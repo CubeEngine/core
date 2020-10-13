@@ -15,17 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.example;
+package org.cubeengine.libcube.service.command;
 
-import net.kyori.adventure.text.Component;
-import org.cubeengine.libcube.service.command.annotation.Command;
-import org.cubeengine.libcube.service.command.DispatcherCommand;
 import org.spongepowered.api.command.CommandCause;
 
-public class ChildExampleCommand2 extends DispatcherCommand {
+import java.util.function.Function;
 
-    @Command(desc = "Does a bar")
-    public void bar(CommandCause cause, String firstParam) {
-        cause.sendMessage(Component.text(firstParam));
-    }
+public interface DefaultParameterProvider<ObjectT> extends Function<CommandCause, ObjectT> {
+
 }

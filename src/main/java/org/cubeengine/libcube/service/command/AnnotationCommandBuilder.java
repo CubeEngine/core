@@ -31,6 +31,14 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.apache.logging.log4j.util.Strings;
+import org.cubeengine.libcube.service.command.annotation.Command;
+import org.cubeengine.libcube.service.command.annotation.Default;
+import org.cubeengine.libcube.service.command.annotation.Flag;
+import org.cubeengine.libcube.service.command.annotation.Named;
+import org.cubeengine.libcube.service.command.annotation.Option;
+import org.cubeengine.libcube.service.command.annotation.Parser;
+import org.cubeengine.libcube.service.command.annotation.ParserFor;
+import org.cubeengine.libcube.service.command.annotation.Using;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 import org.spongepowered.api.command.Command.Builder;
@@ -41,6 +49,8 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.managed.ValueCompleter;
+import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
@@ -60,6 +70,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -74,13 +85,14 @@ public class AnnotationCommandBuilder
         this.i18n = i18n;
     }
 
-    public void registerModuleCommands(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object module, List<Field> commands)
+    public void registerModuleCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object module, List<Field> commands)
     {
         for (Field command : commands)
         {
             try
             {
-                this.registerCommands(event, plugin, command.get(module));
+                command.setAccessible(true);
+                this.registerCommands(injector, event, plugin, command.get(module));
             }
             catch (IllegalAccessException e)
             {
@@ -89,11 +101,13 @@ public class AnnotationCommandBuilder
         }
     }
 
-    public void registerCommands(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder)
+    public void registerCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder)
     {
         final Command holderAnnotation = holder.getClass().getAnnotation(Command.class);
         if (holderAnnotation != null)
         {
+            this.createParsers(injector, holder);
+
             final Builder builder = builder();
             final String name = this.getCommandName(null, holder, holderAnnotation);
 
@@ -124,6 +138,20 @@ public class AnnotationCommandBuilder
             }
         }
 
+    }
+
+    public void createParsers(Injector injector, Object holder)
+    {
+        final Using using = holder.getClass().getAnnotation(Using.class);
+        if (using != null)
+        {
+            for (Class<?> parser : using.value())
+            {
+                final Object parserInstance = injector.getInstance(parser);
+                final Class<?> parsedType = parser.getAnnotation(ParserFor.class).value();
+                ParameterRegistry.register(parsedType, parserInstance);
+            }
+        }
     }
 
     private void createChildCommands(Object holder, Builder dispatcher, String... permNodes)
@@ -206,6 +234,37 @@ public class AnnotationCommandBuilder
         return methods;
     }
 
+    public static class Requirements implements Predicate<CommandCause> {
+        private final List<Predicate<CommandCause>> requirements = new ArrayList<>();
+        private String permission;
+
+        @Override
+        public boolean test(CommandCause commandCause) {
+            for (Predicate<CommandCause> requirement : this.requirements) {
+                if (!requirement.test(commandCause)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void add(Predicate<CommandCause> predicate)
+        {
+            this.requirements.add(predicate);
+        }
+
+        public void addPermission(String permission)
+        {
+            this.permission = permission;
+            this.requirements.add(c -> c.hasPermission(permission));
+        }
+
+        public String getPermission()
+        {
+            return permission;
+        }
+    }
+
     private Parameterized buildCommand(Object holder, Method method, Command annotation, String... permNodes)
     {
         final Builder builder = builder();
@@ -214,18 +273,18 @@ public class AnnotationCommandBuilder
         final Type[] types = method.getParameterTypes();
         final java.lang.reflect.Parameter[] parameters = method.getParameters();
         final List<ContextExtractor<?>> extractors = new ArrayList<>();
+        final Requirements requirements = new Requirements();
         for (int i = 0; i < types.length; i++)
         {
             final Type type = types[i];
             final Annotation[] annotations = annotationsList[i];
             final java.lang.reflect.Parameter parameter = parameters[i];
-            extractors.add(this.buildParameter(i, builder, parameter, type, annotations, types.length - 1));
+            extractors.add(this.buildParameter(i, builder, parameter, type, annotations, types.length - 1, requirements));
         }
-        builder.setPermission(String.join("." , permNodes) + ".use");
+        requirements.addPermission(String.join("." , permNodes) + ".use");
+        builder.setExecutionRequirements(requirements);
         builder.setShortDescription(Component.text(annotation.desc()));
-//        builder.setExecutionRequirements()
 //        builder.setExtendedDescription()
-//        builder.flag()
         final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors);
         builder.setExecutor(executor);
         final HelpExecutor helpExecutor = new HelpExecutor(i18n);
@@ -235,62 +294,189 @@ public class AnnotationCommandBuilder
         return build;
     }
 
-    private ContextExtractor<?> buildParameter(int index, Builder builder, java.lang.reflect.Parameter parameter, Type type, Annotation[] annotations, int last)
+    private ContextExtractor<?> buildParameter(int index, Builder builder, java.lang.reflect.Parameter parameter, Type type, Annotation[] annotations,
+            int last, Requirements requirements)
     {
         final String name = parameter.getName();
         // TODO search param annotation for name
 
-        return buildParameter(index, builder, type, annotations, last, name, false);
+        return buildParameter(index, builder, type, annotations, last, name, false, requirements);
     }
 
     private ContextExtractor<?> buildParameter(int index, Builder builder, Type type, Annotation[] annotations,
-            int last, String name, boolean forceOptional) {
+            int last, String name, boolean forceOptional, Requirements requirements) {
 
-        if (type == CommandCause.class) {
+        if (type == CommandCause.class)
+        {
             return COMMAND_CAUSE;
         }
-        if (type == CommandContext.class) {
-            return COMMAND_CAUSE;
+        if (type == CommandContext.class)
+        {
+            return COMMAND_CONTEXT;
         }
-        Class<?> rawType =  (Class<?>) (type instanceof ParameterizedType ? ((ParameterizedType) type).getRawType() : type);
-        final Parameter.Value.Builder<?> parameterBuilder;
-        if (rawType == String.class) {
-            if (index == last) {
-                parameterBuilder = Parameter.remainingJoinedStrings();
-            } else {
-                parameterBuilder = Parameter.string();
+        if (index == 0) {
+            if (type == ServerPlayer.class) {
+                // First Parameter and ServerPlayer == restricted ServerPlayer command
+                requirements.add(AnnotationCommandBuilder::playerRestricted);
+                return COMMAND_PLAYER;
             }
-        } else if (rawType == Optional.class) {
-            return this.buildParameter(index, builder, ((ParameterizedType) type).getActualTypeArguments()[0], annotations, last, name, true);
-        } else if (rawType == List.class) {
+            if (type == Audience.class) {
+                return COMMAND_AUDIENCE;
+            }
+        }
+
+        Flag flagAnnotation = getAnnotated(annotations, Flag.class);
+        Parser parserAnnotation = getAnnotated(annotations, Parser.class);
+
+        Class<?> rawType =  (Class<?>) (type instanceof ParameterizedType ? ((ParameterizedType) type).getRawType() : type);
+        if (flagAnnotation != null)
+        {
+            return buildFlagParameter(builder, name, flagAnnotation, rawType);
+        }
+        final Parameter.Value.Builder<?> parameterBuilder;
+        if (rawType == Optional.class)
+        {
+            return this.buildParameter(index, builder, ((ParameterizedType) type).getActualTypeArguments()[0], annotations, last, name, true, requirements);
+        }
+        else if (rawType == List.class)
+        {
             throw new IllegalStateException("Not implemented yet");
-        } else if (rawType == Set.class) {
+        }
+        else if (rawType == Set.class)
+        {
             throw new IllegalStateException("Not implemented yet");
-        } else {
-            throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.of(type));
+        }
+        else
+        {
+            final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser() != ValueParser.class ? parserAnnotation.parser() : rawType;
+            final ValueParser parser = ParameterRegistry.getParser(parserType, index == last);
+            if (parser != null)
+            {
+                parameterBuilder = Parameter.builder(rawType).parser(parser);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.of(type));
+            }
+
+            final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer() != ValueCompleter.class ? parserAnnotation.completer() : rawType;
+            final ValueCompleter completer = ParameterRegistry.getCompleter(completerType);
+            if (completer != null)
+            {
+                parameterBuilder.setSuggestions(completer);
+            }
         }
 
         parameterBuilder.setKey(name);
-        final Parameter.Value<?> param = parameterBuilder.build();
-        builder.parameter(param);
+        Default defaultAnnotation = getAnnotated(annotations, Default.class);
+        final DefaultParameterProvider defaultParameterProvider;
+        Named namedAnnotation = getAnnotated(annotations, Named.class);
 
-        boolean optional = isOptional(annotations);
+        boolean optional = defaultAnnotation != null || namedAnnotation != null || isOptional(annotations);
+
+        if (defaultAnnotation != null)
+        {
+            Class<?> clazz = defaultAnnotation.value();
+            if (clazz == DefaultParameterProvider.class) {
+                clazz = rawType;
+            }
+            defaultParameterProvider = ParameterRegistry.getDefaultProvider(clazz);
+            if (namedAnnotation == null) {
+                parameterBuilder.optional().orDefault(defaultParameterProvider);
+            }
+        }
+        else {
+            defaultParameterProvider = null;
+            if (optional && namedAnnotation == null)
+            {
+                parameterBuilder.optional();
+            }
+        }
+
+        Parameter.Value<?> param = parameterBuilder.build();
+
+        if (namedAnnotation != null)
+        {
+            if (namedAnnotation.value().length == 0)
+            {
+                throw new IllegalArgumentException("Named parameter must have at least one name");
+            }
+            final String firstName = namedAnnotation.value()[0];
+            final Parameter.Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedAnnotation.value()).setKey(firstName)
+                    .setUsage(key -> firstName).build();
+            builder.parameter(Parameter.seqBuilder(literal).then(param).optional().build());
+        }
+        else
+        {
+            builder.parameter(param);
+        }
 
         if (forceOptional)
         {
             return c -> c.getOne(param);
         }
-        else if (optional) {
+        else if (optional)
+        {
+            if (namedAnnotation != null && defaultParameterProvider != null) {
+                return c -> ((Optional) c.getOne(param)).orElse(defaultParameterProvider.apply(c.getCause()));
+            }
             return c -> c.getOne(param).orElse(null);
         }
-        else {
+        else
+        {
             return c -> c.requireOne(param);
         }
     }
 
+    private ContextExtractor<Object> buildFlagParameter(Builder builder, String name, Flag flagAnnotation, Class<?> rawType)
+    {
+        if (rawType == Boolean.class || rawType == boolean.class)
+        {
+            String longName = flagAnnotation.longName();
+            if (longName.isEmpty())
+            {
+                longName = name;
+            }
+            String shortName = flagAnnotation.value();
+            if (shortName.isEmpty())
+            {
+                shortName = longName.substring(0, 1);
+            }
+
+            // TODO permissions
+            final org.spongepowered.api.command.parameter.managed.Flag flag = org.spongepowered.api.command.parameter.managed.Flag.builder()
+                    .aliases(shortName, longName)
+                    .build();
+            builder.flag(flag);
+            return (c -> c.hasFlag(flag));
+        }
+        throw new IllegalArgumentException("@Flag parameter must be a boolean");
+    }
+
+    private static boolean playerRestricted(CommandCause cause)
+    {
+        final boolean isPlayer = cause.getAudience() instanceof ServerPlayer;
+        if (!isPlayer) {
+            cause.sendMessage(Component.text("This command is restricted to players in game")); // TODO translate
+        }
+        return isPlayer;
+    }
+
+    private <T extends Annotation> T getAnnotated(Annotation[] annotations, Class<T> clazz)
+    {
+        for (Annotation annotation : annotations) {
+            if (clazz.isAssignableFrom(annotation.getClass())) {
+                return clazz.cast(annotation);
+            }
+        }
+        return null;
+    }
+
     private boolean isOptional(Annotation[] annotations) {
         for (Annotation annotation : annotations) {
-            // TODO optional annotation
+            if (annotation instanceof Option) {
+                return true;
+            }
         }
         return false;
     }
@@ -324,12 +510,11 @@ public class AnnotationCommandBuilder
         }
 
         @Override
-        public CommandResult execute(CommandContext context) throws CommandException {
+        public CommandResult execute(CommandContext context) throws CommandException
+        {
             final Optional<String> actual = context.getCause().getContext().get(EventContextKeys.COMMAND);
-
             final Audience audience = context.getCause().getAudience();
             final Style grayStyle = Style.style(NamedTextColor.GRAY);
-
             Component descLabel = i18n.translate(audience, grayStyle, "Description:");
             final Component permText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}", perm)
                     .append(Component.text(".use").color(NamedTextColor.WHITE));
@@ -347,7 +532,7 @@ public class AnnotationCommandBuilder
                     }
                     usages.add(usage);
                 } else {
-                    usages.add("param?");
+                    usages.add("param(" + param.getClass().getSimpleName() + ")");
                 }
             }
 
@@ -439,4 +624,6 @@ public class AnnotationCommandBuilder
 
     private static final ContextExtractor<CommandCause> COMMAND_CAUSE = CommandContext::getCause;
     private static final ContextExtractor<CommandContext> COMMAND_CONTEXT = c -> c;
+    private static final ContextExtractor<ServerPlayer> COMMAND_PLAYER = c -> (ServerPlayer) c.getCause().getAudience();
+    private static final ContextExtractor<Audience> COMMAND_AUDIENCE = c -> c.getCause().getAudience();
 }

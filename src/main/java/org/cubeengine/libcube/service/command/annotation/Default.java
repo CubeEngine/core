@@ -15,7 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command;
+package org.cubeengine.libcube.service.command.annotation;
+
+import org.cubeengine.libcube.service.command.DefaultParameterProvider;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,28 +25,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marks a parameter as optional defaulting to given provider or a provider for the parameter type.
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Command {
-    /**
-     * Returns the name of the command
-     *
-     * @return the name of the command
-     */
-    String name() default "";
-
-    /**
-     * Returns the aliases of the command
-     *
-     * @return the aliases of the command
-     */
-    String[] alias() default {};
-
-    /**
-     * Returns the description of the command
-     *
-     * @return the description of the command
-     */
-    String desc();
+@Target({ElementType.PARAMETER})
+public @interface Default {
+    Class<? extends DefaultParameterProvider> value() default DefaultParameterProvider.class;
 }

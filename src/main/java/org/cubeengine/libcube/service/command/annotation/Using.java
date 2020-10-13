@@ -15,16 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command;
+package org.cubeengine.libcube.service.command.annotation;
 
-import org.spongepowered.api.command.Command;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class RegisterCommandListener {
-
-    @Listener
-    public void onRegister(final RegisterCommandEvent<Command.Parameterized> event) {
-
-    }
+/**
+ * Specify custom Parsers and ValueCompleters to register
+ */
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface Using {
+    Class<?>[] value() default {};
 }

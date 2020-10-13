@@ -18,7 +18,7 @@
 package org.cubeengine.libcube.service.command.example;
 
 import net.kyori.adventure.text.Component;
-import org.cubeengine.libcube.service.command.Command;
+import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.DispatcherCommand;
 import org.spongepowered.api.command.CommandCause;
 

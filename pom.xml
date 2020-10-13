@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.cubeengine.module</groupId>
         <artifactId>parent</artifactId>
-        <version>2</version>
+        <version>2-api8-SNAPSHOT</version>
     </parent>
 
     <groupId>org.cubeengine</groupId>
@@ -27,12 +27,6 @@
 
     <dependencies>
         <!-- Sponge Dependencies -->
-        <dependency>
-            <groupId>org.spongepowered</groupId>
-            <artifactId>spongeapi</artifactId>
-            <version>8.0.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -106,7 +100,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>

@@ -21,9 +21,11 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
@@ -41,6 +43,7 @@ public abstract class CubeEnginePlugin {
     private PluginContainer lib;
     private Class<?> module;
     private ModuleManager mm;
+    private Object instance;
 
     public CubeEnginePlugin(Class module)
     {
@@ -53,7 +56,7 @@ public abstract class CubeEnginePlugin {
     {
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
-        this.mm.registerAndCreate(this.module, this.plugin, this.injector);
+        this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
         this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
     }
 
@@ -61,7 +64,7 @@ public abstract class CubeEnginePlugin {
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
-        this.mm.loadConfigs(this.module); // TODO too late when recipes use the config
+        this.mm.loadConfigs(this.module);
         if (module == null)
         {
             mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());
@@ -87,6 +90,12 @@ public abstract class CubeEnginePlugin {
                 }
             }
         }
+    }
+
+    @Listener
+    public void onRegisterCommand(final RegisterCommandEvent<Command.Parameterized> event)
+    {
+        this.mm.registerCommands(event, this.plugin, this.instance);
     }
 
     public abstract String sourceVersion();

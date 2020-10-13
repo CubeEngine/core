@@ -19,11 +19,21 @@ package org.cubeengine.libcube.service.command.example;
 
 import com.google.inject.Inject;
 import net.kyori.adventure.text.Component;
-import org.cubeengine.libcube.service.command.Command;
+import org.cubeengine.libcube.service.command.annotation.Command;
+import org.cubeengine.libcube.service.command.annotation.Default;
+import org.cubeengine.libcube.service.command.DefaultParameterProvider;
 import org.cubeengine.libcube.service.command.DispatcherCommand;
+import org.cubeengine.libcube.service.command.annotation.Flag;
+import org.cubeengine.libcube.service.command.annotation.Named;
+import org.cubeengine.libcube.service.command.annotation.Option;
+import org.cubeengine.libcube.service.command.annotation.ParserFor;
+import org.cubeengine.libcube.service.command.annotation.Using;
 import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.world.server.ServerWorld;
 
 @Command(name = "example", desc = "base command")
+@Using({ParentExampleCommand.StringProvider.class, ParentExampleCommand.ThisWorldProvider.class})
 public class ParentExampleCommand extends DispatcherCommand {
 
     @Inject
@@ -31,8 +41,62 @@ public class ParentExampleCommand extends DispatcherCommand {
         super(cmd1, cmd2);
     }
 
-    @Command(desc = "Does a thing")
-    public void myCommand(CommandCause cause, String firstParam) {
-        cause.sendMessage(Component.text(firstParam));
+    @Command(desc = "Command with force flag")
+    public void flagCommand(CommandCause cause, String firstParam, @Flag boolean force)
+    {
+        cause.sendMessage(Component.text(firstParam + " force:" + force));
+    }
+
+    @Command(desc = "Command with optional String")
+    public void optionCommand(CommandCause cause, @Option String ommitMe)
+    {
+        cause.sendMessage(Component.text(ommitMe == null ? "optional!" : ommitMe));
+    }
+
+    @Command(desc = "Command with defaulted String")
+    public void defaultCommand(CommandCause cause, @Default(StringProvider.class) String defaulting)
+    {
+        cause.sendMessage(Component.text(defaulting));
+    }
+
+    @Command(desc = "Command with named String")
+    public void namedParameter(CommandCause cause, @Named("in") String world)
+    {
+        if (world == null) {
+            world = "no world";
+        }
+        cause.sendMessage(Component.text("in " + world));
+    }
+
+    @Command(desc = "Command defaulted named World")
+    public void defaultedNamedParameter(CommandCause cause, @Default(ThisWorldProvider.class) @Named("in") ServerWorld world)
+    {
+        cause.sendMessage(Component.text("in " + world.getKey()));
+    }
+
+    @Command(desc = "Command only for Players")
+    public void restrictedToPlayer(ServerPlayer player)
+    {
+        player.sendMessage(Component.text("Congratulations! You are a player."));
+    }
+
+    @ParserFor(String.class)
+    public static class StringProvider implements DefaultParameterProvider<String>
+    {
+        @Override
+        public String apply(CommandCause cause)
+        {
+            return "defaulted";
+        }
+    }
+
+    @ParserFor(String.class)
+    public static class ThisWorldProvider implements DefaultParameterProvider<ServerWorld>
+    {
+        @Override
+        public ServerWorld apply(CommandCause cause)
+        {
+            return cause.first(ServerPlayer.class).map(ServerPlayer::getWorld).orElseThrow(IllegalStateException::new);
+        }
     }
 }

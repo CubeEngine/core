@@ -20,7 +20,7 @@ package org.cubeengine.libcube;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.apache.logging.log4j.Logger;
-import org.cubeengine.libcube.service.command.ModuleCommand;
+import org.cubeengine.libcube.service.command.annotation.ModuleCommand;
 import org.cubeengine.libcube.service.command.example.ParentExampleCommand;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -34,14 +34,16 @@ import java.nio.file.Path;
 Sponge gripes
 
 commands: support for handling incomplete commands
-commands: getUsage starts with "command"
-commands: getUsage excluding sub-cmds?
-commands: and/or custom usage generator?
-commands: EventContextKeys.COMMAND is missing?
-commands: parent command? could probably get it with event context though
-commands: permission to check is unavailable
 
-createEntity with Provider
+!commands: getUsage starts with "command"
+?commands: getUsage excluding sub-cmds?
+!commands: EventContextKeys.COMMAND is missing?
+!commands: access to executor
+?commands: permission to check is unavailable
+commands: no sequence param in API (SpongeMultiParameter)
+commands: javadocs lie. setPermission/setExecutionRequirements in fact override each other
+commands: console command audience is not SystemSubject
+
 world.getName/asComponent
 world docs for converting old uuids to keys
 BlockRay is gone
@@ -55,10 +57,15 @@ AbstractAttackEntityEvent init exception
 Keys.IS_REPAIRABLE
 check for valid enchantments?
 
-InteractBlockEvent has no World/Location
-   HitVector is not always the block that was hit
-
 plugin ReloadEvent and its command?
+
+inventory transaction drop excess items
+
+ServerPlayer.isOnline?
+
+TeleportHelper.getSafeLocation with Supplier
+
+
  */
 @Core
 public class LibCube

@@ -25,7 +25,7 @@ import com.google.inject.matcher.Matchers;
 import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.libcube.service.ReflectorProvider;
 import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
-import org.cubeengine.libcube.service.command.ModuleCommand;
+import org.cubeengine.libcube.service.command.annotation.ModuleCommand;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.event.ModuleListener;
 import org.cubeengine.libcube.service.filesystem.FileManager;
@@ -161,7 +161,7 @@ public class ModuleManager
         if (module == this.plugin) {
             this.cm.injectCommands(this.injector, module, commands);
         }
-        this.cm.registerModuleCommands(event, container, module, commands);
+        this.cm.registerModuleCommands(this.injector, event, container, module, commands);
     }
 
     public void loadConfigs(Class<?> module) {
