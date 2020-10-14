@@ -43,6 +43,8 @@ commands: support for handling incomplete commands
 commands: no sequence param in API (SpongeMultiParameter)
 commands: javadocs lie. setPermission/setExecutionRequirements in fact override each other
 commands: console command audience is not SystemSubject
+commands: flags repeat
+commands: errors are not shown?
 
 world.getName/asComponent
 world docs for converting old uuids to keys
@@ -65,6 +67,7 @@ ServerPlayer.isOnline?
 
 TeleportHelper.getSafeLocation with Supplier
 
+TeleportHelperFilters are not registered
 
  */
 @Core

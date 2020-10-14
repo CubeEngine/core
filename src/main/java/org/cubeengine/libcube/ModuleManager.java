@@ -17,11 +17,25 @@
  */
 package org.cubeengine.libcube;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ThreadFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
+import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.libcube.service.ReflectorProvider;
 import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
@@ -38,24 +52,9 @@ import org.cubeengine.libcube.service.task.ModuleThreadFactory;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ThreadFactory;
 
 @Singleton
 public class ModuleManager
@@ -71,6 +70,7 @@ public class ModuleManager
     private Module guiceModule = new CubeEngineGuiceModule();
     private Map<Class, PluginContainer> modulePlugins = new HashMap<>();
     private Map<Class, Object> modules = new HashMap<>();
+    private Map<Class, Injector> moduleInjectors = new HashMap<>();
     private Map<Class, Object> bindings = new HashMap<>();
     private LogProvider logProvider;
     private MaterialMatcher mm;
@@ -105,6 +105,7 @@ public class ModuleManager
     {
         this.modulePlugins.put(module, plugin);
         Injector moduleInjector = injector.createChildInjector(guiceModule);
+        this.moduleInjectors.put(module, moduleInjector);
         Object instance = moduleInjector.getInstance(module);
         this.modules.put(module, instance);
 
@@ -122,17 +123,20 @@ public class ModuleManager
     }
 
 
+    public void injectClassAnnots(Class<?> module, Object instance)
+    {
+        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet())
+        {
 
-    public void injectClassAnnots(Class<?> module, Object instance) {
-        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet()) {
-
-            if (module.isAnnotationPresent(entry.getKey())) {
+            if (module.isAnnotationPresent(entry.getKey()))
+            {
                 injectClassAnnot(instance, module.getAnnotation(entry.getKey()), entry.getValue());
             }
         }
     }
 
-    private void injectClassAnnot(Object instance, Annotation annotation, ModuleInjector injector) {
+    private void injectClassAnnot(Object instance, Annotation annotation, ModuleInjector injector)
+    {
         injector.inject(instance, annotation);
     }
 
@@ -141,10 +145,12 @@ public class ModuleManager
         return Collections.unmodifiableMap(modulePlugins);
     }
 
-    public <A extends Annotation> void registerClassInjector(Class<A> annot, ModuleInjector<A> injector) {
+    public <A extends Annotation> void registerClassInjector(Class<A> annot, ModuleInjector<A> injector)
+    {
         this.injectors.put(annot, injector);
 
-        for (Map.Entry<Class, Object> moduleEntry : this.modules.entrySet()) {
+        for (Map.Entry<Class, Object> moduleEntry : this.modules.entrySet())
+        {
             Class module = moduleEntry.getKey();
             injectClassAnnots(module, moduleEntry.getValue());
         }
@@ -158,13 +164,19 @@ public class ModuleManager
     public void registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module)
     {
         final List<Field> commands = getAnnotatedFields(module, ModuleCommand.class);
-        if (module == this.plugin) {
+        if (module == this.plugin)
+        {
             this.cm.injectCommands(this.injector, module, commands);
+            this.cm.registerModuleCommands(this.injector, event, container, module, commands);
         }
-        this.cm.registerModuleCommands(this.injector, event, container, module, commands);
+        else
+        {
+            this.cm.registerModuleCommands(moduleInjectors.get(module.getClass()), event, container, module, commands);
+        }
     }
 
-    public void loadConfigs(Class<?> module) {
+    public void loadConfigs(Class<?> module)
+    {
         Object instance = modules.get(module);
         this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class));
     }
@@ -185,7 +197,8 @@ public class ModuleManager
 
             this.bind(I18n.class).toInstance(i18n);
 
-            for (Map.Entry<Class, Object> entry : bindings.entrySet()) {
+            for (Map.Entry<Class, Object> entry : bindings.entrySet())
+            {
                 this.bind(entry.getKey()).toInstance(entry.getValue());
             }
 

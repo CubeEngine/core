@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.command.parser;
 
+import net.kyori.adventure.text.Component;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.exception.ArgumentParseException;
@@ -25,8 +26,12 @@ import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
+import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionType;
+import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionTypes;
 import org.spongepowered.api.world.server.ServerWorld;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,16 +44,34 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
             CommandContext.Builder context) throws ArgumentParseException
     {
         final ResourceKey key = reader.parseResourceKey("minecraft");
-        return Sponge.getServer().getWorldManager().getWorld(key);
+        final Optional<ServerWorld> world = Sponge.getServer().getWorldManager().getWorld(key);
+        if (!world.isPresent())
+        {
+            throw reader.createException(Component.text("World " + key + " does not exist."));
+        }
+        return world;
+    }
+
+    @Override
+    public List<ClientCompletionType> getClientCompletionType()
+    {
+        return Arrays.asList(ClientCompletionTypes.RESOURCE_KEY.get());
     }
 
     @Override
     public List<String> complete(CommandContext context, String currentInput)
     {
-        return Sponge.getServer().getWorldManager().getWorlds().stream()
-                .map(ServerWorld::getKey)
-                .map(ResourceKey::getFormatted)
-                .filter(x -> x.startsWith(currentInput))
-                .collect(Collectors.toList());
+        final List<String> list = new ArrayList<>();
+        Sponge.getServer().getWorldManager().getWorlds().stream()
+                     .map(ServerWorld::getKey)
+                     .filter(k -> k.getFormatted().startsWith(currentInput) || k.getNamespace().equals("minecraft") && k.getValue().startsWith(currentInput))
+                     .forEach(k -> {
+                         list.add(k.getFormatted());
+                         if (k.getNamespace().equals("minecraft"))
+                         {
+                             list.add(k.getValue());
+                         }
+                     });
+        return list;
     }
 }

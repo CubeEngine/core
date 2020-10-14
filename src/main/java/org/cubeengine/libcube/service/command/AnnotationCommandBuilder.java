@@ -17,8 +17,26 @@
  */
 package org.cubeengine.libcube.service.command;
 
-import static org.spongepowered.api.command.Command.builder;
-
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -49,6 +67,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -56,22 +75,7 @@ import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import static org.spongepowered.api.command.Command.builder;
 
 @Singleton
 public class AnnotationCommandBuilder
@@ -85,7 +89,8 @@ public class AnnotationCommandBuilder
         this.i18n = i18n;
     }
 
-    public void registerModuleCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object module, List<Field> commands)
+    public void registerModuleCommands(Injector injector, RegisterCommandEvent<Parameterized> event,
+                                       PluginContainer plugin, Object module, List<Field> commands)
     {
         for (Field command : commands)
         {
@@ -101,7 +106,8 @@ public class AnnotationCommandBuilder
         }
     }
 
-    public void registerCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder)
+    public void registerCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin,
+                                 Object holder)
     {
         final Command holderAnnotation = holder.getClass().getAnnotation(Command.class);
         if (holderAnnotation != null)
@@ -114,30 +120,33 @@ public class AnnotationCommandBuilder
             builder.setShortDescription(TextComponent.of(holderAnnotation.desc()));
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
             builder.setExecutor(helpExecutor);
-            builder.child(builder().setExecutor(helpExecutor).build(), "?");
+// TODO reenable help subcmd           builder.child(builder().setExecutor(helpExecutor).build(), "?");
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
             this.createChildCommands(holder, builder, plugin.getMetadata().getId(), "command", name);
             final Parameterized build = builder.build();
-            helpExecutor.init(build, null, String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
+            helpExecutor.init(build, null,
+                              String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
             event.register(plugin, build, name, holderAnnotation.alias());
         }
         else
         {
             if (holder instanceof DispatcherCommand)
             {
-                throw new IllegalStateException("Base command needs a Command annotation! " + holder.getClass().getSimpleName());
+                throw new IllegalStateException(
+                    "Base command needs a Command annotation! " + holder.getClass().getSimpleName());
             }
-            final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
+            final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(
+                m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
             for (Method method : methods)
             {
                 final Command methodAnnotation = method.getAnnotation(Command.class);
                 String name = this.getCommandName(method, holder, methodAnnotation);
-                final Parameterized build = this.buildCommand(holder, method, methodAnnotation, plugin.getMetadata().getId(), "command", name);
+                final Parameterized build = this.buildCommand(holder, method, methodAnnotation,
+                                                              plugin.getMetadata().getId(), "command", name);
                 event.register(plugin, build, name, methodAnnotation.alias());
             }
         }
-
     }
 
     public void createParsers(Injector injector, Object holder)
@@ -159,7 +168,8 @@ public class AnnotationCommandBuilder
         final String basePermNode = String.join(".", permNodes);
         dispatcher.setPermission(basePermNode + ".use");
 
-        final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
+        final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(
+            m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
         for (Method method : methods)
         {
             this.createChildCommand(holder, dispatcher, method, permNodes);
@@ -167,10 +177,11 @@ public class AnnotationCommandBuilder
 
         if (holder instanceof DispatcherCommand)
         {
-            for (Object subHolder : ((DispatcherCommand) holder).getSubCommands())
+            for (Object subHolder : ((DispatcherCommand)holder).getSubCommands())
             {
                 final Command subHolderAnnotation = subHolder.getClass().getAnnotation(Command.class);
-                if (subHolderAnnotation != null) {
+                if (subHolderAnnotation != null)
+                {
                     final Builder builder = builder();
                     final String name = this.getCommandName(null, subHolder, subHolderAnnotation);
                     builder.setShortDescription(TextComponent.of(subHolderAnnotation.desc()));
@@ -191,7 +202,9 @@ public class AnnotationCommandBuilder
                     final Parameterized build = builder.build();
                     helpExecutor.init(build, null, String.join(".", permNodes));
                     dispatcher.child(build, alias);
-                } else {
+                }
+                else
+                {
                     this.createChildCommands(subHolder, dispatcher, permNodes);
                 }
             }
@@ -214,10 +227,12 @@ public class AnnotationCommandBuilder
     private String getCommandName(Method method, Object holder, Command cmd)
     {
         String name = cmd.name();
-        if (!name.isEmpty()) {
+        if (!name.isEmpty())
+        {
             return name;
         }
-        if (method == null) {
+        if (method == null)
+        {
             throw new IllegalStateException("Command needs a name: " + holder.getClass().getSimpleName());
         }
         return method.getName();
@@ -234,14 +249,18 @@ public class AnnotationCommandBuilder
         return methods;
     }
 
-    public static class Requirements implements Predicate<CommandCause> {
+    public static class Requirements implements Predicate<CommandCause>
+    {
         private final List<Predicate<CommandCause>> requirements = new ArrayList<>();
         private String permission;
 
         @Override
-        public boolean test(CommandCause commandCause) {
-            for (Predicate<CommandCause> requirement : this.requirements) {
-                if (!requirement.test(commandCause)) {
+        public boolean test(CommandCause commandCause)
+        {
+            for (Predicate<CommandCause> requirement : this.requirements)
+            {
+                if (!requirement.test(commandCause))
+                {
                     return false;
                 }
             }
@@ -274,14 +293,19 @@ public class AnnotationCommandBuilder
         final java.lang.reflect.Parameter[] parameters = method.getParameters();
         final List<ContextExtractor<?>> extractors = new ArrayList<>();
         final Requirements requirements = new Requirements();
+        List<Parameter> params = new ArrayList<>();
+        Map<Named, Parameter> namedParameter = new LinkedHashMap<>();
+        List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
         for (int i = 0; i < types.length; i++)
         {
             final Type type = types[i];
             final Annotation[] annotations = annotationsList[i];
             final java.lang.reflect.Parameter parameter = parameters[i];
-            extractors.add(this.buildParameter(i, builder, parameter, type, annotations, types.length - 1, requirements));
+            extractors.add(
+                this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements));
         }
-        requirements.addPermission(String.join("." , permNodes) + ".use");
+        buildParams(builder, params, namedParameter, flags);
+        requirements.addPermission(String.join(".", permNodes) + ".use");
         builder.setExecutionRequirements(requirements);
         builder.setShortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
@@ -290,21 +314,54 @@ public class AnnotationCommandBuilder
         final HelpExecutor helpExecutor = new HelpExecutor(i18n);
         builder.child(builder().setExecutor(helpExecutor).build(), "?");
         final Parameterized build = builder.build();
-        helpExecutor.init(build, executor, String.join("." , permNodes));
+        helpExecutor.init(build, executor, String.join(".", permNodes));
         return build;
     }
 
-    private ContextExtractor<?> buildParameter(int index, Builder builder, java.lang.reflect.Parameter parameter, Type type, Annotation[] annotations,
-            int last, Requirements requirements)
+    private void buildParams(Builder builder, List<Parameter> params, Map<Named, Parameter> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
+    {
+        for (Parameter param : params)
+        {
+            builder.parameter(param);
+        }
+        for (org.spongepowered.api.command.parameter.managed.Flag flag : flags)
+        {
+            builder.flag(flag);
+        }
+        for (Entry<Named, Parameter> namedParam : namedParams.entrySet())
+        {
+            {
+                // Flag experiment
+//                builder.flag(org.spongepowered.api.command.parameter.managed.Flag.of(namedParam.getValue(), namedParam.getKey().value()));
+            }
+            {
+                // Sequence
+                final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value()).setKey(namedParam.getKey().value()[0]).build();
+                final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue()).optional().terminal().build();
+                builder.parameter(named);
+            }
+
+
+
+        }
+    }
+
+    private ContextExtractor<?> buildParameter(int index, List<Parameter> params, Map<Named, Parameter> namedParameter,
+                                               List<org.spongepowered.api.command.parameter.managed.Flag> flags,
+                                               java.lang.reflect.Parameter parameter, Type type,
+                                               Annotation[] annotations, int last, Requirements requirements)
     {
         final String name = parameter.getName();
         // TODO search param annotation for name
 
-        return buildParameter(index, builder, type, annotations, last, name, false, requirements);
+        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements);
     }
 
-    private ContextExtractor<?> buildParameter(int index, Builder builder, Type type, Annotation[] annotations,
-            int last, String name, boolean forceOptional, Requirements requirements) {
+    private ContextExtractor<?> buildParameter(int index, List<Parameter> params, Map<Named, Parameter> namedParameter,
+                                               List<org.spongepowered.api.command.parameter.managed.Flag> flags,
+                                               Type type, Annotation[] annotations, int last, String name,
+                                               boolean forceOptional, Requirements requirements)
+    {
 
         if (type == CommandCause.class)
         {
@@ -314,13 +371,16 @@ public class AnnotationCommandBuilder
         {
             return COMMAND_CONTEXT;
         }
-        if (index == 0) {
-            if (type == ServerPlayer.class) {
+        if (index == 0)
+        {
+            if (type == ServerPlayer.class)
+            {
                 // First Parameter and ServerPlayer == restricted ServerPlayer command
                 requirements.add(AnnotationCommandBuilder::playerRestricted);
                 return COMMAND_PLAYER;
             }
-            if (type == Audience.class) {
+            if (type == Audience.class)
+            {
                 return COMMAND_AUDIENCE;
             }
         }
@@ -328,15 +388,16 @@ public class AnnotationCommandBuilder
         Flag flagAnnotation = getAnnotated(annotations, Flag.class);
         Parser parserAnnotation = getAnnotated(annotations, Parser.class);
 
-        Class<?> rawType =  (Class<?>) (type instanceof ParameterizedType ? ((ParameterizedType) type).getRawType() : type);
+        Class<?> rawType = (Class<?>)(type instanceof ParameterizedType ? ((ParameterizedType)type).getRawType() : type);
         if (flagAnnotation != null)
         {
-            return buildFlagParameter(builder, name, flagAnnotation, rawType);
+            return buildFlagParameter(flags, name, flagAnnotation, rawType);
         }
         final Parameter.Value.Builder<?> parameterBuilder;
         if (rawType == Optional.class)
         {
-            return this.buildParameter(index, builder, ((ParameterizedType) type).getActualTypeArguments()[0], annotations, last, name, true, requirements);
+            return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
+                                       annotations, last, name, true, requirements);
         }
         else if (rawType == List.class)
         {
@@ -348,7 +409,8 @@ public class AnnotationCommandBuilder
         }
         else
         {
-            final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser() != ValueParser.class ? parserAnnotation.parser() : rawType;
+            final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser()
+                != ValueParser.class ? parserAnnotation.parser() : rawType;
             final ValueParser parser = ParameterRegistry.getParser(parserType, index == last);
             if (parser != null)
             {
@@ -359,11 +421,16 @@ public class AnnotationCommandBuilder
                 throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.of(type));
             }
 
-            final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer() != ValueCompleter.class ? parserAnnotation.completer() : rawType;
+            final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer()
+                != ValueCompleter.class ? parserAnnotation.completer() : rawType;
             final ValueCompleter completer = ParameterRegistry.getCompleter(completerType);
             if (completer != null)
             {
                 parameterBuilder.setSuggestions(completer);
+            }
+            else if (rawType == String.class)
+            {
+                parameterBuilder.setSuggestions((context, currentInput) -> Collections.emptyList());
             }
         }
 
@@ -377,15 +444,18 @@ public class AnnotationCommandBuilder
         if (defaultAnnotation != null)
         {
             Class<?> clazz = defaultAnnotation.value();
-            if (clazz == DefaultParameterProvider.class) {
+            if (clazz == DefaultParameterProvider.class)
+            {
                 clazz = rawType;
             }
             defaultParameterProvider = ParameterRegistry.getDefaultProvider(clazz);
-            if (namedAnnotation == null) {
+            if (namedAnnotation == null)
+            {
                 parameterBuilder.optional().orDefault(defaultParameterProvider);
             }
         }
-        else {
+        else
+        {
             defaultParameterProvider = null;
             if (optional && namedAnnotation == null)
             {
@@ -401,14 +471,11 @@ public class AnnotationCommandBuilder
             {
                 throw new IllegalArgumentException("Named parameter must have at least one name");
             }
-            final String firstName = namedAnnotation.value()[0];
-            final Parameter.Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedAnnotation.value()).setKey(firstName)
-                    .setUsage(key -> firstName).build();
-            builder.parameter(Parameter.seqBuilder(literal).then(param).optional().build());
+            namedParameter.put(namedAnnotation, param);
         }
         else
         {
-            builder.parameter(param);
+            params.add(param);
         }
 
         if (forceOptional)
@@ -417,8 +484,9 @@ public class AnnotationCommandBuilder
         }
         else if (optional)
         {
-            if (namedAnnotation != null && defaultParameterProvider != null) {
-                return c -> ((Optional) c.getOne(param)).orElse(defaultParameterProvider.apply(c.getCause()));
+            if (namedAnnotation != null && defaultParameterProvider != null)
+            {
+                return c -> ((Optional)c.getOne(param)).orElse(defaultParameterProvider.apply(c.getCause()));
             }
             return c -> c.getOne(param).orElse(null);
         }
@@ -428,7 +496,8 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private ContextExtractor<Object> buildFlagParameter(Builder builder, String name, Flag flagAnnotation, Class<?> rawType)
+    private ContextExtractor<Object> buildFlagParameter( List<org.spongepowered.api.command.parameter.managed.Flag> flags, String name, Flag flagAnnotation,
+                                                        Class<?> rawType)
     {
         if (rawType == Boolean.class || rawType == boolean.class)
         {
@@ -444,10 +513,8 @@ public class AnnotationCommandBuilder
             }
 
             // TODO permissions
-            final org.spongepowered.api.command.parameter.managed.Flag flag = org.spongepowered.api.command.parameter.managed.Flag.builder()
-                    .aliases(shortName, longName)
-                    .build();
-            builder.flag(flag);
+            final org.spongepowered.api.command.parameter.managed.Flag flag = org.spongepowered.api.command.parameter.managed.Flag.builder().aliases(shortName, longName).build();
+            flags.add(flag);
             return (c -> c.hasFlag(flag));
         }
         throw new IllegalArgumentException("@Flag parameter must be a boolean");
@@ -456,7 +523,8 @@ public class AnnotationCommandBuilder
     private static boolean playerRestricted(CommandCause cause)
     {
         final boolean isPlayer = cause.getAudience() instanceof ServerPlayer;
-        if (!isPlayer) {
+        if (!isPlayer)
+        {
             cause.sendMessage(Component.text("This command is restricted to players in game")); // TODO translate
         }
         return isPlayer;
@@ -464,17 +532,22 @@ public class AnnotationCommandBuilder
 
     private <T extends Annotation> T getAnnotated(Annotation[] annotations, Class<T> clazz)
     {
-        for (Annotation annotation : annotations) {
-            if (clazz.isAssignableFrom(annotation.getClass())) {
+        for (Annotation annotation : annotations)
+        {
+            if (clazz.isAssignableFrom(annotation.getClass()))
+            {
                 return clazz.cast(annotation);
             }
         }
         return null;
     }
 
-    private boolean isOptional(Annotation[] annotations) {
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Option) {
+    private boolean isOptional(Annotation[] annotations)
+    {
+        for (Annotation annotation : annotations)
+        {
+            if (annotation instanceof Option)
+            {
                 return true;
             }
         }
@@ -498,14 +571,16 @@ public class AnnotationCommandBuilder
         }
     }
 
-    public static class HelpExecutor implements CommandExecutor {
+    public static class HelpExecutor implements CommandExecutor
+    {
 
         private I18n i18n;
         private Parameterized target;
         private CubeEngineCommand executor;
         private String perm;
 
-        public HelpExecutor(I18n i18n) {
+        public HelpExecutor(I18n i18n)
+        {
             this.i18n = i18n;
         }
 
@@ -516,22 +591,27 @@ public class AnnotationCommandBuilder
             final Audience audience = context.getCause().getAudience();
             final Style grayStyle = Style.style(NamedTextColor.GRAY);
             Component descLabel = i18n.translate(audience, grayStyle, "Description:");
-            final Component permText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}", perm)
-                    .append(Component.text(".use").color(NamedTextColor.WHITE));
-            descLabel = descLabel.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, permText))
-                    .clickEvent(ClickEvent.copyToClipboard(perm + ".use"));
+            final Component permText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}",
+                                                      perm).append(Component.text(".use").color(NamedTextColor.WHITE));
+            descLabel = descLabel.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, permText)).clickEvent(
+                ClickEvent.copyToClipboard(perm + ".use"));
             final Component descValue = target.getShortDescription(context.getCause()).get().color(NamedTextColor.GOLD);
             context.sendMessage(Component.empty().append(descLabel).append(Component.text(" ")).append(descValue));
 
             List<String> usages = new ArrayList<>();
-            for (Parameter param : target.parameters()) {
-                if (param instanceof Parameter.Value) {
-                    String usage = ((Parameter.Value<?>) param).getUsage(context.getCause());
-                    if (!param.isOptional()) {
+            for (Parameter param : target.parameters())
+            {
+                if (param instanceof Parameter.Value)
+                {
+                    String usage = ((Parameter.Value<?>)param).getUsage(context.getCause());
+                    if (!param.isOptional())
+                    {
                         usage = "<" + usage + ">";
                     }
                     usages.add(usage);
-                } else {
+                }
+                else
+                {
                     usages.add("param(" + param.getClass().getSimpleName() + ")");
                 }
             }
@@ -542,34 +622,43 @@ public class AnnotationCommandBuilder
 
             i18n.send(audience, grayStyle, "Usage: {input}", joinedUsage);
 
-
 //            context.sendMessage(target.getUsage(context.getCause()).style(grayStyle));
 //            context.sendMessage(Component.text(actual.orElse("no cmd?")));
 
-            final List<Parameter.Subcommand> subcommands = target.subcommands().stream().filter(sc -> !sc.getAliases().iterator().next().equals("?")).collect(Collectors.toList());
-            if (!subcommands.isEmpty()) {
+            final List<Parameter.Subcommand> subcommands = target.subcommands().stream().filter(
+                sc -> !sc.getAliases().iterator().next().equals("?")).collect(Collectors.toList());
+            if (!subcommands.isEmpty())
+            {
                 context.sendMessage(Component.empty());
                 i18n.send(audience, MessageType.NEUTRAL, "The following sub-commands are available:");
                 context.sendMessage(Component.empty());
-                for (Parameter.Subcommand subcommand : subcommands) {
+                for (Parameter.Subcommand subcommand : subcommands)
+                {
                     final String firstAlias = subcommand.getAliases().iterator().next();
                     final Parameterized subCmd = subcommand.getCommand();
                     TextComponent textPart1 = Component.text(firstAlias, NamedTextColor.YELLOW);
-                    final Component subPermText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}", perm + "." + firstAlias)
-                            .append(Component.text(".use").color(NamedTextColor.WHITE));
-                    textPart1 = textPart1.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, subPermText))
-                            .clickEvent(ClickEvent.copyToClipboard(perm + "." + firstAlias + ".use"));
-                    final TextComponent text = Component.empty().append(textPart1)
-                            .append(Component.text(": "))
-                            .append(subCmd.getShortDescription(context.getCause()).get().style(grayStyle)
-                                    .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("click to show usage")))
-                                    .clickEvent(ClickEvent.runCommand(cmdPrefix + actual.orElse("null") + " " + firstAlias + " ?")) // TODO missing command context
-                            );
+                    final Component subPermText = i18n.translate(audience, grayStyle,
+                                                                 "Permission: (click to copy) {input}",
+                                                                 perm + "." + firstAlias).append(
+                        Component.text(".use").color(NamedTextColor.WHITE));
+                    textPart1 = textPart1.hoverEvent(
+                        HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, subPermText)).clickEvent(
+                        ClickEvent.copyToClipboard(perm + "." + firstAlias + ".use"));
+                    final TextComponent text = Component.empty().append(textPart1).append(Component.text(": ")).append(
+                        subCmd.getShortDescription(context.getCause()).get().style(grayStyle).hoverEvent(
+                            HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                  Component.text("click to show usage"))).clickEvent(
+                            ClickEvent.runCommand(cmdPrefix + actual.orElse("null") + " " + firstAlias + " ?"))
+                        // TODO missing command context
+                                                                                                                      );
 
                     context.sendMessage(text);
                 }
-            } else {
-                if (this.executor == null) {
+            }
+            else
+            {
+                if (this.executor == null)
+                {
                     i18n.send(audience, MessageType.NEGATIVE, "No actions are available");
                 }
             }
@@ -577,14 +666,16 @@ public class AnnotationCommandBuilder
             return CommandResult.empty();
         }
 
-        public void init(Parameterized target, CubeEngineCommand executor, String perm) {
+        public void init(Parameterized target, CubeEngineCommand executor, String perm)
+        {
             this.target = target;
             this.executor = executor;
             this.perm = perm;
         }
     }
 
-    public static class CubeEngineCommand implements CommandExecutor {
+    public static class CubeEngineCommand implements CommandExecutor
+    {
 
         private final Object holder;
         private final Method method;
@@ -598,7 +689,8 @@ public class AnnotationCommandBuilder
         }
 
         @Override
-        public CommandResult execute(CommandContext context) throws CommandException {
+        public CommandResult execute(CommandContext context) throws CommandException
+        {
 
             final List<Object> args = new ArrayList<>();
             for (ContextExtractor<?> extractor : this.extractors)
@@ -611,6 +703,7 @@ public class AnnotationCommandBuilder
             }
             catch (IllegalAccessException | InvocationTargetException e)
             {
+                e.printStackTrace();
                 // TODO
                 return CommandResult.error(TextComponent.of(e.getCause().getMessage()));
             }
@@ -619,11 +712,12 @@ public class AnnotationCommandBuilder
         }
     }
 
-    public interface ContextExtractor<T> extends Function<CommandContext, T> {
+    public interface ContextExtractor<T> extends Function<CommandContext, T>
+    {
     }
 
     private static final ContextExtractor<CommandCause> COMMAND_CAUSE = CommandContext::getCause;
     private static final ContextExtractor<CommandContext> COMMAND_CONTEXT = c -> c;
-    private static final ContextExtractor<ServerPlayer> COMMAND_PLAYER = c -> (ServerPlayer) c.getCause().getAudience();
+    private static final ContextExtractor<ServerPlayer> COMMAND_PLAYER = c -> (ServerPlayer)c.getCause().getAudience();
     private static final ContextExtractor<Audience> COMMAND_AUDIENCE = c -> c.getCause().getAudience();
 }
