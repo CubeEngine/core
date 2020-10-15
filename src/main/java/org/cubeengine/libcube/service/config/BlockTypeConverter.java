@@ -39,7 +39,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getRegistry().getCatalogRegistry().get(BlockType.class, Key.of(node.asText())).orElse(null);
+            return Sponge.getRegistry().getCatalogRegistry().get(BlockType.class, Key.key(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

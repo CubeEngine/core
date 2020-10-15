@@ -57,11 +57,13 @@ public class CommandSourceFormatter extends ReflectedFormatter
         final String name = sender.getFriendlyIdentifier().orElse(sender.getIdentifier());
         if (sender == context.get(SOURCE))
         {
-            TextComponent componentName = TextComponent.of(name).color(NamedTextColor.YELLOW);
+            TextComponent componentName = net.kyori.adventure.text.Component.text(name).color(NamedTextColor.YELLOW);
             if (sender instanceof Identifiable)
             {
                 final UUID uuid = ((Identifiable) sender).getUniqueId();
-                componentName = componentName.append(TextComponent.of(", ")).append(TextComponent.of(uuid.toString(), NamedTextColor.GOLD));
+                componentName = componentName.append(
+                    net.kyori.adventure.text.Component.text(", ")).append(
+                    net.kyori.adventure.text.Component.text(uuid.toString(), NamedTextColor.GOLD));
             }
             return HoverComponent.hoverText(componentName, colored(NamedTextColor.RED, i18n.translate("You")));
         }
@@ -71,7 +73,8 @@ public class CommandSourceFormatter extends ReflectedFormatter
     @Format
     public Component format(User user)
     {
-        return HoverComponent.hoverText(TextComponent.of(user.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(user.getName()));
+        return HoverComponent.hoverText(
+            net.kyori.adventure.text.Component.text(user.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(user.getName()));
     }
 
     @Format

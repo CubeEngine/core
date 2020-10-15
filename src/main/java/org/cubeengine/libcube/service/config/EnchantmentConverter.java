@@ -39,7 +39,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getRegistry().getCatalogRegistry().get(EnchantmentType.class, Key.of(((StringNode)node).getValue())).orElse(null);
+            return Sponge.getRegistry().getCatalogRegistry().get(EnchantmentType.class, Key.key(((StringNode)node).getValue())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

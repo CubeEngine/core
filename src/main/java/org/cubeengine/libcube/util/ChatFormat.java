@@ -97,7 +97,7 @@ public enum ChatFormat
     public static Component fromLegacy(String string, Map<String, Component> replacements, char formatChar)
     {
         String[] parts = string.split(SPLIT_COLOR_KEEP.replace('&', formatChar));
-        TextComponent.Builder builder = TextComponent.builder();
+        TextComponent.Builder builder = Component.text();
         TextColor nextColor = null;
         Style nextStyle = null;
         for (String part : parts)
@@ -112,7 +112,7 @@ public enum ChatFormat
                 final TextDecoration decoration = getByChar(part.charAt(1)).style.getColor();
                 if (nextStyle == null)
                 {
-                    nextStyle = Style.of(decoration);
+                    nextStyle = Style.style(decoration);
                 }
                 else
                 {
@@ -121,7 +121,7 @@ public enum ChatFormat
                 continue;
             }
 
-            TextComponent.Builder partBuilder = TextComponent.builder();
+            TextComponent.Builder partBuilder = Component.text();
             String[] toReplace = part.split(SPLIT_PARAM_KEEP.replace('&', formatChar));
             for (String r : toReplace)
             {
@@ -132,7 +132,7 @@ public enum ChatFormat
                 }
                 else// if (!r.matches("\\{.+\\}"))
                 {
-                    partBuilder.append(TextComponent.of(r));
+                    partBuilder.append(Component.text(r));
                 }
             }
             if (nextColor != null)

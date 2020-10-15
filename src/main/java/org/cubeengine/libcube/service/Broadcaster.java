@@ -74,15 +74,14 @@ public class Broadcaster
         if (perm == null)
         {
             final Audience audience = Audiences.server();
-            audience.sendMessage(i18n.composeMessage(audience, format, message, params));
+            i18n.send(audience, format, message, params);
         }
         else
         {
             final Audience audience = Audiences.system();
-            audience.sendMessage(i18n.composeMessage(audience, format, message, params));
+            i18n.send(audience, format, message, params);
 
-            getOnlinePlayers().stream().filter(p -> p.hasPermission(perm)).forEach(p ->
-                    p.sendMessage(i18n.composeMessage(p, format, message, params)));
+            getOnlinePlayers().stream().filter(p -> p.hasPermission(perm)).forEach(p -> i18n.send(audience, format, message, params));
         }
 
     }
@@ -102,8 +101,7 @@ public class Broadcaster
         final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
         for (Player user : this.getOnlinePlayers())
         {
-            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {input#message:color=WHITE}",
-                    causeName, message, params));
+            i18n.send(user, starColor, "* {user} {input#message:color=WHITE}", causeName, message, params);
         }
     }
 
@@ -112,14 +110,13 @@ public class Broadcaster
         final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
         for (Player user : this.getOnlinePlayers())
         {
-            user.sendMessage(i18n.composeMessage(user.getLocale(), starColor, "* {user} {txt#message:color=WHITE}", causeName,
-                                                 i18n.translate(user, message, params)));
+            i18n.send(user, starColor, "* {user} {txt#message:color=WHITE}", causeName, i18n.translate(user, message, params));
         }
     }
 
     public void broadcastStatus(String message, CommandCause sender, Object... params)
     {
-        this.broadcastStatus(Style.of(NamedTextColor.WHITE), message, sender, params);
+        this.broadcastStatus(Style.style(NamedTextColor.WHITE), message, sender, params);
     }
 
     public synchronized void kickAll(String message)

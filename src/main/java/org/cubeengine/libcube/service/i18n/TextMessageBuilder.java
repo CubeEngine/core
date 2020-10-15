@@ -47,7 +47,7 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
     @Override
     public TextComponent.Builder newBuilder()
     {
-        return TextComponent.builder();
+        return net.kyori.adventure.text.Component.text();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
     @Override
     public void buildText(org.cubeengine.dirigent.parser.component.TextComponent component, TextComponent.Builder builder, Context context)
     {
-        builder.append(TextComponent.of(component.getText()));
+        builder.append(net.kyori.adventure.text.Component.text(component.getText()));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
 
     private void buildClick(ClickComponent click, TextComponent.Builder builder, Context context)
     {
-        TextComponent.Builder b = TextComponent.builder();
+        TextComponent.Builder b = net.kyori.adventure.text.Component.text();
         buildAny(click.getComponent(), b, context);
         final ClickEvent clickEvent = click.getClick();
         b.clickEvent(clickEvent);
@@ -98,7 +98,7 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
 
     private void buildHover(HoverComponent hover, TextComponent.Builder builder, Context context)
     {
-        TextComponent.Builder b = TextComponent.builder();
+        TextComponent.Builder b = net.kyori.adventure.text.Component.text();
         buildAny(hover.getComponent(), b, context);
         b.hoverEvent(hover.getHoverEvent());
         builder.append(b.build());
@@ -106,7 +106,7 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
 
     private void buildStyled(StyledComponent styled, TextComponent.Builder builder, Context context)
     {
-        TextComponent.Builder b = TextComponent.builder();
+        TextComponent.Builder b = net.kyori.adventure.text.Component.text();
         buildAny(styled.getComponent(), b, context);
         b.style(styled.getFormat());
         builder.append(b.build());
@@ -115,10 +115,10 @@ public class TextMessageBuilder extends MessageBuilder<net.kyori.adventure.text.
     @Override
     public void buildUnresolvable(UnresolvableMacro component, TextComponent.Builder builder, Context context)
     {
-        TextComponent.Builder b = TextComponent.builder();
+        TextComponent.Builder b = net.kyori.adventure.text.Component.text();
         Locale locale = context.get(LOCALE);
-        b.append(TextComponent.of(i18n.translate(locale, "{{MISSING MACRO}}")).color(NamedTextColor.DARK_RED));
-        b.hoverEvent(HoverEvent.showText(TextComponent.of(i18n.translate(locale, "Please report this!"))));
+        b.append(net.kyori.adventure.text.Component.text(i18n.translate(locale, "{{MISSING MACRO}}")).color(NamedTextColor.DARK_RED));
+        b.hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text(i18n.translate(locale, "Please report this!"))));
         builder.append(b.build());
     }
 }

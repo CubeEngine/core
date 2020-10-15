@@ -92,7 +92,7 @@ public class EntityMatcher
             name = "minecraft:item_frame";
         }
 
-        EntityType<?> entity = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.of(name)).orElse(null);
+        EntityType<?> entity = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.key(name)).orElse(null);
         if (entity != null)
         {
             return entity;

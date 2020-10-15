@@ -63,22 +63,22 @@ public class ModuleManager
     private final Reflector reflector;
     private final File path;
     private final EventManager em;
-    private LibCube plugin;
+    private final LibCube plugin;
     private final SpongeLogFactory logFactory;
     private final ModuleThreadFactory tf;
-    private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");;
-    private Module guiceModule = new CubeEngineGuiceModule();
-    private Map<Class, PluginContainer> modulePlugins = new HashMap<>();
-    private Map<Class, Object> modules = new HashMap<>();
-    private Map<Class, Injector> moduleInjectors = new HashMap<>();
-    private Map<Class, Object> bindings = new HashMap<>();
-    private LogProvider logProvider;
-    private MaterialMatcher mm;
-    private AnnotationCommandBuilder cm;
-    private I18n i18n;
-    private Injector injector;
+    private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
+    private final Module guiceModule = new CubeEngineGuiceModule();
+    private final Map<Class<?>, PluginContainer> modulePlugins = new HashMap<>();
+    private final Map<Class<?>, Object> modules = new HashMap<>();
+    private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
+    private final Map<Class, Object> bindings = new HashMap<>();
+    private final LogProvider logProvider;
+    private final MaterialMatcher mm;
+    private final AnnotationCommandBuilder cm;
+    private final I18n i18n;
+    private final Injector injector;
 
-    private Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
+    private final Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
 
     public ModuleManager(File path, Logger logger, LibCube libCube, PluginContainer container, Injector injector)
     {
@@ -115,7 +115,7 @@ public class ModuleManager
         this.em.injectListeners(moduleInjector, instance, getAnnotatedFields(instance, ModuleListener.class));
         this.em.registerListener(module, instance); // TODO is this working for modules without listener?
 
-        injectClassAnnots(module, instance);
+        injectClassAnnotations(module, instance);
 
         // TODO do stuff with my module
 
@@ -123,36 +123,31 @@ public class ModuleManager
     }
 
 
-    public void injectClassAnnots(Class<?> module, Object instance)
+    public void injectClassAnnotations(Class<?> module, Object instance)
     {
-        for (Map.Entry<Class<? extends Annotation>, ModuleInjector<?>> entry : this.injectors.entrySet())
-        {
-
-            if (module.isAnnotationPresent(entry.getKey()))
-            {
-                injectClassAnnot(instance, module.getAnnotation(entry.getKey()), entry.getValue());
-            }
-        }
+        this.injectors.entrySet().stream()
+                      .filter(entry -> module.isAnnotationPresent(entry.getKey()))
+                      .forEach(entry -> injectClassAnnotation(instance, module.getAnnotation(entry.getKey()), entry.getValue()));
     }
 
-    private void injectClassAnnot(Object instance, Annotation annotation, ModuleInjector injector)
+    private void injectClassAnnotation(Object instance, Annotation annotation, ModuleInjector injector)
     {
         injector.inject(instance, annotation);
     }
 
-    public Map<Class, PluginContainer> getModulePlugins()
+    public Map<Class<?>, PluginContainer> getModulePlugins()
     {
         return Collections.unmodifiableMap(modulePlugins);
     }
 
-    public <A extends Annotation> void registerClassInjector(Class<A> annot, ModuleInjector<A> injector)
+    public <A extends Annotation> void registerClassInjector(Class<A> annotation, ModuleInjector<A> injector)
     {
-        this.injectors.put(annot, injector);
+        this.injectors.put(annotation, injector);
 
-        for (Map.Entry<Class, Object> moduleEntry : this.modules.entrySet())
+        for (Map.Entry<Class<?>, Object> moduleEntry : this.modules.entrySet())
         {
-            Class module = moduleEntry.getKey();
-            injectClassAnnots(module, moduleEntry.getValue());
+            Class<?> module = moduleEntry.getKey();
+            injectClassAnnotations(module, moduleEntry.getValue());
         }
 
     }

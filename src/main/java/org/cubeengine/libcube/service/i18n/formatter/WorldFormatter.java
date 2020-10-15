@@ -35,14 +35,16 @@ public class WorldFormatter extends ReflectedFormatter
     @Format
     public Component format(ServerWorld world)
     {
-        return HoverComponent.hoverText(TextComponent.of(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),
-                    StyledComponent.colored(NamedTextColor.GOLD, world.getDirectory().getFileName().toString()));
+        return HoverComponent.hoverText(
+            net.kyori.adventure.text.Component.text(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),
+            StyledComponent.colored(NamedTextColor.GOLD, world.getDirectory().getFileName().toString()));
     }
 
     @Format
     public Component format(WorldProperties world)
     {
-        return HoverComponent.hoverText(TextComponent.of(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),
-                StyledComponent.colored(NamedTextColor.GOLD, world.getWorld().get().getDirectory().getFileName().toString()));
+        return HoverComponent.hoverText(
+            net.kyori.adventure.text.Component.text(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),
+            StyledComponent.colored(NamedTextColor.GOLD, world.getWorld().get().getDirectory().getFileName().toString()));
     }
 }

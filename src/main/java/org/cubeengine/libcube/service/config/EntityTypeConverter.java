@@ -40,7 +40,7 @@ public class EntityTypeConverter extends SimpleConverter<EntityType>
     {
         if (node instanceof StringNode)
         {
-            Optional<EntityType> type = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.of(node.getValue().toString()));
+            Optional<EntityType> type = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.key(node.getValue().toString()));
             if (type.isPresent())
             {
                 return type.get();

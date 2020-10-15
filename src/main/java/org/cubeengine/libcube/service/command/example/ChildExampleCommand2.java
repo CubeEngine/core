@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.command.example;
 
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.DispatcherCommand;
@@ -26,6 +27,6 @@ public class ChildExampleCommand2 extends DispatcherCommand {
 
     @Command(desc = "Does a bar")
     public void bar(CommandCause cause, String firstParam) {
-        cause.sendMessage(Component.text(firstParam));
+        cause.sendMessage(Identity.nil(), Component.text(firstParam));
     }
 }

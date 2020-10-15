@@ -82,7 +82,7 @@ public class Permission
         boolean hasPerm = checkOn.hasPermission(this.getId());
         if (!hasPerm)
         {
-            Component perm = TextComponent.of(this.id).hoverEvent(HoverEvent.showText(TextComponent.of(this.desc)));
+            Component perm = Component.text(this.id).hoverEvent(HoverEvent.showText(Component.text(this.desc)));
             i18n.send(checkOn, MessageType.NEGATIVE, "You are missing the permission {txt}.", perm);
         }
         return hasPerm;

@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.command.example;
 
 import com.google.inject.Inject;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
@@ -44,19 +45,19 @@ public class ParentExampleCommand extends DispatcherCommand {
     @Command(desc = "Command with force flag")
     public void flagCommand(CommandCause cause, String firstParam, @Flag boolean force)
     {
-        cause.sendMessage(Component.text(firstParam + " force:" + force));
+        cause.sendMessage(Identity.nil(), Component.text(firstParam + " force:" + force));
     }
 
     @Command(desc = "Command with optional String")
     public void optionCommand(CommandCause cause, @Option String ommitMe)
     {
-        cause.sendMessage(Component.text(ommitMe == null ? "optional!" : ommitMe));
+        cause.sendMessage(Identity.nil(), Component.text(ommitMe == null ? "optional!" : ommitMe));
     }
 
     @Command(desc = "Command with defaulted String")
     public void defaultCommand(CommandCause cause, @Default(StringProvider.class) String defaulting)
     {
-        cause.sendMessage(Component.text(defaulting));
+        cause.sendMessage(Identity.nil(), Component.text(defaulting));
     }
 
     @Command(desc = "Command with named String")
@@ -65,19 +66,19 @@ public class ParentExampleCommand extends DispatcherCommand {
         if (world == null) {
             world = "no world";
         }
-        cause.sendMessage(Component.text("in " + world));
+        cause.sendMessage(Identity.nil(), Component.text("in " + world));
     }
 
     @Command(desc = "Command defaulted named World")
     public void defaultedNamedParameter(CommandCause cause, @Default(ThisWorldProvider.class) @Named("in") ServerWorld world)
     {
-        cause.sendMessage(Component.text("in " + world.getKey()));
+        cause.sendMessage(Identity.nil(), Component.text("in " + world.getKey()));
     }
 
     @Command(desc = "Command only for Players")
     public void restrictedToPlayer(ServerPlayer player)
     {
-        player.sendMessage(Component.text("Congratulations! You are a player."));
+        player.sendMessage(Identity.nil(), Component.text("Congratulations! You are a player."));
     }
 
     @ParserFor(String.class)

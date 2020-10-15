@@ -22,6 +22,7 @@ import static java.util.Collections.emptySet;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Server;
@@ -89,7 +90,7 @@ public class PermissionManager
         builder.id(permission.getId());
         if (permission.getDesc() != null)
         {
-            builder.description(TextComponent.of(permission.getDesc()));
+            builder.description(Component.text(permission.getDesc()));
         }
         permission.getExplicitParents().forEach(s -> builder.assign(s, true));
         builder.register();

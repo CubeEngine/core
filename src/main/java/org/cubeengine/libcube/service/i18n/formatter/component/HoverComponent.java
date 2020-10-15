@@ -61,7 +61,7 @@ public class HoverComponent implements Component
 
     public static Component hoverItem(ItemStack item, Component component)
     {
-        final Key itemKey = Key.of(item.getType().getKey().asString());
+        final Key itemKey = Key.key(item.getType().getKey().asString());
         final HoverEvent.ShowItem showItem = HoverEvent.ShowItem.of(itemKey, item.getQuantity()); // TODO NBT?
         return new HoverComponent(HoverEvent.showItem(showItem), component);
     }
@@ -72,8 +72,8 @@ public class HoverComponent implements Component
 
     public static Component hoverEntity(Entity entity, String name, Component component)
     {
-        final Key entityKey = Key.of(entity.getType().getKey().asString());
-        final HoverEvent.ShowEntity showEntity = HoverEvent.ShowEntity.of(entityKey, entity.getUniqueId(), TextComponent.of(name));
+        final Key entityKey = Key.key(entity.getType().getKey().asString());
+        final HoverEvent.ShowEntity showEntity = HoverEvent.ShowEntity.of(entityKey, entity.getUniqueId(), net.kyori.adventure.text.Component.text(name));
         return new HoverComponent(HoverEvent.showEntity(showEntity), component);
     }
 
@@ -89,7 +89,7 @@ public class HoverComponent implements Component
 
     public static Component hoverText(String text, Component component)
     {
-        return hoverText(TextComponent.of(text), component);
+        return hoverText(net.kyori.adventure.text.Component.text(text), component);
     }
 
     public static Component hoverText(net.kyori.adventure.text.Component text, String component)
@@ -99,6 +99,6 @@ public class HoverComponent implements Component
 
     public static Component hoverText(String text, String component)
     {
-        return hoverText(TextComponent.of(text), new Text(component));
+        return hoverText(net.kyori.adventure.text.Component.text(text), new Text(component));
     }
 }

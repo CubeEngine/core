@@ -69,6 +69,7 @@ TeleportHelper.getSafeLocation with Supplier
 
 TeleportHelperFilters are not registered
 
+SpawnEgg getEntityType and getFor EntityType
  */
 @Core
 public class LibCube

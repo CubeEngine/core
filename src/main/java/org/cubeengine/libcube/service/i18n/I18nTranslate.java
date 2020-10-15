@@ -21,6 +21,7 @@ import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.Style;
@@ -116,7 +117,7 @@ public abstract class I18nTranslate
         Objects.requireNonNull(context, "context");
         if (message == null)
         {
-            return TextComponent.of("null");
+            return Component.text("null");
         }
         return composeMessage(context, style, this.getTranslation(context.get(LOCALE), message), args);
     }
@@ -168,12 +169,12 @@ public abstract class I18nTranslate
 
     public void send(Audience source, Style style, String message, Object... args)
     {
-        source.sendMessage(translate(source, style, message, args));
+        this.send(ChatType.SYSTEM, source, style, message, args);
     }
 
     public void sendN(Audience source, Style style, int n, String singular, String plural, Object... args)
     {
-        source.sendMessage(translateN(source, style, n, singular, plural, args));
+        this.sendN(ChatType.SYSTEM, source, style, n, singular, plural, args);
     }
 
     // Send to ChatTypeMessageReceiver with TextFormat
@@ -189,8 +190,8 @@ public abstract class I18nTranslate
     }
 
     public enum ChatType {
-        CHAT(Audience::sendMessage),
-        SYSTEM((a, c) -> a.sendMessage(c, MessageType.SYSTEM)),
+        CHAT((a, c) -> a.sendMessage(Identity.nil(), c)),
+        SYSTEM((a, c) -> a.sendMessage(Identity.nil(), c, MessageType.SYSTEM)),
         ACTION_BAR(Audience::sendActionBar);
 
         private BiConsumer<Audience, Component> biConsumer;

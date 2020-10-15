@@ -42,6 +42,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -117,7 +118,7 @@ public class AnnotationCommandBuilder
             final Builder builder = builder();
             final String name = this.getCommandName(null, holder, holderAnnotation);
 
-            builder.setShortDescription(TextComponent.of(holderAnnotation.desc()));
+            builder.setShortDescription(Component.text(holderAnnotation.desc()));
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
             builder.setExecutor(helpExecutor);
 // TODO reenable help subcmd           builder.child(builder().setExecutor(helpExecutor).build(), "?");
@@ -184,7 +185,7 @@ public class AnnotationCommandBuilder
                 {
                     final Builder builder = builder();
                     final String name = this.getCommandName(null, subHolder, subHolderAnnotation);
-                    builder.setShortDescription(TextComponent.of(subHolderAnnotation.desc()));
+                    builder.setShortDescription(Component.text(subHolderAnnotation.desc()));
                     //        builder.setExecutionRequirements()?
                     //        builder.setExtendedDescription()!
                     final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
@@ -525,7 +526,7 @@ public class AnnotationCommandBuilder
         final boolean isPlayer = cause.getAudience() instanceof ServerPlayer;
         if (!isPlayer)
         {
-            cause.sendMessage(Component.text("This command is restricted to players in game")); // TODO translate
+            cause.sendMessage(Identity.nil(), Component.text("This command is restricted to players in game")); // TODO translate
         }
         return isPlayer;
     }
@@ -596,7 +597,7 @@ public class AnnotationCommandBuilder
             descLabel = descLabel.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, permText)).clickEvent(
                 ClickEvent.copyToClipboard(perm + ".use"));
             final Component descValue = target.getShortDescription(context.getCause()).get().color(NamedTextColor.GOLD);
-            context.sendMessage(Component.empty().append(descLabel).append(Component.text(" ")).append(descValue));
+            context.sendMessage(Identity.nil(), Component.empty().append(descLabel).append(Component.text(" ")).append(descValue));
 
             List<String> usages = new ArrayList<>();
             for (Parameter param : target.parameters())
@@ -629,9 +630,9 @@ public class AnnotationCommandBuilder
                 sc -> !sc.getAliases().iterator().next().equals("?")).collect(Collectors.toList());
             if (!subcommands.isEmpty())
             {
-                context.sendMessage(Component.empty());
+                context.sendMessage(Identity.nil(), Component.empty());
                 i18n.send(audience, MessageType.NEUTRAL, "The following sub-commands are available:");
-                context.sendMessage(Component.empty());
+                context.sendMessage(Identity.nil(), Component.empty());
                 for (Parameter.Subcommand subcommand : subcommands)
                 {
                     final String firstAlias = subcommand.getAliases().iterator().next();
@@ -652,7 +653,7 @@ public class AnnotationCommandBuilder
                         // TODO missing command context
                                                                                                                       );
 
-                    context.sendMessage(text);
+                    context.sendMessage(Identity.nil(), text);
                 }
             }
             else
@@ -662,7 +663,7 @@ public class AnnotationCommandBuilder
                     i18n.send(audience, MessageType.NEGATIVE, "No actions are available");
                 }
             }
-            context.sendMessage(Component.empty());
+            context.sendMessage(Identity.nil(), Component.empty());
             return CommandResult.empty();
         }
 
@@ -705,7 +706,7 @@ public class AnnotationCommandBuilder
             {
                 e.printStackTrace();
                 // TODO
-                return CommandResult.error(TextComponent.of(e.getCause().getMessage()));
+                return CommandResult.error(Component.text(e.getCause().getMessage()));
             }
 
             return CommandResult.success();

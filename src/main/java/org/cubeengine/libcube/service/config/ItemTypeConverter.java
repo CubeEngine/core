@@ -38,7 +38,7 @@ public class ItemTypeConverter extends SimpleConverter<ItemType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getRegistry().getCatalogRegistry().get(ItemType.class, Key.of(node.asText())).orElse(null);
+            return Sponge.getRegistry().getCatalogRegistry().get(ItemType.class, Key.key(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }
