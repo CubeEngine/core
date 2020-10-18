@@ -68,6 +68,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
@@ -294,8 +295,8 @@ public class AnnotationCommandBuilder
         final java.lang.reflect.Parameter[] parameters = method.getParameters();
         final List<ContextExtractor<?>> extractors = new ArrayList<>();
         final Requirements requirements = new Requirements();
-        List<Parameter> params = new ArrayList<>();
-        Map<Named, Parameter> namedParameter = new LinkedHashMap<>();
+        List<Parameter.Value.Builder> params = new ArrayList<>();
+        Map<Named, Parameter.Value.Builder> namedParameter = new LinkedHashMap<>();
         List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
         for (int i = 0; i < types.length; i++)
         {
@@ -319,17 +320,23 @@ public class AnnotationCommandBuilder
         return build;
     }
 
-    private void buildParams(Builder builder, List<Parameter> params, Map<Named, Parameter> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
+    private void buildParams(Builder builder, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
     {
-        for (Parameter param : params)
+
+        for (int i = 0; i < params.size(); i++)
         {
-            builder.parameter(param);
+            final Value.Builder param = params.get(i);
+            if (i == params.size() - 1)
+            {
+                param.terminal();
+            }
+            builder.parameter(param.build());
         }
         for (org.spongepowered.api.command.parameter.managed.Flag flag : flags)
         {
             builder.flag(flag);
         }
-        for (Entry<Named, Parameter> namedParam : namedParams.entrySet())
+        for (Entry<Named, Parameter.Value.Builder> namedParam : namedParams.entrySet())
         {
             {
                 // Flag experiment
@@ -338,7 +345,7 @@ public class AnnotationCommandBuilder
             {
                 // Sequence
                 final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value()).setKey(namedParam.getKey().value()[0]).build();
-                final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue()).optional().terminal().build();
+                final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue().build()).optional().terminal().build();
                 builder.parameter(named);
             }
 
@@ -347,7 +354,7 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private ContextExtractor<?> buildParameter(int index, List<Parameter> params, Map<Named, Parameter> namedParameter,
+    private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                java.lang.reflect.Parameter parameter, Type type,
                                                Annotation[] annotations, int last, Requirements requirements)
@@ -358,7 +365,7 @@ public class AnnotationCommandBuilder
         return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements);
     }
 
-    private ContextExtractor<?> buildParameter(int index, List<Parameter> params, Map<Named, Parameter> namedParameter,
+    private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                Type type, Annotation[] annotations, int last, String name,
                                                boolean forceOptional, Requirements requirements)
@@ -436,8 +443,9 @@ public class AnnotationCommandBuilder
         }
 
         parameterBuilder.setKey(name);
-        Default defaultAnnotation = getAnnotated(annotations, Default.class);
-        final DefaultParameterProvider defaultParameterProvider;
+        final Key<?> key = Parameter.key(name, TypeToken.of(rawType));
+
+        Default defaultAnnotation = getAnnotated(annotations, Default.class); final DefaultParameterProvider defaultParameterProvider;
         Named namedAnnotation = getAnnotated(annotations, Named.class);
 
         boolean optional = defaultAnnotation != null || namedAnnotation != null || isOptional(annotations);
@@ -464,36 +472,34 @@ public class AnnotationCommandBuilder
             }
         }
 
-        Parameter.Value<?> param = parameterBuilder.build();
-
         if (namedAnnotation != null)
         {
             if (namedAnnotation.value().length == 0)
             {
                 throw new IllegalArgumentException("Named parameter must have at least one name");
             }
-            namedParameter.put(namedAnnotation, param);
+            namedParameter.put(namedAnnotation, parameterBuilder);
         }
         else
         {
-            params.add(param);
+            params.add(parameterBuilder);
         }
 
         if (forceOptional)
         {
-            return c -> c.getOne(param);
+            return c -> c.getOne(key);
         }
         else if (optional)
         {
             if (namedAnnotation != null && defaultParameterProvider != null)
             {
-                return c -> ((Optional)c.getOne(param)).orElse(defaultParameterProvider.apply(c.getCause()));
+                return c -> ((Optional)c.getOne(key)).orElse(defaultParameterProvider.apply(c.getCause()));
             }
-            return c -> c.getOne(param).orElse(null);
+            return c -> c.getOne(key).orElse(null);
         }
         else
         {
-            return c -> c.requireOne(param);
+            return c -> c.requireOne(key);
         }
     }
 
