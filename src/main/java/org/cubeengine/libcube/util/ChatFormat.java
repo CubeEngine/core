@@ -23,9 +23,11 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import scala.Char;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -34,30 +36,30 @@ import java.util.regex.Pattern;
  */
 public enum ChatFormat
 {
-    BLACK('0', () -> NamedTextColor.BLACK),
-    DARK_BLUE('1', () -> NamedTextColor.DARK_BLUE),
-    DARK_GREEN('2', () -> NamedTextColor.DARK_GREEN),
-    DARK_AQUA('3', () -> NamedTextColor.DARK_AQUA),
-    DARK_RED('4', () -> NamedTextColor.DARK_RED),
-    PURPLE('5', () -> NamedTextColor.DARK_PURPLE),
-    GOLD('6', () -> NamedTextColor.GOLD),
-    GREY('7', () -> NamedTextColor.GRAY),
-    DARK_GREY('8', () -> NamedTextColor.DARK_GRAY),
-    INDIGO('9', () -> NamedTextColor.BLUE),
-    BRIGHT_GREEN('a', () -> NamedTextColor.GREEN),
-    AQUA('b', () -> NamedTextColor.AQUA),
-    RED('c', () -> NamedTextColor.RED),
-    PINK('d', () -> NamedTextColor.LIGHT_PURPLE),
-    YELLOW('e', () -> NamedTextColor.YELLOW),
-    WHITE('f', () -> NamedTextColor.WHITE),
+    BLACK('0', NamedTextColor.BLACK),
+    DARK_BLUE('1', NamedTextColor.DARK_BLUE),
+    DARK_GREEN('2', NamedTextColor.DARK_GREEN),
+    DARK_AQUA('3', NamedTextColor.DARK_AQUA),
+    DARK_RED('4', NamedTextColor.DARK_RED),
+    PURPLE('5', NamedTextColor.DARK_PURPLE),
+    GOLD('6', NamedTextColor.GOLD),
+    GREY('7', NamedTextColor.GRAY),
+    DARK_GREY('8', NamedTextColor.DARK_GRAY),
+    INDIGO('9', NamedTextColor.BLUE),
+    BRIGHT_GREEN('a', NamedTextColor.GREEN),
+    AQUA('b', NamedTextColor.AQUA),
+    RED('c', NamedTextColor.RED),
+    PINK('d', NamedTextColor.LIGHT_PURPLE),
+    YELLOW('e', NamedTextColor.YELLOW),
+    WHITE('f', NamedTextColor.WHITE),
 
-    RESET('r', () -> (TextColor) null),
+    RESET('r'),
 
-    MAGIC('k', () -> TextDecoration.OBFUSCATED),
-    BOLD('l', () -> TextDecoration.BOLD),
-    STRIKE('m', () -> TextDecoration.STRIKETHROUGH),
-    UNDERLINE('n', () -> TextDecoration.UNDERLINED),
-    ITALIC('o', () -> TextDecoration.ITALIC)
+    MAGIC('k', TextDecoration.OBFUSCATED),
+    BOLD('l', TextDecoration.BOLD),
+    STRIKE('m', TextDecoration.STRIKETHROUGH),
+    UNDERLINE('n', TextDecoration.UNDERLINED),
+    ITALIC('o', TextDecoration.ITALIC)
     ;
 
     private static final Pattern PARSE_FOR_CONSOLE = Pattern.compile("");
@@ -71,24 +73,29 @@ public enum ChatFormat
     public static final String STYLES = "&[kKlLmMnNoO]";
     public static final String SPLIT_PARAM_KEEP = "((?<=\\{[A-Z_]{0,50}\\})|(?=\\{[A-Z_]{0,50}\\}))";
 
+    public static Map<Character, NamedTextColor> namedColors = new LinkedHashMap<>();
+    public static Map<Character, TextDecoration> textDecorations = new LinkedHashMap<>();
+
     private final char formatChar;
-    private ColorProvider color;
-    private DecorationProvider style;
+    private NamedTextColor color;
+    private TextDecoration style;
     private final String string;
 
-    ChatFormat(char formatChar, ColorProvider base)
+    ChatFormat(char formatChar, NamedTextColor namedColor)
     {
-        this.formatChar = formatChar;
-        this.color = base;
-        this.string = String.valueOf(new char[]{
-            BASE_CHAR, formatChar
-        });
+        this(formatChar);
+        this.color = namedColor;
     }
 
-    ChatFormat(char formatChar, DecorationProvider base)
+    ChatFormat(char formatChar, TextDecoration decoraction)
+    {
+        this(formatChar);
+        this.style = decoraction;
+    }
+
+    ChatFormat(char formatChar)
     {
         this.formatChar = formatChar;
-        this.style = base;
         this.string = String.valueOf(new char[]{
             BASE_CHAR, formatChar
         });
@@ -104,12 +111,12 @@ public enum ChatFormat
         {
             if (part.matches(COLORS.replace('&', formatChar)))
             {
-                nextColor = getByChar(part.charAt(1)).color.getColor();
+                nextColor = getByChar(part.charAt(1)).color;
                 continue;
             }
             if (part.matches(STYLES.replace('&', formatChar)))
             {
-                final TextDecoration decoration = getByChar(part.charAt(1)).style.getColor();
+                final TextDecoration decoration = getByChar(part.charAt(1)).style;
                 if (nextStyle == null)
                 {
                     nextStyle = Style.style(decoration);
@@ -160,17 +167,7 @@ public enum ChatFormat
 
     public TextColor getColor()
     {
-        return color.getColor();
-    }
-
-    public interface ColorProvider
-    {
-        TextColor getColor();
-    }
-
-    public interface DecorationProvider
-    {
-        TextDecoration getColor();
+        return color;
     }
 
     /**
@@ -275,6 +272,16 @@ public enum ChatFormat
         for (ChatFormat format : values)
         {
             FORMAT_CHARS_MAP.put(format.getChar(), format);
+            if (format.color != null)
+            {
+                namedColors.put(format.formatChar, format.color);
+            }
+            if (format.style != null)
+            {
+                textDecorations.put(format.formatChar, format.style);
+            }
+
         }
     }
+
 }

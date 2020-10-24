@@ -53,6 +53,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
 import org.cubeengine.libcube.service.command.annotation.Flag;
+import org.cubeengine.libcube.service.command.annotation.Greedy;
+import org.cubeengine.libcube.service.command.annotation.Label;
 import org.cubeengine.libcube.service.command.annotation.Named;
 import org.cubeengine.libcube.service.command.annotation.Option;
 import org.cubeengine.libcube.service.command.annotation.Parser;
@@ -66,12 +68,14 @@ import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
+import org.spongepowered.api.command.manager.CommandFailedRegistrationException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
+import org.spongepowered.api.command.parameter.managed.ValueUsage;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
@@ -122,7 +126,7 @@ public class AnnotationCommandBuilder
             builder.setShortDescription(Component.text(holderAnnotation.desc()));
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
             builder.setExecutor(helpExecutor);
-// TODO reenable help subcmd           builder.child(builder().setExecutor(helpExecutor).build(), "?");
+            builder.child(builder().setExecutor(helpExecutor).build(), "?");
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
             this.createChildCommands(holder, builder, plugin.getMetadata().getId(), "command", name);
@@ -144,9 +148,16 @@ public class AnnotationCommandBuilder
             {
                 final Command methodAnnotation = method.getAnnotation(Command.class);
                 String name = this.getCommandName(method, holder, methodAnnotation);
-                final Parameterized build = this.buildCommand(holder, method, methodAnnotation,
-                                                              plugin.getMetadata().getId(), "command", name);
-                event.register(plugin, build, name, methodAnnotation.alias());
+                try
+                {
+                    final Parameterized build = this.buildCommand(holder, method, methodAnnotation,
+                                                                  plugin.getMetadata().getId(), "command", name);
+                    event.register(plugin, build, name, methodAnnotation.alias());
+                }
+                catch (Exception e)
+                {
+                    throw new IllegalStateException("Failed to register command " + name, e);
+                }
             }
         }
     }
@@ -417,9 +428,10 @@ public class AnnotationCommandBuilder
         }
         else
         {
+            Greedy greedyAnnotation = getAnnotated(annotations, Greedy.class);
             final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser()
                 != ValueParser.class ? parserAnnotation.parser() : rawType;
-            final ValueParser parser = ParameterRegistry.getParser(parserType, index == last);
+            final ValueParser parser = ParameterRegistry.getParser(parserType, index == last, greedyAnnotation != null);
             if (parser != null)
             {
                 parameterBuilder = Parameter.builder(rawType).parser(parser);
@@ -470,6 +482,12 @@ public class AnnotationCommandBuilder
             {
                 parameterBuilder.optional();
             }
+        }
+
+        Label labelAnnotation = getAnnotated(annotations, Label.class);
+        if (labelAnnotation != null)
+        {
+            parameterBuilder.setUsage(k -> labelAnnotation.value());
         }
 
         if (namedAnnotation != null)

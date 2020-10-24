@@ -1,0 +1,56 @@
+/*
+ * This file is part of CubeEngine.
+ * CubeEngine is licensed under the GNU General Public License Version 3.
+ *
+ * CubeEngine is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * CubeEngine is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cubeengine.libcube.service.command.parser;
+
+import java.util.List;
+import java.util.Optional;
+import net.kyori.adventure.audience.Audience;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.exception.ArgumentParseException;
+import org.spongepowered.api.command.parameter.ArgumentReader.Mutable;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.command.parameter.CommandContext.Builder;
+import org.spongepowered.api.command.parameter.Parameter.Key;
+import org.spongepowered.api.command.parameter.managed.ValueCompleter;
+import org.spongepowered.api.command.parameter.managed.ValueParser;
+import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameters;
+
+public class AudienceValuerParser implements ValueParser<Audience>, ValueCompleter
+{
+    @Override
+    public List<String> complete(CommandContext context, String currentInput)
+    {
+        final List<String> list = CatalogedValueParameters.PLAYER.get().complete(context, currentInput);
+        if ("console".startsWith(currentInput))
+        {
+            list.add("console");
+        }
+        return list;
+    }
+
+    @Override
+    public Optional<? extends Audience> getValue(Key<? super Audience> parameterKey, Mutable reader,
+                                                 Builder context) throws ArgumentParseException
+    {
+        if ("console".equals(reader.parseString()))
+        {
+            return Optional.of(Sponge.getSystemSubject());
+        }
+        return CatalogedValueParameters.PLAYER.get().getValue(parameterKey, reader, context);
+    }
+}

@@ -28,6 +28,7 @@ import org.spongepowered.api.adventure.Audiences;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.service.permission.Subject;
 
 import java.util.Collection;
 
@@ -96,9 +97,9 @@ public class Broadcaster
         this.broadcastMessageWithPerm(format, message, null, params);
     }
 
-    public void broadcastStatus(Style starColor, String message, CommandCause sender, Object... params)
+    public void broadcastStatus(Style starColor, String message, Subject sender, Object... params)
     {
-        final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
+        final String causeName = sender.getFriendlyIdentifier().orElse(sender.getIdentifier());
         for (Player user : this.getOnlinePlayers())
         {
             i18n.send(user, starColor, "* {user} {input#message:color=WHITE}", causeName, message, params);
@@ -114,7 +115,7 @@ public class Broadcaster
         }
     }
 
-    public void broadcastStatus(String message, CommandCause sender, Object... params)
+    public void broadcastStatus(String message, Subject sender, Object... params)
     {
         this.broadcastStatus(Style.style(NamedTextColor.WHITE), message, sender, params);
     }

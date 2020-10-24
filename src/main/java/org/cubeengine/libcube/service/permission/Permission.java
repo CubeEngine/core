@@ -79,11 +79,16 @@ public class Permission
      */
     public <T extends Audience & Subject> boolean check(T checkOn, I18n i18n)
     {
+        return this.check(checkOn, checkOn, i18n);
+    }
+
+    public boolean check(Subject checkOn, Audience audience, I18n i18n)
+    {
         boolean hasPerm = checkOn.hasPermission(this.getId());
         if (!hasPerm)
         {
             Component perm = Component.text(this.id).hoverEvent(HoverEvent.showText(Component.text(this.desc)));
-            i18n.send(checkOn, MessageType.NEGATIVE, "You are missing the permission {txt}.", perm);
+            i18n.send(audience, MessageType.NEGATIVE, "You are missing the permission {txt}.", perm);
         }
         return hasPerm;
     }

@@ -18,19 +18,19 @@
 package org.cubeengine.libcube.service.command;
 
 
+import net.kyori.adventure.audience.Audience;
+import org.cubeengine.libcube.service.command.parser.AudienceValuerParser;
+import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParameterProvider;
 import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
-import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
 import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameters;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ParameterRegistry
@@ -63,12 +63,15 @@ public class ParameterRegistry
     static
     {
         register(ServerWorld.class, new ServerWorldValueParser());
+        register(Audience.class, new AudienceValuerParser());
         registerSponge(String.class, CatalogedValueParameters.STRING);
+        registerSponge(ServerPlayer.class, CatalogedValueParameters.PLAYER);
+        register(ServerPlayer.class, new ServerPlayerDefaultParameterProvider());
     }
 
-    static ValueParser<?> getParser(Class<?> type, boolean last)
+    static ValueParser<?> getParser(Class<?> type, boolean last, boolean greedy)
     {
-        if (type == String.class && last)
+        if (type == String.class && last && greedy)
         {
             return CatalogedValueParameters.REMAINING_JOINED_STRINGS.get();
         }
