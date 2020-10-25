@@ -39,6 +39,18 @@ public class ParameterRegistry
     private static final Map<Class, Supplier<ValueCompleter>> completers = new HashMap<>();
     private static final Map<Class, Supplier<DefaultParameterProvider<?>>> defaultProviders = new HashMap<>();
 
+    public final static Map<Class<?>, Class<?>> primitiveClassMap = new HashMap<>();
+    static {
+        primitiveClassMap.put(boolean.class, Boolean.class);
+        primitiveClassMap.put(byte.class, Byte.class);
+        primitiveClassMap.put(short.class, Short.class);
+        primitiveClassMap.put(char.class, Character.class);
+        primitiveClassMap.put(int.class, Integer.class);
+        primitiveClassMap.put(long.class, Long.class);
+        primitiveClassMap.put(float.class, Float.class);
+        primitiveClassMap.put(double.class, Double.class);
+    }
+
     public static void register(Class<?> clazz, Object valueParameter)
     {
         if (valueParameter instanceof ValueParser) {
@@ -66,11 +78,14 @@ public class ParameterRegistry
         register(Audience.class, new AudienceValuerParser());
         registerSponge(String.class, CatalogedValueParameters.STRING);
         registerSponge(ServerPlayer.class, CatalogedValueParameters.PLAYER);
+        registerSponge(Boolean.class, CatalogedValueParameters.BOOLEAN);
+        registerSponge(Integer.class, CatalogedValueParameters.INTEGER);
         register(ServerPlayer.class, new ServerPlayerDefaultParameterProvider());
     }
 
     static ValueParser<?> getParser(Class<?> type, boolean last, boolean greedy)
     {
+        type = primitiveClassMap.getOrDefault(type, type);
         if (type == String.class && last && greedy)
         {
             return CatalogedValueParameters.REMAINING_JOINED_STRINGS.get();

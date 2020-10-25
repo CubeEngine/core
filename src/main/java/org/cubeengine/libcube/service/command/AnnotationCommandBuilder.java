@@ -343,37 +343,44 @@ public class AnnotationCommandBuilder
 
     private Parameterized buildCommand(Object holder, Method method, Command annotation, String... permNodes)
     {
-        final Builder builder = builder();
-
-        final Annotation[][] annotationsList = method.getParameterAnnotations();
-        final Type[] types = method.getParameterTypes();
-        final java.lang.reflect.Parameter[] parameters = method.getParameters();
-        final List<ContextExtractor<?>> extractors = new ArrayList<>();
-        final Requirements requirements = new Requirements();
-        List<Parameter.Value.Builder> params = new ArrayList<>();
-        Map<Named, Parameter.Value.Builder> namedParameter = new LinkedHashMap<>();
-        List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
-        for (int i = 0; i < types.length; i++)
+        try
         {
-            final Type type = types[i];
-            final Annotation[] annotations = annotationsList[i];
-            final java.lang.reflect.Parameter parameter = parameters[i];
-            extractors.add(
-                this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, permNodes));
-        }
-        buildParams(builder, params, namedParameter, flags);
-        requirements.addPermission(String.join(".", permNodes) + ".use");
-        requirements.add(method.getAnnotation(Restricted.class));
-        builder.setExecutionRequirements(requirements);
-        builder.setShortDescription(Component.text(annotation.desc()));
+            final Builder builder = builder();
+
+            final Annotation[][] annotationsList = method.getParameterAnnotations();
+            final Type[] types = method.getParameterTypes();
+            final java.lang.reflect.Parameter[] parameters = method.getParameters();
+            final List<ContextExtractor<?>> extractors = new ArrayList<>();
+            final Requirements requirements = new Requirements();
+            List<Value.Builder> params = new ArrayList<>();
+            Map<Named, Value.Builder> namedParameter = new LinkedHashMap<>();
+            List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
+            for (int i = 0; i < types.length; i++)
+            {
+                final Type type = types[i];
+                final Annotation[] annotations = annotationsList[i];
+                final java.lang.reflect.Parameter parameter = parameters[i];
+                extractors.add(
+                    this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, permNodes));
+            }
+            buildParams(builder, params, namedParameter, flags);
+            requirements.addPermission(String.join(".", permNodes) + ".use");
+            requirements.add(method.getAnnotation(Restricted.class));
+            builder.setExecutionRequirements(requirements);
+            builder.setShortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
-        final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors);
-        builder.setExecutor(executor);
-        final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-        builder.child(builder().setExecutor(helpExecutor).build(), "?");
-        final Parameterized build = builder.build();
-        helpExecutor.init(build, executor, String.join(".", permNodes));
-        return build;
+            final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors);
+            builder.setExecutor(executor);
+            final HelpExecutor helpExecutor = new HelpExecutor(i18n);
+            builder.child(builder().setExecutor(helpExecutor).build(), "?");
+            final Parameterized build = builder.build();
+            helpExecutor.init(build, executor, String.join(".", permNodes));
+            return build;
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Exception while building command for\n" + method, e);
+        }
     }
 
     private void buildParams(Builder builder, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
@@ -463,6 +470,10 @@ public class AnnotationCommandBuilder
         {
             return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
                                        annotations, last, name, true, requirements, permNodes);
+        }
+        else if (rawType.isArray())
+        {
+            throw new IllegalStateException("Not implemented yet");
         }
         else if (rawType == List.class)
         {
@@ -787,6 +798,10 @@ public class AnnotationCommandBuilder
             {
                 e.printStackTrace();
                 // TODO
+                if (e.getCause().getMessage() == null)
+                {
+                    return CommandResult.error(Component.text(e.getCause().getClass().getSimpleName()));
+                }
                 return CommandResult.error(Component.text(e.getCause().getMessage()));
             }
 
