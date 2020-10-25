@@ -59,8 +59,10 @@ import org.cubeengine.libcube.service.command.annotation.Greedy;
 import org.cubeengine.libcube.service.command.annotation.Label;
 import org.cubeengine.libcube.service.command.annotation.Named;
 import org.cubeengine.libcube.service.command.annotation.Option;
+import org.cubeengine.libcube.service.command.annotation.ParameterPermission;
 import org.cubeengine.libcube.service.command.annotation.Parser;
 import org.cubeengine.libcube.service.command.annotation.ParserFor;
+import org.cubeengine.libcube.service.command.annotation.Restricted;
 import org.cubeengine.libcube.service.command.annotation.Using;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.i18n.formatter.MessageType;
@@ -87,6 +89,7 @@ import static org.spongepowered.api.command.Command.builder;
 
 /*
 TODO handle @Alias with spaces
+TODO @Restricted msg translation
  */
 @Singleton
 public class AnnotationCommandBuilder
@@ -309,6 +312,23 @@ public class AnnotationCommandBuilder
             this.requirements.add(predicate);
         }
 
+        public void add(Restricted restricted)
+        {
+            if (restricted != null)
+            {
+                final Class<?> restrictedTo = restricted.value();
+                final String msg = restricted.msg().isEmpty() ? "Command is restricted to " + restrictedTo.getSimpleName() : restricted.msg();
+
+                this.add(commandCause -> {
+                    if (!restrictedTo.isAssignableFrom(commandCause.getSubject().getClass()))
+                    {
+                        commandCause.getAudience().sendMessage(Identity.nil(), Component.text(msg));
+                    }
+                    return true;
+                });
+            }
+        }
+
         public void addPermission(String permission)
         {
             this.permission = permission;
@@ -339,10 +359,11 @@ public class AnnotationCommandBuilder
             final Annotation[] annotations = annotationsList[i];
             final java.lang.reflect.Parameter parameter = parameters[i];
             extractors.add(
-                this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements));
+                this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, permNodes));
         }
         buildParams(builder, params, namedParameter, flags);
         requirements.addPermission(String.join(".", permNodes) + ".use");
+        requirements.add(method.getAnnotation(Restricted.class));
         builder.setExecutionRequirements(requirements);
         builder.setShortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
@@ -392,18 +413,18 @@ public class AnnotationCommandBuilder
     private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                java.lang.reflect.Parameter parameter, Type type,
-                                               Annotation[] annotations, int last, Requirements requirements)
+                                               Annotation[] annotations, int last, Requirements requirements, String[] permNodes)
     {
         final String name = parameter.getName();
         // TODO search param annotation for name
 
-        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements);
+        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, permNodes);
     }
 
     private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                Type type, Annotation[] annotations, int last, String name,
-                                               boolean forceOptional, Requirements requirements)
+                                               boolean forceOptional, Requirements requirements, String[] permNodes)
     {
 
         if (type == CommandCause.class)
@@ -428,19 +449,20 @@ public class AnnotationCommandBuilder
             }
         }
 
-        Flag flagAnnotation = getAnnotated(annotations, Flag.class);
-        Parser parserAnnotation = getAnnotated(annotations, Parser.class);
+        final Flag flagAnnotation = getAnnotated(annotations, Flag.class);
+        final Parser parserAnnotation = getAnnotated(annotations, Parser.class);
+        final ParameterPermission permAnnotation = getAnnotated(annotations, ParameterPermission.class);
 
         Class<?> rawType = (Class<?>)(type instanceof ParameterizedType ? ((ParameterizedType)type).getRawType() : type);
         if (flagAnnotation != null)
         {
-            return buildFlagParameter(flags, name, flagAnnotation, rawType);
+            return buildFlagParameter(flags, name, flagAnnotation, permAnnotation, rawType, permNodes);
         }
         final Parameter.Value.Builder<?> parameterBuilder;
         if (rawType == Optional.class)
         {
             return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
-                                       annotations, last, name, true, requirements);
+                                       annotations, last, name, true, requirements, permNodes);
         }
         else if (rawType == List.class)
         {
@@ -481,11 +503,12 @@ public class AnnotationCommandBuilder
         parameterBuilder.setKey(name);
         final Key<?> key = Parameter.key(name, TypeToken.of(rawType));
 
-        Default defaultAnnotation = getAnnotated(annotations, Default.class); final DefaultParameterProvider defaultParameterProvider;
+        Default defaultAnnotation = getAnnotated(annotations, Default.class);
         Named namedAnnotation = getAnnotated(annotations, Named.class);
 
         boolean optional = defaultAnnotation != null || namedAnnotation != null || isOptional(annotations);
 
+        final DefaultParameterProvider defaultParameterProvider;
         if (defaultAnnotation != null)
         {
             Class<?> clazz = defaultAnnotation.value();
@@ -512,6 +535,11 @@ public class AnnotationCommandBuilder
         if (labelAnnotation != null)
         {
             parameterBuilder.setUsage(k -> labelAnnotation.value());
+        }
+
+        if (permAnnotation != null)
+        {
+            parameterBuilder.setRequiredPermission(String.join(".", permNodes) + "." + name);
         }
 
         if (namedAnnotation != null)
@@ -545,8 +573,8 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private ContextExtractor<Object> buildFlagParameter( List<org.spongepowered.api.command.parameter.managed.Flag> flags, String name, Flag flagAnnotation,
-                                                        Class<?> rawType)
+    private ContextExtractor<Object> buildFlagParameter(List<org.spongepowered.api.command.parameter.managed.Flag> flags, String name, Flag flagAnnotation,
+                                                        ParameterPermission permAnnotation, Class<?> rawType, String[] permNodes)
     {
         if (rawType == Boolean.class || rawType == boolean.class)
         {
@@ -561,8 +589,13 @@ public class AnnotationCommandBuilder
                 shortName = longName.substring(0, 1);
             }
 
-            // TODO permissions
-            final org.spongepowered.api.command.parameter.managed.Flag flag = org.spongepowered.api.command.parameter.managed.Flag.builder().aliases(shortName, longName).build();
+            final org.spongepowered.api.command.parameter.managed.Flag.Builder builder = org.spongepowered.api.command.parameter.managed.Flag.builder().aliases(shortName, longName);
+            if (permAnnotation != null)
+            {
+                builder.setPermission(String.join(".", permNodes) + "." + name);
+            }
+
+            final org.spongepowered.api.command.parameter.managed.Flag flag = builder.build();
             flags.add(flag);
             return (c -> c.hasFlag(flag));
         }
