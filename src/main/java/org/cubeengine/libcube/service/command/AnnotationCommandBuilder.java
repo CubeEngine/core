@@ -51,6 +51,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.apache.logging.log4j.util.Strings;
+import org.cubeengine.libcube.service.command.annotation.Alias;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
 import org.cubeengine.libcube.service.command.annotation.Flag;
@@ -83,6 +84,10 @@ import org.spongepowered.plugin.PluginContainer;
 
 import static org.spongepowered.api.command.Command.builder;
 
+
+/*
+TODO handle @Alias with spaces
+ */
 @Singleton
 public class AnnotationCommandBuilder
 {
@@ -132,7 +137,7 @@ public class AnnotationCommandBuilder
             builder.child(builder().setExecutor(helpExecutor).build(), "?");
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
-            this.createChildCommands(holder, builder, plugin.getMetadata().getId(), "command", name);
+            this.createChildCommands(event, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
@@ -182,7 +187,7 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private void createChildCommands(Object holder, Builder dispatcher, String... permNodes)
+    private void createChildCommands(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
     {
         final String basePermNode = String.join(".", permNodes);
         dispatcher.setPermission(basePermNode + ".use");
@@ -191,7 +196,7 @@ public class AnnotationCommandBuilder
             m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
         for (Method method : methods)
         {
-            this.createChildCommand(holder, dispatcher, method, permNodes);
+            this.createChildCommand(event, plugin, holder, dispatcher, method, permNodes);
         }
 
         if (holder instanceof DispatcherCommand)
@@ -208,7 +213,7 @@ public class AnnotationCommandBuilder
                     //        builder.setExtendedDescription()!
                     final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
                     newPermNodes[permNodes.length] = name;
-                    this.createChildCommands(subHolder, builder, newPermNodes);
+                    this.createChildCommands(event, plugin, subHolder, builder, newPermNodes);
                     final HelpExecutor helpExecutor = new HelpExecutor(i18n);
                     builder.setExecutor(helpExecutor);
                     final List<String> alias = new ArrayList<>();
@@ -221,16 +226,22 @@ public class AnnotationCommandBuilder
                     final Parameterized build = builder.build();
                     helpExecutor.init(build, null, String.join(".", permNodes));
                     dispatcher.child(build, alias);
+
+                    final Alias aliasAnnotation = subHolder.getClass().getAnnotation(Alias.class);
+                    if (aliasAnnotation != null)
+                    {
+                        event.register(plugin, build, aliasAnnotation.value(), aliasAnnotation.alias());
+                    }
                 }
                 else
                 {
-                    this.createChildCommands(subHolder, dispatcher, permNodes);
+                    this.createChildCommands(event, plugin, subHolder, dispatcher, permNodes);
                 }
             }
         }
     }
 
-    private void createChildCommand(Object holder, Builder dispatcher, Method method, String... permNodes)
+    private void createChildCommand(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder, Builder dispatcher, Method method, String... permNodes)
     {
         final Command methodAnnotation = method.getAnnotation(Command.class);
         String name = this.getCommandName(method, holder, methodAnnotation);
@@ -241,6 +252,13 @@ public class AnnotationCommandBuilder
         alias.add(name);
         alias.addAll(Arrays.asList(methodAnnotation.alias()));
         dispatcher.child(build, alias);
+
+        final Alias aliasAnnotation = method.getAnnotation(Alias.class);
+        if (aliasAnnotation != null)
+        {
+            event.register(plugin, build, aliasAnnotation.value(), aliasAnnotation.alias());
+        }
+
     }
 
     private String getCommandName(Method method, Object holder, Command cmd)
