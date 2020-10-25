@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -32,6 +33,8 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Strings;
 
 /**
  * This class contains some utilities to work with Strings.

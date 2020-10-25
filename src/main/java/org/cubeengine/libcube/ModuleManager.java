@@ -53,6 +53,8 @@ import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.command.Command;
+import org.spongepowered.api.command.Command.Parameterized;
+import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
 
@@ -69,6 +71,7 @@ public class ModuleManager
     private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
     private final Module guiceModule = new CubeEngineGuiceModule();
     private final Map<Class<?>, PluginContainer> modulePlugins = new HashMap<>();
+    private final Map<Class<?>, Map<CommandMapping, Command.Parameterized>> moduleCommands = new HashMap<>();
     private final Map<Class<?>, Object> modules = new HashMap<>();
     private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
     private final Map<Class, Object> bindings = new HashMap<>();
@@ -158,16 +161,23 @@ public class ModuleManager
 
     public void registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module)
     {
+        final Map<CommandMapping, Parameterized> registered;
         final List<Field> commands = getAnnotatedFields(module, ModuleCommand.class);
         if (module == this.plugin)
         {
             this.cm.injectCommands(this.injector, module, commands);
-            this.cm.registerModuleCommands(this.injector, event, container, module, commands);
+            registered = this.cm.registerModuleCommands(this.injector, event, container, module, commands);
         }
         else
         {
-            this.cm.registerModuleCommands(moduleInjectors.get(module.getClass()), event, container, module, commands);
+            registered = this.cm.registerModuleCommands(moduleInjectors.get(module.getClass()), event, container, module, commands);
         }
+        this.moduleCommands.put(module.getClass(), registered);
+    }
+
+    public Map<CommandMapping, Parameterized> getBaseCommands(Class<?> module)
+    {
+        return this.moduleCommands.get(module);
     }
 
     public void loadConfigs(Class<?> module)

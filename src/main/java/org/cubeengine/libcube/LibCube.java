@@ -70,6 +70,10 @@ TeleportHelper.getSafeLocation with Supplier
 TeleportHelperFilters are not registered
 
 SpawnEgg getEntityType and getFor EntityType
+
+PlayerChatEvent no way to get original player receiving
+
+Command#getShortDesc NPE
  */
 @Core
 public class LibCube

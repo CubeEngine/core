@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -68,14 +69,13 @@ import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
-import org.spongepowered.api.command.manager.CommandFailedRegistrationException;
+import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.ValueUsage;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
@@ -95,26 +95,29 @@ public class AnnotationCommandBuilder
         this.i18n = i18n;
     }
 
-    public void registerModuleCommands(Injector injector, RegisterCommandEvent<Parameterized> event,
-                                       PluginContainer plugin, Object module, List<Field> commands)
+    public Map<CommandMapping, Parameterized> registerModuleCommands(Injector injector, RegisterCommandEvent<Parameterized> event,
+                                                                     PluginContainer plugin, Object module, List<Field> commands)
     {
+        Map<CommandMapping, org.spongepowered.api.command.Command.Parameterized> moduleCommands = new HashMap<>();
         for (Field command : commands)
         {
             try
             {
                 command.setAccessible(true);
-                this.registerCommands(injector, event, plugin, command.get(module));
+                this.registerCommands(injector, event, plugin, command.get(module), moduleCommands);
             }
             catch (IllegalAccessException e)
             {
                 throw new IllegalStateException(e);
             }
         }
+        return moduleCommands;
     }
 
     public void registerCommands(Injector injector, RegisterCommandEvent<Parameterized> event, PluginContainer plugin,
-                                 Object holder)
+                                 Object holder, Map<CommandMapping, org.spongepowered.api.command.Command.Parameterized> moduleCommands)
     {
+
         final Command holderAnnotation = holder.getClass().getAnnotation(Command.class);
         if (holderAnnotation != null)
         {
@@ -133,7 +136,9 @@ public class AnnotationCommandBuilder
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
-            event.register(plugin, build, name, holderAnnotation.alias());
+
+            final CommandMapping mapping = event.register(plugin, build, name, holderAnnotation.alias());
+            moduleCommands.put(mapping, build);
         }
         else
         {
@@ -152,7 +157,8 @@ public class AnnotationCommandBuilder
                 {
                     final Parameterized build = this.buildCommand(holder, method, methodAnnotation,
                                                                   plugin.getMetadata().getId(), "command", name);
-                    event.register(plugin, build, name, methodAnnotation.alias());
+                    final CommandMapping mapping = event.register(plugin, build, name, methodAnnotation.alias());
+                    moduleCommands.put(mapping, build);
                 }
                 catch (Exception e)
                 {

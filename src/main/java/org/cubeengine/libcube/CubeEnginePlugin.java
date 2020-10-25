@@ -24,6 +24,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
@@ -68,11 +69,16 @@ public abstract class CubeEnginePlugin {
         if (module == null)
         {
             mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());
-            return;
         }
+    }
+
+    @Listener(order = Order.EARLY)
+    public void onStarted(StartedEngineEvent<Server> event)
+    {
+        Object module = mm.getModule(this.module);
         for (Field field : ModuleManager.getAnnotatedFields(module, InjectService.class))
         {
-            Optional<?> provided = Sponge.getServiceProvider().provide(field.getType());
+            Optional<?> provided = Sponge.getServer().getServiceProvider().provide(field.getType());
             if (!provided.isPresent())
             {
                 mm.getLoggerFor(this.module).warn("Missing Service");
