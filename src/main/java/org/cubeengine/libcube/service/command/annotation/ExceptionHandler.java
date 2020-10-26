@@ -15,22 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.parser;
+package org.cubeengine.libcube.service.command.annotation;
 
-import org.cubeengine.libcube.service.command.DefaultParameterProvider;
-import org.spongepowered.api.command.CommandCause;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.cubeengine.libcube.service.command.CommandExceptionHandler;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class ServerPlayerDefaultParameterProvider implements DefaultParameterProvider<ServerPlayer>
-{
-    @Override
-    public ServerPlayer apply(CommandCause commandCause)
-    {
-        if (commandCause.getSubject() instanceof ServerPlayer)
-        {
-            return ((ServerPlayer)commandCause.getSubject());
-        }
-        return null;
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ExceptionHandler {
+
+    Class<? extends CommandExceptionHandler>[] value();
 }

@@ -29,6 +29,7 @@ import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.i18n.I18nService;
 import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.locale.LocaleSource;
 
@@ -93,6 +94,11 @@ public abstract class I18nTranslate
         return getI18nService().translate(message);
     }
 
+    public String getTranslation(CommandCause cause, String message)
+    {
+        return this.getTranslation(cause.getAudience(), message);
+    }
+
     // TextFormat and Locale
     public Component translate(Locale locale, Style style, String message, Object... args)
     {
@@ -143,6 +149,16 @@ public abstract class I18nTranslate
         return this.translateN(mr, Style.empty(), n, singular, plural, args);
     }
 
+    public Component translate(CommandCause mr, String message, Object... args)
+    {
+        return this.translate(mr, Style.empty(), message, args);
+    }
+
+    public Component translateN(CommandCause mr, int n, String singular, String plural, Object... args)
+    {
+        return this.translateN(mr, Style.empty(), n, singular, plural, args);
+    }
+
     // Get from Object with TextFormat
 
     public Component translate(Player source, Style style, String message, Object... args)
@@ -165,6 +181,16 @@ public abstract class I18nTranslate
         return translateN(contextFromReceiver(source), style, n, singular, plural, args);
     }
 
+    public Component translate(CommandCause source, Style style, String message, Object... args)
+    {
+        return translate(contextFromReceiver(source), style, message, args);
+    }
+
+    public Component translateN(CommandCause source, Style style, int n, String singular, String plural, Object... args)
+    {
+        return translateN(contextFromReceiver(source), style, n, singular, plural, args);
+    }
+
     // Send to MessageReceiver with TextFormat
 
     public void send(Audience source, Style style, String message, Object... args)
@@ -173,6 +199,16 @@ public abstract class I18nTranslate
     }
 
     public void sendN(Audience source, Style style, int n, String singular, String plural, Object... args)
+    {
+        this.sendN(ChatType.SYSTEM, source, style, n, singular, plural, args);
+    }
+
+    public void send(CommandCause source, Style style, String message, Object... args)
+    {
+        this.send(ChatType.SYSTEM, source, style, message, args);
+    }
+
+    public void sendN(CommandCause source, Style style, int n, String singular, String plural, Object... args)
     {
         this.sendN(ChatType.SYSTEM, source, style, n, singular, plural, args);
     }
@@ -187,6 +223,16 @@ public abstract class I18nTranslate
     public void sendN(ChatType type, Audience source, Style style, int n, String singular, String plural, Object... args)
     {
         type.sendTo(source, this.translateN(source, style, n, singular, plural, args));
+    }
+
+    public void send(ChatType type, CommandCause source, Style style, String message, Object... args)
+    {
+        type.sendTo(source.getAudience(), this.translate(source, style, message, args));
+    }
+
+    public void sendN(ChatType type, CommandCause source, Style style, int n, String singular, String plural, Object... args)
+    {
+        type.sendTo(source.getAudience(), this.translateN(source, style, n, singular, plural, args));
     }
 
     public enum ChatType {

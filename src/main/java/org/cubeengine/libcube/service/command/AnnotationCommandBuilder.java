@@ -19,7 +19,6 @@ package org.cubeengine.libcube.service.command;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -45,12 +44,6 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
-import org.apache.logging.log4j.util.Strings;
 import org.cubeengine.libcube.service.command.annotation.Alias;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
@@ -65,13 +58,9 @@ import org.cubeengine.libcube.service.command.annotation.ParserFor;
 import org.cubeengine.libcube.service.command.annotation.Restricted;
 import org.cubeengine.libcube.service.command.annotation.Using;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.i18n.formatter.MessageType;
 import org.spongepowered.api.command.Command.Builder;
 import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.CommandCause;
-import org.spongepowered.api.command.CommandExecutor;
-import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
@@ -80,7 +69,6 @@ import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
-import org.spongepowered.api.event.EventContextKeys;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
 
@@ -140,7 +128,7 @@ public class AnnotationCommandBuilder
             builder.child(builder().setExecutor(helpExecutor).build(), "?");
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
-            this.createChildCommands(event, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
+            this.createChildCommands(event, injector, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
@@ -163,7 +151,7 @@ public class AnnotationCommandBuilder
                 String name = this.getCommandName(method, holder, methodAnnotation);
                 try
                 {
-                    final Parameterized build = this.buildCommand(holder, method, methodAnnotation,
+                    final Parameterized build = this.buildCommand(injector, holder, method, methodAnnotation,
                                                                   plugin.getMetadata().getId(), "command", name);
                     final CommandMapping mapping = event.register(plugin, build, name, methodAnnotation.alias());
                     moduleCommands.put(mapping, build);
@@ -190,7 +178,7 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private void createChildCommands(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
+    private void createChildCommands(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
     {
         final String basePermNode = String.join(".", permNodes);
         dispatcher.setPermission(basePermNode + ".use");
@@ -199,13 +187,14 @@ public class AnnotationCommandBuilder
             m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
         for (Method method : methods)
         {
-            this.createChildCommand(event, plugin, holder, dispatcher, method, permNodes);
+            this.createChildCommand(event, injector, plugin, holder, dispatcher, method, permNodes);
         }
 
         if (holder instanceof DispatcherCommand)
         {
             for (Object subHolder : ((DispatcherCommand)holder).getSubCommands())
             {
+                this.createParsers(injector, subHolder);
                 final Command subHolderAnnotation = subHolder.getClass().getAnnotation(Command.class);
                 if (subHolderAnnotation != null)
                 {
@@ -216,7 +205,7 @@ public class AnnotationCommandBuilder
                     //        builder.setExtendedDescription()!
                     final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
                     newPermNodes[permNodes.length] = name;
-                    this.createChildCommands(event, plugin, subHolder, builder, newPermNodes);
+                    this.createChildCommands(event, injector, plugin, subHolder, builder, newPermNodes);
                     final HelpExecutor helpExecutor = new HelpExecutor(i18n);
                     builder.setExecutor(helpExecutor);
                     final List<String> alias = new ArrayList<>();
@@ -238,19 +227,19 @@ public class AnnotationCommandBuilder
                 }
                 else
                 {
-                    this.createChildCommands(event, plugin, subHolder, dispatcher, permNodes);
+                    this.createChildCommands(event, injector, plugin, subHolder, dispatcher, permNodes);
                 }
             }
         }
     }
 
-    private void createChildCommand(RegisterCommandEvent<Parameterized> event, PluginContainer plugin, Object holder, Builder dispatcher, Method method, String... permNodes)
+    private void createChildCommand(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, Method method, String... permNodes)
     {
         final Command methodAnnotation = method.getAnnotation(Command.class);
         String name = this.getCommandName(method, holder, methodAnnotation);
         final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
         newPermNodes[permNodes.length] = name;
-        final Parameterized build = buildCommand(holder, method, methodAnnotation, newPermNodes);
+        final Parameterized build = buildCommand(injector, holder, method, methodAnnotation, newPermNodes);
         final List<String> alias = new ArrayList<>();
         alias.add(name);
         alias.addAll(Arrays.asList(methodAnnotation.alias()));
@@ -341,7 +330,7 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private Parameterized buildCommand(Object holder, Method method, Command annotation, String... permNodes)
+    private Parameterized buildCommand(Injector injector, Object holder, Method method, Command annotation, String... permNodes)
     {
         try
         {
@@ -369,7 +358,7 @@ public class AnnotationCommandBuilder
             builder.setExecutionRequirements(requirements);
             builder.setShortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
-            final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors);
+            final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors, injector);
             builder.setExecutor(executor);
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
             builder.child(builder().setExecutor(helpExecutor).build(), "?");
@@ -661,151 +650,6 @@ public class AnnotationCommandBuilder
             {
                 throw new IllegalStateException(e);
             }
-        }
-    }
-
-    public static class HelpExecutor implements CommandExecutor
-    {
-
-        private I18n i18n;
-        private Parameterized target;
-        private CubeEngineCommand executor;
-        private String perm;
-
-        public HelpExecutor(I18n i18n)
-        {
-            this.i18n = i18n;
-        }
-
-        @Override
-        public CommandResult execute(CommandContext context) throws CommandException
-        {
-            final Optional<String> actual = context.getCause().getContext().get(EventContextKeys.COMMAND);
-            final Audience audience = context.getCause().getAudience();
-            final Style grayStyle = Style.style(NamedTextColor.GRAY);
-            Component descLabel = i18n.translate(audience, grayStyle, "Description:");
-            final Component permText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}",
-                                                      perm).append(Component.text(".use").color(NamedTextColor.WHITE));
-            descLabel = descLabel.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, permText)).clickEvent(
-                ClickEvent.copyToClipboard(perm + ".use"));
-            final Component descValue = target.getShortDescription(context.getCause()).get().color(NamedTextColor.GOLD);
-            context.sendMessage(Identity.nil(), Component.empty().append(descLabel).append(Component.text(" ")).append(descValue));
-
-            List<String> usages = new ArrayList<>();
-            for (Parameter param : target.parameters())
-            {
-                if (param instanceof Parameter.Value)
-                {
-                    String usage = ((Parameter.Value<?>)param).getUsage(context.getCause());
-                    if (!param.isOptional())
-                    {
-                        usage = "<" + usage + ">";
-                    }
-                    usages.add(usage);
-                }
-                else
-                {
-                    usages.add("param(" + param.getClass().getSimpleName() + ")");
-                }
-            }
-
-            final String cmdPrefix = context.getCause().getAudience() instanceof ServerPlayer ? "/" : "";
-            final String usage = usages.isEmpty() && executor == null ? "<command>" : Strings.join(usages, ' ');
-            final String joinedUsage = cmdPrefix + actual.orElse("missing command context") + " " + usage;
-
-            i18n.send(audience, grayStyle, "Usage: {input}", joinedUsage);
-
-//            context.sendMessage(target.getUsage(context.getCause()).style(grayStyle));
-//            context.sendMessage(Component.text(actual.orElse("no cmd?")));
-
-            final List<Parameter.Subcommand> subcommands = target.subcommands().stream().filter(
-                sc -> !sc.getAliases().iterator().next().equals("?")).collect(Collectors.toList());
-            if (!subcommands.isEmpty())
-            {
-                context.sendMessage(Identity.nil(), Component.empty());
-                i18n.send(audience, MessageType.NEUTRAL, "The following sub-commands are available:");
-                context.sendMessage(Identity.nil(), Component.empty());
-                for (Parameter.Subcommand subcommand : subcommands)
-                {
-                    final String firstAlias = subcommand.getAliases().iterator().next();
-                    final Parameterized subCmd = subcommand.getCommand();
-                    TextComponent textPart1 = Component.text(firstAlias, NamedTextColor.YELLOW);
-                    final Component subPermText = i18n.translate(audience, grayStyle,
-                                                                 "Permission: (click to copy) {input}",
-                                                                 perm + "." + firstAlias).append(
-                        Component.text(".use").color(NamedTextColor.WHITE));
-                    textPart1 = textPart1.hoverEvent(
-                        HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, subPermText)).clickEvent(
-                        ClickEvent.copyToClipboard(perm + "." + firstAlias + ".use"));
-                    final TextComponent text = Component.empty().append(textPart1).append(Component.text(": ")).append(
-                        subCmd.getShortDescription(context.getCause()).get().style(grayStyle).hoverEvent(
-                            HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                  Component.text("click to show usage"))).clickEvent(
-                            ClickEvent.runCommand(cmdPrefix + actual.orElse("null") + " " + firstAlias + " ?"))
-                        // TODO missing command context
-                                                                                                                      );
-
-                    context.sendMessage(Identity.nil(), text);
-                }
-            }
-            else
-            {
-                if (this.executor == null)
-                {
-                    i18n.send(audience, MessageType.NEGATIVE, "No actions are available");
-                }
-            }
-            context.sendMessage(Identity.nil(), Component.empty());
-            return CommandResult.empty();
-        }
-
-        public void init(Parameterized target, CubeEngineCommand executor, String perm)
-        {
-            this.target = target;
-            this.executor = executor;
-            this.perm = perm;
-        }
-    }
-
-    public static class CubeEngineCommand implements CommandExecutor
-    {
-
-        private final Object holder;
-        private final Method method;
-        private final List<ContextExtractor<?>> extractors;
-
-        public CubeEngineCommand(Object holder, Method method, List<ContextExtractor<?>> extractors)
-        {
-            this.holder = holder;
-            this.method = method;
-            this.extractors = extractors;
-        }
-
-        @Override
-        public CommandResult execute(CommandContext context) throws CommandException
-        {
-
-            final List<Object> args = new ArrayList<>();
-            for (ContextExtractor<?> extractor : this.extractors)
-            {
-                args.add(extractor.apply(context));
-            }
-            try
-            {
-                method.invoke(holder, args.toArray());
-            }
-            catch (IllegalAccessException | InvocationTargetException e)
-            {
-                e.printStackTrace();
-                // TODO
-                if (e.getCause().getMessage() == null)
-                {
-                    return CommandResult.error(Component.text(e.getCause().getClass().getSimpleName()));
-                }
-                return CommandResult.error(Component.text(e.getCause().getMessage()));
-            }
-
-            return CommandResult.success();
         }
     }
 

@@ -15,22 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with CubeEngine.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cubeengine.libcube.service.command.parser;
+package org.cubeengine.libcube.service.command;
 
-import org.cubeengine.libcube.service.command.DefaultParameterProvider;
-import org.spongepowered.api.command.CommandCause;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import net.kyori.adventure.text.TextComponent.Builder;
+import org.spongepowered.api.command.parameter.CommandContext;
 
-public class ServerPlayerDefaultParameterProvider implements DefaultParameterProvider<ServerPlayer>
+public interface CommandExceptionHandler
 {
-    @Override
-    public ServerPlayer apply(CommandCause commandCause)
-    {
-        if (commandCause.getSubject() instanceof ServerPlayer)
-        {
-            return ((ServerPlayer)commandCause.getSubject());
-        }
-        return null;
-    }
+    boolean handleException(Throwable t, CommandContext context, Builder text);
+
+    int priority();
 }

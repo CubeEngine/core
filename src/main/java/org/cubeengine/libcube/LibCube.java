@@ -74,6 +74,8 @@ SpawnEgg getEntityType and getFor EntityType
 PlayerChatEvent no way to get original player receiving
 
 Command#getShortDesc NPE
+
+CommandTree is not refreshed on client when permissions change
  */
 @Core
 public class LibCube

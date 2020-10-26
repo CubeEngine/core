@@ -22,14 +22,13 @@ import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
-public class ServerPlayerDefaultParameterProvider implements DefaultParameterProvider<ServerPlayer>
+public class UserDefaultParameterProvider implements DefaultParameterProvider<User>
 {
     @Override
-    public ServerPlayer apply(CommandCause commandCause)
+    public User apply(CommandCause commandCause)
     {
-        if (commandCause.getSubject() instanceof ServerPlayer)
-        {
-            return ((ServerPlayer)commandCause.getSubject());
+        if (commandCause.getSubject() instanceof ServerPlayer) {
+            return ((ServerPlayer)commandCause.getSubject()).getUser();
         }
         return null;
     }
