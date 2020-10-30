@@ -17,18 +17,19 @@
  */
 package org.cubeengine.libcube.util;
 
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
-import static org.cubeengine.libcube.service.i18n.formatter.MessageType.POSITIVE;
-
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.Style;
-import org.cubeengine.libcube.service.i18n.I18n;
-import org.spongepowered.api.command.CommandCause;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import org.cubeengine.libcube.service.i18n.I18n;
+import org.spongepowered.api.adventure.SpongeComponents;
+
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.NEGATIVE;
+import static org.cubeengine.libcube.service.i18n.formatter.MessageType.POSITIVE;
 
 public class ConfirmManager
 {
@@ -40,35 +41,34 @@ public class ConfirmManager
 
     public static void requestConfirmation(I18n i18n, Component msg, Audience source, Runnable run)
     {
-        Component confirm = i18n.translate(source, Style.empty(), "Confirm");
-        Component cancel = i18n.translate(source,  Style.empty(), "Cancel");
-        UUID uuid = UUID.randomUUID();
-        // TODO callback commands are gone :( ?
-//        confirm = confirm.color(NamedTextColor.GOLD).clickEvent(TextActions.executeCallback(s -> confirm(i18n, source, uuid, run))).build();
-//        cancel = cancel.color(NamedTextColor.GOLD).clickEvent(TextActions.executeCallback(s -> cancel(i18n, source, uuid))).build();
-//        times.put(uuid, System.currentTimeMillis());
-//        source.sendMessage(msg.toBuilder().append(Text.of(" ")).append(confirm).append(Text.of(" ")).append(cancel).build());
+        final UUID uuid = UUID.randomUUID();
+        final Component confirm = i18n.translate(source, Style.style(NamedTextColor.GOLD), "Confirm")
+            .clickEvent(SpongeComponents.executeCallback(s -> confirm(i18n, source, uuid, run)));
+        final Component cancel = i18n.translate(source,  Style.style(NamedTextColor.GOLD), "Cancel")
+            .clickEvent(SpongeComponents.executeCallback(s -> cancel(i18n, source, uuid)));
+        ConfirmManager.times.put(uuid, System.currentTimeMillis());
+        source.sendMessage(Identity.nil(), Component.text().append(msg).append(Component.space()).append(confirm).append(Component.space()).append(cancel).build());
     }
 
-    private static void confirm(I18n i18n, CommandCause source, UUID uuid, Runnable run)
+    private static void confirm(I18n i18n, Audience source, UUID uuid, Runnable run)
     {
-        Long start = times.remove(uuid);
-        if (start == null || System.currentTimeMillis() - start > CONFIRM_TIMEOUT)
+        Long start = ConfirmManager.times.remove(uuid);
+        if (start == null || System.currentTimeMillis() - start > ConfirmManager.CONFIRM_TIMEOUT)
         {
-            i18n.send(source.getAudience(), NEGATIVE, "Confirmation Request is no longer valid");
+            i18n.send(source, NEGATIVE, "Confirmation Request is no longer valid");
             return;
         }
         run.run();
     }
 
-    private static void cancel(I18n i18n, CommandCause source, UUID uuid)
+    private static void cancel(I18n i18n, Audience source, UUID uuid)
     {
-        Long remove = times.remove(uuid);
+        Long remove = ConfirmManager.times.remove(uuid);
         if (remove == null)
         {
-            i18n.send(source.getAudience(), NEGATIVE, "Confirmation Request is no longer valid");
+            i18n.send(source, NEGATIVE, "Confirmation Request is no longer valid");
             return;
         }
-        i18n.send(source.getAudience(), POSITIVE, "Confirmation cancelled!");
+        i18n.send(source, POSITIVE, "Confirmation cancelled!");
     }
 }

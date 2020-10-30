@@ -47,4 +47,11 @@ public @interface Command {
      * @return the description of the command
      */
     String desc();
+
+    /**
+     * Return true to register as the dispatcher base command
+     *
+     * @return true to register as the dispatcher base command
+     */
+    boolean dispatcher() default false;
 }

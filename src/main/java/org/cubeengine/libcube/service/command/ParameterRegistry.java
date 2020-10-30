@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.command;
 
 
+import com.google.inject.Injector;
 import net.kyori.adventure.audience.Audience;
 import org.cubeengine.libcube.service.command.parser.AudienceValuerParser;
 import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParameterProvider;
@@ -102,11 +103,17 @@ public class ParameterRegistry
         throw new IllegalArgumentException("No parser was registered for " + type);
     }
 
-    static ValueCompleter getCompleter(Class<?> type)
+    static ValueCompleter getCompleter(Injector injector, Class<?> type)
     {
         final Supplier<ValueCompleter> completer = completers.get(type);
         if (completer != null) {
             return completer.get();
+        }
+        if (ValueCompleter.class.isAssignableFrom(type))
+        {
+            final ValueCompleter valueCompleter = (ValueCompleter) injector.getInstance(type);
+            completers.put(type, () -> valueCompleter);
+            return valueCompleter;
         }
         return null;
     }

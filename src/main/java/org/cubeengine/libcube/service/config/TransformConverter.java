@@ -56,7 +56,7 @@ public class TransformConverter extends SingleClassConverter<Transform>
             double rx = manager.convertFromNode(input.get("rx"), double.class);
             double ry = manager.convertFromNode(input.get("ry"), double.class);
             double rz = manager.convertFromNode(input.get("rz"), double.class);
-            return Transform.of(new Vector3d(x, y, z), new Vector3d(ry, ry, rz));
+            return Transform.of(new Vector3d(x, y, z), new Vector3d(rx, ry, rz));
         }
         throw ConversionException.of(this, node, "Node is not a MapNode!");
     }

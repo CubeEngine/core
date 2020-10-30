@@ -61,6 +61,7 @@ import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.command.Command.Builder;
 import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
@@ -123,12 +124,15 @@ public class AnnotationCommandBuilder
             final String name = this.getCommandName(null, holder, holderAnnotation);
 
             builder.setShortDescription(Component.text(holderAnnotation.desc()));
-            final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-            builder.setExecutor(helpExecutor);
-            builder.child(builder().setExecutor(helpExecutor).build(), "?");
+
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
-            this.createChildCommands(event, injector, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
+            final Optional<CommandExecutor> dispatcherExecutor = this.createChildCommands(event, injector, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
+
+            final HelpExecutor helpExecutor = new HelpExecutor(i18n);
+            builder.setExecutor(new DispatcherExecutor(helpExecutor, dispatcherExecutor.orElse(null)));
+            builder.child(builder().setExecutor(helpExecutor).build(), "?");
+
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
@@ -178,16 +182,41 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private void createChildCommands(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
+    private Optional<CommandExecutor> createChildCommands(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
     {
         final String basePermNode = String.join(".", permNodes);
         dispatcher.setPermission(basePermNode + ".use");
-
+        Optional<CommandExecutor> dispatcherExecutor = Optional.empty();
         final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(
             m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
         for (Method method : methods)
         {
-            this.createChildCommand(event, injector, plugin, holder, dispatcher, method, permNodes);
+            final Command methodAnnotation = method.getAnnotation(Command.class);
+
+            if (methodAnnotation.dispatcher())
+            {
+                String name = this.getCommandName(method, holder, methodAnnotation);
+                final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
+                newPermNodes[permNodes.length] = name;
+                final Parameterized build = buildCommand(injector, holder, method, methodAnnotation, newPermNodes);
+
+                dispatcher.parameters(build.parameters());
+                for (org.spongepowered.api.command.parameter.managed.Flag flag : build.flags())
+                {
+                    dispatcher.flag(flag);
+                }
+                // TODO execution requirements - but they do not apply for child commands does it work?
+                final Predicate<CommandCause> requirements = build.getExecutionRequirements();
+                // TODO would get overwritten by other requirements... maybe wrap executor instead?
+                dispatcher.setExecutionRequirements(requirements);
+
+                dispatcherExecutor = build.getExecutor();
+            }
+            else
+            {
+                this.createChildCommand(event, injector, plugin, holder, dispatcher, method, methodAnnotation, permNodes);
+            }
+
         }
 
         if (holder instanceof DispatcherCommand)
@@ -205,9 +234,9 @@ public class AnnotationCommandBuilder
                     //        builder.setExtendedDescription()!
                     final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
                     newPermNodes[permNodes.length] = name;
-                    this.createChildCommands(event, injector, plugin, subHolder, builder, newPermNodes);
+                    final Optional<CommandExecutor> subDispatcherExecutor = this.createChildCommands(event, injector, plugin, subHolder, builder, newPermNodes);
                     final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-                    builder.setExecutor(helpExecutor);
+                    builder.setExecutor(new DispatcherExecutor(helpExecutor, subDispatcherExecutor.orElse(null)));
                     final List<String> alias = new ArrayList<>();
                     alias.add(name);
                     alias.addAll(Arrays.asList(subHolderAnnotation.alias()));
@@ -231,11 +260,11 @@ public class AnnotationCommandBuilder
                 }
             }
         }
+        return dispatcherExecutor;
     }
 
-    private void createChildCommand(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, Method method, String... permNodes)
+    private void createChildCommand(RegisterCommandEvent<Parameterized> event, Injector injector, PluginContainer plugin, Object holder, Builder dispatcher, Method method, Command methodAnnotation, String... permNodes)
     {
-        final Command methodAnnotation = method.getAnnotation(Command.class);
         String name = this.getCommandName(method, holder, methodAnnotation);
         final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
         newPermNodes[permNodes.length] = name;
@@ -350,7 +379,7 @@ public class AnnotationCommandBuilder
                 final Annotation[] annotations = annotationsList[i];
                 final java.lang.reflect.Parameter parameter = parameters[i];
                 extractors.add(
-                    this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, permNodes));
+                    this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, injector, permNodes));
             }
             buildParams(builder, params, namedParameter, flags);
             requirements.addPermission(String.join(".", permNodes) + ".use");
@@ -409,18 +438,18 @@ public class AnnotationCommandBuilder
     private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                java.lang.reflect.Parameter parameter, Type type,
-                                               Annotation[] annotations, int last, Requirements requirements, String[] permNodes)
+                                               Annotation[] annotations, int last, Requirements requirements, Injector injector, String[] permNodes)
     {
         final String name = parameter.getName();
         // TODO search param annotation for name
 
-        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, permNodes);
+        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, injector, permNodes);
     }
 
     private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                Type type, Annotation[] annotations, int last, String name,
-                                               boolean forceOptional, Requirements requirements, String[] permNodes)
+                                               boolean forceOptional, Requirements requirements, Injector injector, String[] permNodes)
     {
 
         if (type == CommandCause.class)
@@ -458,7 +487,7 @@ public class AnnotationCommandBuilder
         if (rawType == Optional.class)
         {
             return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
-                                       annotations, last, name, true, requirements, permNodes);
+                                       annotations, last, name, true, requirements, injector, permNodes);
         }
         else if (rawType.isArray())
         {
@@ -489,7 +518,7 @@ public class AnnotationCommandBuilder
 
             final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer()
                 != ValueCompleter.class ? parserAnnotation.completer() : rawType;
-            final ValueCompleter completer = ParameterRegistry.getCompleter(completerType);
+            final ValueCompleter completer = ParameterRegistry.getCompleter(injector, completerType);
             if (completer != null)
             {
                 parameterBuilder.setSuggestions(completer);
