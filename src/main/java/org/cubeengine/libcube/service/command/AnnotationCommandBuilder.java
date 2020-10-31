@@ -127,7 +127,7 @@ public class AnnotationCommandBuilder
 
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
-            final Optional<CommandExecutor> dispatcherExecutor = this.createChildCommands(event, injector, plugin, holder, builder, plugin.getMetadata().getId(), "command", name);
+            final Optional<CommandExecutor> dispatcherExecutor = this.createChildCommands(event, injector, plugin, holder, builder, getBasePerm(plugin), "command", name);
 
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
             builder.setExecutor(new DispatcherExecutor(helpExecutor, dispatcherExecutor.orElse(null)));
@@ -135,7 +135,7 @@ public class AnnotationCommandBuilder
 
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
-                              String.join(".", Arrays.asList(plugin.getMetadata().getId(), "command", name)));
+                              String.join(".", Arrays.asList(getBasePerm(plugin), "command", name)));
 
             final CommandMapping mapping = event.register(plugin, build, name, holderAnnotation.alias());
             moduleCommands.put(mapping, build);
@@ -155,8 +155,7 @@ public class AnnotationCommandBuilder
                 String name = this.getCommandName(method, holder, methodAnnotation);
                 try
                 {
-                    final Parameterized build = this.buildCommand(injector, holder, method, methodAnnotation,
-                                                                  plugin.getMetadata().getId(), "command", name);
+                    final Parameterized build = this.buildCommand(injector, holder, method, methodAnnotation, getBasePerm(plugin), "command", name);
                     final CommandMapping mapping = event.register(plugin, build, name, methodAnnotation.alias());
                     moduleCommands.put(mapping, build);
                 }
@@ -166,6 +165,16 @@ public class AnnotationCommandBuilder
                 }
             }
         }
+    }
+
+    public String getBasePerm(PluginContainer plugin)
+    {
+        final String id = plugin.getMetadata().getId();
+        if (id.startsWith("cubeengine-"))
+        {
+            return "cubeengine." + id.substring(11);
+        }
+        return id;
     }
 
     public void createParsers(Injector injector, Object holder)
