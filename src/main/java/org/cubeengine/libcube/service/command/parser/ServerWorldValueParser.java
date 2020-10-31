@@ -18,8 +18,10 @@
 package org.cubeengine.libcube.service.command.parser;
 
 import net.kyori.adventure.text.Component;
+import org.cubeengine.libcube.service.command.DefaultParameterProvider;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.exception.ArgumentParseException;
 import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -28,6 +30,7 @@ import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionType;
 import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionTypes;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCompleter
+public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCompleter, DefaultParameterProvider<ServerWorld>
 {
 
     @Override
@@ -73,5 +76,15 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
                          }
                      });
         return list;
+    }
+
+    @Override
+    public ServerWorld apply(CommandCause commandCause)
+    {
+        if (commandCause.getAudience() instanceof ServerPlayer)
+        {
+            return ((ServerPlayer)commandCause.getAudience()).getWorld();
+        }
+        return null;
     }
 }
