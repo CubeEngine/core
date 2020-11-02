@@ -71,7 +71,7 @@ public class BlockUtil
         Collection<ServerLocation> blocks = new HashSet<>();
         for (org.spongepowered.api.util.Direction bf : BLOCK_FACES)
         {
-            final ServerLocation relative = block.add(bf.asBlockOffset());
+            final ServerLocation relative = block.relativeTo(bf);
             final Optional<AttachmentSurface> surface = relative.get(Keys.ATTACHMENT_SURFACE);
             if (surface.isPresent()) {
                 final Optional<Direction> direction = relative.get(Keys.DIRECTION);
@@ -115,7 +115,7 @@ public class BlockUtil
     public static Collection<ServerLocation> getDetachableBlocksOnTop(ServerLocation block)
     {
         Collection<ServerLocation> blocks = new HashSet<>();
-        ServerLocation onTop = block.add(UP.asBlockOffset());
+        ServerLocation onTop = block.relativeTo(UP);
         while (isDetachableFromBelow(onTop.getBlockType()))
         {
             blocks.add(onTop);
@@ -124,7 +124,7 @@ public class BlockUtil
                 blocks.add(attachedBlock);
                 blocks.addAll(getDetachableBlocksOnTop(attachedBlock));
             }
-            onTop = onTop.add(UP.asBlockOffset());
+            onTop = onTop.relativeTo(UP);
         }
         return blocks;
     }
@@ -146,7 +146,7 @@ public class BlockUtil
     {
         for (final Direction face : DIRECTIONS)
         {
-            BlockType type = block.add(face.asBlockOffset()).getBlockType();
+            BlockType type = block.relativeTo(face).getBlockType();
             if (type == WATER.get())
             {
                 return true;

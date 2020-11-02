@@ -54,7 +54,6 @@ enchantment data allowed?
 Entity class from EntityType?
 Adventure: Audience with permissions
 Adventure: Sponge managed Callbacks
-Location#getRelative(Direction) (workaround location.add(direction.asBlockOffset()))
 AbstractAttackEntityEvent init exception
 Keys.IS_REPAIRABLE
 check for valid enchantments?

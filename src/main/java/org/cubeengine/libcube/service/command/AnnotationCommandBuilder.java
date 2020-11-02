@@ -116,10 +116,9 @@ public class AnnotationCommandBuilder
     {
 
         final Command holderAnnotation = holder.getClass().getAnnotation(Command.class);
+        this.createParsers(injector, holder);
         if (holderAnnotation != null)
         {
-            this.createParsers(injector, holder);
-
             final Builder builder = builder();
             final String name = this.getCommandName(null, holder, holderAnnotation);
 
@@ -515,7 +514,7 @@ public class AnnotationCommandBuilder
             Greedy greedyAnnotation = getAnnotated(annotations, Greedy.class);
             final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser()
                 != ValueParser.class ? parserAnnotation.parser() : rawType;
-            final ValueParser parser = ParameterRegistry.getParser(parserType, index == last, greedyAnnotation != null);
+            final ValueParser parser = ParameterRegistry.getParser(injector, parserType, index == last, greedyAnnotation != null);
             if (parser != null)
             {
                 parameterBuilder = Parameter.builder(rawType).parser(parser);
@@ -554,7 +553,7 @@ public class AnnotationCommandBuilder
             {
                 clazz = rawType;
             }
-            defaultParameterProvider = ParameterRegistry.getDefaultProvider(clazz);
+            defaultParameterProvider = ParameterRegistry.getDefaultProvider(injector, clazz);
             if (namedAnnotation == null)
             {
                 parameterBuilder.optional().orDefault(defaultParameterProvider);

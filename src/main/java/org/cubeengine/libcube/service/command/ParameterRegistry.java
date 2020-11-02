@@ -88,7 +88,7 @@ public class ParameterRegistry
         register(User.class, new UserDefaultParameterProvider());
     }
 
-    static ValueParser<?> getParser(Class<?> type, boolean last, boolean greedy)
+    static ValueParser<?> getParser(Injector injector, Class<?> type, boolean last, boolean greedy)
     {
         type = primitiveClassMap.getOrDefault(type, type);
         if (type == String.class && last && greedy)
@@ -99,6 +99,12 @@ public class ParameterRegistry
         if (parser != null)
         {
             return parser.get();
+        }
+        if (ValueParser.class.isAssignableFrom(type))
+        {
+            final ValueParser<?> instance = (ValueParser<?>) injector.getInstance(type);
+            parsers.put(type, () -> instance);
+            return instance;
         }
         throw new IllegalArgumentException("No parser was registered for " + type);
     }
@@ -118,11 +124,17 @@ public class ParameterRegistry
         return null;
     }
 
-    static <T> DefaultParameterProvider<T> getDefaultProvider(Class<?> type)
+    static <T> DefaultParameterProvider<T> getDefaultProvider(Injector injector, Class<?> type)
     {
         final Supplier<DefaultParameterProvider<T>> completer = (Supplier) defaultProviders.get(type);
         if (completer != null) {
             return completer.get();
+        }
+        if (DefaultParameterProvider.class.isAssignableFrom(type))
+        {
+            final DefaultParameterProvider<T> defaultProvider = (DefaultParameterProvider<T>) injector.getInstance(type);
+            defaultProviders.put(type, () -> defaultProvider);
+            return defaultProvider;
         }
         throw new IllegalArgumentException("No default provider was registered for " + type);
     }

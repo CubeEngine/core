@@ -86,7 +86,7 @@ public class LocationUtil
             }
             else
             {
-                if (canPass(blockType) && canPass(curLoc.add(UP.asBlockOffset()).getBlockType()))
+                if (canPass(blockType) && canPass(curLoc.relativeTo(UP).getBlockType()))
                 {
                     loc = curLoc;
                     break;
@@ -107,7 +107,7 @@ public class LocationUtil
      */
     public static ServerLocation getBlockInSight(Player player)
     {
-        BlockType headIn = player.getLocation().add(UP.asBlockOffset()).getBlockType();
+        BlockType headIn = player.getLocation().relativeTo(UP).getBlockType();
         List<BlockType> fluidBlocks = Sponge.getRegistry().getCatalogRegistry().getAllOf(FluidType.class).stream()
                 .map(FluidType::getDefaultState)
                 .map(FluidState::getBlock)
@@ -159,13 +159,13 @@ public class LocationUtil
     {
         if (!canPass(loc.getBlockType()))
         {
-            loc = loc.add(UP.asBlockOffset());
+            loc = loc.relativeTo(UP);
         }
         int maxHeight = 256; // TODO loc.getWorld().getDimension().getBuildHeight();
-        while (!(canPass(loc.getBlockType()) && canPass(loc.add(UP.asBlockOffset()).getBlockType())) && loc.getY() < maxHeight)
+        while (!(canPass(loc.getBlockType()) && canPass(loc.relativeTo(UP).getBlockType())) && loc.getY() < maxHeight)
         {
             // TODO half block gaps
-            ServerLocation rel = loc.add(UP.asBlockOffset());
+            ServerLocation rel = loc.relativeTo(UP);
             if (rel.getY() == 0)
             {
                 break;
