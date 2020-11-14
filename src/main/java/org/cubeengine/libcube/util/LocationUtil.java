@@ -17,9 +17,9 @@
  */
 package org.cubeengine.libcube.util;
 
-import static java.util.stream.Collectors.toList;
-import static org.spongepowered.api.util.Direction.UP;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -29,14 +29,16 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.fluid.FluidState;
 import org.spongepowered.api.fluid.FluidType;
-import org.spongepowered.api.util.blockray.BlockRayHit;
+import org.spongepowered.api.util.Direction;
+import org.spongepowered.api.util.blockray.RayTrace;
+import org.spongepowered.api.util.blockray.RayTraceResult;
+import org.spongepowered.api.world.Locatable;
+import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.ServerLocation;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import static java.util.stream.Collectors.toList;
+import static org.spongepowered.api.util.Direction.UP;
 
 public class LocationUtil
 {
@@ -62,39 +64,21 @@ public class LocationUtil
 
     public static Optional<ServerLocation> getBlockBehindWall(ServerPlayer player, int maxRange, int maxWallThickness)
     {
-        Iterator<BlockRayHit> it = Collections.emptyIterator(); // TODO BlockRays?
-                //BlockRayHit.from(player).distanceLimit(maxRange + maxWallThickness).iterator();
-        boolean wallHit = false;
-        int blocks = 0;
-        ServerLocation loc = null;
-        while (it.hasNext())
-        {
-            blocks++;
-            if (!wallHit && blocks > maxRange)
+        final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player).limit(maxRange + maxWallThickness);
+        AtomicBoolean wallHit = new AtomicBoolean();
+        ray.select(lb -> {
+            boolean canPass = canPass(lb.getBlockState().getType());
+            if (!wallHit.get())
             {
-                break;
-            }
-            BlockRayHit hit = it.next();
-            ServerLocation curLoc = hit.getLocation();
-            BlockType blockType = curLoc.getBlockType();
-            if (!wallHit)
-            {
-                if (!canPass(blockType))
+                if (!canPass)
                 {
-                    wallHit = true;
+                    wallHit.set(true);
                 }
+                return false;
             }
-            else
-            {
-                if (canPass(blockType) && canPass(curLoc.relativeTo(UP).getBlockType()))
-                {
-                    loc = curLoc;
-                    break;
-                }
-            }
-
-        }
-        return Optional.ofNullable(loc);
+            return canPass && canPass(lb.getServerLocation().relativeTo(Direction.UP).getBlockType());
+        });
+        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation);
     }
 
     /**
@@ -115,33 +99,32 @@ public class LocationUtil
                 .collect(toList());
 
         boolean headInFluid = fluidBlocks.contains(headIn);
-        Iterator<BlockRayHit> it = Collections.emptyIterator();
-                // TODO BlockRay.from(player).distanceLimit(500).iterator();
-        BlockRayHit next = null;
-        while (it.hasNext())
-        {
-            next = it.next();
-            BlockType nextType = next.getLocation().getBlockType();
-            if (fluidBlocks.contains(nextType))
+
+        final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player);
+        AtomicBoolean wallHit = new AtomicBoolean();
+        ray.select(lb -> {
+            final BlockType type = lb.getBlockState().getType();
+            if (fluidBlocks.contains(type))
             {
                 if (!headInFluid)
                 {
-                    break;
+                    return true;
                 }
             }
-            else if (canPass(nextType))
+            else if (canPass(type))
             {
-                if (BlockTypes.AIR.equals(nextType) && headInFluid)
+                if (type.isAnyOf(BlockTypes.AIR, BlockTypes.CAVE_AIR, BlockTypes.VOID_AIR) && headInFluid)
                 {
-                    break;
+                    return true;
                 }
             }
             else
             {
-                break;
+                return true;
             }
-        }
-        return next == null ? null : next.getLocation();
+            return false;
+        });
+        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation).get();
     }
 
     public static boolean canPass(BlockType type)

@@ -26,9 +26,9 @@ import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.ScheduledTask;
-import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.api.util.Ticks;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        final Task task = Task.builder().delayTicks(delay).execute(runnable).plugin(getPlugin(owner)).build();
+        final Task task = Task.builder().delay(Ticks.of(delay)).execute(runnable).plugin(getPlugin(owner)).build();
         return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
     }
 
@@ -90,7 +90,7 @@ public class SpongeTaskManager implements TaskManager
         checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        final Task task = Task.builder().delayTicks(delay).intervalTicks(interval).execute(runnable).plugin(getPlugin(owner)).build();
+        final Task task = Task.builder().delay(Ticks.of(delay)).interval(Ticks.of(interval)).execute(runnable).plugin(getPlugin(owner)).build();
         return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
     }
 

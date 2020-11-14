@@ -48,12 +48,10 @@ commands: errors are not shown?
 
 world.getName/asComponent
 world docs for converting old uuids to keys
-BlockRay is gone
+cannot check if itemstack custom name not set
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?
-Entity class from EntityType?
 Adventure: Audience with permissions
-Adventure: Sponge managed Callbacks
 AbstractAttackEntityEvent init exception
 Keys.IS_REPAIRABLE
 check for valid enchantments?

@@ -37,10 +37,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -521,7 +521,7 @@ public class AnnotationCommandBuilder
             }
             else
             {
-                throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.of(type));
+                throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.get(type));
             }
 
             final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer()
@@ -538,7 +538,7 @@ public class AnnotationCommandBuilder
         }
 
         parameterBuilder.setKey(name);
-        final Key<?> key = Parameter.key(name, TypeToken.of(rawType));
+        final Key<?> key = Parameter.key(name, TypeToken.get(rawType));
 
         Default defaultAnnotation = getAnnotated(annotations, Default.class);
         Named namedAnnotation = getAnnotated(annotations, Named.class);
@@ -644,7 +644,9 @@ public class AnnotationCommandBuilder
         final boolean isPlayer = cause.getAudience() instanceof ServerPlayer;
         if (!isPlayer)
         {
-            cause.sendMessage(Identity.nil(), Component.text("This command is restricted to players in game")); // TODO translate
+            // TODO show error message?
+            // TODO translate
+//            throw new IllegalStateException("This command is restricted to players in game");
         }
         return isPlayer;
     }

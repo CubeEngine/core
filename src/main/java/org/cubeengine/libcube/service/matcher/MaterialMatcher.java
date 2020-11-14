@@ -41,6 +41,7 @@ import org.spongepowered.plugin.PluginContainer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -268,7 +269,7 @@ public class MaterialMatcher
 
     private Map<String, BlockState> buildBlockStateItems() {
         Map<String, BlockState> blockStateItems = new HashMap<>();
-        Collection<BlockState> blocks = Sponge.getRegistry().getCatalogRegistry().getAllOf(BlockState.class);
+        Collection<BlockState> blocks = Collections.emptyList();//Sponge.getRegistry().getCatalogRegistry().getAllOf(BlockState.class);
         //System.out.println("Loading Names for " + blocks.size() + " Blockstates");
         for (BlockState blockState : blocks)
         {
@@ -301,7 +302,7 @@ public class MaterialMatcher
                         }
                     });
                  */
-                blockStateItems.put(finalState.getKey().asString(), finalState);
+//                blockStateItems.put(finalState.getKey().asString(), finalState);
             }
             catch (IllegalArgumentException | DataRegistrationNotFoundException ignored)
             {}
