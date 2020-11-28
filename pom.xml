@@ -159,8 +159,10 @@
                     <plugin>
                         <groupId>org.cubeengine.maven.plugins</groupId>
                         <artifactId>ore-deploy-maven-plugin</artifactId>
+                        <version>1.2.0-SNAPSHOT</version>
                         <configuration>
-                            <pluginId>cubeengine-core</pluginId>
+                            <projectOwner>Faithcaio</projectOwner>
+                            <projectSlug>cubeengine---libcube</projectSlug>
                         </configuration>
                     </plugin>
                 </plugins>
