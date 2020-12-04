@@ -60,8 +60,6 @@ plugin ReloadEvent and its command?
 
 inventory transaction drop excess items
 
-ServerPlayer.isOnline?
-
 TeleportHelper.getSafeLocation with Supplier
 
 TeleportHelperFilters are not registered
