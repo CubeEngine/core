@@ -29,6 +29,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.fluid.FluidState;
 import org.spongepowered.api.fluid.FluidType;
+import org.spongepowered.api.fluid.FluidTypes;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.blockray.RayTrace;
 import org.spongepowered.api.util.blockray.RayTraceResult;
@@ -66,6 +67,7 @@ public class LocationUtil
     {
         final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player).limit(maxRange + maxWallThickness);
         AtomicBoolean wallHit = new AtomicBoolean();
+        AtomicBoolean wallPassed = new AtomicBoolean();
         ray.select(lb -> {
             boolean canPass = canPass(lb.getBlockState().getType());
             if (!wallHit.get())
@@ -73,6 +75,15 @@ public class LocationUtil
                 if (!canPass)
                 {
                     wallHit.set(true);
+                }
+                return false;
+            }
+            else if (!wallPassed.get())
+            {
+                if (canPass && canPass(lb.getServerLocation().relativeTo(Direction.UP).getBlockType()))
+                {
+                    wallPassed.set(true);
+                    return true;
                 }
                 return false;
             }
@@ -93,6 +104,7 @@ public class LocationUtil
     {
         BlockType headIn = player.getLocation().relativeTo(UP).getBlockType();
         List<BlockType> fluidBlocks = Sponge.getRegistry().getCatalogRegistry().getAllOf(FluidType.class).stream()
+                .filter(t -> !t.equals(FluidTypes.EMPTY.get()))
                 .map(FluidType::getDefaultState)
                 .map(FluidState::getBlock)
                 .map(BlockState::getType)
@@ -100,8 +112,7 @@ public class LocationUtil
 
         boolean headInFluid = fluidBlocks.contains(headIn);
 
-        final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player);
-        AtomicBoolean wallHit = new AtomicBoolean();
+        final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player).limit(200);
         ray.select(lb -> {
             final BlockType type = lb.getBlockState().getType();
             if (fluidBlocks.contains(type))
@@ -124,11 +135,12 @@ public class LocationUtil
             }
             return false;
         });
-        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation).get();
+        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation).orElse(null);
     }
 
     public static boolean canPass(BlockType type)
     {
+
         return type.getDefaultState().get(Keys.IS_PASSABLE).orElse(false);
     }
 

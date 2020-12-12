@@ -56,13 +56,7 @@ AbstractAttackEntityEvent init exception
 Keys.IS_REPAIRABLE
 check for valid enchantments?
 
-plugin ReloadEvent and its command?
-
 inventory transaction drop excess items
-
-TeleportHelper.getSafeLocation with Supplier
-
-TeleportHelperFilters are not registered
 
 SpawnEgg getEntityType and getFor EntityType
 

@@ -31,7 +31,6 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.data.type.AttachmentSurface;
 import org.spongepowered.api.data.type.DoorHinge;
 import org.spongepowered.api.data.type.DoorHinges;
-import org.spongepowered.api.data.type.MatterStates;
 import org.spongepowered.api.data.type.PortionType;
 import org.spongepowered.api.data.type.PortionTypes;
 import org.spongepowered.api.util.Direction;
@@ -167,7 +166,7 @@ public class BlockUtil
 
     public static boolean isFluidBlock(BlockType mat)
     {
-        return mat.getDefaultState().get(Keys.MATTER_STATE).get() == MatterStates.LIQUID.get();
+        return false;
     }
 
     /**
