@@ -174,8 +174,8 @@ public class InventoryGuard
         {
             ItemStack origStack = transaction.getOriginal().createStack();
             ItemStack finalStack = transaction.getFinal().createStack();
-            String origString = origStack.isEmpty() ? origStack.getType().getKey().asString() : origStack.getType().getKey().asString() + " " + origStack.getQuantity();
-            String finalString = finalStack.isEmpty() ? finalStack.getType().getKey().asString() : finalStack.getType().getKey().asString() + " " + finalStack.getQuantity();
+//            String origString = origStack.isEmpty() ? origStack.getType().getKey().asString() : origStack.getType().getKey().asString() + " " + origStack.getQuantity();
+//            String finalString = finalStack.isEmpty() ? finalStack.getType().getKey().asString() : finalStack.getType().getKey().asString() + " " + finalStack.getQuantity();
             //System.out.print(origString + "->" + finalString + "\n");
 
             //System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());

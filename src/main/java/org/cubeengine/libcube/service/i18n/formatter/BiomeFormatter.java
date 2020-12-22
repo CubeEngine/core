@@ -19,8 +19,8 @@ package org.cubeengine.libcube.service.i18n.formatter;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.cubeengine.dirigent.context.Arguments;
-import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.context.Context;
+import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -35,6 +35,6 @@ public class BiomeFormatter extends AbstractFormatter<BiomeType>
     @Override
     protected Component format(BiomeType arg, Context context, Arguments args)
     {
-        return new StyledComponent(NamedTextColor.DARK_AQUA, arg.getKey().asString()); // TODO translation
+        return new StyledComponent(NamedTextColor.DARK_AQUA, arg.toString()); // TODO translation
     }
 }

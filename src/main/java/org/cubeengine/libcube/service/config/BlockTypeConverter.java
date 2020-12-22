@@ -17,21 +17,22 @@
  */
 package org.cubeengine.libcube.service.config;
 
-import net.kyori.adventure.key.Key;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
-import org.cubeengine.libcube.service.matcher.MaterialMatcher;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.registry.RegistryTypes;
 
 public class BlockTypeConverter extends SimpleConverter<BlockType>
 {
 
     @Override
-    public Node toNode(BlockType object) {
-        return StringNode.of(object.getKey().asString());
+    public Node toNode(BlockType object)
+    {
+        return StringNode.of(Sponge.getGame().registries().registry(RegistryTypes.BLOCK_TYPE).valueKey(object).asString());
     }
 
     @Override
@@ -39,7 +40,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getRegistry().getCatalogRegistry().get(BlockType.class, Key.key(node.asText())).orElse(null);
+            return Sponge.getGame().registries().registry(RegistryTypes.BLOCK_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

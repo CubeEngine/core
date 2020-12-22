@@ -23,6 +23,8 @@ import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.item.enchantment.Enchantment;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.registry.RegistryType;
+import org.spongepowered.api.registry.RegistryTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,16 +43,14 @@ public class EnchantMatcher
     public EnchantMatcher(StringMatcher stringMatcher)
     {
         this.sm = stringMatcher;
-        for (EnchantmentType enchantment : Sponge.getRegistry().getCatalogRegistry().getAllOf(EnchantmentType.class))
-        {
-            this.ids.put(enchantment.getKey().asString(), enchantment);
-            if ("minecraft".equals(enchantment.getKey().getNamespace()))
+        Sponge.getGame().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).streamEntries().forEach(entry -> {
+            this.ids.put(entry.key().getFormatted(), entry.value());
+            if ("minecraft".equals(entry.key().getNamespace()))
             {
-                this.ids.put(enchantment.getKey().getValue(), enchantment);
+                this.ids.put(entry.key().getValue(), entry.value());
             }
 // TODO            this.names.put(enchantment.getTranslation().get(), enchantment);
-        }
-
+        });
     }
 
     /**

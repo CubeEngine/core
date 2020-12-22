@@ -26,6 +26,7 @@ import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
 import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.api.world.server.ServerWorldProperties;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 
@@ -41,7 +42,7 @@ public class WorldFormatter extends ReflectedFormatter
     }
 
     @Format
-    public Component format(WorldProperties world)
+    public Component format(ServerWorldProperties world)
     {
         return HoverComponent.hoverText(
             net.kyori.adventure.text.Component.text(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),

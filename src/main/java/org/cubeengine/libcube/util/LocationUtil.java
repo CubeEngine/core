@@ -30,6 +30,8 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.fluid.FluidState;
 import org.spongepowered.api.fluid.FluidType;
 import org.spongepowered.api.fluid.FluidTypes;
+import org.spongepowered.api.registry.RegistryType;
+import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.blockray.RayTrace;
 import org.spongepowered.api.util.blockray.RayTraceResult;
@@ -103,7 +105,7 @@ public class LocationUtil
     public static ServerLocation getBlockInSight(Player player)
     {
         BlockType headIn = player.getLocation().relativeTo(UP).getBlockType();
-        List<BlockType> fluidBlocks = Sponge.getRegistry().getCatalogRegistry().getAllOf(FluidType.class).stream()
+        List<BlockType> fluidBlocks = Sponge.getGame().registries().registry(RegistryTypes.FLUID_TYPE).stream()
                 .filter(t -> !t.equals(FluidTypes.EMPTY.get()))
                 .map(FluidType::getDefaultState)
                 .map(FluidState::getBlock)

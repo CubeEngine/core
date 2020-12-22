@@ -26,8 +26,8 @@ import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameter;
-import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameters;
+import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameter;
+import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
@@ -69,7 +69,7 @@ public class ParameterRegistry
             defaultProviders.put(valueParameter.getClass(), () -> ((DefaultParameterProvider) valueParameter));
         }
     }
-    private static <T> void registerSponge(Class<T> clazz, Supplier<CatalogedValueParameter<T>> valueParameter)
+    private static <T> void registerSponge(Class<T> clazz, Supplier<ResourceKeyedValueParameter<T>> valueParameter)
     {
         parsers.put(clazz, () -> valueParameter.get());
         completers.put(clazz, () -> valueParameter.get());
@@ -79,11 +79,11 @@ public class ParameterRegistry
     {
         register(ServerWorld.class, new ServerWorldValueParser());
         register(Audience.class, new AudienceValuerParser());
-        registerSponge(String.class, CatalogedValueParameters.STRING);
-        registerSponge(ServerPlayer.class, CatalogedValueParameters.PLAYER);
-        registerSponge(User.class, CatalogedValueParameters.USER);
-        registerSponge(Boolean.class, CatalogedValueParameters.BOOLEAN);
-        registerSponge(Integer.class, CatalogedValueParameters.INTEGER);
+        registerSponge(String.class, ResourceKeyedValueParameters.STRING);
+        registerSponge(ServerPlayer.class, ResourceKeyedValueParameters.PLAYER);
+        registerSponge(User.class, ResourceKeyedValueParameters.USER);
+        registerSponge(Boolean.class, ResourceKeyedValueParameters.BOOLEAN);
+        registerSponge(Integer.class, ResourceKeyedValueParameters.INTEGER);
         register(ServerPlayer.class, new ServerPlayerDefaultParameterProvider());
         register(User.class, new UserDefaultParameterProvider());
     }
@@ -93,7 +93,7 @@ public class ParameterRegistry
         type = primitiveClassMap.getOrDefault(type, type);
         if (type == String.class && last && greedy)
         {
-            return CatalogedValueParameters.REMAINING_JOINED_STRINGS.get();
+            return ResourceKeyedValueParameters.REMAINING_JOINED_STRINGS.get();
         }
         final Supplier<ValueParser<?>> parser = parsers.get(type);
         if (parser != null)

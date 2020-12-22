@@ -28,14 +28,14 @@ import org.spongepowered.api.command.parameter.CommandContext.Builder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.standard.CatalogedValueParameters;
+import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
 
 public class AudienceValuerParser implements ValueParser<Audience>, ValueCompleter
 {
     @Override
     public List<String> complete(CommandContext context, String currentInput)
     {
-        final List<String> list = CatalogedValueParameters.PLAYER.get().complete(context, currentInput);
+        final List<String> list = ResourceKeyedValueParameters.PLAYER.get().complete(context, currentInput);
         if ("console".startsWith(currentInput))
         {
             list.add("console");
@@ -51,6 +51,6 @@ public class AudienceValuerParser implements ValueParser<Audience>, ValueComplet
         {
             return Optional.of(Sponge.getSystemSubject());
         }
-        return CatalogedValueParameters.PLAYER.get().getValue(parameterKey, reader, context);
+        return ResourceKeyedValueParameters.PLAYER.get().getValue(parameterKey, reader, context);
     }
 }

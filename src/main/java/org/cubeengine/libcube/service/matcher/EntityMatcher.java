@@ -30,6 +30,7 @@ import org.spongepowered.api.entity.living.Monster;
 import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.trader.Villager;
 import org.spongepowered.api.entity.projectile.Projectile;
+import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.math.vector.Vector3d;
 
 import java.util.HashMap;
@@ -50,15 +51,14 @@ public class EntityMatcher
     public EntityMatcher(StringMatcher stringMatcher, Reflector reflector)
     {
         this.stringMatcher = stringMatcher;
-        for (EntityType<?> type : Sponge.getRegistry().getCatalogRegistry().getAllOf(EntityType.class))
-        {
-            ids.put(type.getKey().asString(), type);
+        Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
+            ids.put(entry.key().asString(), entry.value());
 // TODO translactions            translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
-        }
+        });
         reflector.getDefaultConverterManager().registerConverter(new EntityTypeConverter(), EntityType.class);
     }
 
-    /**
+                                                                                                       /**
      * Tries to match an EntityType<?> for given string
      *
      * @param name the name to match
@@ -92,7 +92,7 @@ public class EntityMatcher
             name = "minecraft:item_frame";
         }
 
-        EntityType<?> entity = Sponge.getRegistry().getCatalogRegistry().get(EntityType.class, Key.key(name)).orElse(null);
+        EntityType<?> entity = Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).findValue(ResourceKey.resolve(name)).orElse(null);
         if (entity != null)
         {
             return entity;
@@ -116,10 +116,9 @@ public class EntityMatcher
         if (entity == null && locale != null)
         {
             Map<String, EntityType> translations = new HashMap<>();
-            for (EntityType<?> type : Sponge.getRegistry().getCatalogRegistry().getAllOf(EntityType.class))
-            {
-// TODO translation                translations.put(type.getTranslation().get(locale, type), type);
-            }
+            Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
+                // TODO translation                translations.put(type.getTranslation().get(locale, type), type);
+            });
             entity = anyFromMap(name, translations); // Use Language Translations
         }
 
@@ -159,7 +158,7 @@ public class EntityMatcher
     }
 
     public Entity getEntity(EntityType<?> type) {
-        final ResourceKey defKey = Sponge.getServer().getWorldManager().getDefaultPropertiesKey();
+        final ResourceKey defKey = Sponge.getServer().getWorldManager().getServer().getDefaultWorldKey();
         return Sponge.getServer().getWorldManager().getWorld(defKey).get().createEntity(type, Vector3d.ZERO);
     }
 

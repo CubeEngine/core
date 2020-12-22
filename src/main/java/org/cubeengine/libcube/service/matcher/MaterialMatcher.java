@@ -24,7 +24,6 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.text.TranslatableComponent;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
-import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -35,6 +34,7 @@ import org.spongepowered.api.data.Key;
 import org.spongepowered.api.data.Keys;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 
@@ -73,16 +73,16 @@ public class MaterialMatcher
     private Map<String, BlockState> blockStateItems;
 
     @Inject
-    public <T extends CatalogType> MaterialMatcher(ModuleManager mm)
+    public MaterialMatcher(ModuleManager mm)
     {
         this.plugin = mm.getPlugin(LibCube.class).get();
 
-        for (ItemType type : Sponge.getRegistry().getCatalogRegistry().getAllOf(ItemType.class)) {
+        Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
             final String translationKey = ((TranslatableComponent) type.asComponent()).key();
             // TODO get translation on server? GameDictionary?
 
             // TODO Keys.IS_REPAIRABLE
-        }
+        });
 
         Map<String, ItemType> defLocalizedName = new HashMap<>();
         Map<String, ItemType> localizedName = new HashMap<>();
@@ -133,9 +133,9 @@ public class MaterialMatcher
     }
 
     private void buildLocalizedNames(Map<String, ItemType> defLocalizedName, Map<String, ItemType> localizedName) {
-        for (ItemType itemType : Sponge.getRegistry().getCatalogRegistry().getAllOf(ItemType.class))
-        {
-            final ResourceKey id = itemType.getKey();
+        Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).streamEntries().forEach(entry -> {
+            final ItemType itemType = entry.value();
+            final ResourceKey id = entry.key();
             ids.put(id.asString(), itemType);
             if ("minecraft".equals(id.getNamespace()))
             {
@@ -160,7 +160,7 @@ public class MaterialMatcher
                 sourceName += String.join(" ", splitSourceName).replace(sourceName, "");
                 localizedName.put(sourceName, itemType);
             }
-        }
+        });
     }
 
     private Map<String, BlockState> buildLocalizedVariantMap(Locale locale)
@@ -242,7 +242,7 @@ public class MaterialMatcher
             {
                 if (variant.getKey().size() > 1)
                 {
-                    System.out.print(e.getKey().getKey() + " has multiple Variants:");
+                    System.out.print(e.getKey() + " has multiple Variants:");
                     for (String s : variant.getKey())
                     {
                         System.out.print(" " + s);
