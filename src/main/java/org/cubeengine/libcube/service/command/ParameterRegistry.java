@@ -69,7 +69,7 @@ public class ParameterRegistry
             defaultProviders.put(valueParameter.getClass(), () -> ((DefaultParameterProvider) valueParameter));
         }
     }
-    private static <T> void registerSponge(Class<T> clazz, Supplier<ResourceKeyedValueParameter<T>> valueParameter)
+    private static <VP extends ValueParser<T> & ValueCompleter,T> void registerSponge(Class<T> clazz, Supplier<VP> valueParameter)
     {
         parsers.put(clazz, () -> valueParameter.get());
         completers.put(clazz, () -> valueParameter.get());

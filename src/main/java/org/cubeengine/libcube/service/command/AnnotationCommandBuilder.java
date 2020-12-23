@@ -349,6 +349,7 @@ public class AnnotationCommandBuilder
                     if (!restrictedTo.isAssignableFrom(commandCause.getSubject().getClass()))
                     {
                         commandCause.getAudience().sendMessage(Identity.nil(), Component.text(msg));
+                        return false;
                     }
                     return true;
                 });
@@ -641,7 +642,7 @@ public class AnnotationCommandBuilder
 
     private static boolean playerRestricted(CommandCause cause)
     {
-        final boolean isPlayer = cause.getAudience() instanceof ServerPlayer;
+        final boolean isPlayer = cause.getSubject() instanceof ServerPlayer;
         if (!isPlayer)
         {
             // TODO show error message?

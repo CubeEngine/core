@@ -192,7 +192,6 @@ public class ModuleManager
         @Override
         protected void configure()
         {
-            Matchers.annotatedWith(ModuleConfig.class);
             this.bind(ModuleManager.class).toInstance(ModuleManager.this);
             this.bind(FileManager.class).toInstance(fm); // TODO how to organize our folders?
             this.bind(Reflector.class).toInstance(reflector);

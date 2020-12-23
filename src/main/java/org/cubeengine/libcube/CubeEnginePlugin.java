@@ -61,7 +61,7 @@ public abstract class CubeEnginePlugin {
         this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
     }
 
-    @Listener
+    @Listener(order = Order.EARLY)
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
@@ -72,7 +72,7 @@ public abstract class CubeEnginePlugin {
         }
     }
 
-    @Listener(order = Order.EARLY)
+    @Listener(order = Order.FIRST)
     public void onStarted(StartedEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);

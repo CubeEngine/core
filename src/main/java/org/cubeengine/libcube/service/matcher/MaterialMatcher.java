@@ -76,7 +76,10 @@ public class MaterialMatcher
     public MaterialMatcher(ModuleManager mm)
     {
         this.plugin = mm.getPlugin(LibCube.class).get();
+    }
 
+    public void onEnable()
+    {
         Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
             final String translationKey = ((TranslatableComponent) type.asComponent()).key();
             // TODO get translation on server? GameDictionary?
@@ -90,10 +93,7 @@ public class MaterialMatcher
         localizedNames.put(Locale.US, localizedName);
         buildLocalizedNames(defLocalizedName, localizedName);
 // TODO Taskbuilder        onEnable();
-    }
 
-    public void onEnable()
-    {
         Sponge.getAsyncScheduler().submit(Task.builder().execute(() -> {
             this.blockStateItems = buildBlockStateItems(); // Helper
             this.variantMap.putAll(buildVariantMap());
