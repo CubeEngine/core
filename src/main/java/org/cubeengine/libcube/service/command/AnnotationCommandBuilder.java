@@ -24,7 +24,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -44,6 +43,7 @@ import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.Buildable;
 import org.cubeengine.libcube.service.command.annotation.Alias;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
@@ -58,6 +58,7 @@ import org.cubeengine.libcube.service.command.annotation.ParserFor;
 import org.cubeengine.libcube.service.command.annotation.Restricted;
 import org.cubeengine.libcube.service.command.annotation.Using;
 import org.cubeengine.libcube.service.i18n.I18n;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command.Builder;
 import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.CommandCause;
@@ -65,9 +66,11 @@ import org.spongepowered.api.command.CommandExecutor;
 import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.Parameter.FirstOfBuilder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
+import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
@@ -375,12 +378,12 @@ public class AnnotationCommandBuilder
             final Builder builder = builder();
 
             final Annotation[][] annotationsList = method.getParameterAnnotations();
-            final Type[] types = method.getParameterTypes();
+            final Type[] types = method.getGenericParameterTypes();
             final java.lang.reflect.Parameter[] parameters = method.getParameters();
             final List<ContextExtractor<?>> extractors = new ArrayList<>();
             final Requirements requirements = new Requirements();
-            List<Value.Builder> params = new ArrayList<>();
-            Map<Named, Value.Builder> namedParameter = new LinkedHashMap<>();
+            List<org.spongepowered.api.util.Builder<Parameter, ?>> params = new ArrayList<>();
+            Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter = new LinkedHashMap<>();
             List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
             for (int i = 0; i < types.length; i++)
             {
@@ -410,15 +413,17 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private void buildParams(Builder builder, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
+    private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
     {
 
         for (int i = 0; i < params.size(); i++)
         {
-            final Value.Builder param = params.get(i);
+            final org.spongepowered.api.util.Builder<Parameter, ?> param = params.get(i);
             if (i == params.size() - 1)
             {
-                param.terminal();
+                if (param instanceof Value.Builder) {
+                    ((Value.Builder)param).terminal();
+                }
             }
             builder.parameter(param.build());
         }
@@ -426,7 +431,7 @@ public class AnnotationCommandBuilder
         {
             builder.flag(flag);
         }
-        for (Entry<Named, Parameter.Value.Builder> namedParam : namedParams.entrySet())
+        for (Entry<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParam : namedParams.entrySet())
         {
             {
                 // Flag experiment
@@ -438,13 +443,10 @@ public class AnnotationCommandBuilder
                 final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue().build()).optional().terminal().build();
                 builder.parameter(named);
             }
-
-
-
         }
     }
 
-    private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
+    private ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                java.lang.reflect.Parameter parameter, Type type,
                                                Annotation[] annotations, int last, Requirements requirements, Injector injector, String[] permNodes)
@@ -455,7 +457,7 @@ public class AnnotationCommandBuilder
         return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, injector, permNodes);
     }
 
-    private ContextExtractor<?> buildParameter(int index, List<Parameter.Value.Builder> params, Map<Named, Parameter.Value.Builder> namedParameter,
+    private <T> ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                Type type, Annotation[] annotations, int last, String name,
                                                boolean forceOptional, Requirements requirements, Injector injector, String[] permNodes)
@@ -484,7 +486,6 @@ public class AnnotationCommandBuilder
         }
 
         final Flag flagAnnotation = getAnnotated(annotations, Flag.class);
-        final Parser parserAnnotation = getAnnotated(annotations, Parser.class);
         final ParameterPermission permAnnotation = getAnnotated(annotations, ParameterPermission.class);
 
         Class<?> rawType = (Class<?>)(type instanceof ParameterizedType ? ((ParameterizedType)type).getRawType() : type);
@@ -492,69 +493,50 @@ public class AnnotationCommandBuilder
         {
             return buildFlagParameter(flags, name, flagAnnotation, permAnnotation, rawType, permNodes);
         }
-        final Parameter.Value.Builder<?> parameterBuilder;
         if (rawType == Optional.class)
         {
             return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
                                        annotations, last, name, true, requirements, injector, permNodes);
         }
-        else if (rawType.isArray())
-        {
-            throw new IllegalStateException("Not implemented yet");
-        }
-        else if (rawType == List.class)
-        {
-            throw new IllegalStateException("Not implemented yet");
-        }
-        else if (rawType == Set.class)
-        {
-            throw new IllegalStateException("Not implemented yet");
-        }
-        else
-        {
-            Greedy greedyAnnotation = getAnnotated(annotations, Greedy.class);
-            final Class<?> parserType = parserAnnotation != null && parserAnnotation.parser()
-                != ValueParser.class ? parserAnnotation.parser() : rawType;
-            final ValueParser parser = ParameterRegistry.getParser(injector, parserType, index == last, greedyAnnotation != null);
-            if (parser != null)
+        if (FirstValueParameter.class.isAssignableFrom(rawType)) {
+            List<ContextExtractor<?>> extractors = new ArrayList<>();
+            for (Field field : rawType.getFields())
             {
-                parameterBuilder = Parameter.builder(rawType).parser(parser);
-            }
-            else
-            {
-                throw new IllegalArgumentException("Could not build Parameter for type: " + TypeToken.get(type));
-            }
+                final Type fieldType = field.getGenericType();
+                extractors.add(this.buildParameter(index, params, namedParameter, flags, fieldType,
+                                           annotations, last, name, true, requirements, injector, permNodes));
 
-            final Class<?> completerType = parserAnnotation != null && parserAnnotation.completer()
-                != ValueCompleter.class ? parserAnnotation.completer() : rawType;
-            final ValueCompleter completer = ParameterRegistry.getCompleter(injector, completerType);
-            if (completer != null)
-            {
-                parameterBuilder.setSuggestions(completer);
             }
-            else if (rawType == String.class)
-            {
-                parameterBuilder.setSuggestions((context, currentInput) -> Collections.emptyList());
-            }
+            return this.buildFirstValueParameter(injector, extractors, params, rawType);
+        }
+
+
+        final Parameter.Value.Builder parameterBuilder = Parameter.builder((TypeToken<T>)TypeToken.get(type));
+        final Parser parserAnnotation = getAnnotated(annotations, Parser.class);
+        final Greedy greedyAnnotation = getAnnotated(annotations, Greedy.class);
+        final Class<? extends ValueParameter<T>> customParserType = parserAnnotation != null && parserAnnotation.parser() != ValueParser.class ? (Class<ValueParameter<T>>) parserAnnotation.parser() : null;
+        final Class<? extends ValueCompleter> customCompleterType = parserAnnotation != null && parserAnnotation.completer() != ValueCompleter.class ? parserAnnotation.completer() : null;
+
+        parameterBuilder.parser(ParameterRegistry.getParser(injector, type, customParserType,index == last, greedyAnnotation != null));
+
+        final ValueCompleter completer = ParameterRegistry.getCompleter(injector, type, customCompleterType);
+        if (completer != null)
+        {
+            parameterBuilder.setSuggestions(completer);
         }
 
         parameterBuilder.setKey(name);
-        final Key<?> key = Parameter.key(name, TypeToken.get(rawType));
+        final Key<T> key = (Key<T>) Parameter.key(name, TypeToken.get(type));
 
         Default defaultAnnotation = getAnnotated(annotations, Default.class);
         Named namedAnnotation = getAnnotated(annotations, Named.class);
 
         boolean optional = defaultAnnotation != null || namedAnnotation != null || isOptional(annotations);
 
-        final DefaultParameterProvider defaultParameterProvider;
+        final DefaultParameterProvider<T> defaultParameterProvider;
         if (defaultAnnotation != null)
         {
-            Class<?> clazz = defaultAnnotation.value();
-            if (clazz == DefaultParameterProvider.class)
-            {
-                clazz = rawType;
-            }
-            defaultParameterProvider = ParameterRegistry.getDefaultProvider(injector, clazz);
+            defaultParameterProvider = ParameterRegistry.getDefaultProvider(injector, type, defaultAnnotation.value());
             if (namedAnnotation == null)
             {
                 parameterBuilder.optional().orDefault(defaultParameterProvider);
@@ -595,20 +577,106 @@ public class AnnotationCommandBuilder
 
         if (forceOptional)
         {
-            return c -> c.getOne(key);
-        }
-        else if (optional)
-        {
-            if (namedAnnotation != null && defaultParameterProvider != null)
-            {
-                return c -> ((Optional)c.getOne(key)).orElse(defaultParameterProvider.apply(c.getCause()));
-            }
-            return c -> c.getOne(key).orElse(null);
+            return new OptionalContextExtractor<>(key);
         }
         else
         {
-            return c -> c.requireOne(key);
+            return new SimpleContextExtractor<>(key, optional, (namedAnnotation != null) ? null : defaultParameterProvider);
         }
+    }
+
+    private static class SimpleContextExtractor<T> implements ContextExtractor<T>
+    {
+        private Parameter.Key<T> key;
+        boolean optional;
+        private DefaultParameterProvider<T> defaultParameterProvider;
+
+        public SimpleContextExtractor(Key<T> key, boolean optional, DefaultParameterProvider<T> defaultParameterProvider)
+        {
+            this.key = key;
+            this.optional = optional;
+            this.defaultParameterProvider = defaultParameterProvider;
+        }
+
+        @Override
+        public T apply(CommandContext commandContext)
+        {
+            if (this.optional)
+            {
+                if (defaultParameterProvider != null)
+                {
+                    return commandContext.getOne(key).orElse(defaultParameterProvider.apply(commandContext.getCause()));
+                }
+                return commandContext.getOne(key).orElse(null);
+            }
+            return commandContext.requireOne(key);
+        }
+    }
+
+    private static class OptionalContextExtractor<T> implements ContextExtractor<Optional<T>>
+    {
+        private Parameter.Key<T> key;
+
+        public OptionalContextExtractor(Key<T> key)
+        {
+            this.key = key;
+        }
+
+        @Override
+        public Optional<T> apply(CommandContext commandContext)
+        {
+            return commandContext.getOne(key);
+        }
+    }
+
+    private static class FirstOfContextExtractor<T> implements ContextExtractor<T>
+    {
+        private final Field[] fields;
+        private Class<T> clazz;
+        private Injector injector;
+        private final List<ContextExtractor<?>> extractors;
+
+        public FirstOfContextExtractor(Class<T> clazz, Injector injector, List<ContextExtractor<?>> extractors)
+        {
+            this.clazz = clazz;
+            this.injector = injector;
+            this.extractors = extractors;
+            this.fields = clazz.getFields();
+        }
+
+        @Override
+        public T apply(CommandContext commandContext)
+        {
+            final T instance = injector.getInstance(clazz);
+            try
+            {
+                for (int i = 0; i < fields.length; i++)
+                {
+                    final Field field = fields[i];
+                    Object extractedValue = extractors.get(i).apply(commandContext);
+                    if (extractedValue instanceof Optional && field.getType() != Optional.class) {
+                        extractedValue = ((Optional<?>)extractedValue).orElse(null);
+                    }
+                    field.set(instance, extractedValue);
+                }
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new IllegalStateException("Failed to extract context for " + clazz.getName(), e);
+            }
+            return instance;
+        }
+    }
+
+    private ContextExtractor<?> buildFirstValueParameter(Injector injector, List<ContextExtractor<?>> extractors, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Class<?> rawType)
+    {
+        final List<org.spongepowered.api.util.Builder<Parameter, ?>> firstValueParams = new ArrayList<>(params.subList(params.size() - extractors.size(), params.size()));
+        params.removeAll(firstValueParams);
+        final FirstOfBuilder firstOfBuilder = Sponge.getGame().getBuilderProvider().provide(FirstOfBuilder.class);
+        firstOfBuilder.orFirstOf(firstValueParams.stream().map(Buildable.Builder::build).collect(Collectors.toList()));
+        params.add(firstOfBuilder);
+
+        return new FirstOfContextExtractor<>(rawType, injector, extractors);
     }
 
     private ContextExtractor<Object> buildFlagParameter(List<org.spongepowered.api.command.parameter.managed.Flag> flags, String name, Flag flagAnnotation,

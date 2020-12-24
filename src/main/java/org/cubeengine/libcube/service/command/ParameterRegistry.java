@@ -18,7 +18,13 @@
 package org.cubeengine.libcube.service.command;
 
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 import com.google.inject.Injector;
+import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
 import org.cubeengine.libcube.service.command.parser.AudienceValuerParser;
 import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParameterProvider;
@@ -26,53 +32,40 @@ import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameter;
 import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerWorld;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import org.spongepowered.math.vector.Vector3d;
 
 public class ParameterRegistry
 {
-    private static final Map<Class, Supplier<ValueParser<?>>> parsers = new HashMap<>();
-    private static final Map<Class, Supplier<ValueCompleter>> completers = new HashMap<>();
-    private static final Map<Class, Supplier<DefaultParameterProvider<?>>> defaultProviders = new HashMap<>();
+    private static final Map<Type, Supplier<ValueParser<?>>> parsers = new HashMap<>();
+    private static final Map<Type, Supplier<ValueCompleter>> completers = new HashMap<>();
+    private static final Map<Type, Supplier<DefaultParameterProvider<?>>> defaultProviders = new HashMap<>();
 
-    public final static Map<Class<?>, Class<?>> primitiveClassMap = new HashMap<>();
-    static {
-        primitiveClassMap.put(boolean.class, Boolean.class);
-        primitiveClassMap.put(byte.class, Byte.class);
-        primitiveClassMap.put(short.class, Short.class);
-        primitiveClassMap.put(char.class, Character.class);
-        primitiveClassMap.put(int.class, Integer.class);
-        primitiveClassMap.put(long.class, Long.class);
-        primitiveClassMap.put(float.class, Float.class);
-        primitiveClassMap.put(double.class, Double.class);
-    }
-
-    public static void register(Class<?> clazz, Object valueParameter)
+    public static void register(Type type, Object valueParameter)
     {
+        final Type valueParameterType = valueParameter.getClass();
         if (valueParameter instanceof ValueParser) {
-            parsers.put(clazz, () -> ((ValueParser<?>) valueParameter));
-            parsers.put(valueParameter.getClass(), () -> ((ValueParser<?>) valueParameter));
+            parsers.put(type, () -> ((ValueParser<?>) valueParameter));
+            parsers.put(valueParameterType, () -> ((ValueParser<?>) valueParameter));
         }
         if (valueParameter instanceof ValueCompleter) {
-            completers.put(clazz, () -> (ValueCompleter) valueParameter);
-            completers.put(valueParameter.getClass(), () -> ((ValueCompleter) valueParameter));
+            completers.put(type, () -> (ValueCompleter) valueParameter);
+            completers.put(valueParameterType, () -> ((ValueCompleter) valueParameter));
         }
         if (valueParameter instanceof DefaultParameterProvider) {
-            defaultProviders.put(clazz, () -> (DefaultParameterProvider) valueParameter);
-            defaultProviders.put(valueParameter.getClass(), () -> ((DefaultParameterProvider) valueParameter));
+            defaultProviders.put(type, () -> (DefaultParameterProvider) valueParameter);
+            defaultProviders.put(valueParameterType, () -> ((DefaultParameterProvider) valueParameter));
         }
     }
-    private static <VP extends ValueParser<T> & ValueCompleter,T> void registerSponge(Class<T> clazz, Supplier<VP> valueParameter)
+
+    private static <VP extends ValueParser<T> & ValueCompleter,T> void registerSponge(Type type, Supplier<VP> valueParameter)
     {
-        parsers.put(clazz, () -> valueParameter.get());
-        completers.put(clazz, () -> valueParameter.get());
+        parsers.put(type, () -> valueParameter.get());
+        completers.put(type, () -> valueParameter.get());
     }
 
     static
@@ -83,58 +76,90 @@ public class ParameterRegistry
         registerSponge(ServerPlayer.class, ResourceKeyedValueParameters.PLAYER);
         registerSponge(User.class, ResourceKeyedValueParameters.USER);
         registerSponge(Boolean.class, ResourceKeyedValueParameters.BOOLEAN);
+        registerSponge(boolean.class, ResourceKeyedValueParameters.BOOLEAN);
         registerSponge(Integer.class, ResourceKeyedValueParameters.INTEGER);
+        registerSponge(int.class, ResourceKeyedValueParameters.INTEGER);
         register(ServerPlayer.class, new ServerPlayerDefaultParameterProvider());
         register(User.class, new UserDefaultParameterProvider());
+        registerSponge(Vector3d.class, ResourceKeyedValueParameters.VECTOR3D);
+
+        registerSponge((new TypeToken<Collection<Entity>>() {}).getType(), ResourceKeyedValueParameters.MANY_ENTITIES); // Target-Selector
     }
 
-    static ValueParser<?> getParser(Injector injector, Class<?> type, boolean last, boolean greedy)
+    static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)
     {
-        type = primitiveClassMap.getOrDefault(type, type);
-        if (type == String.class && last && greedy)
+        if (parserType != null)
         {
-            return ResourceKeyedValueParameters.REMAINING_JOINED_STRINGS.get();
+            final Supplier<ValueParser<?>> parser = parsers.get(parserType);
+            if (parser != null)
+            {
+                return (ValueParser<T>) parser.get();
+            }
+            if (ValueParser.class.isAssignableFrom(parserType))
+            {
+                final ValueParser<T> instance = injector.getInstance(parserType);
+                parsers.put(parserType, () -> instance);
+                return instance;
+            }
+            throw new IllegalStateException("ValueParser cannot be created! " + parserType);
         }
+
         final Supplier<ValueParser<?>> parser = parsers.get(type);
         if (parser != null)
         {
-            return parser.get();
+            if (last && greedy && parser.get() == ResourceKeyedValueParameters.STRING.get())
+            {
+                return (ValueParser<T>) ResourceKeyedValueParameters.REMAINING_JOINED_STRINGS.get();
+            }
+            return (ValueParser<T>) parser.get();
         }
-        if (ValueParser.class.isAssignableFrom(type))
-        {
-            final ValueParser<?> instance = (ValueParser<?>) injector.getInstance(type);
-            parsers.put(type, () -> instance);
-            return instance;
-        }
+
         throw new IllegalArgumentException("No parser was registered for " + type);
     }
 
-    static ValueCompleter getCompleter(Injector injector, Class<?> type)
+    static ValueCompleter getCompleter(Injector injector, Type type, Class<? extends ValueCompleter> completerType)
     {
-        final Supplier<ValueCompleter> completer = completers.get(type);
-        if (completer != null) {
-            return completer.get();
-        }
-        if (ValueCompleter.class.isAssignableFrom(type))
+        if (completerType != null)
         {
-            final ValueCompleter valueCompleter = (ValueCompleter) injector.getInstance(type);
-            completers.put(type, () -> valueCompleter);
-            return valueCompleter;
+            final Supplier<ValueCompleter> customCompleter = completers.get(TypeToken.get(completerType));
+            if (customCompleter != null)
+            {
+                return customCompleter.get();
+            }
+            if (ValueCompleter.class.isAssignableFrom(completerType))
+            {
+                final ValueCompleter valueCompleter = injector.getInstance(completerType);
+                completers.put(type, () -> valueCompleter);
+                return valueCompleter;
+            }
+            throw new IllegalStateException("Completer cannot be created! " + completerType);
         }
-        return null;
+        final Supplier<ValueCompleter> completer = completers.get(type);
+        return completer != null ? completer.get() : null;
     }
 
-    static <T> DefaultParameterProvider<T> getDefaultProvider(Injector injector, Class<?> type)
+    static <T> DefaultParameterProvider<T> getDefaultProvider(Injector injector, Type type, Class<?> customType)
     {
-        final Supplier<DefaultParameterProvider<T>> completer = (Supplier) defaultProviders.get(type);
-        if (completer != null) {
-            return completer.get();
-        }
-        if (DefaultParameterProvider.class.isAssignableFrom(type))
+        if (customType != DefaultParameterProvider.class && DefaultParameterProvider.class.isAssignableFrom(customType))
         {
-            final DefaultParameterProvider<T> defaultProvider = (DefaultParameterProvider<T>) injector.getInstance(type);
+            final Supplier<DefaultParameterProvider<T>> provider = (Supplier) defaultProviders.get(TypeToken.get(customType));
+            if (provider != null) {
+                return provider.get();
+            }
+            final DefaultParameterProvider<T> defaultProvider = (DefaultParameterProvider<T>) injector.getInstance(customType);
             defaultProviders.put(type, () -> defaultProvider);
             return defaultProvider;
+        }
+        else
+        {
+            if (customType != DefaultParameterProvider.class)
+            {
+                type = customType;
+            }
+            final Supplier<DefaultParameterProvider<T>> provider = (Supplier) defaultProviders.get(type);
+            if (provider != null) {
+                return provider.get();
+            }
         }
         throw new IllegalArgumentException("No default provider was registered for " + type);
     }
