@@ -87,14 +87,6 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- Monitoring -->
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
-            <version>${prometheusVersion}</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
