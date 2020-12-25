@@ -31,11 +31,14 @@ import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParamete
 import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
+import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
+import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameters;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -83,7 +86,9 @@ public class ParameterRegistry
         register(User.class, new UserDefaultParameterProvider());
         registerSponge(Vector3d.class, ResourceKeyedValueParameters.VECTOR3D);
 
-        registerSponge((new TypeToken<Collection<Entity>>() {}).getType(), ResourceKeyedValueParameters.MANY_ENTITIES); // Target-Selector
+        registerSponge((new TypeToken<Collection<Entity>>() {}).getType(), ResourceKeyedValueParameters.MANY_ENTITIES);
+        registerSponge((new TypeToken<Collection<ServerPlayer>>() {}).getType(), ResourceKeyedValueParameters.MANY_PLAYERS);
+        registerSponge((new TypeToken<Collection<GameProfile>>() {}).getType(), ResourceKeyedValueParameters.MANY_GAME_PROFILES);
     }
 
     static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)
@@ -114,6 +119,12 @@ public class ParameterRegistry
             return (ValueParser<T>) parser.get();
         }
 
+        if (type instanceof Class && ((Class<?>)type).isEnum())
+        {
+            // TODO cache me
+            return (ValueParameter<T>)VariableValueParameters.enumChoices(((Class<? extends Enum>)type));
+        }
+
         throw new IllegalArgumentException("No parser was registered for " + type);
     }
 
@@ -135,7 +146,16 @@ public class ParameterRegistry
             throw new IllegalStateException("Completer cannot be created! " + completerType);
         }
         final Supplier<ValueCompleter> completer = completers.get(type);
-        return completer != null ? completer.get() : null;
+        if (completer == null)
+        {
+            if (type instanceof Class && ((Class<?>)type).isEnum())
+            {
+                // TODO cache me
+                return VariableValueParameters.enumChoices(((Class<? extends Enum>)type));
+            }
+            return null;
+        }
+        return completer.get();
     }
 
     static <T> DefaultParameterProvider<T> getDefaultProvider(Injector injector, Type type, Class<?> customType)
