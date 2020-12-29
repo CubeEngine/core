@@ -48,7 +48,6 @@ commands: errors are not shown?
 
 world.getName/asComponent
 world docs for converting old uuids to keys
-cannot check if itemstack custom name not set
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?
 Adventure: Audience with permissions
