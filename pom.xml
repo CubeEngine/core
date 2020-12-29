@@ -112,6 +112,20 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>cubeengine-repo</id>
+            <name>CubeEngine Public Repository</name>
+            <url>http://repo.cubeengine.org/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <build>
         <finalName>LibCube</finalName>
         <resources>
