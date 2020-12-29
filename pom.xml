@@ -124,6 +124,17 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>spongepowered-repo-new</id>
+            <name>New Sponge Public Repository</name>
+            <url>https://repo-new.spongepowered.org/repository/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <build>
