@@ -21,7 +21,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-maven-
             - name: Publish package
-              run: mvn package deploy
+              run: mvn package deploy -U
               env:
                   MAVEN_USERNAME: ${{ secrets.NEXUS_USER }}
                   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASS }}
