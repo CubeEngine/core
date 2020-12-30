@@ -47,6 +47,7 @@ import net.kyori.adventure.util.Buildable;
 import org.cubeengine.libcube.service.command.annotation.Alias;
 import org.cubeengine.libcube.service.command.annotation.Command;
 import org.cubeengine.libcube.service.command.annotation.Default;
+import org.cubeengine.libcube.service.command.annotation.Delegate;
 import org.cubeengine.libcube.service.command.annotation.Flag;
 import org.cubeengine.libcube.service.command.annotation.Greedy;
 import org.cubeengine.libcube.service.command.annotation.Label;
@@ -285,12 +286,25 @@ public class AnnotationCommandBuilder
         alias.addAll(Arrays.asList(methodAnnotation.alias()));
         dispatcher.child(build, alias);
 
+        if (this.isDelegateMethod(holder, name))
+        {
+            final List<Parameter> parameters = build.parameters();
+            dispatcher.parameters(parameters);
+            dispatcher.setExecutor(build.getExecutor().get());
+        }
+
         final Alias aliasAnnotation = method.getAnnotation(Alias.class);
         if (aliasAnnotation != null)
         {
             event.register(plugin, build, aliasAnnotation.value(), aliasAnnotation.alias());
         }
 
+    }
+
+    private boolean isDelegateMethod(Object holder, String name)
+    {
+        final Delegate annotation = holder.getClass().getAnnotation(Delegate.class);
+        return annotation != null && annotation.value().equals(name);
     }
 
     private String getCommandName(Method method, Object holder, Command cmd)

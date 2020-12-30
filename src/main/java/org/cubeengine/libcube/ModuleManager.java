@@ -175,6 +175,14 @@ public class ModuleManager
         this.moduleCommands.put(module.getClass(), registered);
     }
 
+    public <T> T registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module, Class<T> holderClass)
+    {
+        final Map<CommandMapping, Parameterized> registered = this.moduleCommands.computeIfAbsent(module.getClass(), k -> new HashMap<>());
+        final T instance = injector.getInstance(holderClass);
+        this.cm.registerCommands(moduleInjectors.get(module.getClass()), event, container, instance, registered);
+        return instance;
+    }
+
     public Map<CommandMapping, Parameterized> getBaseCommands(Class<?> module)
     {
         return this.moduleCommands.get(module);
