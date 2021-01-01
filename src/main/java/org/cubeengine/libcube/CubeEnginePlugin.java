@@ -48,13 +48,13 @@ public abstract class CubeEnginePlugin {
 
     public CubeEnginePlugin(Class module)
     {
-        this.lib = Sponge.getPluginManager().getPlugin("cubeengine-core").get();
         this.module = module;
     }
 
     @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
+        this.lib = Sponge.getPluginManager().getPlugin("cubeengine-core").get();
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
