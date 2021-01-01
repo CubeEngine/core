@@ -17,6 +17,10 @@
  */
 package org.cubeengine.libcube.service.command;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
@@ -34,13 +38,8 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.command.parameter.Parameter.MultiParameter;
 import org.spongepowered.api.event.EventContextKeys;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class HelpExecutor implements CommandExecutor
 {
@@ -58,7 +57,7 @@ public class HelpExecutor implements CommandExecutor
     @Override
     public CommandResult execute(CommandContext context) throws CommandException
     {
-        final Optional<String> actual = context.getCause().getContext().get(EventContextKeys.COMMAND);
+        final Optional<String> rawCommand = context.getCause().getContext().get(EventContextKeys.COMMAND);
         final Audience audience = context.getCause().getAudience();
         final Style grayStyle = Style.style(NamedTextColor.GRAY);
         Component descLabel = i18n.translate(audience, grayStyle, "Description:");
@@ -70,24 +69,12 @@ public class HelpExecutor implements CommandExecutor
         List<String> usages = new ArrayList<>();
         for (Parameter param : target.parameters())
         {
-            if (param instanceof Parameter.Value)
-            {
-                String usage = ((Parameter.Value<?>)param).getUsage(context.getCause());
-                if (!param.isOptional())
-                {
-                    usage = "<" + usage + ">";
-                }
-                usages.add(usage);
-            }
-            else
-            {
-                usages.add("param(" + param.getClass().getSimpleName() + ")");
-            }
+            collectUsage(context, usages, param);
         }
 
-        final String cmdPrefix = context.getCause().getAudience() instanceof ServerPlayer ? "/" : "";
+        final String actual = rawCommand.map(r -> r.endsWith("?") ? r.substring(0, r.length() - 1) : r).orElse("missing command context").trim();
         final String usage = usages.isEmpty() && executor == null ? "<command>" : Strings.join(usages, ' ');
-        final String joinedUsage = cmdPrefix + actual.orElse("missing command context") + " " + usage;
+        final String joinedUsage = actual + " " + usage;
 
         i18n.send(audience, grayStyle, "Usage: {input}", joinedUsage);
 
@@ -109,9 +96,10 @@ public class HelpExecutor implements CommandExecutor
                     Component.text(".use").color(NamedTextColor.WHITE));
                 textPart1 = textPart1.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, subPermText)).clickEvent(
                     ClickEvent.copyToClipboard(perm + "." + firstAlias + ".use"));
+                final String newHelpCmd = actual + " " + firstAlias + " ?";
                 final TextComponent text = Component.empty().append(textPart1).append(Component.text(": ")).append(subCmd.getShortDescription(context.getCause()).get().style(
                     grayStyle).hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("click to show usage"))).clickEvent(
-                    ClickEvent.runCommand(cmdPrefix + actual.orElse("null") + " " + firstAlias + " ?"))
+                    ClickEvent.runCommand(newHelpCmd))
                                                                                                                    // TODO missing command context
                                                                                                                   );
 
@@ -127,6 +115,39 @@ public class HelpExecutor implements CommandExecutor
         }
         context.sendMessage(Identity.nil(), Component.empty());
         return CommandResult.empty();
+    }
+
+    private void collectUsage(CommandContext context, List<String> usages, Parameter param)
+    {
+        if (param instanceof Parameter.Value)
+        {
+            String usage = ((Parameter.Value<?>)param).getUsage(context.getCause());
+            if (!param.isOptional())
+            {
+                usage = "<" + usage + ">";
+            }
+            usages.add(usage);
+        }
+        else if (param instanceof MultiParameter)
+        {
+            final List<String> childUsages = new ArrayList<>();
+            for (Parameter childParam : ((MultiParameter)param).getChildParameter())
+            {
+                this.collectUsage(context, childUsages, childParam);
+            }
+            if (param.isOptional())
+            {
+                usages.add("[" + String.join(" ", childUsages) + "]");
+            }
+            else
+            {
+                usages.add("<" + String.join(" ", childUsages) + ">");
+            }
+        }
+        else
+        {
+            usages.add("param(" + param.getClass().getSimpleName() + ")");
+        }
     }
 
     public void init(Command.Parameterized target, CubeEngineCommand executor, String perm)

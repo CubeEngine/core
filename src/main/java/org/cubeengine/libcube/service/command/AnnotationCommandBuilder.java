@@ -396,8 +396,8 @@ public class AnnotationCommandBuilder
             final java.lang.reflect.Parameter[] parameters = method.getParameters();
             final List<ContextExtractor<?>> extractors = new ArrayList<>();
             final Requirements requirements = new Requirements();
-            List<org.spongepowered.api.util.Builder<Parameter, ?>> params = new ArrayList<>();
-            Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter = new LinkedHashMap<>();
+            List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params = new ArrayList<>();
+            Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter = new LinkedHashMap<>();
             List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
             for (int i = 0; i < types.length; i++)
             {
@@ -427,40 +427,38 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
+    private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
     {
 
         for (int i = 0; i < params.size(); i++)
         {
-            final org.spongepowered.api.util.Builder<Parameter, ?> param = params.get(i);
-            if (i == params.size() - 1)
-            {
-                if (param instanceof Value.Builder) {
-                    ((Value.Builder)param).terminal();
-                }
-            }
+            final org.spongepowered.api.util.Builder<? extends Parameter, ?> param = params.get(i);
             builder.parameter(param.build());
         }
         for (org.spongepowered.api.command.parameter.managed.Flag flag : flags)
         {
             builder.flag(flag);
         }
-        for (Entry<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParam : namedParams.entrySet())
+        for (Entry<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParam : namedParams.entrySet())
         {
             {
                 // Flag experiment
 //                builder.flag(org.spongepowered.api.command.parameter.managed.Flag.of(namedParam.getValue(), namedParam.getKey().value()));
             }
             {
+
                 // Sequence
-                final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value()).setKey(namedParam.getKey().value()[0]).build();
+                final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value())
+                                                        .setSuggestions((f,g) -> Arrays.asList(namedParam.getKey().value()))
+                                                        .setKey(namedParam.getKey().value()[0]).build();
                 final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue().build()).optional().terminal().build();
                 builder.parameter(named);
             }
         }
     }
 
-    private ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter,
+    private ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params,
+                                               Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                java.lang.reflect.Parameter parameter, Type type,
                                                Annotation[] annotations, int last, Requirements requirements, Injector injector, String[] permNodes)
@@ -471,7 +469,8 @@ public class AnnotationCommandBuilder
         return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, injector, permNodes);
     }
 
-    private <T> ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<Parameter, ?>> namedParameter,
+    private <T> ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params,
+                                                   Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter,
                                                List<org.spongepowered.api.command.parameter.managed.Flag> flags,
                                                Type type, Annotation[] annotations, int last, String name,
                                                boolean forceOptional, Requirements requirements, Injector injector, String[] permNodes)
@@ -553,7 +552,7 @@ public class AnnotationCommandBuilder
             defaultParameterProvider = ParameterRegistry.getDefaultProvider(injector, type, defaultAnnotation.value());
             if (namedAnnotation == null)
             {
-                parameterBuilder.optional().orDefault(defaultParameterProvider);
+                parameterBuilder.optional();
             }
         }
         else
@@ -595,7 +594,7 @@ public class AnnotationCommandBuilder
         }
         else
         {
-            return new SimpleContextExtractor<>(key, optional, (namedAnnotation != null) ? null : defaultParameterProvider);
+            return new SimpleContextExtractor<>(key, optional, defaultParameterProvider);
         }
     }
 
@@ -682,9 +681,9 @@ public class AnnotationCommandBuilder
         }
     }
 
-    private ContextExtractor<?> buildFirstValueParameter(Injector injector, List<ContextExtractor<?>> extractors, List<org.spongepowered.api.util.Builder<Parameter, ?>> params, Class<?> rawType)
+    private ContextExtractor<?> buildFirstValueParameter(Injector injector, List<ContextExtractor<?>> extractors, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, Class<?> rawType)
     {
-        final List<org.spongepowered.api.util.Builder<Parameter, ?>> firstValueParams = new ArrayList<>(params.subList(params.size() - extractors.size(), params.size()));
+        final List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> firstValueParams = new ArrayList<>(params.subList(params.size() - extractors.size(), params.size()));
         params.removeAll(firstValueParams);
         final FirstOfBuilder firstOfBuilder = Sponge.getGame().getBuilderProvider().provide(FirstOfBuilder.class);
         firstOfBuilder.orFirstOf(firstValueParams.stream().map(Buildable.Builder::build).collect(Collectors.toList()));

@@ -26,6 +26,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.cubeengine.processor.Core;
 import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
+import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
@@ -35,25 +36,17 @@ Sponge gripes
 
 commands: support for handling incomplete commands
 
-!commands: getUsage starts with "command"
-?commands: getUsage excluding sub-cmds?
-!commands: EventContextKeys.COMMAND is missing?
-!commands: access to executor
-?commands: permission to check is unavailable
-commands: no sequence param in API (SpongeMultiParameter)
-commands: javadocs lie. setPermission/setExecutionRequirements in fact override each other
+? CommandContext or Cause helper isPlayer? isConsole?
+? CommandContext or Cause helper getLocale
+async tab-complete
 commands: console command audience is not SystemSubject
 commands: flags repeat
 commands: errors are not shown?
 
-world.getName/asComponent
-world docs for converting old uuids to keys
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?
 Adventure: Audience with permissions
-AbstractAttackEntityEvent init exception
 Keys.IS_REPAIRABLE
-check for valid enchantments?
 
 inventory transaction drop excess items
 
@@ -61,9 +54,6 @@ SpawnEgg getEntityType and getFor EntityType
 
 PlayerChatEvent no way to get original player receiving
 
-Command#getShortDesc NPE
-
-CommandTree is not refreshed on client when permissions change
  */
 @Core
 public class LibCube
