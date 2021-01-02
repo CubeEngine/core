@@ -38,7 +38,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
-import org.spongepowered.api.command.parameter.Parameter.MultiParameter;
+import org.spongepowered.api.command.parameter.Parameter.Multi;
 import org.spongepowered.api.event.EventContextKeys;
 
 public class HelpExecutor implements CommandExecutor
@@ -128,10 +128,10 @@ public class HelpExecutor implements CommandExecutor
             }
             usages.add(usage);
         }
-        else if (param instanceof MultiParameter)
+        else if (param instanceof Parameter.Multi)
         {
             final List<String> childUsages = new ArrayList<>();
-            for (Parameter childParam : ((MultiParameter)param).getChildParameter())
+            for (Parameter childParam : ((Parameter.Multi)param).getChildParameters())
             {
                 this.collectUsage(context, childUsages, childParam);
             }
