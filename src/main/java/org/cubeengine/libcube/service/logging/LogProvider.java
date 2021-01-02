@@ -18,61 +18,34 @@
 package org.cubeengine.libcube.service.logging;
 
 import com.google.inject.Inject;
+import org.cubeengine.libcube.ModuleManager;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.logscribe.LogTarget;
 import org.cubeengine.logscribe.filter.PrefixFilter;
-import org.cubeengine.logscribe.target.file.AsyncFileTarget;
-import org.cubeengine.libcube.ModuleManager;
-import org.cubeengine.libcube.service.filesystem.FileManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LogProvider
 {
-    private LogFactory logFactory;
-    private FileManager fm;
-    private ModuleManager mm;
-    private Map<String, Log> loggers = new HashMap<>();
+    private final LogFactory logFactory;
+    private final Map<String, Log> loggers = new HashMap<>();
 
     @Inject
-    public LogProvider(LogFactory logFactory, FileManager fm, ModuleManager mm)
+    public LogProvider(LogFactory logFactory)
     {
         this.logFactory = logFactory;
-        this.fm = fm;
-        this.mm = mm;
     }
 
-    public Log getLogger(Class owner, String name, boolean module)
+    public Log getLogger(Class<?> owner, String name)
     {
-        String longName = owner.getName() + "#" + name;
-        Log logger = loggers.get(longName);
-        if (logger != null)
-        {
+        return loggers.computeIfAbsent(owner.getName() + "#" + name, longName -> {
+            Log baseLogger = logFactory.getLog(LogFactory.class, ModuleManager.MAIN_LOGGER_ID);
+            Log logger = logFactory.getLog(owner, name);
+            LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
+            parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
             return logger;
-        }
-        Log baseLogger = logFactory.getLog(LogFactory.class, "CubeEngine");
-        if (module)
-        {
-            logger = logFactory.getLog(owner, name);
-            logger.addTarget(
-                    new AsyncFileTarget.Builder(LoggingUtil.getLogFile(fm, name).toPath(),
-                            LoggingUtil.getFileFormat(true, true)
-                    ).setAppend(true).setCycler(LoggingUtil.getCycler()).setThreadFactory(mm.getThreadFactory(owner)).build());
-
-            LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
-            parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
-        }
-        else
-        {
-            logger = logFactory.getLog(owner, name);
-            LogTarget parentTarget = logger.addDelegate(baseLogger); // delegate to main logger
-
-            parentTarget.appendFilter(new PrefixFilter("[" + name + "] "));
-            // TODO manually add Target for non-modules
-        }
-        this.loggers.put(longName, logger);
-        return logger;
+        });
     }
 }

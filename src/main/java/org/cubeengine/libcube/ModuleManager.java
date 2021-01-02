@@ -34,7 +34,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
-import com.google.inject.matcher.Matchers;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.libcube.service.ReflectorProvider;
@@ -45,10 +45,12 @@ import org.cubeengine.libcube.service.event.ModuleListener;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
+import org.cubeengine.libcube.service.logging.Log4jProxyTarget;
 import org.cubeengine.libcube.service.logging.LogProvider;
-import org.cubeengine.libcube.service.logging.SpongeLogFactory;
+import org.cubeengine.libcube.service.logging.LoggerConfiguration;
 import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
+import org.cubeengine.logscribe.DefaultLogFactory;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
@@ -61,12 +63,15 @@ import org.spongepowered.plugin.PluginContainer;
 @Singleton
 public class ModuleManager
 {
+    public static final String MAIN_LOGGER_ID = "CubeEngine";
+
+    private final Log mainLogger;
     private final FileManager fm;
     private final Reflector reflector;
     private final File path;
     private final EventManager em;
     private final LibCube plugin;
-    private final SpongeLogFactory logFactory;
+    private final DefaultLogFactory logFactory;
     private final ModuleThreadFactory tf;
     private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
     private final Module guiceModule = new CubeEngineGuiceModule();
@@ -74,7 +79,7 @@ public class ModuleManager
     private final Map<Class<?>, Map<CommandMapping, Command.Parameterized>> moduleCommands = new HashMap<>();
     private final Map<Class<?>, Object> modules = new HashMap<>();
     private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
-    private final Map<Class, Object> bindings = new HashMap<>();
+    private final Map<Class<?>, Object> bindings = new HashMap<>();
     private final LogProvider logProvider;
     private final MaterialMatcher mm;
     private final AnnotationCommandBuilder cm;
@@ -91,17 +96,31 @@ public class ModuleManager
         this.path = path;
         this.plugin = libCube;
         this.fm = new FileManager(this, path, reflector);
-        this.logFactory = new SpongeLogFactory(this.reflector, this.fm, this);
+        this.logFactory = new DefaultLogFactory();
         this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
-        this.logProvider = new LogProvider(this.logFactory, this.fm, this);
-        this.logFactory.init(tf);
+        this.logProvider = new LogProvider(this.logFactory);
         this.mm = new MaterialMatcher(this);
         this.i18n = new I18n(fm, reflector, logProvider, this);
+        this.mainLogger = configureMainLogger(path);
 
         this.injector = injector.createChildInjector(guiceModule);
         this.injector.injectMembers(this.i18n);
         this.cm = this.injector.getInstance(AnnotationCommandBuilder.class);
         this.em = this.injector.getInstance(EventManager.class);
+    }
+
+    private Log configureMainLogger(File path) {
+        final LoggerConfiguration config = reflector.load(LoggerConfiguration.class,
+                                                        path.toPath().resolve("logger.yml").toFile());
+
+        // configure console logger
+        final Log4jProxyTarget baseTarget =
+            new Log4jProxyTarget((org.apache.logging.log4j.core.Logger)LogManager.getLogger(MAIN_LOGGER_ID));
+        // Sponge is already adding this baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
+        baseTarget.setLevel((config.consoleLevel));
+
+        // create main logger and attach console logger
+        return logFactory.getLog(LogFactory.class, MAIN_LOGGER_ID).addTarget(baseTarget);
     }
 
     public Object registerAndCreate(Class<?> module, PluginContainer plugin, Injector injector)
@@ -209,9 +228,9 @@ public class ModuleManager
 
             this.bind(I18n.class).toInstance(i18n);
 
-            for (Map.Entry<Class, Object> entry : bindings.entrySet())
+            for (Map.Entry<Class<?>, Object> entry : bindings.entrySet())
             {
-                this.bind(entry.getKey()).toInstance(entry.getValue());
+                this.bind((Class)entry.getKey()).toInstance(entry.getValue());
             }
 
         }
@@ -240,7 +259,7 @@ public class ModuleManager
         return fields;
     }
 
-    public Path getPathFor(Class module)
+    public Path getPathFor(Class<?> module)
     {
         Optional<String> moduleID = getModuleID(module);
         if (!moduleID.isPresent())
@@ -259,7 +278,7 @@ public class ModuleManager
         return modulePath;
     }
 
-    public Log getLoggerFor(Class module)
+    public Log getLoggerFor(Class<?> module)
     {
         PluginContainer container = this.modulePlugins.get(module);
         String name;
@@ -276,27 +295,27 @@ public class ModuleManager
             }
         }
 
-        return this.logProvider.getLogger(module, name, container != null);
+        return this.logProvider.getLogger(module, name);
     }
 
-    public ThreadFactory getThreadFactory(Class module)
+    public ThreadFactory getThreadFactory(Class<?> module)
     {
-        return new ModuleThreadFactory(this.threadGroup, this.logProvider.getLogger(ThreadFactory.class, getModuleName(module).orElse(module.getSimpleName()), getPlugin(module).isPresent()));
+        return new ModuleThreadFactory(this.threadGroup, this.logProvider.getLogger(ThreadFactory.class, getModuleName(module).orElse(module.getSimpleName())));
     }
 
-    public Object getModule(Class module)
+    public Object getModule(Class<?> module)
     {
         return this.modules.get(module);
     }
 
 
-    public Optional<PluginContainer> getPlugin(Class owner)
+    public Optional<PluginContainer> getPlugin(Class<?> owner)
     {
         return Optional.ofNullable(this.modulePlugins.get(owner));
     }
 
 
-    public Optional<String> getModuleID(Class clazz)
+    public Optional<String> getModuleID(Class<?> clazz)
     {
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())
@@ -311,7 +330,7 @@ public class ModuleManager
         return Optional.empty();
     }
 
-    public Optional<String> getModuleName(Class clazz)
+    public Optional<String> getModuleName(Class<?> clazz)
     {
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())

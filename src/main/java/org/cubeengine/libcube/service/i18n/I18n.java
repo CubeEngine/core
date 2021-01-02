@@ -103,7 +103,7 @@ public class I18n extends I18nTranslate
     @Inject
     public I18n(FileManager fm, Reflector reflector, LogProvider logProvider, ModuleManager mm)
     {
-        this.log = logProvider.getLogger(I18n.class, "I18n", false);
+        this.log = logProvider.getLogger(I18n.class, "I18n");
         this.plugin = ((LibCube) mm.getModule(LibCube.class));
         this.config = reflector.load(I18nConfig.class, fm.getDataPath().resolve("i18n.yml").toFile());
         reflector.getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);

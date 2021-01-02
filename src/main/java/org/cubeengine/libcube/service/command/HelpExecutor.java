@@ -38,7 +38,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
-import org.spongepowered.api.command.parameter.Parameter.Multi;
 import org.spongepowered.api.event.EventContextKeys;
 
 public class HelpExecutor implements CommandExecutor

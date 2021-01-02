@@ -49,7 +49,7 @@ public class StringMatcher
         }
         else
         {
-            this.logger = logProvider.getLogger(StringMatcher.class, "StringMatcher", false);
+            this.logger = logProvider.getLogger(StringMatcher.class, "StringMatcher");
         }
     }
 

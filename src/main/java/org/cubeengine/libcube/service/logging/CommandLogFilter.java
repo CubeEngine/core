@@ -28,7 +28,7 @@ import org.apache.logging.log4j.message.Message;
 public class CommandLogFilter extends AbstractFilter
 {
     private static final Object[] NO_ARGS = {};
-    private static final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-\\.]{3,16} issued server command: /.+");
+    private static final Pattern DETECTION_PATTERN = Pattern.compile("[\\w\\d\\-.]{3,16} issued server command: /.+");
 
     public CommandLogFilter()
     {

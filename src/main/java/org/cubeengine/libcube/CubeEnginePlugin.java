@@ -46,7 +46,7 @@ public abstract class CubeEnginePlugin {
     private ModuleManager mm;
     private Object instance;
 
-    public CubeEnginePlugin(Class module)
+    public CubeEnginePlugin(Class<?> module)
     {
         this.module = module;
     }
@@ -54,7 +54,8 @@ public abstract class CubeEnginePlugin {
     @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
-        this.lib = Sponge.getPluginManager().getPlugin("cubeengine-core").get();
+        this.lib = event.getGame().getPluginManager().getPlugin("cubeengine-core")
+                        .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
