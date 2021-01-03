@@ -22,6 +22,7 @@ import com.google.inject.Injector;
 import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.command.annotation.ModuleCommand;
 import org.cubeengine.libcube.service.command.example.ParentExampleCommand;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.cubeengine.processor.Core;
@@ -66,12 +67,12 @@ public class LibCube
     @ModuleCommand private ParentExampleCommand cmd;
 
     @Inject
-    public LibCube(@ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
+    public LibCube(Game game, @ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
     {
         this.path = path.resolve("cubeengine").toFile();
         this.pluginLogger = logger;
         this.container = container;
-        this.mm = new ModuleManager(this.path, logger, this, container, injector);
+        this.mm = new ModuleManager(game, this.path, logger, this, container, injector);
     }
 
     @Listener

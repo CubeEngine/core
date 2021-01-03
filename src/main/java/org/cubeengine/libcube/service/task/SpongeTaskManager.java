@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.cubeengine.libcube.LibCube;
 import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
@@ -40,127 +41,64 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class SpongeTaskManager implements TaskManager
 {
-    private final Map<Class, Set<UUID>> tasks;
-    private ModuleManager mm;
+    private final Game game;
     private PluginContainer plugin;
 
     @Inject
-    public SpongeTaskManager(ModuleManager mm)
+    public SpongeTaskManager(Game game, PluginContainer plugin)
     {
-        this.mm = mm;
-        this.plugin = mm.getPlugin(LibCube.class).get();
-        this.tasks = new ConcurrentHashMap<>();
-        mm.registerBinding(TaskManager.class, this);
-    }
-
-    private Set<UUID> getTaskIDs(Class owner)
-    {
-        return this.getTaskIDs(owner, true);
-    }
-
-    private Set<UUID> getTaskIDs(Class owner, boolean create)
-    {
-        Set<UUID> IDs = this.tasks.get(owner);
-        if (create && IDs == null)
-        {
-            this.tasks.put(owner, IDs = new HashSet<>());
-        }
-        return IDs;
+        this.game = game;
+        this.plugin = plugin;
     }
 
     @Override
-    public UUID runTask(Class owner, Runnable runnable)
+    public ScheduledTask runTask(Runnable runnable)
     {
-        return this.runTaskDelayed(owner, runnable, 0);
+        return this.runTaskDelayed(runnable, 0);
     }
 
     @Override
-    public UUID runTaskDelayed(Class owner, Runnable runnable, long delay)
+    public ScheduledTask runTaskDelayed(Runnable runnable, long delay)
     {
-        checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        final Task task = Task.builder().delay(Ticks.of(delay)).execute(runnable).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
+        final Task task = newTask().delay(Ticks.of(delay)).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
     }
 
     @Override
-    public UUID runTimer(Class owner, Runnable runnable, long delay, long interval)
+    public ScheduledTask runTimer(Runnable runnable, long delay, long interval)
     {
-        checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        final Task task = Task.builder().delay(Ticks.of(delay)).interval(Ticks.of(interval)).execute(runnable).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, Sponge.getServer().getScheduler().submit(task));
-    }
-
-    private PluginContainer getPlugin(Class owner)
-    {
-        return this.mm.getPlugin(owner).orElse(this.plugin);
+        final Task task = newTask().delay(Ticks.of(delay)).interval(Ticks.of(interval)).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
     }
 
     @Override
-    public UUID runAsynchronousTask(Class owner, Runnable runnable)
+    public ScheduledTask runAsynchronousTask(Runnable runnable)
     {
-        return this.runAsynchronousTaskDelayed(owner, runnable, 0);
+        return this.runAsynchronousTaskDelayed(runnable, 0);
     }
 
     @Override
-    public UUID runAsynchronousTaskDelayed(Class owner, Runnable runnable, long delay)
+    public ScheduledTask runAsynchronousTaskDelayed(Runnable runnable, long delay)
     {
-        checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
-        final Task task = Task.builder().delay(delay * 50, MILLISECONDS).execute(runnable).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, Sponge.getAsyncScheduler().submit(task));
-    }
-
-    private UUID addTaskId(Class owner, ScheduledTask task)
-    {
-        final Set<UUID> tasks = this.getTaskIDs(owner);
-        tasks.add(task.getUniqueId());
-        return task.getUniqueId();
+        final Task task = newTask().delay(delay * 50, MILLISECONDS).execute(runnable).build();
+        return game.getAsyncScheduler().submit(task);
     }
 
     @Override
-    public UUID runAsynchronousTimer(Class owner, Runnable runnable, long delay, long interval)
+    public ScheduledTask runAsynchronousTimer(Runnable runnable, long delay, long interval)
     {
-        checkNotNull(owner, "The module must not be null!");
         checkNotNull(runnable, "The runnable must not be null!");
 
-        final Task task = Task.builder().delay(delay * 50, MILLISECONDS).execute(runnable).interval(interval * 50, MILLISECONDS).plugin(getPlugin(owner)).build();
-        return addTaskId(owner, Sponge.getAsyncScheduler().submit(task));
+        final Task task = newTask().delay(delay * 50, MILLISECONDS).execute(runnable).interval(interval * 50, MILLISECONDS).build();
+        return game.getAsyncScheduler().submit(task);
     }
 
-    @Override
-    public void cancelTask(Class owner, UUID uuid)
-    {
-        Optional<ScheduledTask> task = Sponge.getServer().getScheduler().getTaskById(uuid);
-        task.ifPresent(ScheduledTask::cancel);
-
-        Set<UUID> ownerIds = getTaskIDs(owner);
-        if (ownerIds != null)
-        {
-            ownerIds.remove(uuid);
-        }
+    private Task.Builder newTask() {
+        return Task.builder().plugin(plugin);
     }
-
-    @Override
-    public void cancelTasks(Class owner)
-    {
-        Set<UUID> taskIDs = this.tasks.remove(owner);
-        if (taskIDs != null)
-        {
-            for (UUID taskID : taskIDs)
-            {
-                cancelTask(owner, taskID);
-            }
-        }
-    }
-
-    @Override
-    public synchronized void clean(Class owner)
-    {
-        this.cancelTasks(owner);
-    }
-
 }

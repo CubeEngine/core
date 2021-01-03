@@ -17,20 +17,18 @@
  */
 package org.cubeengine.libcube.service.task;
 
-import java.util.UUID;
+import org.spongepowered.api.scheduler.ScheduledTask;
 
 /**
  * This Task can be cancelled from the inside.
  */
 public abstract class Task implements Runnable
 {
-    private UUID taskid;
-    private final Class owner;
+    private ScheduledTask task;
     private final TaskManager tm;
 
-    public Task(Class owner, TaskManager tm)
+    public Task(TaskManager tm)
     {
-        this.owner = owner;
         this.tm = tm;
     }
 
@@ -39,7 +37,10 @@ public abstract class Task implements Runnable
      */
     public void cancelTask()
     {
-        this.tm.cancelTask(this.owner, this.taskid);
+        if (this.task != null)
+        {
+            this.task.cancel();
+        }
     }
 
     /**
@@ -50,7 +51,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runAsynchronousTimer(this.owner, this, delay, repeat);
+        this.task = this.tm.runAsynchronousTimer(this, delay, repeat);
     }
 
     /**
@@ -60,7 +61,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncTask(int delay)
     {
-        this.taskid = this.tm.runAsynchronousTaskDelayed(this.owner, this, delay);
+        this.task = this.tm.runAsynchronousTaskDelayed(this, delay);
     }
 
     /**
@@ -71,7 +72,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)
     {
-        this.taskid = this.tm.runTimer(this.owner, this, delay, repeat);
+        this.task = this.tm.runTimer(this, delay, repeat);
     }
 
     /**
@@ -81,6 +82,6 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncTask(int delay)
     {
-        this.taskid = this.tm.runTaskDelayed(this.owner, this, delay);
+        this.task = this.tm.runTaskDelayed(this, delay);
     }
 }

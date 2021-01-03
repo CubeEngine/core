@@ -19,6 +19,7 @@ package org.cubeengine.libcube;
 
 import com.google.inject.Injector;
 import org.apache.logging.log4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -34,7 +35,7 @@ public abstract class CorePlugin
 
     public CorePlugin(Path path, Logger logger, Injector injector, PluginContainer container)
     {
-        libCube = new LibCube(path, logger, injector, container);
+        libCube = new LibCube(Sponge.getGame(), path, logger, injector, container);
     }
 
     public LibCube getCore() {

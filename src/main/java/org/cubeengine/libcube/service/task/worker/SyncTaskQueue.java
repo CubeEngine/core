@@ -19,8 +19,8 @@ package org.cubeengine.libcube.service.task.worker;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.UUID;
 import org.cubeengine.libcube.service.task.TaskManager;
+import org.spongepowered.api.scheduler.ScheduledTask;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,23 +30,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SyncTaskQueue implements TaskQueue
 {
     private final Worker workerTask = new Worker();
-    private final Class owner;
     private final TaskManager tm;
     private final Queue<Runnable> taskQueue;
-    private UUID taskID;
+    private ScheduledTask task;
     private boolean isShutdown;
 
-    public SyncTaskQueue(Class owner, TaskManager tm)
+    public SyncTaskQueue(TaskManager tm)
     {
-        this(owner, tm, new LinkedList<>());
+        this(tm, new LinkedList<>());
     }
 
-    public SyncTaskQueue(Class owner, TaskManager tm, Queue<Runnable> taskQueue)
+    public SyncTaskQueue(TaskManager tm, Queue<Runnable> taskQueue)
     {
-        this.owner = owner;
         this.tm = tm;
         this.taskQueue = taskQueue;
-        this.taskID = null;
+        this.task = null;
         this.isShutdown = false;
     }
 
@@ -54,7 +52,9 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.taskQueue.isEmpty())
         {
-            this.tm.cancelTask(owner, this.taskID);
+            if (task != null) {
+                task.cancel();
+            }
             return;
         }
         this.taskQueue.poll().run();
@@ -78,7 +78,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.taskID = this.tm.runTimer(owner, this.workerTask, 0, 1);
+            this.task = this.tm.runTimer(this.workerTask, 0, 1);
         }
     }
 
@@ -107,15 +107,15 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (this.isRunning())
         {
-            this.tm.cancelTask(owner, this.taskID);
-            this.taskID = null;
+            task.cancel();
+            this.task = null;
         }
     }
 
     @Override
     public synchronized boolean isRunning()
     {
-        return this.taskID != null;
+        return this.task != null && !task.isCancelled();
     }
 
     @Override

@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.task;
 
 import com.google.inject.ImplementedBy;
+import org.spongepowered.api.scheduler.ScheduledTask;
 
 import java.util.UUID;
 
@@ -28,7 +29,6 @@ import java.util.UUID;
 @ImplementedBy(SpongeTaskManager.class)
 public interface TaskManager
 {
-
     /**
      * Schedules a delayed task for a module
      *
@@ -36,7 +36,7 @@ public interface TaskManager
      * @param runnable the task
      * @return the ID of the task
      */
-    UUID runTask(Class owner, Runnable runnable);
+    ScheduledTask runTask(Runnable runnable);
 
     /**
      * Schedules a delayed task for a module with the given delay on the main server thread
@@ -46,7 +46,7 @@ public interface TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    UUID runTaskDelayed(Class owner, Runnable runnable, long delay);
+    ScheduledTask runTaskDelayed(Runnable runnable, long delay);
 
     /**
      * Schedules a repeating task for a module with the given delay and interval
@@ -57,7 +57,7 @@ public interface TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    UUID runTimer(Class owner, Runnable runnable, long delay, long interval);
+    ScheduledTask runTimer(Runnable runnable, long delay, long interval);
 
     /**
      * Schedules a asynchronous delayed task for a module
@@ -66,7 +66,7 @@ public interface TaskManager
      * @param runnable the task
      * @return the ID of the task
      */
-    UUID runAsynchronousTask(Class owner, Runnable runnable);
+    ScheduledTask runAsynchronousTask(Runnable runnable);
 
     /**
      * Schedules a asynchronous delayed task for a module with the given delay
@@ -76,7 +76,7 @@ public interface TaskManager
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    UUID runAsynchronousTaskDelayed(Class owner, Runnable runnable, long delay);
+    ScheduledTask runAsynchronousTaskDelayed(Runnable runnable, long delay);
 
     /**
      * Schedules a asynchronous repeating task for a module with the given delay and interval
@@ -87,22 +87,5 @@ public interface TaskManager
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    UUID runAsynchronousTimer(Class owner, Runnable runnable, long delay, long interval);
-
-    /**
-     * Cancels a task of a module
-     *
-     * @param owner the module
-     * @param uuid the taskID
-     */
-    void cancelTask(Class owner, UUID uuid);
-
-    void cancelTasks(Class owner);
-
-    /**
-     * This method can be used to remove all objects related to the given module
-     *
-     * @param owner the module
-     */
-    void clean(Class owner);
+    ScheduledTask runAsynchronousTimer(Runnable runnable, long delay, long interval);
 }

@@ -59,7 +59,7 @@ public class InventoryGuard
     private final HashSet<Runnable> onChange = new HashSet<>();
 
     private boolean ignoreRepaircost = true;
-    private Class owner;
+    private Class<?> owner;
 
     public InventoryGuard(EventManager em, TaskManager tm, Inventory inventory, UUID[] users)
     {
@@ -270,7 +270,7 @@ public class InventoryGuard
     {
         for (Runnable runner : this.onChange)
         {
-            tm.runTask(owner, runner);
+            tm.runTask(runner);
         }
     }
 

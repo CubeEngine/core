@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
 import com.google.inject.AbstractModule;
+import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
@@ -50,10 +52,13 @@ import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.logging.LoggerConfiguration;
 import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
+import org.cubeengine.libcube.service.task.SpongeTaskManager;
+import org.cubeengine.libcube.service.task.TaskManager;
 import org.cubeengine.logscribe.DefaultLogFactory;
 import org.cubeengine.logscribe.Log;
 import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.manager.CommandMapping;
@@ -65,6 +70,7 @@ public class ModuleManager
 {
     public static final String MAIN_LOGGER_ID = "CubeEngine";
 
+    private final Game game;
     private final Log mainLogger;
     private final FileManager fm;
     private final Reflector reflector;
@@ -79,7 +85,7 @@ public class ModuleManager
     private final Map<Class<?>, Map<CommandMapping, Command.Parameterized>> moduleCommands = new HashMap<>();
     private final Map<Class<?>, Object> modules = new HashMap<>();
     private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
-    private final Map<Class<?>, Object> bindings = new HashMap<>();
+    private final Map<Class<?>, Consumer<Binder>> bindings = new HashMap<>();
     private final LogProvider logProvider;
     private final MaterialMatcher mm;
     private final AnnotationCommandBuilder cm;
@@ -88,8 +94,9 @@ public class ModuleManager
 
     private final Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
 
-    public ModuleManager(File path, Logger logger, LibCube libCube, PluginContainer container, Injector injector)
+    public ModuleManager(Game game, File path, Logger logger, LibCube libCube, PluginContainer container, Injector injector)
     {
+        this.game = game;
         this.reflector = new ReflectorProvider().get();
         this.modulePlugins.put(LibCube.class, container);
         this.modules.put(LibCube.class, libCube);
@@ -123,12 +130,15 @@ public class ModuleManager
         return logFactory.getLog(LogFactory.class, MAIN_LOGGER_ID).addTarget(baseTarget);
     }
 
-    public Object registerAndCreate(Class<?> module, PluginContainer plugin, Injector injector)
+    public <T> T registerAndCreate(Class<T> module, PluginContainer plugin, Injector injector)
     {
         this.modulePlugins.put(module, plugin);
-        Injector moduleInjector = injector.createChildInjector(guiceModule);
+        Injector moduleInjector = injector.createChildInjector(guiceModule, binder -> {
+            binder.bind(Log.class).toInstance(getLoggerFor(module));
+            binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
+        });
         this.moduleInjectors.put(module, moduleInjector);
-        Object instance = moduleInjector.getInstance(module);
+        T instance = moduleInjector.getInstance(module);
         this.modules.put(module, instance);
 
         this.i18n.registerPlugin(plugin);
@@ -175,7 +185,7 @@ public class ModuleManager
     }
 
     public <T> void registerBinding(Class<T> clazz, T db) {
-        this.bindings.put(clazz, db);
+        this.bindings.put(clazz, binder -> binder.bind(clazz).toInstance(db));
     }
 
     public void registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module)
@@ -225,14 +235,11 @@ public class ModuleManager
             this.bind(LogFactory.class).toInstance(logFactory);
             this.bind(LogProvider.class).toInstance(logProvider);
             this.bind(MaterialMatcher.class).toInstance(mm);
+            this.bind(TaskManager.class).to(SpongeTaskManager.class);
 
             this.bind(I18n.class).toInstance(i18n);
 
-            for (Map.Entry<Class<?>, Object> entry : bindings.entrySet())
-            {
-                this.bind((Class)entry.getKey()).toInstance(entry.getValue());
-            }
-
+            bindings.forEach((owner, binding) -> binding.accept(binder()));
         }
     }
 
