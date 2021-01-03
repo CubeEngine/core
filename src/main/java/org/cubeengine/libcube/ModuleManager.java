@@ -129,7 +129,6 @@ public class ModuleManager
     {
         this.modulePlugins.put(module, plugin);
         Module moduleModule = binder -> {
-            binder.bind(PluginContainer.class).toInstance(plugin);
             binder.bind(Log.class).toInstance(getLoggerFor(module));
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));

@@ -41,8 +41,7 @@ public abstract class CubeEnginePlugin {
     @Inject PluginContainer plugin;
     @Inject private Injector injector;
     @ConfigDir(sharedRoot = false) @Inject Path dataFolder;
-    private PluginContainer lib;
-    private Class<?> module;
+    private final Class<?> module;
     private ModuleManager mm;
     private Object instance;
 
@@ -54,8 +53,8 @@ public abstract class CubeEnginePlugin {
     @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
-        this.lib = event.getGame().getPluginManager().getPlugin("cubeengine-core")
-                        .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
+        final PluginContainer lib = event.getGame().getPluginManager().getPlugin("cubeengine-core")
+                                         .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
