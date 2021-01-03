@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.task;
 
 import org.spongepowered.api.scheduler.ScheduledTask;
+import org.spongepowered.api.util.Ticks;
 
 /**
  * This Task can be cancelled from the inside.
@@ -51,7 +52,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncRepeatingTask(int delay, int repeat)
     {
-        this.task = this.tm.runAsynchronousTimer(this, delay, repeat);
+        this.task = this.tm.runTimerAsync(task -> this.run(), Ticks.of(delay), Ticks.of(repeat));
     }
 
     /**
@@ -61,7 +62,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleAsyncTask(int delay)
     {
-        this.task = this.tm.runAsynchronousTaskDelayed(this, delay);
+        this.task = this.tm.runTaskAsyncDelayed(this, Ticks.of(delay));
     }
 
     /**
@@ -72,7 +73,7 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncRepeatingTask(int delay, int repeat)
     {
-        this.task = this.tm.runTimer(this, delay, repeat);
+        this.task = this.tm.runTimer(task -> this.run(), Ticks.of(delay), Ticks.of(repeat));
     }
 
     /**
@@ -82,6 +83,6 @@ public abstract class Task implements Runnable
      */
     public void scheduleSyncTask(int delay)
     {
-        this.task = this.tm.runTaskDelayed(this, delay);
+        this.task = this.tm.runTaskDelayed(this, Ticks.of(delay));
     }
 }

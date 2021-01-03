@@ -17,32 +17,24 @@
  */
 package org.cubeengine.libcube.service.task;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.cubeengine.libcube.LibCube;
-import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.api.util.Ticks;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.Duration;
+import java.util.function.Consumer;
 
 @Singleton
 public class SpongeTaskManager implements TaskManager
 {
     private final Game game;
-    private PluginContainer plugin;
+    private final PluginContainer plugin;
 
     @Inject
     public SpongeTaskManager(Game game, PluginContainer plugin)
@@ -54,47 +46,77 @@ public class SpongeTaskManager implements TaskManager
     @Override
     public ScheduledTask runTask(Runnable runnable)
     {
-        return this.runTaskDelayed(runnable, 0);
-    }
-
-    @Override
-    public ScheduledTask runTaskDelayed(Runnable runnable, long delay)
-    {
-        checkNotNull(runnable, "The runnable must not be null!");
-
-        final Task task = newTask().delay(Ticks.of(delay)).execute(runnable).build();
+        final Task task = newTask().execute(runnable).build();
         return game.getServer().getScheduler().submit(task);
     }
 
     @Override
-    public ScheduledTask runTimer(Runnable runnable, long delay, long interval)
+    public ScheduledTask runTaskDelayed(Runnable runnable, Duration delay)
     {
-        checkNotNull(runnable, "The runnable must not be null!");
-
-        final Task task = newTask().delay(Ticks.of(delay)).interval(Ticks.of(interval)).execute(runnable).build();
+        final Task task = newTask().delay(delay).execute(runnable).build();
         return game.getServer().getScheduler().submit(task);
     }
 
     @Override
-    public ScheduledTask runAsynchronousTask(Runnable runnable)
+    public ScheduledTask runTaskDelayed(Runnable runnable, Ticks delay)
     {
-        return this.runAsynchronousTaskDelayed(runnable, 0);
+        final Task task = newTask().delay(delay).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
     }
 
     @Override
-    public ScheduledTask runAsynchronousTaskDelayed(Runnable runnable, long delay)
+    public ScheduledTask runTaskAsync(Runnable runnable)
     {
-        checkNotNull(runnable, "The runnable must not be null!");
-        final Task task = newTask().delay(delay * 50, MILLISECONDS).execute(runnable).build();
+        final Task task = newTask().execute(runnable).build();
         return game.getAsyncScheduler().submit(task);
     }
 
     @Override
-    public ScheduledTask runAsynchronousTimer(Runnable runnable, long delay, long interval)
+    public ScheduledTask runTaskAsyncDelayed(Runnable runnable, Duration delay)
     {
-        checkNotNull(runnable, "The runnable must not be null!");
+        final Task task = newTask().delay(delay).execute(runnable).build();
+        return game.getAsyncScheduler().submit(task);
+    }
 
-        final Task task = newTask().delay(delay * 50, MILLISECONDS).execute(runnable).interval(interval * 50, MILLISECONDS).build();
+    @Override
+    public ScheduledTask runTaskAsyncDelayed(Runnable runnable, Ticks delay)
+    {
+        final Task task = newTask().delay(delay).execute(runnable).build();
+        return game.getAsyncScheduler().submit(task);
+    }
+
+    @Override
+    public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration delay, Duration interval)
+    {
+        final Task task = newTask().delay(delay).interval(interval).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
+    }
+
+    @Override
+    public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval)
+    {
+        final Task task = newTask().delay(delay).interval(interval).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
+    }
+
+    @Override
+    public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration interval)
+    {
+        final Task task = newTask().interval(interval).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
+    }
+
+    @Override
+    public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks interval)
+    {
+        final Task task = newTask().interval(interval).execute(runnable).build();
+        return game.getServer().getScheduler().submit(task);
+    }
+
+    @Override
+    public ScheduledTask runTimerAsync(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval)
+    {
+        final Task task = newTask().delay(delay).execute(runnable).interval(interval).build();
         return game.getAsyncScheduler().submit(task);
     }
 

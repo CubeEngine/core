@@ -19,8 +19,10 @@ package org.cubeengine.libcube.service.task;
 
 import com.google.inject.ImplementedBy;
 import org.spongepowered.api.scheduler.ScheduledTask;
+import org.spongepowered.api.util.Ticks;
 
-import java.util.UUID;
+import java.time.Duration;
+import java.util.function.Consumer;
 
 /**
  * This class provides methods to register and cancel tasks and the global
@@ -32,7 +34,6 @@ public interface TaskManager
     /**
      * Schedules a delayed task for a module
      *
-     * @param owner   the module
      * @param runnable the task
      * @return the ID of the task
      */
@@ -41,51 +42,92 @@ public interface TaskManager
     /**
      * Schedules a delayed task for a module with the given delay on the main server thread
      *
-     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @return the ID of the task
      */
-    ScheduledTask runTaskDelayed(Runnable runnable, long delay);
+    ScheduledTask runTaskDelayed(Runnable runnable, Duration delay);
+
+    /**
+     * Schedules a delayed task for a module with the given delay on the main server thread
+     *
+     * @param runnable the task
+     * @param delay    the delay in ticks
+     * @return the ID of the task
+     */
+    ScheduledTask runTaskDelayed(Runnable runnable, Ticks delay);
+
+    /**
+     * Schedules a asynchronous delayed task for a module
+     *
+     * @param runnable the task
+     * @return the ID of the task
+     */
+    ScheduledTask runTaskAsync(Runnable runnable);
+
+    /**
+     * Schedules a asynchronous delayed task for a module with the given delay
+     *
+     * @param runnable the task
+     * @param delay    the delay in ticks
+     * @return the ID of the task
+     */
+    ScheduledTask runTaskAsyncDelayed(Runnable runnable, Duration delay);
+
+    /**
+     * Schedules a asynchronous delayed task for a module with the given delay
+     *
+     * @param runnable the task
+     * @param delay    the delay in ticks
+     * @return the ID of the task
+     */
+    ScheduledTask runTaskAsyncDelayed(Runnable runnable, Ticks delay);
 
     /**
      * Schedules a repeating task for a module with the given delay and interval
      *
-     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    ScheduledTask runTimer(Runnable runnable, long delay, long interval);
+    ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration delay, Duration interval);
 
     /**
-     * Schedules a asynchronous delayed task for a module
+     * Schedules a repeating task for a module with the given delay and interval
      *
-     * @param owner   the module
      * @param runnable the task
+     * @param delay    the delay in ticks in ticks
+     * @param interval the interval in ticks
      * @return the ID of the task
      */
-    ScheduledTask runAsynchronousTask(Runnable runnable);
+    ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval);
 
     /**
-     * Schedules a asynchronous delayed task for a module with the given delay
+     * Schedules a repeating task for a module with the given delay and interval
      *
-     * @param owner   the module
      * @param runnable the task
-     * @param delay    the delay in ticks
+     * @param interval the interval in ticks
      * @return the ID of the task
      */
-    ScheduledTask runAsynchronousTaskDelayed(Runnable runnable, long delay);
+    ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration interval);
+
+    /**
+     * Schedules a repeating task for a module with the given delay and interval
+     *
+     * @param runnable the task
+     * @param interval the interval in ticks
+     * @return the ID of the task
+     */
+    ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks interval);
 
     /**
      * Schedules a asynchronous repeating task for a module with the given delay and interval
      *
-     * @param owner   the module
      * @param runnable the task
      * @param delay    the delay in ticks
      * @param interval the interval in ticks
      * @return the ID of the task
      */
-    ScheduledTask runAsynchronousTimer(Runnable runnable, long delay, long interval);
+    ScheduledTask runTimerAsync(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval);
 }

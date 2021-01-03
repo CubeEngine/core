@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import org.cubeengine.libcube.service.task.TaskManager;
 import org.spongepowered.api.scheduler.ScheduledTask;
+import org.spongepowered.api.util.Ticks;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -78,7 +79,7 @@ public class SyncTaskQueue implements TaskQueue
     {
         if (!this.isRunning())
         {
-            this.task = this.tm.runTimer(this.workerTask, 0, 1);
+            this.task = this.tm.runTimer(task -> this.workerTask.run(), Ticks.of(1));
         }
     }
 
