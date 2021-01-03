@@ -36,6 +36,7 @@ import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
+import com.google.inject.util.Modules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.ModuleInjector;
@@ -127,12 +128,13 @@ public class ModuleManager
     public <T> T registerAndCreate(Class<T> module, PluginContainer plugin, Injector injector)
     {
         this.modulePlugins.put(module, plugin);
-        Injector moduleInjector = injector.createChildInjector(guiceModule, binder -> {
+        Module moduleModule = binder -> {
             binder.bind(PluginContainer.class).toInstance(plugin);
             binder.bind(Log.class).toInstance(getLoggerFor(module));
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
-        });
+        };
+        Injector moduleInjector = injector.createChildInjector(Modules.override(guiceModule).with(moduleModule));
         this.moduleInjectors.put(module, moduleInjector);
         T instance = moduleInjector.getInstance(module);
         this.modules.put(module, instance);
