@@ -50,7 +50,6 @@ import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.logging.Log4jProxyTarget;
 import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.logging.LoggerConfiguration;
-import org.cubeengine.libcube.service.matcher.MaterialMatcher;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
 import org.cubeengine.libcube.service.task.SpongeTaskManager;
 import org.cubeengine.libcube.service.task.TaskManager;
@@ -75,7 +74,6 @@ public class ModuleManager
     private final FileManager fm;
     private final Reflector reflector;
     private final File path;
-    private final EventManager em;
     private final LibCube plugin;
     private final DefaultLogFactory logFactory;
     private final ModuleThreadFactory tf;
@@ -87,7 +85,6 @@ public class ModuleManager
     private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
     private final Map<Class<?>, Consumer<Binder>> bindings = new HashMap<>();
     private final LogProvider logProvider;
-    private final MaterialMatcher mm;
     private final AnnotationCommandBuilder cm;
     private final I18n i18n;
     private final Injector injector;
@@ -105,15 +102,12 @@ public class ModuleManager
         this.fm = new FileManager(this, path, reflector);
         this.logFactory = new DefaultLogFactory();
         this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
-        this.logProvider = new LogProvider(this.logFactory);
-        this.mm = new MaterialMatcher(this);
-        this.i18n = new I18n(fm, reflector, logProvider, this);
         this.mainLogger = configureMainLogger(path);
 
         this.injector = injector.createChildInjector(guiceModule);
-        this.injector.injectMembers(this.i18n);
         this.cm = this.injector.getInstance(AnnotationCommandBuilder.class);
-        this.em = this.injector.getInstance(EventManager.class);
+        this.i18n = this.injector.getInstance(I18n.class);
+        this.logProvider = this.injector.getInstance(LogProvider.class);
     }
 
     private Log configureMainLogger(File path) {
@@ -134,8 +128,10 @@ public class ModuleManager
     {
         this.modulePlugins.put(module, plugin);
         Injector moduleInjector = injector.createChildInjector(guiceModule, binder -> {
+            binder.bind(PluginContainer.class).toInstance(plugin);
             binder.bind(Log.class).toInstance(getLoggerFor(module));
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
+            binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
         });
         this.moduleInjectors.put(module, moduleInjector);
         T instance = moduleInjector.getInstance(module);
@@ -143,9 +139,11 @@ public class ModuleManager
 
         this.i18n.registerPlugin(plugin);
 
+        final EventManager em = moduleInjector.getInstance(EventManager.class);
+        em.injectListeners(moduleInjector, instance, getAnnotatedFields(instance, ModuleListener.class));
+        em.registerListener(instance);
+
         this.cm.injectCommands(moduleInjector, instance, getAnnotatedFields(instance, ModuleCommand.class));
-        this.em.injectListeners(moduleInjector, instance, getAnnotatedFields(instance, ModuleListener.class));
-        this.em.registerListener(module, instance); // TODO is this working for modules without listener?
 
         injectClassAnnotations(module, instance);
 
@@ -233,11 +231,12 @@ public class ModuleManager
             this.bind(FileManager.class).toInstance(fm); // TODO how to organize our folders?
             this.bind(Reflector.class).toInstance(reflector);
             this.bind(LogFactory.class).toInstance(logFactory);
-            this.bind(LogProvider.class).toInstance(logProvider);
-            this.bind(MaterialMatcher.class).toInstance(mm);
-            this.bind(TaskManager.class).to(SpongeTaskManager.class);
 
-            this.bind(I18n.class).toInstance(i18n);
+            // TODO apparently, these are unnecessary. Check and remove or restore.
+            // this.bind(MaterialMatcher.class).to(MaterialMatcher.class);
+            // this.bind(TaskManager.class).to(SpongeTaskManager.class);
+            // this.bind(I18n.class).to(I18n.class);
+            // this.bind(LogProvider.class).to(LogProvider.class);
 
             bindings.forEach((owner, binding) -> binding.accept(binder()));
         }

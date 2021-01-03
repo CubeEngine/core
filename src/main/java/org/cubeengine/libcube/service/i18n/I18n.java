@@ -90,10 +90,10 @@ import java.util.jar.JarFile;
 public class I18n extends I18nTranslate
 {
     private final I18nService service;
-    private List<URL> poFiles = new LinkedList<>();
-    private Map<String, Language> languageLookupMap = new HashMap<>();
-    private BuilderDirigent<Component, TextComponent.Builder> compositor;
-    @Inject private StringMatcher stringMatcher;
+    private final List<URL> poFiles = new LinkedList<>();
+    private final Map<String, Language> languageLookupMap = new HashMap<>();
+    private final BuilderDirigent<Component, TextComponent.Builder> compositor;
+    private final StringMatcher stringMatcher;
     private final I18nConfig config;
     private final Context defaultContext;
 
@@ -101,8 +101,9 @@ public class I18n extends I18nTranslate
     private final LibCube plugin;
 
     @Inject
-    public I18n(FileManager fm, Reflector reflector, LogProvider logProvider, ModuleManager mm)
+    public I18n(FileManager fm, Reflector reflector, LogProvider logProvider, ModuleManager mm, StringMatcher stringMatcher)
     {
+        this.stringMatcher = stringMatcher;
         this.log = logProvider.getLogger(I18n.class, "I18n");
         this.plugin = ((LibCube) mm.getModule(LibCube.class));
         this.config = reflector.load(I18nConfig.class, fm.getDataPath().resolve("i18n.yml").toFile());

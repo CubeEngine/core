@@ -42,9 +42,9 @@ import java.util.UUID;
 
 public class InventoryGuard
 {
-    private EventManager em;
-    private TaskManager tm;
-    private Inventory inventory;
+    private final EventManager em;
+    private final TaskManager tm;
+    private final Inventory inventory;
     private Container container;
     private final HashSet<UUID> users;
 
@@ -59,7 +59,6 @@ public class InventoryGuard
     private final HashSet<Runnable> onChange = new HashSet<>();
 
     private boolean ignoreRepaircost = true;
-    private Class<?> owner;
 
     public InventoryGuard(EventManager em, TaskManager tm, Inventory inventory, UUID[] users)
     {
@@ -75,10 +74,9 @@ public class InventoryGuard
         this.ignoreRepaircost = set;
     }
 
-    public void submitInventory(Class owner, boolean openInventory)
+    public void submitInventory(boolean openInventory)
     {
-        this.owner = owner;
-        em.registerListener(owner, this);
+        em.registerListener(this);
         if (openInventory)
         {
             for (UUID user : users)
@@ -145,7 +143,7 @@ public class InventoryGuard
                 this.users.remove(player.getUniqueId());
                 if (this.users.isEmpty())
                 {
-                    em.removeListener(owner, this); // no user left to check
+                    em.removeListener(this); // no user left to check
                 }
                 this.onClose.forEach(Runnable::run);
             }

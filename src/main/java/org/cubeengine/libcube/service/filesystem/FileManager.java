@@ -41,15 +41,15 @@ import java.util.List;
  */
 public class FileManager
 {
-    private ModuleManager mm;
-    private File dataFolder;
+    private final ModuleManager mm;
+    private final File dataFolder;
     private final Reflector reflector;
 
-    private Path languagePath;
-    private Path logPath;
+    private final Path languagePath;
+    private final Path logPath;
 
-    private Path translationPath;
-    private FileAttribute<?>[] folderCreateAttributes;
+    private final Path translationPath;
+    private final FileAttribute<?>[] folderCreateAttributes;
 
     @Inject
     public FileManager(ModuleManager moduleManager, File dataFolder, Reflector reflector)

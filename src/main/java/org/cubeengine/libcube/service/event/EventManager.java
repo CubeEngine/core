@@ -21,21 +21,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.cubeengine.libcube.LibCube;
-import org.cubeengine.libcube.ModuleManager;
-import org.spongepowered.api.Sponge;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.plugin.PluginContainer;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
 /**
@@ -43,87 +35,41 @@ import java.util.function.Predicate;
  */
 public class EventManager
 {
-    private final ConcurrentMap<Class, Set<Object>> listenerMap;
-    private final org.spongepowered.api.event.EventManager eventManager;
+    private final org.spongepowered.api.event.EventManager em;
     private final PluginContainer plugin;
-    private ModuleManager mm;
 
     @Inject
-    public EventManager(ModuleManager mm)
+    public EventManager(Game game, PluginContainer plugin)
     {
-        this.mm = mm;
-        this.eventManager = Sponge.getEventManager();
-        this.listenerMap = new ConcurrentHashMap<>();
-        this.plugin = mm.getPlugin(LibCube.class).get();
+        this.em = game.getEventManager();
+        this.plugin = plugin;
     }
 
     /**
      * Registers an event listener with a module
      *
-     * @param owner   the module
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager registerListener(Class owner, Object listener)
+    public void registerListener(Object listener)
     {
-        this.listenerMap.computeIfAbsent(owner, k -> new HashSet<>()).add(listener);
-        this.eventManager.registerListeners(this.mm.getPlugin(owner).orElse(this.plugin), listener);
-        return this;
+        this.em.registerListeners(this.plugin, listener);
     }
 
-    public <T extends Event> EventManager listenUntil(Class owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
-        eventManager.registerListener(this.mm.getPlugin(owner).orElse(this.plugin), eventClass, new UntilEventListener<>(filter, listener));
+    public <T extends Event> EventManager listenUntil(Class<?> owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
+        em.registerListener(this.plugin, eventClass, new UntilEventListener<>(filter, listener));
         return this;
     }
 
     /**
      * Removes an event listener from a module
      *
-     * @param owner   the module
      * @param listener the listener
      * @return fluent interface
      */
-    public EventManager removeListener(Class owner, Object listener)
+    public void removeListener(Object listener)
     {
-        checkNotNull(owner, "The module must not be null!");
-        checkNotNull(listener, "The listener must not be null!");
-
-        Set<Object> listeners = this.listenerMap.get(owner);
-        if (listeners != null && listeners.remove(listener))
-        {
-            eventManager.unregisterListeners(listener);
-        }
-        return this;
-    }
-
-    /**
-     * Removes all listeners of the given module
-     *
-     * @param owner te module
-     */
-    private void removeListeners(Class owner)
-    {
-        Set<Object> listeners = this.listenerMap.remove(owner);
-        if (listeners != null)
-        {
-            listeners.forEach(eventManager::unregisterListeners);
-        }
-    }
-
-    /**
-     * Removes all listeners registered by the CubeEngine
-     *
-     * @return fluent interface
-     */
-    public EventManager removeListeners()
-    {
-        Iterator<Entry<Class, Set<Object>>> it = this.listenerMap.entrySet().iterator();
-        while (it.hasNext())
-        {
-            it.next().getValue().forEach(eventManager::unregisterListeners);
-            it.remove();
-        }
-        return this;
+        em.unregisterListeners(listener);
     }
 
     /**
@@ -135,7 +81,7 @@ public class EventManager
      */
     public <T extends Event> T fireEvent(T event)
     {
-        this.eventManager.post(event);
+        this.em.post(event);
         return event;
     }
 
@@ -148,7 +94,7 @@ public class EventManager
                 field.setAccessible(true);
                 Object listener = injector.getInstance(field.getType());
                 field.set(instance, listener);
-                this.registerListener(instance.getClass(), listener);
+                this.registerListener(listener);
             }
             catch (IllegalAccessException e)
             {
@@ -172,7 +118,7 @@ public class EventManager
         public void handle(T event) {
             if (filter.test(event)) {
                 if (listener.test(event)) {
-                    eventManager.unregisterListeners(this);
+                    em.unregisterListeners(this);
                 }
             }
         }

@@ -25,6 +25,7 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.cubeengine.libcube.ModuleManager;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
@@ -45,21 +46,22 @@ import java.util.Set;
 @Singleton
 public class PermissionManager
 {
-    @Inject private ModuleManager mm;
-    private PluginContainer plugin;
+    private final PluginContainer plugin;
+    private final ModuleManager mm;
 
-    private final Map<Class, Permission> basePermission = new HashMap<>();
+    private final Map<Class<?>, Permission> basePermission = new HashMap<>();
     private final Map<String, Permission> permissions = new HashMap<>();
-    private Permission rootPermission;
+    private final Permission rootPermission;
 
     private PermissionService permissionService;
     private final Set<Permission> unregistered = new HashSet<>();
 
     @Inject
-    public PermissionManager(PluginContainer plugin)
+    public PermissionManager(Game game, ModuleManager mm, PluginContainer plugin)
     {
         this.plugin = plugin;
-        Sponge.getEventManager().registerListeners(plugin, this);
+        this.mm = mm;
+        game.getEventManager().registerListeners(plugin, this);
         rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", emptySet())); // TODO translatable
     }
 
@@ -97,7 +99,7 @@ public class PermissionManager
         return permission;
     }
 
-    public Permission getBasePermission(Class owner)
+    public Permission getBasePermission(Class<?> owner)
     {
         Permission perm = basePermission.get(owner);
         if (perm == null)
@@ -115,7 +117,7 @@ public class PermissionManager
         return permissions.get(permission);
     }
 
-    public Permission getPermission(Class owner, String permission)
+    public Permission getPermission(Class<?> owner, String permission)
     {
         return getPermission(permId(owner, permission, null));
     }

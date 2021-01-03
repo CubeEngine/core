@@ -58,8 +58,6 @@ import java.util.stream.Collectors;
 @Singleton
 public class MaterialMatcher
 {
-    private PluginContainer plugin;
-
     private final Map<String, ItemType> names = new HashMap<>();
     private final Map<String, ItemType> ids = new HashMap<>();
     private final Map<BlockType, Map<String, BlockState>> variantMap = new HashMap<>();
@@ -69,13 +67,14 @@ public class MaterialMatcher
 
     private final Map<Locale, Map<String, ItemStack>> localizedStackMap = new HashMap<>();
 
-    @Inject private StringMatcher stringMatcher;
+    private final StringMatcher stringMatcher;
+
     private Map<String, BlockState> blockStateItems;
 
     @Inject
-    public MaterialMatcher(ModuleManager mm)
+    public MaterialMatcher(StringMatcher stringMatcher)
     {
-        this.plugin = mm.getPlugin(LibCube.class).get();
+        this.stringMatcher = stringMatcher;
     }
 
     public void onEnable()

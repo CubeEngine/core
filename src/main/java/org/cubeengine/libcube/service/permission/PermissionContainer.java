@@ -20,9 +20,9 @@ package org.cubeengine.libcube.service.permission;
 public abstract class PermissionContainer
 {
     protected final PermissionManager pm;
-    private final Class owner;
+    private final Class<?> owner;
 
-    public PermissionContainer(PermissionManager pm, Class owner)
+    public PermissionContainer(PermissionManager pm, Class<?> owner)
     {
         this.pm = pm;
         this.owner = owner;
