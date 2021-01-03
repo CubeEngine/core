@@ -47,7 +47,7 @@ public class ConfigWorld
         if (this.world == null || !this.world.getKey().asString().equals(this.name))
         {
             final ResourceKey key = ResourceKey.resolve(name);
-            this.world = Sponge.getServer().getWorldManager().getWorld(key).orElse(Sponge.getServer().getWorldManager().loadWorld(key).join());
+            this.world = Sponge.getServer().getWorldManager().world(key).orElse(Sponge.getServer().getWorldManager().loadWorld(key).join());
         }
         return this.world;
     }

@@ -46,12 +46,12 @@ public class WorldConverter extends SimpleConverter<ServerWorld>
             if (string.contains("(") && string.contains(")"))
             {
                 UUID uid = UUID.fromString(string.substring(string.indexOf('(') + 1, string.indexOf(')')));
-                world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.sponge(uid.toString()));
+                world = Sponge.getServer().getWorldManager().world(ResourceKey.sponge(uid.toString()));
                 string = string.substring(0, string.indexOf('('));
             }
             if (!world.isPresent())
             {
-                world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.sponge(string));
+                world = Sponge.getServer().getWorldManager().world(ResourceKey.sponge(string));
             }
             if (world.isPresent())
             {

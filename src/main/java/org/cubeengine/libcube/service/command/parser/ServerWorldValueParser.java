@@ -47,7 +47,7 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
             CommandContext.Builder context) throws ArgumentParseException
     {
         final ResourceKey key = reader.parseResourceKey("minecraft");
-        final Optional<ServerWorld> world = Sponge.getServer().getWorldManager().getWorld(key);
+        final Optional<ServerWorld> world = Sponge.getServer().getWorldManager().world(key);
         if (!world.isPresent())
         {
             throw reader.createException(Component.text("World " + key + " does not exist."));
@@ -65,7 +65,7 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
     public List<String> complete(CommandContext context, String currentInput)
     {
         final List<String> list = new ArrayList<>();
-        Sponge.getServer().getWorldManager().getWorlds().stream()
+        Sponge.getServer().getWorldManager().worlds().stream()
                      .map(ServerWorld::getKey)
                      .filter(k -> k.getFormatted().startsWith(currentInput) || k.getNamespace().equals("minecraft") && k.getValue().startsWith(currentInput))
                      .forEach(k -> {

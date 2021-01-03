@@ -23,9 +23,9 @@ import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.AbstractFormatter;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
-import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.world.biome.Biome;
 
-public class BiomeFormatter extends AbstractFormatter<BiomeType>
+public class BiomeFormatter extends AbstractFormatter<Biome>
 {
     public BiomeFormatter()
     {
@@ -33,7 +33,7 @@ public class BiomeFormatter extends AbstractFormatter<BiomeType>
     }
 
     @Override
-    protected Component format(BiomeType arg, Context context, Arguments args)
+    protected Component format(Biome arg, Context context, Arguments args)
     {
         return new StyledComponent(NamedTextColor.DARK_AQUA, arg.toString()); // TODO translation
     }

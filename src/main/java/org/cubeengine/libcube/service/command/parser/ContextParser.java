@@ -68,7 +68,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     @Override
     public List<String> complete(CommandContext context, String currentInput)
     {
-        List<String> list = Sponge.getServer().getWorldManager().getWorlds().stream()
+        List<String> list = Sponge.getServer().getWorldManager().worlds().stream()
                                   .map(ServerWorld::getKey)
                                   .map(ResourceKey::asString)
                                   .filter(n -> n.toLowerCase().startsWith(currentInput.toLowerCase()))
@@ -81,7 +81,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
         if (currentInput.equals("world") || currentInput.toLowerCase().startsWith("world|"))
         {
             String subToken = currentInput.equals("world") ? "" : currentInput.substring(6);
-            list.addAll(Sponge.getServer().getWorldManager().getWorlds().stream()
+            list.addAll(Sponge.getServer().getWorldManager().worlds().stream()
                               .map(ServerWorld::getKey)
                               .map(ResourceKey::asString)
                               .filter(n -> n.toLowerCase().startsWith(subToken.toLowerCase()))
@@ -122,7 +122,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
 
     private boolean isValidWorld(String token)
     {
-        return Sponge.getServer().getWorldManager().getWorld(ResourceKey.resolve(token)).isPresent();
+        return Sponge.getServer().getWorldManager().world(ResourceKey.resolve(token)).isPresent();
     }
 
 

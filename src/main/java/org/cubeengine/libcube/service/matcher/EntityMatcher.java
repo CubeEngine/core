@@ -158,8 +158,8 @@ public class EntityMatcher
     }
 
     public Entity getEntity(EntityType<?> type) {
-        final ResourceKey defKey = Sponge.getServer().getWorldManager().getServer().getDefaultWorldKey();
-        return Sponge.getServer().getWorldManager().getWorld(defKey).get().createEntity(type, Vector3d.ZERO);
+        final ResourceKey defKey = Sponge.getServer().getDefaultWorldKey();
+        return Sponge.getServer().getWorldManager().world(defKey).get().createEntity(type, Vector3d.ZERO);
     }
 
     /**

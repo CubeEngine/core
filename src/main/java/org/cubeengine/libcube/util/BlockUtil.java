@@ -35,7 +35,7 @@ import org.spongepowered.api.data.type.PortionType;
 import org.spongepowered.api.data.type.PortionTypes;
 import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.ServerLocation;
+import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.chunk.Chunk;
 import org.spongepowered.api.world.storage.ChunkLayout;
 

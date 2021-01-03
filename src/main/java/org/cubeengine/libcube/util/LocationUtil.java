@@ -38,7 +38,7 @@ import org.spongepowered.api.util.blockray.RayTraceResult;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.LocatableBlock;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.ServerLocation;
+import org.spongepowered.api.world.server.ServerLocation;
 
 import static java.util.stream.Collectors.toList;
 import static org.spongepowered.api.util.Direction.UP;

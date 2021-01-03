@@ -25,7 +25,7 @@ import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.ServerLocation;
+import org.spongepowered.api.world.server.ServerLocation;
 import org.spongepowered.api.world.server.ServerWorld;
 
 import java.util.LinkedHashMap;
@@ -53,7 +53,7 @@ public class LocationConverter extends SingleClassConverter<ServerLocation>
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getValue();
-            ServerWorld world = Sponge.getServer().getWorldManager().getWorld(ResourceKey.resolve(((StringNode)input.get("world")).getValue())).get();
+            ServerWorld world = Sponge.getServer().getWorldManager().world(ResourceKey.resolve(((StringNode)input.get("world")).getValue())).get();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);

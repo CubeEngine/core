@@ -19,7 +19,7 @@ package org.cubeengine.libcube.service;
 
 import org.cubeengine.libcube.util.math.shape.Shape;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.world.ServerLocation;
+import org.spongepowered.api.world.server.ServerLocation;
 
 public interface Selector
 {
