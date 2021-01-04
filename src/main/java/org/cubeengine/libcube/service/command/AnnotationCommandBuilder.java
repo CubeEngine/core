@@ -140,7 +140,7 @@ public class AnnotationCommandBuilder
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(getBasePerm(plugin), "command", name)));
 
-            final CommandMapping mapping = event.register(plugin, build, name, holderAnnotation.alias());
+            final CommandMapping mapping = event.registerMapping(plugin, build, name, holderAnnotation.alias());
             moduleCommands.put(mapping, build);
         }
         else
@@ -159,7 +159,7 @@ public class AnnotationCommandBuilder
                 try
                 {
                     final Parameterized build = this.buildCommand(injector, holder, method, methodAnnotation, getBasePerm(plugin), "command", name);
-                    final CommandMapping mapping = event.register(plugin, build, name, methodAnnotation.alias());
+                    final CommandMapping mapping = event.registerMapping(plugin, build, name, methodAnnotation.alias());
                     moduleCommands.put(mapping, build);
                 }
                 catch (Exception e)
