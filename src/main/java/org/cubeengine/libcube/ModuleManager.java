@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
@@ -206,8 +207,9 @@ public class ModuleManager
     public <T> T registerCommands(RegisterCommandEvent<Command.Parameterized> event, PluginContainer container, Object module, Class<T> holderClass)
     {
         final Map<CommandMapping, Parameterized> registered = this.moduleCommands.computeIfAbsent(module.getClass(), k -> new HashMap<>());
-        final T instance = injector.getInstance(holderClass);
-        this.cm.registerCommands(moduleInjectors.get(module.getClass()), event, container, instance, registered);
+        final Injector moduleInjector = moduleInjectors.get(module.getClass());
+        final T instance = moduleInjector.getInstance(holderClass);
+        this.cm.registerCommands(moduleInjector, event, container, instance, registered);
         return instance;
     }
 
@@ -216,10 +218,10 @@ public class ModuleManager
         return this.moduleCommands.get(module);
     }
 
-    public void loadConfigs(Class<?> module)
+    public void loadConfigs(Class<?> module, boolean early)
     {
         Object instance = modules.get(module);
-        this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class));
+        this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class, a -> a.early() == early));
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
@@ -253,12 +255,16 @@ public class ModuleManager
         return path;
     }
 
-    public static List<Field> getAnnotatedFields(Object instance, Class<? extends Annotation> annotation)
+    public static <T extends Annotation> List<Field> getAnnotatedFields(Object instance, Class<T> annotation)
+    {
+        return getAnnotatedFields(instance, annotation, a -> true);
+    }
+    public static <T extends Annotation> List<Field> getAnnotatedFields(Object instance, Class<T> annotation, Predicate<T> predicate)
     {
         List<Field> fields = new ArrayList<>();
         for (Field field : instance.getClass().getDeclaredFields())
         {
-            if (field.isAnnotationPresent(annotation))
+            if (field.isAnnotationPresent(annotation) && predicate.test(field.getAnnotation(annotation)))
             {
                 fields.add(field);
             }

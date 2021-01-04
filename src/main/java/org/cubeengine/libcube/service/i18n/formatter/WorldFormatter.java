@@ -17,7 +17,6 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
@@ -25,6 +24,8 @@ import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
+import org.cubeengine.libcube.service.i18n.formatter.component.TextComponent;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.api.world.server.storage.ServerWorldProperties;
 
@@ -34,9 +35,10 @@ public class WorldFormatter extends ReflectedFormatter
     @Format
     public Component format(ServerWorld world)
     {
+        final ResourceKey worldKey = world.getKey();
         return HoverComponent.hoverText(
-            net.kyori.adventure.text.Component.text(world.getUniqueId().toString()).color(NamedTextColor.YELLOW),
-            StyledComponent.colored(NamedTextColor.GOLD, world.getDirectory().getFileName().toString()));
+            net.kyori.adventure.text.Component.text(worldKey.asString()).color(NamedTextColor.YELLOW),
+            new TextComponent(world.getProperties().displayName().orElse(net.kyori.adventure.text.Component.text(worldKey.getValue()).color(NamedTextColor.GOLD))));
     }
 
     @Format

@@ -31,7 +31,6 @@ import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -59,13 +58,14 @@ public abstract class CubeEnginePlugin {
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
         this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
+        this.mm.loadConfigs(this.module, true);
     }
 
     @Listener(order = Order.EARLY)
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
-        this.mm.loadConfigs(this.module);
+        this.mm.loadConfigs(this.module, false);
         if (module == null)
         {
             mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());

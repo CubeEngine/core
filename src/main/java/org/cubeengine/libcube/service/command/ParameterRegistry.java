@@ -21,6 +21,7 @@ package org.cubeengine.libcube.service.command;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import com.google.inject.Injector;
@@ -29,7 +30,10 @@ import net.kyori.adventure.audience.Audience;
 import org.cubeengine.libcube.service.command.parser.AudienceValuerParser;
 import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParameterProvider;
 import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
+import org.cubeengine.libcube.service.command.parser.StringListParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
+import org.cubeengine.libcube.service.command.parser.Vector2iValueParser;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
@@ -38,8 +42,15 @@ import org.spongepowered.api.command.parameter.managed.standard.VariableValuePar
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.registry.DefaultedRegistryType;
+import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
 
 public class ParameterRegistry
@@ -82,13 +93,26 @@ public class ParameterRegistry
         registerSponge(boolean.class, ResourceKeyedValueParameters.BOOLEAN);
         registerSponge(Integer.class, ResourceKeyedValueParameters.INTEGER);
         registerSponge(int.class, ResourceKeyedValueParameters.INTEGER);
+        registerSponge(Double.class, ResourceKeyedValueParameters.DOUBLE);
+        registerSponge(double.class, ResourceKeyedValueParameters.DOUBLE);
         register(ServerPlayer.class, new ServerPlayerDefaultParameterProvider());
         register(User.class, new UserDefaultParameterProvider());
         registerSponge(Vector3d.class, ResourceKeyedValueParameters.VECTOR3D);
+        register(Vector2i.class, new Vector2iValueParser());
+        registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
+        registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
+        registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER));
+        registerSponge(ItemStackSnapshot.class, ResourceKeyedValueParameters.ITEM_STACK_SNAPSHOT);
 
+        register((new TypeToken<List<String>>() {}).getType(), new StringListParser());
         registerSponge((new TypeToken<Collection<Entity>>() {}).getType(), ResourceKeyedValueParameters.MANY_ENTITIES);
         registerSponge((new TypeToken<Collection<ServerPlayer>>() {}).getType(), ResourceKeyedValueParameters.MANY_PLAYERS);
         registerSponge((new TypeToken<Collection<GameProfile>>() {}).getType(), ResourceKeyedValueParameters.MANY_GAME_PROFILES);
+    }
+
+    private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> difficulty)
+    {
+        return VariableValueParameters.registryEntryBuilder(c -> Sponge.getGame().registries(), difficulty).defaultNamespace(defaultNameSpace).build();
     }
 
     static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)

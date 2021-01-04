@@ -140,15 +140,14 @@ public class AnnotationCommandBuilder
             helpExecutor.init(build, null,
                               String.join(".", Arrays.asList(getBasePerm(plugin), "command", name)));
 
-            final CommandMapping mapping = event.registerMapping(plugin, build, name, holderAnnotation.alias());
+            final CommandMapping mapping = event.register(plugin, build, name, holderAnnotation.alias()).mapping();
             moduleCommands.put(mapping, build);
         }
         else
         {
             if (holder instanceof DispatcherCommand)
             {
-                throw new IllegalStateException(
-                    "Base command needs a Command annotation! " + holder.getClass().getSimpleName());
+                throw new IllegalStateException("Base command needs a Command annotation! " + holder.getClass().getSimpleName());
             }
             final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(
                 m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
@@ -159,12 +158,12 @@ public class AnnotationCommandBuilder
                 try
                 {
                     final Parameterized build = this.buildCommand(injector, holder, method, methodAnnotation, getBasePerm(plugin), "command", name);
-                    final CommandMapping mapping = event.registerMapping(plugin, build, name, methodAnnotation.alias());
+                    final CommandMapping mapping = event.register(plugin, build, name, methodAnnotation.alias()).mapping();
                     moduleCommands.put(mapping, build);
                 }
                 catch (Exception e)
                 {
-                    throw new IllegalStateException("Failed to register command " + name, e);
+                    throw new IllegalStateException("Failed to register command " + name + " in " + holder.getClass().getSimpleName(), e);
                 }
             }
         }
