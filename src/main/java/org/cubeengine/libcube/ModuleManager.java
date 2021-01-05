@@ -39,7 +39,6 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.util.Modules;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.libcube.service.ReflectorProvider;
 import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
@@ -93,7 +92,7 @@ public class ModuleManager
 
     private final Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
 
-    public ModuleManager(Game game, File path, Logger logger, LibCube libCube, PluginContainer container, Injector injector)
+    public ModuleManager(Game game, File path, LibCube libCube, PluginContainer container, Injector injector)
     {
         this.game = game;
         this.reflector = new ReflectorProvider().get();
@@ -234,12 +233,6 @@ public class ModuleManager
             this.bind(FileManager.class).toInstance(fm); // TODO how to organize our folders?
             this.bind(Reflector.class).toInstance(reflector);
             this.bind(LogFactory.class).toInstance(logFactory);
-
-            // TODO apparently, these are unnecessary. Check and remove or restore.
-            // this.bind(MaterialMatcher.class).to(MaterialMatcher.class);
-            // this.bind(TaskManager.class).to(SpongeTaskManager.class);
-            // this.bind(I18n.class).to(I18n.class);
-            // this.bind(LogProvider.class).to(LogProvider.class);
 
             bindings.forEach((owner, binding) -> binding.accept(binder()));
         }

@@ -17,21 +17,18 @@
  */
 package org.cubeengine.libcube;
 
+import java.io.File;
+import java.nio.file.Path;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.apache.logging.log4j.Logger;
-import org.cubeengine.libcube.service.command.annotation.ModuleCommand;
-import org.cubeengine.libcube.service.command.example.ParentExampleCommand;
+import org.cubeengine.processor.Core;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.cubeengine.processor.Core;
 import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
-import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.io.File;
-import java.nio.file.Path;
 /*
 Sponge gripes
 
@@ -60,19 +57,15 @@ PlayerChatEvent no way to get original player receiving
 public class LibCube
 {
     private final File path;
-    private final Logger pluginLogger;
     private PluginContainer container;
     private ModuleManager mm;
-
-    @ModuleCommand private ParentExampleCommand cmd;
 
     @Inject
     public LibCube(Game game, @ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
     {
         this.path = path.resolve("cubeengine").toFile();
-        this.pluginLogger = logger;
         this.container = container;
-        this.mm = new ModuleManager(game, this.path, logger, this, container, injector);
+        this.mm = new ModuleManager(game, this.path, this, container, injector);
     }
 
     @Listener

@@ -17,18 +17,15 @@
  */
 package org.cubeengine.libcube.service.task;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import java.time.Duration;
+import java.util.function.Consumer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.api.util.Ticks;
-
-import java.time.Duration;
-import java.util.function.Consumer;
+import org.spongepowered.plugin.PluginContainer;
 
 @Singleton
 public class SpongeTaskManager implements TaskManager
