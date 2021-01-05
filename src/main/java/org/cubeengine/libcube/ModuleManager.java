@@ -208,7 +208,7 @@ public class ModuleManager
         final Map<CommandMapping, Parameterized> registered = this.moduleCommands.computeIfAbsent(module.getClass(), k -> new HashMap<>());
         final Injector moduleInjector = moduleInjectors.get(module.getClass());
         final T instance = moduleInjector.getInstance(holderClass);
-        this.cm.registerCommands(moduleInjector, event, container, instance, registered);
+        this.cm.registerCommands(moduleInjector, module.getClass(), event, container, instance, registered);
         return instance;
     }
 

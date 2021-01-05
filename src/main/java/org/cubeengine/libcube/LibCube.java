@@ -40,6 +40,8 @@ async tab-complete
 commands: console command audience is not SystemSubject
 commands: flags repeat
 commands: errors are not shown?
+ValueParser get if used in completion
+Entity#copy does also copy the UUID making it useless
 
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?

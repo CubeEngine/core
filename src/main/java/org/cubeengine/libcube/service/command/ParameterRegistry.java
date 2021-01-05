@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import com.google.inject.Injector;
 import io.leangen.geantyref.TypeToken;
@@ -34,18 +35,21 @@ import org.cubeengine.libcube.service.command.parser.StringListParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.cubeengine.libcube.service.command.parser.Vector2iValueParser;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
 import org.spongepowered.api.command.parameter.managed.standard.VariableValueParameters;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.registry.DefaultedRegistryType;
+import org.spongepowered.api.registry.RegistryHolder;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.server.ServerWorld;
@@ -99,6 +103,7 @@ public class ParameterRegistry
         register(User.class, new UserDefaultParameterProvider());
         registerSponge(Vector3d.class, ResourceKeyedValueParameters.VECTOR3D);
         register(Vector2i.class, new Vector2iValueParser());
+        registerSponge(EntityType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENTITY_TYPE));
         registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
         registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
         registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER));
@@ -110,9 +115,9 @@ public class ParameterRegistry
         registerSponge((new TypeToken<Collection<GameProfile>>() {}).getType(), ResourceKeyedValueParameters.MANY_GAME_PROFILES);
     }
 
-    private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> difficulty)
+    private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> registryType)
     {
-        return VariableValueParameters.registryEntryBuilder(c -> Sponge.getGame().registries(), difficulty).defaultNamespace(defaultNameSpace).build();
+        return VariableValueParameters.registryEntryBuilder(c -> Sponge.getGame().registries(), registryType).defaultNamespace(defaultNameSpace).build();
     }
 
     static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)
