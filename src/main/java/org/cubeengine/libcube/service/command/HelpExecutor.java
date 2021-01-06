@@ -18,8 +18,10 @@
 package org.cubeengine.libcube.service.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
@@ -38,6 +40,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.exception.CommandException;
 import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.Parameter.Subcommand;
 import org.spongepowered.api.event.EventContextKeys;
 
 public class HelpExecutor implements CommandExecutor
@@ -134,14 +137,65 @@ public class HelpExecutor implements CommandExecutor
             {
                 this.collectUsage(context, childUsages, childParam);
             }
-            if (param.isOptional())
+
+            // Fixing multiple named parameters usage:
+            // As SubCommands cannot be optional they are nested in multiple FirstOf-SubCommand combos
+            // Essentially [p1 <value>] [p2 <value>] is actually registered as
+            // [p1 <value> [p2 <value>]] or [p2 <value>]
+            // For this we can go through usages in reverse and remove all previous occurences of a named parameter
+            final List<String> repeats = new ArrayList<>();
+            Collections.reverse(childUsages);
+            for (String childUsage : childUsages)
             {
-                usages.add("[" + String.join(" ", childUsages) + "]");
+                for (String repeat : repeats)
+                {
+                    String optRepeat = " [" + repeat + "]";
+                    if (childUsage.endsWith(optRepeat))
+                    {
+                        childUsage = childUsage.substring(0, childUsage.indexOf(optRepeat));
+                    }
+                }
+                repeats.add(childUsage);
+            }
+            Collections.reverse(repeats);
+            childUsages.clear();
+            childUsages.addAll(repeats);
+
+            // TODO different usage for sequence/firstof
+            if (param.getClass().getName().contains("FirstOf"))
+            {
+                if (param.isOptional())
+                {
+                    usages.add("[" + String.join("] [", childUsages) + "]");
+                }
+                else
+                {
+                    usages.add("<" + String.join(" | ", childUsages) + ">");
+                }
             }
             else
             {
-                usages.add("<" + String.join(" ", childUsages) + ">");
+                if (param.isOptional())
+                {
+                    usages.add("[" + String.join(" ", childUsages) + "]");
+                }
+                else
+                {
+                    usages.add("<" + String.join(" ", childUsages) + ">");
+                }
             }
+
+        }
+        else if (param instanceof Subcommand)
+        {
+            final Set<String> aliases = ((Subcommand)param).getAliases();
+            final ArrayList<String> subUsage = new ArrayList<>();
+            for (Parameter subCmdParam : ((Subcommand)param).getCommand().parameters())
+            {
+                this.collectUsage(context, subUsage, subCmdParam);
+            }
+            usages.add(String.join("|", aliases) + " " + String.join(" ", subUsage));
+
         }
         else
         {

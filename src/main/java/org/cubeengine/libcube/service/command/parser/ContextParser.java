@@ -17,6 +17,7 @@
  */
 package org.cubeengine.libcube.service.command.parser;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import com.google.inject.Inject;
@@ -34,6 +35,8 @@ import org.spongepowered.api.command.parameter.CommandContext.Builder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
+import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionType;
+import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionTypes;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.server.ServerWorld;
 
@@ -77,6 +80,10 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
         {
             list.add("global");
         }
+        if ("world".startsWith(currentInput))
+        {
+            list.add("world");
+        }
 
         if (currentInput.equals("world") || currentInput.toLowerCase().startsWith("world|"))
         {
@@ -94,7 +101,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     @Override
     public Optional<? extends Context> getValue(Key<? super Context> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
-        String token = reader.parseString();
+        String token = reader.parseUnquotedString();
         String checkToken = token.toLowerCase();
         if (GLOBAL.getKey().equalsIgnoreCase(token))
         {

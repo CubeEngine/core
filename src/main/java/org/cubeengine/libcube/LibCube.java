@@ -41,6 +41,9 @@ commands: console command audience is not SystemSubject
 commands: flags repeat
 commands: errors are not shown?
 ValueParser get if used in completion
+List of quoted String as one parameter
+missing gamerule registration
+
 Entity#copy does also copy the UUID making it useless
 
 translations for various types (TranslationTextComponent LanguageMap)

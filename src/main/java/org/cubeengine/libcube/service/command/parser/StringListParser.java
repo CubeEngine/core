@@ -34,6 +34,10 @@ public class StringListParser implements ValueParser<List<String>>
         List<String> list = new ArrayList<>();
         do
         {
+            if (reader.peekString().isEmpty())
+            {
+                return Optional.empty();
+            }
             list.add(reader.parseString());
         }
         while (reader.canRead());

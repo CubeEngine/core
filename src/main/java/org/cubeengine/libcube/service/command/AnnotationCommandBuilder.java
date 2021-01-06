@@ -24,6 +24,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -70,6 +71,8 @@ import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.Parameter.FirstOfBuilder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
+import org.spongepowered.api.command.parameter.Parameter.SequenceBuilder;
+import org.spongepowered.api.command.parameter.Parameter.Subcommand;
 import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
@@ -410,13 +413,13 @@ public class AnnotationCommandBuilder
             extractors.add(
                 this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, injector, permNodes));
         }
-        buildParams(builder, params, namedParameter, flags);
+        final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors, injector);
+        buildParams(builder, params, namedParameter, flags, executor);
         requirements.addPermission(String.join(".", permNodes) + ".use");
         requirements.add(method.getAnnotation(Restricted.class));
         builder.setExecutionRequirements(requirements);
         builder.setShortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
-        final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors, injector);
         builder.setExecutor(executor);
         final HelpExecutor helpExecutor = new HelpExecutor(i18n);
         builder.child(builder().setExecutor(helpExecutor).build(), "?");
@@ -425,17 +428,35 @@ public class AnnotationCommandBuilder
         return build;
     }
 
-    private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParams, List<org.spongepowered.api.command.parameter.managed.Flag> flags)
+    private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParams,
+                                 List<org.spongepowered.api.command.parameter.managed.Flag> flags, CubeEngineCommand executor)
     {
         for (int i = 0; i < params.size(); i++)
         {
             final org.spongepowered.api.util.Builder<? extends Parameter, ?> param = params.get(i);
+            if (i == params.size()-1)
+            {
+                if (param instanceof Value.Builder)
+                {
+                    ((Value.Builder)param).terminal();
+                }
+                else if (param instanceof FirstOfBuilder)
+                {
+                    ((FirstOfBuilder)param).terminal();
+                }
+                else if (param instanceof SequenceBuilder)
+                {
+                    ((SequenceBuilder)param).terminal();
+                }
+            }
             builder.parameter(param.build());
         }
         for (org.spongepowered.api.command.parameter.managed.Flag flag : flags)
         {
             builder.flag(flag);
         }
+
+        Map<Named, org.spongepowered.api.command.Command.Builder> namedSubCommands = new LinkedHashMap<>();
         for (Entry<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParam : namedParams.entrySet())
         {
             {
@@ -443,14 +464,46 @@ public class AnnotationCommandBuilder
 //                builder.flag(org.spongepowered.api.command.parameter.managed.Flag.of(namedParam.getValue(), namedParam.getKey().value()));
             }
             {
+                final Builder namedSubCmd = builder().parameter(namedParam.getValue().build()).setExecutor(executor);
+                namedSubCommands.put(namedParam.getKey(), namedSubCmd);
 
-                // Sequence
-                final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value())
-                                                        .setSuggestions((f,g) -> Arrays.asList(namedParam.getKey().value()))
-                                                        .setKey(namedParam.getKey().value()[0]).build();
-                final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue().build()).optional().terminal().build();
-                builder.parameter(named);
+//                // Sequence
+//                final Value<Boolean> literal = Parameter.literal(Boolean.class, true, namedParam.getKey().value())
+//                                                        .setSuggestions((f,g) -> Arrays.asList(namedParam.getKey().value()))
+//                                                        .setKey(namedParam.getKey().value()[0]).build();
+//                final Parameter named = Parameter.seqBuilder(literal).then(namedParam.getValue().build()).optional().terminal().build();
+//                builder.parameter(named);
             }
+        }
+
+        if (!namedSubCommands.isEmpty())
+        {
+            final ArrayList<Entry<Named, Builder>> reverse = new ArrayList<>(namedSubCommands.entrySet());
+            Collections.reverse(reverse);
+            List<Subcommand> subcommands = new ArrayList<>();
+            for (Entry<Named, Builder> namedParam : reverse)
+            {
+                if (!subcommands.isEmpty())
+                {
+                    final FirstOfBuilder firstofBuilder = Parameter.firstOfBuilder(subcommands.get(0)).optional();
+                    for (int i = 1, size = subcommands.size(); i < size; i++)
+                    {
+                        firstofBuilder.or(subcommands.get(i));
+                    }
+                    namedParam.getValue().parameter(firstofBuilder.build());
+                }
+
+                subcommands.add(Parameter.subcommand(namedParam.getValue().build(), namedParam.getKey().value()[0],
+                                                                         Arrays.copyOfRange(namedParam.getKey().value(), 1, namedParam.getKey().value().length)));
+            }
+            Collections.reverse(subcommands);
+
+            final FirstOfBuilder namedBuilder = Parameter.firstOfBuilder(subcommands.get(0)).optional();
+            for (int i = 1, subcommandsSize = subcommands.size(); i < subcommandsSize; i++)
+            {
+                namedBuilder.or(subcommands.get(i));
+            }
+            builder.parameter(namedBuilder.build());
         }
     }
 
