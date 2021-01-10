@@ -107,7 +107,7 @@ public class ParameterRegistry
         registerSponge(EntityType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENTITY_TYPE));
         registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
         registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
-        registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER));
+        registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER_TYPE));
         registerSponge(ItemStackSnapshot.class, ResourceKeyedValueParameters.ITEM_STACK_SNAPSHOT);
 
         register((new TypeToken<List<String>>() {}).getType(), new StringListParser());
