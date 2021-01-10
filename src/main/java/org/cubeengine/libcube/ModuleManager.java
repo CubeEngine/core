@@ -64,6 +64,7 @@ import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.manager.CommandMapping;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.metadata.PluginMetadata;
 
 @Singleton
 public class ModuleManager
@@ -77,7 +78,6 @@ public class ModuleManager
     private final File path;
     private final LibCube plugin;
     private final DefaultLogFactory logFactory;
-    private final ModuleThreadFactory tf;
     private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
     private final Module guiceModule = new CubeEngineGuiceModule();
     private final Map<Class<?>, PluginContainer> modulePlugins = new HashMap<>();
@@ -102,7 +102,6 @@ public class ModuleManager
         this.plugin = libCube;
         this.fm = new FileManager(this, path, reflector);
         this.logFactory = new DefaultLogFactory();
-        this.tf = new ModuleThreadFactory(this.threadGroup, this.logFactory.getLog(ThreadFactory.class));
         this.mainLogger = configureMainLogger(path);
 
         this.injector = injector.createChildInjector(guiceModule);
@@ -129,9 +128,14 @@ public class ModuleManager
     {
         this.modulePlugins.put(module, plugin);
         Module moduleModule = binder -> {
-            binder.bind(Log.class).toInstance(getLoggerFor(module));
+            final Log log = getLoggerFor(module);
+            final PluginMetadata metadata = plugin.getMetadata();
+            final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.getName().orElse(metadata.getId()));
+            binder.bind(Log.class).toInstance(log);
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
+            binder.bind(ThreadGroup.class).toInstance(group);
+            binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, log));
         };
         Injector moduleInjector = injector.createChildInjector(Modules.override(guiceModule).with(moduleModule));
         this.moduleInjectors.put(module, moduleInjector);
