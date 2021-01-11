@@ -373,7 +373,7 @@ public class AnnotationCommandBuilder
                 this.add(commandCause -> {
                     if (!restrictedTo.isAssignableFrom(commandCause.getSubject().getClass()))
                     {
-                        commandCause.getAudience().sendMessage(Identity.nil(), Component.text(msg));
+// TODO custom error message                       commandCause.getAudience().sendMessage(Identity.nil(), Component.text(msg));
                         return false;
                     }
                     return true;
@@ -567,7 +567,7 @@ public class AnnotationCommandBuilder
             {
                 final Type fieldType = field.getGenericType();
                 extractors.add(this.buildParameter(index, params, namedParameter, flags, fieldType,
-                                           annotations, last, name, true, requirements, injector, permNodes));
+                                           annotations, last, field.getName(), true, requirements, injector, permNodes));
 
             }
             return this.buildFirstValueParameter(injector, extractors, params, rawType);
