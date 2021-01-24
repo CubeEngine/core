@@ -43,6 +43,8 @@ commands: errors are not shown?
 ValueParser get if used in completion
 List of quoted String as one parameter
 missing gamerule registration
+missing weather event
+missing potioneffect event? Data instead?
 
 Entity#copy does also copy the UUID making it useless
 
@@ -57,6 +59,17 @@ SpawnEgg getEntityType and getFor EntityType
 
 PlayerChatEvent no way to get original player receiving
 
+event listener still called if cancelled
+
+InteractBlockEvent.Secondary cancel on doors do not resend the other block.
+InteractEntityEvent.Secondary cancel does not reset item in hand on client
+InteractBlockEvent.Secondary cancel does not reset item in hand on client
+
+CommandMapping does not contain all aliases (sub-commands)
+
+CollideEntityEvent not implemented
+
+Piglin Aggro does not call retarget event
  */
 @Core
 public class LibCube
