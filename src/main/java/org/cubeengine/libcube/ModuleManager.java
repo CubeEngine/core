@@ -132,7 +132,6 @@ public class ModuleManager
             final Log log = getLoggerFor(module);
             final PluginMetadata metadata = plugin.getMetadata();
             final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.getName().orElse(metadata.getId()));
-            binder.bind(Server.class).toInstance(game.getServer());
             binder.bind(Log.class).toInstance(log);
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
