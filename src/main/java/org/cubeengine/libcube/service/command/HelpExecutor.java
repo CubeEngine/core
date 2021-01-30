@@ -116,7 +116,7 @@ public class HelpExecutor implements CommandExecutor
             }
         }
         context.sendMessage(Identity.nil(), Component.empty());
-        return CommandResult.empty();
+        return CommandResult.success();
     }
 
     private void collectUsage(CommandContext context, List<String> usages, Parameter param)
