@@ -39,6 +39,7 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.util.Modules;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.ModuleInjector;
 import org.cubeengine.libcube.service.ReflectorProvider;
 import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
@@ -133,6 +134,7 @@ public class ModuleManager
             final PluginMetadata metadata = plugin.getMetadata();
             final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.getName().orElse(metadata.getId()));
             binder.bind(Log.class).toInstance(log);
+            binder.bind(Logger.class).toInstance(plugin.getLogger());
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
             binder.bind(ThreadGroup.class).toInstance(group);
