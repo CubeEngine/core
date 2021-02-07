@@ -70,6 +70,8 @@ CommandMapping does not contain all aliases (sub-commands)
 CollideEntityEvent not implemented
 
 Piglin Aggro does not call retarget event
+
+Trident
  */
 @Core
 public class LibCube
