@@ -71,6 +71,8 @@ CollideEntityEvent not implemented
 
 Piglin Aggro does not call retarget event
 
+resourekey completion does NOT ignore default namespace prefix making tab-completion annoying
+
 Trident
  */
 @Core

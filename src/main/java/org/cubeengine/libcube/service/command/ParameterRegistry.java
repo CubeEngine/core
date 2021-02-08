@@ -43,6 +43,7 @@ import org.spongepowered.api.command.parameter.managed.standard.VariableValuePar
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
@@ -106,6 +107,7 @@ public class ParameterRegistry
         registerSponge(BlockType.class, () -> registryTypeParser("minecraft", RegistryTypes.BLOCK_TYPE));
         registerSponge(EntityType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENTITY_TYPE));
         registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
+        registerSponge(GameMode.class, () -> registryTypeParser("sponge", RegistryTypes.GAME_MODE));
         registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
         registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER_TYPE));
         registerSponge(ItemStackSnapshot.class, ResourceKeyedValueParameters.ITEM_STACK_SNAPSHOT);
