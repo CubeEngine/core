@@ -31,6 +31,7 @@ import org.cubeengine.i18n.I18nService;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.spongepowered.api.entity.Tamer;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.util.Identifiable;
 
@@ -75,6 +76,13 @@ public class CommandSourceFormatter extends ReflectedFormatter
     {
         return HoverComponent.hoverText(
             net.kyori.adventure.text.Component.text(user.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(user.getName()));
+    }
+
+    @Format
+    public Component format(GameProfile gameProfile)
+    {
+        return HoverComponent.hoverText(
+            net.kyori.adventure.text.Component.text(gameProfile.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(gameProfile.getName().orElse(gameProfile.getUniqueId().toString())));
     }
 
     @Format
