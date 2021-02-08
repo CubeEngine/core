@@ -166,7 +166,7 @@ public class HelpExecutor implements CommandExecutor
             {
                 if (param.isOptional())
                 {
-                    usages.add("[" + String.join("] [", childUsages) + "]");
+                    usages.add("[" + String.join(" | ", childUsages) + "]");
                 }
                 else
                 {

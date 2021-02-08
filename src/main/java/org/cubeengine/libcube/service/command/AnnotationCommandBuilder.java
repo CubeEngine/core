@@ -42,7 +42,6 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Buildable;
 import org.cubeengine.libcube.ModuleManager;
@@ -77,6 +76,7 @@ import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
+import org.spongepowered.api.command.parameter.managed.ValueUsage;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
@@ -217,10 +217,7 @@ public class AnnotationCommandBuilder
                     final Parameterized build = buildCommand(injector, holder, method, methodAnnotation, newPermNodes);
 
                     dispatcher.parameters(build.parameters());
-                    for (org.spongepowered.api.command.parameter.managed.Flag flag : build.flags())
-                    {
-                        dispatcher.flag(flag);
-                    }
+
                     // TODO execution requirements - but they do not apply for child commands does it work?
                     final Predicate<CommandCause> requirements = build.getExecutionRequirements();
                     // TODO would get overwritten by other requirements... maybe wrap executor instead?
@@ -404,17 +401,16 @@ public class AnnotationCommandBuilder
         final Requirements requirements = new Requirements();
         List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params = new ArrayList<>();
         Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter = new LinkedHashMap<>();
-        List<org.spongepowered.api.command.parameter.managed.Flag> flags = new ArrayList<>();
         for (int i = 0; i < types.length; i++)
         {
             final Type type = types[i];
             final Annotation[] annotations = annotationsList[i];
             final java.lang.reflect.Parameter parameter = parameters[i];
             extractors.add(
-                this.buildParameter(i, params, namedParameter, flags, parameter, type, annotations, types.length - 1, requirements, injector, permNodes));
+                this.buildParameter(i, params, namedParameter, parameter, type, annotations, types.length - 1, requirements, injector, permNodes));
         }
         final CubeEngineCommand executor = new CubeEngineCommand(holder, method, extractors, injector);
-        buildParams(builder, params, namedParameter, flags, executor);
+        buildParams(builder, params, namedParameter, executor);
         requirements.addPermission(String.join(".", permNodes) + ".use");
         requirements.add(method.getAnnotation(Restricted.class));
         builder.setExecutionRequirements(requirements);
@@ -429,7 +425,7 @@ public class AnnotationCommandBuilder
     }
 
     private <T> void buildParams(Builder builder, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParams,
-                                 List<org.spongepowered.api.command.parameter.managed.Flag> flags, CubeEngineCommand executor)
+                                 CubeEngineCommand executor)
     {
         for (int i = 0; i < params.size(); i++)
         {
@@ -450,10 +446,6 @@ public class AnnotationCommandBuilder
                 }
             }
             builder.parameter(param.build());
-        }
-        for (org.spongepowered.api.command.parameter.managed.Flag flag : flags)
-        {
-            builder.flag(flag);
         }
 
         Map<Named, org.spongepowered.api.command.Command.Builder> namedSubCommands = new LinkedHashMap<>();
@@ -508,22 +500,18 @@ public class AnnotationCommandBuilder
     }
 
     private ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params,
-                                               Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter,
-                                               List<org.spongepowered.api.command.parameter.managed.Flag> flags,
-                                               java.lang.reflect.Parameter parameter, Type type,
+                                               Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter, java.lang.reflect.Parameter parameter, Type type,
                                                Annotation[] annotations, int last, Requirements requirements, Injector injector, String[] permNodes)
     {
         final String name = parameter.getName();
         // TODO search param annotation for name
 
-        return buildParameter(index, params, namedParameter, flags, type, annotations, last, name, false, requirements, injector, permNodes);
+        return buildParameter(index, params, namedParameter, type, annotations, last, name, false, requirements, injector, permNodes);
     }
 
     private <T> ContextExtractor<?> buildParameter(int index, List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params,
-                                                   Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter,
-                                               List<org.spongepowered.api.command.parameter.managed.Flag> flags,
-                                               Type type, Annotation[] annotations, int last, String name,
-                                               boolean forceOptional, Requirements requirements, Injector injector, String[] permNodes)
+                                                   Map<Named, org.spongepowered.api.util.Builder<? extends Parameter, ?>> namedParameter, Type type, Annotation[] annotations, int last, String name,
+                                                   boolean forceOptional, Requirements requirements, Injector injector, String[] permNodes)
     {
 
         if (type == CommandCause.class)
@@ -554,11 +542,11 @@ public class AnnotationCommandBuilder
         Class<?> rawType = (Class<?>)(type instanceof ParameterizedType ? ((ParameterizedType)type).getRawType() : type);
         if (flagAnnotation != null)
         {
-            return buildFlagParameter(flags, name, flagAnnotation, permAnnotation, rawType, permNodes);
+            return this.buildFlagParameter(params, name, flagAnnotation, permAnnotation, rawType, permNodes);
         }
         if (rawType == Optional.class)
         {
-            return this.buildParameter(index, params, namedParameter, flags, ((ParameterizedType)type).getActualTypeArguments()[0],
+            return this.buildParameter(index, params, namedParameter, ((ParameterizedType)type).getActualTypeArguments()[0],
                                        annotations, last, name, true, requirements, injector, permNodes);
         }
         if (FirstValueParameter.class.isAssignableFrom(rawType)) {
@@ -566,8 +554,8 @@ public class AnnotationCommandBuilder
             for (Field field : rawType.getFields())
             {
                 final Type fieldType = field.getGenericType();
-                extractors.add(this.buildParameter(index, params, namedParameter, flags, fieldType,
-                                           annotations, last, field.getName(), true, requirements, injector, permNodes));
+                extractors.add(this.buildParameter(index, params, namedParameter, fieldType,
+                                                   annotations, last, field.getName(), true, requirements, injector, permNodes));
 
             }
             return this.buildFirstValueParameter(injector, extractors, params, rawType);
@@ -742,7 +730,7 @@ public class AnnotationCommandBuilder
         return new FirstOfContextExtractor<>(rawType, injector, extractors);
     }
 
-    private ContextExtractor<Object> buildFlagParameter(List<org.spongepowered.api.command.parameter.managed.Flag> flags, String name, Flag flagAnnotation,
+    private ContextExtractor<Boolean> buildFlagParameter(List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> params, String name, Flag flagAnnotation,
                                                         ParameterPermission permAnnotation, Class<?> rawType, String[] permNodes)
     {
         if (rawType == Boolean.class || rawType == boolean.class)
@@ -758,15 +746,20 @@ public class AnnotationCommandBuilder
                 shortName = longName.substring(0, 1);
             }
 
-            final org.spongepowered.api.command.parameter.managed.Flag.Builder builder = org.spongepowered.api.command.parameter.managed.Flag.builder().aliases(shortName, longName);
+            final String finalShortName = shortName;
+            final String finalLongName = longName;
+            final Value.Builder<Boolean> builderShort = Parameter.literal(Boolean.class, true, "-" + shortName).optional().setKey(name).setUsage(key -> "-" + finalShortName);
+            final Value.Builder<Boolean> builderLong = Parameter.literal(Boolean.class, true, "-" + longName).optional().setKey(name).setUsage(key -> "-" + finalLongName);
             if (permAnnotation != null)
             {
-                builder.setPermission(String.join(".", permNodes) + "." + name);
+                builderShort.setRequiredPermission(String.join(".", permNodes) + "." + name);
+                builderLong.setRequiredPermission(String.join(".", permNodes) + "." + name);
             }
 
-            final org.spongepowered.api.command.parameter.managed.Flag flag = builder.build();
-            flags.add(flag);
-            return (c -> c.hasFlag(flag));
+            final FirstOfBuilder flagParamBuilder = Parameter.firstOfBuilder(builderShort.build()).or(builderLong.build()).optional();
+            final Key<Boolean> key = Parameter.key(name, Boolean.class);
+            params.add(flagParamBuilder);
+            return new SimpleContextExtractor<>(key, true, c -> false);
         }
         throw new IllegalArgumentException("@Flag parameter must be a boolean");
     }
