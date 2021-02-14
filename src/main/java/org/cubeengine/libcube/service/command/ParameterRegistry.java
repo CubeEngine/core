@@ -94,6 +94,9 @@ public class ParameterRegistry
         registerSponge(ServerPlayer.class, ResourceKeyedValueParameters.PLAYER);
         registerSponge(User.class, ResourceKeyedValueParameters.USER);
         registerSponge(Boolean.class, ResourceKeyedValueParameters.BOOLEAN);
+        final DefaultParameterProvider<Boolean> booleanDefaultProvider = c -> false;
+        register(Boolean.class, booleanDefaultProvider);
+        register(boolean.class, booleanDefaultProvider);
         registerSponge(boolean.class, ResourceKeyedValueParameters.BOOLEAN);
         registerSponge(Integer.class, ResourceKeyedValueParameters.INTEGER);
         registerSponge(int.class, ResourceKeyedValueParameters.INTEGER);
