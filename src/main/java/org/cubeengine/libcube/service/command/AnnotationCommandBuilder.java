@@ -191,7 +191,12 @@ public class AnnotationCommandBuilder
             for (Class<?> parser : using.value())
             {
                 final Object parserInstance = injector.getInstance(parser);
-                final Class<?> parsedType = parser.getAnnotation(ParserFor.class).value();
+                final ParserFor parserAnnot = parser.getAnnotation(ParserFor.class);
+                if (parserAnnot == null)
+                {
+                    throw new IllegalStateException("Parser " + parser.getName() + " is missing @ParserFor annotation");
+                }
+                final Class<?> parsedType = parserAnnot.value();
                 ParameterRegistry.register(parsedType, parserInstance);
             }
         }
