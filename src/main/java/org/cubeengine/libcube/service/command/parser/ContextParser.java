@@ -17,7 +17,6 @@
  */
 package org.cubeengine.libcube.service.command.parser;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import com.google.inject.Inject;
@@ -35,8 +34,6 @@ import org.spongepowered.api.command.parameter.CommandContext.Builder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionType;
-import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionTypes;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.world.server.ServerWorld;
 
@@ -59,12 +56,6 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     @Override
     public Context apply(CommandCause commandCause)
     {
-        /*
-        if (invocation.getCommandSource() instanceof Player)
-        {
-            return new Context(WORLD_KEY, ((Player)invocation.getCommandSource()).getWorld().getName());
-        }
-        */
         return GLOBAL;
     }
 

@@ -19,6 +19,7 @@ package org.cubeengine.libcube.service.command.parser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import net.kyori.adventure.audience.Audience;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.exception.ArgumentParseException;
@@ -28,15 +29,16 @@ import org.spongepowered.api.command.parameter.CommandContext.Builder;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.standard.ResourceKeyedValueParameters;
+import org.spongepowered.api.util.Nameable;
 
 public class AudienceValuerParser implements ValueParser<Audience>, ValueCompleter
 {
     @Override
     public List<String> complete(CommandContext context, String currentInput)
     {
-        final List<String> list = ResourceKeyedValueParameters.PLAYER.get().complete(context, currentInput);
-        if ("console".startsWith(currentInput))
+        final String token = currentInput.toLowerCase();
+        final List<String> list = Sponge.getServer().getOnlinePlayers().stream().map(Nameable::getName).filter(name -> name.toLowerCase().startsWith(token)).collect(Collectors.toList());
+        if ("console".startsWith(token))
         {
             list.add("console");
         }
@@ -44,13 +46,13 @@ public class AudienceValuerParser implements ValueParser<Audience>, ValueComplet
     }
 
     @Override
-    public Optional<? extends Audience> getValue(Key<? super Audience> parameterKey, Mutable reader,
-                                                 Builder context) throws ArgumentParseException
+    public Optional<? extends Audience> getValue(Key<? super Audience> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
-        if ("console".equals(reader.parseString()))
+        final String name = reader.parseString();
+        if ("console".equals(name))
         {
             return Optional.of(Sponge.getSystemSubject());
         }
-        return ResourceKeyedValueParameters.PLAYER.get().getValue(parameterKey, reader, context);
+        return Sponge.getServer().getPlayer(name);
     }
 }
