@@ -89,14 +89,14 @@ public abstract class I18nTranslate
     public String getTranslation(Audience audience, String message)
     {
         if (audience instanceof LocaleSource) {
-            return getI18nService().translate(((LocaleSource) audience).getLocale(), message);
+            return getI18nService().translate(((LocaleSource) audience).locale(), message);
         }
         return getI18nService().translate(message);
     }
 
     public String getTranslation(CommandCause cause, String message)
     {
-        return this.getTranslation(cause.getAudience(), message);
+        return this.getTranslation(cause.audience(), message);
     }
 
     // TextFormat and Locale
@@ -227,12 +227,12 @@ public abstract class I18nTranslate
 
     public void send(ChatType type, CommandCause source, Style style, String message, Object... args)
     {
-        type.sendTo(source.getAudience(), this.translate(source, style, message, args));
+        type.sendTo(source.audience(), this.translate(source, style, message, args));
     }
 
     public void sendN(ChatType type, CommandCause source, Style style, int n, String singular, String plural, Object... args)
     {
-        type.sendTo(source.getAudience(), this.translateN(source, style, n, singular, plural, args));
+        type.sendTo(source.audience(), this.translateN(source, style, n, singular, plural, args));
     }
 
     public enum ChatType {

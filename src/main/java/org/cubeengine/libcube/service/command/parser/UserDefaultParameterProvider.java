@@ -27,8 +27,8 @@ public class UserDefaultParameterProvider implements DefaultParameterProvider<Us
     @Override
     public User apply(CommandCause commandCause)
     {
-        if (commandCause.getSubject() instanceof ServerPlayer) {
-            return ((ServerPlayer)commandCause.getSubject()).getUser();
+        if (commandCause.subject() instanceof ServerPlayer) {
+            return ((ServerPlayer)commandCause.subject()).user();
         }
         return null;
     }

@@ -47,16 +47,16 @@ public class LocationUtil
 {
     public static long getChunkKey(Location loc)
     {
-        int chunkX = loc.getBlockX() >> 4;
-        int chunkZ = loc.getBlockZ() >> 4;
+        int chunkX = loc.blockX() >> 4;
+        int chunkZ = loc.blockZ() >> 4;
         return getChunkKey(chunkX, chunkZ);
     }
 
     public static long getLocationKey(Location loc)
     {
-        int x = loc.getBlockX() & 0x3FFFFFF;
-        int y = loc.getBlockY() & 0x1FF;
-        int z = loc.getBlockZ() & 0x3FFFFFF;
+        int x = loc.blockX() & 0x3FFFFFF;
+        int y = loc.blockY() & 0x1FF;
+        int z = loc.blockZ() & 0x3FFFFFF;
         return ((((long)x << 26) | z) << 26) | y;
     }
 
@@ -71,7 +71,7 @@ public class LocationUtil
         AtomicBoolean wallHit = new AtomicBoolean();
         AtomicBoolean wallPassed = new AtomicBoolean();
         ray.select(lb -> {
-            boolean canPass = canPass(lb.getBlockState().getType());
+            boolean canPass = canPass(lb.blockState().type());
             if (!wallHit.get())
             {
                 if (!canPass)
@@ -82,16 +82,16 @@ public class LocationUtil
             }
             else if (!wallPassed.get())
             {
-                if (canPass && canPass(lb.getServerLocation().relativeTo(Direction.UP).getBlockType()))
+                if (canPass && canPass(lb.serverLocation().relativeTo(Direction.UP).blockType()))
                 {
                     wallPassed.set(true);
                     return true;
                 }
                 return false;
             }
-            return canPass && canPass(lb.getServerLocation().relativeTo(Direction.UP).getBlockType());
+            return canPass && canPass(lb.serverLocation().relativeTo(Direction.UP).blockType());
         });
-        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation);
+        return ray.execute().map(RayTraceResult::selectedObject).map(Locatable::serverLocation);
     }
 
     /**
@@ -104,19 +104,19 @@ public class LocationUtil
      */
     public static ServerLocation getBlockInSight(Player player)
     {
-        BlockType headIn = player.getLocation().relativeTo(UP).getBlockType();
-        List<BlockType> fluidBlocks = Sponge.getGame().registries().registry(RegistryTypes.FLUID_TYPE).stream()
+        BlockType headIn = player.location().relativeTo(UP).blockType();
+        List<BlockType> fluidBlocks = Sponge.game().registries().registry(RegistryTypes.FLUID_TYPE).stream()
                 .filter(t -> !t.equals(FluidTypes.EMPTY.get()))
-                .map(FluidType::getDefaultState)
-                .map(FluidState::getBlock)
-                .map(BlockState::getType)
+                .map(FluidType::defaultState)
+                .map(FluidState::block)
+                .map(BlockState::type)
                 .collect(toList());
 
         boolean headInFluid = fluidBlocks.contains(headIn);
 
         final RayTrace<LocatableBlock> ray = RayTrace.block().sourceEyePosition(player).direction(player).limit(200);
         ray.select(lb -> {
-            final BlockType type = lb.getBlockState().getType();
+            final BlockType type = lb.blockState().type();
             if (fluidBlocks.contains(type))
             {
                 if (!headInFluid)
@@ -137,13 +137,13 @@ public class LocationUtil
             }
             return false;
         });
-        return ray.execute().map(RayTraceResult::getSelectedObject).map(Locatable::getServerLocation).orElse(null);
+        return ray.execute().map(RayTraceResult::selectedObject).map(Locatable::serverLocation).orElse(null);
     }
 
     public static boolean canPass(BlockType type)
     {
 
-        return type.getDefaultState().get(Keys.IS_PASSABLE).orElse(false);
+        return type.defaultState().get(Keys.IS_PASSABLE).orElse(false);
     }
 
     /**
@@ -154,16 +154,16 @@ public class LocationUtil
      */
     public static ServerLocation getLocationUp(ServerLocation loc)
     {
-        if (!canPass(loc.getBlockType()))
+        if (!canPass(loc.blockType()))
         {
             loc = loc.relativeTo(UP);
         }
         int maxHeight = 256; // TODO loc.getWorld().getDimension().getBuildHeight();
-        while (!(canPass(loc.getBlockType()) && canPass(loc.relativeTo(UP).getBlockType())) && loc.getY() < maxHeight)
+        while (!(canPass(loc.blockType()) && canPass(loc.relativeTo(UP).blockType())) && loc.y() < maxHeight)
         {
             // TODO half block gaps
             ServerLocation rel = loc.relativeTo(UP);
-            if (rel.getY() == 0)
+            if (rel.y() == 0)
             {
                 break;
             }

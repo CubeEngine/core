@@ -33,7 +33,7 @@ public class ConfigWorld
 
     public ConfigWorld(ServerWorld world)
     {
-        this.name = world.getKey().asString();
+        this.name = world.key().asString();
         this.world = world;
     }
 
@@ -44,10 +44,10 @@ public class ConfigWorld
 
     public ServerWorld getWorld()
     {
-        if (this.world == null || !this.world.getKey().asString().equals(this.name))
+        if (this.world == null || !this.world.key().asString().equals(this.name))
         {
             final ResourceKey key = ResourceKey.resolve(name);
-            this.world = Sponge.getServer().getWorldManager().world(key).orElse(Sponge.getServer().getWorldManager().loadWorld(key).join());
+            this.world = Sponge.server().worldManager().world(key).orElse(Sponge.server().worldManager().loadWorld(key).join());
         }
         return this.world;
     }
@@ -65,7 +65,7 @@ public class ConfigWorld
         }
 
         ConfigWorld that = (ConfigWorld) o;
-        if (getWorld() != null ? !getWorld().getUniqueId().equals(that.getWorld().getUniqueId()) : that.getWorld() != null)
+        if (getWorld() != null ? !getWorld().uniqueId().equals(that.getWorld().uniqueId()) : that.getWorld() != null)
         {
             return false;
         }

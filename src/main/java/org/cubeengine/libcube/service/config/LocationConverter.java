@@ -37,10 +37,10 @@ public class LocationConverter extends SingleClassConverter<ServerLocation>
     public Node toNode(ServerLocation location, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("world", location.getWorldKey().asString());
-        loc.put("x", location.getX());
-        loc.put("y", location.getY());
-        loc.put("z", location.getZ());
+        loc.put("world", location.worldKey().asString());
+        loc.put("x", location.x());
+        loc.put("y", location.y());
+        loc.put("z", location.z());
         //loc.put("yaw", location.getYaw()); // TODO Location + Direction
         //loc.put("pitch", location.getPitch()); // TODO Location + Direction
         return manager.convertToNode(loc);
@@ -53,7 +53,7 @@ public class LocationConverter extends SingleClassConverter<ServerLocation>
         if (node instanceof MapNode)
         {
             Map<String, Node> input = ((MapNode)node).getValue();
-            ServerWorld world = Sponge.getServer().getWorldManager().world(ResourceKey.resolve(((StringNode)input.get("world")).getValue())).get();
+            ServerWorld world = Sponge.server().worldManager().world(ResourceKey.resolve(((StringNode)input.get("world")).getValue())).get();
             double x = manager.convertFromNode(input.get("x"), double.class);
             double y = manager.convertFromNode(input.get("y"), double.class);
             double z = manager.convertFromNode(input.get("z"), double.class);

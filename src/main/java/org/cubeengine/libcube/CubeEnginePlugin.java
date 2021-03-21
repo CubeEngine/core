@@ -52,7 +52,7 @@ public abstract class CubeEnginePlugin {
     @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
-        final PluginContainer lib = event.getGame().getPluginManager().getPlugin("cubeengine-core")
+        final PluginContainer lib = event.game().pluginManager().plugin("cubeengine-core")
                                          .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
@@ -78,7 +78,7 @@ public abstract class CubeEnginePlugin {
         Object module = mm.getModule(this.module);
         for (Field field : ModuleManager.getAnnotatedFields(module, InjectService.class))
         {
-            Optional<?> provided = Sponge.getServer().getServiceProvider().provide(field.getType());
+            Optional<?> provided = Sponge.server().serviceProvider().provide(field.getType());
             if (!provided.isPresent())
             {
                 mm.getLoggerFor(this.module).warn("Missing Service");

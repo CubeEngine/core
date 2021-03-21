@@ -115,7 +115,7 @@ public class BlockUtil
     {
         Collection<ServerLocation> blocks = new HashSet<>();
         ServerLocation onTop = block.relativeTo(UP);
-        while (isDetachableFromBelow(onTop.getBlockType()))
+        while (isDetachableFromBelow(onTop.blockType()))
         {
             blocks.add(onTop);
             for (ServerLocation attachedBlock : getAttachedBlocks(onTop))
@@ -145,7 +145,7 @@ public class BlockUtil
     {
         for (final Direction face : DIRECTIONS)
         {
-            BlockType type = block.relativeTo(face).getBlockType();
+            BlockType type = block.relativeTo(face).blockType();
             if (type == WATER.get())
             {
                 return true;
@@ -202,13 +202,13 @@ public class BlockUtil
 
     public static boolean isNonObstructingSolidBlock(BlockType material)
     {
-        return material.getDefaultState().get(Keys.IS_PASSABLE).get();
+        return material.defaultState().get(Keys.IS_PASSABLE).get();
     }
 
     public static Chunk getChunk(ServerLocation block, Game game)
     {
-        ChunkLayout cl = game.getServer().getChunkLayout();
-        return block.getWorld().getChunk(cl.toChunk(block.getBlockPosition()).get());
+        ChunkLayout cl = game.server().chunkLayout();
+        return block.world().chunk(cl.toChunk(block.blockPosition()).get());
     }
 
     public static Direction getOtherDoorDirection(Direction direction, DoorHinge hinge)
@@ -231,7 +231,7 @@ public class BlockUtil
         }
         if (hinge == DoorHinges.RIGHT.get())
         {
-            direction = direction.getOpposite();
+            direction = direction.opposite();
         }
         return direction;
     }

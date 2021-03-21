@@ -36,7 +36,7 @@ public class DataContainerConverter implements ClassedConverter<DataContainer>
     @Override
     public Node toNode(DataContainer object, ConverterManager manager) throws ConversionException
     {
-        return manager.convertToNode(object.getValues(false));
+        return manager.convertToNode(object.values(false));
     }
 
     @Override

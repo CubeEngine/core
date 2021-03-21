@@ -55,13 +55,13 @@ public class CommandSourceFormatter extends ReflectedFormatter
     @Format
     public Component format(Subject sender, Context context)
     {
-        final String name = sender.getFriendlyIdentifier().orElse(sender.getIdentifier());
+        final String name = sender.friendlyIdentifier().orElse(sender.identifier());
         if (sender == context.get(SOURCE))
         {
             TextComponent componentName = net.kyori.adventure.text.Component.text(name).color(NamedTextColor.YELLOW);
             if (sender instanceof Identifiable)
             {
-                final UUID uuid = ((Identifiable) sender).getUniqueId();
+                final UUID uuid = ((Identifiable) sender).uniqueId();
                 componentName = componentName.append(
                     net.kyori.adventure.text.Component.text(", ")).append(
                     net.kyori.adventure.text.Component.text(uuid.toString(), NamedTextColor.GOLD));
@@ -75,19 +75,19 @@ public class CommandSourceFormatter extends ReflectedFormatter
     public Component format(User user)
     {
         return HoverComponent.hoverText(
-            net.kyori.adventure.text.Component.text(user.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(user.getName()));
+            net.kyori.adventure.text.Component.text(user.uniqueId().toString()).color(NamedTextColor.GOLD), this.format(user.name()));
     }
 
     @Format
     public Component format(GameProfile gameProfile)
     {
         return HoverComponent.hoverText(
-            net.kyori.adventure.text.Component.text(gameProfile.getUniqueId().toString()).color(NamedTextColor.GOLD), this.format(gameProfile.getName().orElse(gameProfile.getUniqueId().toString())));
+            net.kyori.adventure.text.Component.text(gameProfile.uniqueId().toString()).color(NamedTextColor.GOLD), this.format(gameProfile.name().orElse(gameProfile.uniqueId().toString())));
     }
 
     @Format
     public Component format(Tamer tamer)
     {
-        return this.format(tamer.getName());
+        return this.format(tamer.name());
     }
 }

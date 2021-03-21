@@ -32,7 +32,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     @Override
     public Node toNode(BlockType object)
     {
-        return StringNode.of(Sponge.getGame().registries().registry(RegistryTypes.BLOCK_TYPE).valueKey(object).asString());
+        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE).valueKey(object).asString());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getGame().registries().registry(RegistryTypes.BLOCK_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
+            return Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

@@ -59,13 +59,13 @@ public class HelpExecutor implements CommandExecutor
     @Override
     public CommandResult execute(CommandContext context) throws CommandException
     {
-        final Optional<String> rawCommand = context.getCause().getContext().get(EventContextKeys.COMMAND);
-        final Audience audience = context.getCause().getAudience();
+        final Optional<String> rawCommand = context.cause().context().get(EventContextKeys.COMMAND);
+        final Audience audience = context.cause().audience();
         final Style grayStyle = Style.style(NamedTextColor.GRAY);
         Component descLabel = i18n.translate(audience, grayStyle, "Description:");
         final Component permText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}", perm).append(Component.text(".use").color(NamedTextColor.WHITE));
         descLabel = descLabel.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, permText)).clickEvent(ClickEvent.copyToClipboard(perm + ".use"));
-        final Component descValue = target.getShortDescription(context.getCause()).get().color(NamedTextColor.GOLD);
+        final Component descValue = target.shortDescription(context.cause()).get().color(NamedTextColor.GOLD);
         context.sendMessage(Identity.nil(), Component.empty().append(descLabel).append(Component.space()).append(descValue));
 
         List<String> usages = new ArrayList<>();
@@ -83,7 +83,7 @@ public class HelpExecutor implements CommandExecutor
 //            context.sendMessage(target.getUsage(context.getCause()).style(grayStyle));
 //            context.sendMessage(Component.text(actual.orElse("no cmd?")));
 
-        final List<Parameter.Subcommand> subcommands = target.subcommands().stream().filter(sc -> !sc.getAliases().iterator().next().equals("?")).collect(Collectors.toList());
+        final List<Parameter.Subcommand> subcommands = target.subcommands().stream().filter(sc -> !sc.aliases().iterator().next().equals("?")).collect(Collectors.toList());
         if (!subcommands.isEmpty())
         {
             context.sendMessage(Identity.nil(), Component.empty());
@@ -91,15 +91,15 @@ public class HelpExecutor implements CommandExecutor
             context.sendMessage(Identity.nil(), Component.empty());
             for (Parameter.Subcommand subcommand : subcommands)
             {
-                final String firstAlias = subcommand.getAliases().iterator().next();
-                final Command.Parameterized subCmd = subcommand.getCommand();
+                final String firstAlias = subcommand.aliases().iterator().next();
+                final Command.Parameterized subCmd = subcommand.command();
                 TextComponent textPart1 = Component.text(firstAlias, NamedTextColor.YELLOW);
                 final Component subPermText = i18n.translate(audience, grayStyle, "Permission: (click to copy) {input}", perm + "." + firstAlias).append(
                     Component.text(".use").color(NamedTextColor.WHITE));
                 textPart1 = textPart1.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, subPermText)).clickEvent(
                     ClickEvent.copyToClipboard(perm + "." + firstAlias + ".use"));
                 final String newHelpCmd = actual + " " + firstAlias + " ?";
-                final TextComponent text = Component.empty().append(textPart1).append(Component.text(": ")).append(subCmd.getShortDescription(context.getCause()).get().style(
+                final TextComponent text = Component.empty().append(textPart1).append(Component.text(": ")).append(subCmd.shortDescription(context.cause()).get().style(
                     grayStyle).hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text("click to show usage"))).clickEvent(
                     ClickEvent.runCommand(newHelpCmd))
                                                                                                                    // TODO missing command context
@@ -123,7 +123,7 @@ public class HelpExecutor implements CommandExecutor
     {
         if (param instanceof Parameter.Value)
         {
-            String usage = ((Parameter.Value<?>)param).getUsage(context.getCause());
+            String usage = ((Parameter.Value<?>)param).usage(context.cause());
             if (!param.isOptional())
             {
                 usage = "<" + usage + ">";
@@ -133,7 +133,7 @@ public class HelpExecutor implements CommandExecutor
         else if (param instanceof Parameter.Multi)
         {
             final List<String> childUsages = new ArrayList<>();
-            for (Parameter childParam : ((Parameter.Multi)param).getChildParameters())
+            for (Parameter childParam : ((Parameter.Multi)param).childParameters())
             {
                 this.collectUsage(context, childUsages, childParam);
             }
@@ -188,9 +188,9 @@ public class HelpExecutor implements CommandExecutor
         }
         else if (param instanceof Subcommand)
         {
-            final Set<String> aliases = ((Subcommand)param).getAliases();
+            final Set<String> aliases = ((Subcommand)param).aliases();
             final ArrayList<String> subUsage = new ArrayList<>();
-            for (Parameter subCmdParam : ((Subcommand)param).getCommand().parameters())
+            for (Parameter subCmdParam : ((Subcommand)param).command().parameters())
             {
                 this.collectUsage(context, subUsage, subCmdParam);
             }

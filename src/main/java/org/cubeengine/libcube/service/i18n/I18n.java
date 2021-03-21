@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 import static org.cubeengine.dirigent.context.Contexts.LOCALE;
 import static org.cubeengine.dirigent.context.Contexts.createContext;
 import static org.cubeengine.libcube.service.i18n.Properties.SOURCE;
-import static org.spongepowered.api.Sponge.getAssetManager;
+import static org.spongepowered.api.Sponge.assetManager;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -169,16 +169,16 @@ public class I18n extends I18nTranslate
     public void enable()
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
-        Asset langs = getAssetManager().getAsset(plugin.getContainer(), "languages/languages.yml").get();
+        Asset langs = assetManager().asset(plugin.getContainer(), "languages/languages.yml").get();
         try
         {
             List<URL> urls = new ArrayList<>();
             for (String lang : langs.readLines())
             {
-                Optional<Asset> langAsset = getAssetManager().getAsset(plugin.getContainer(), "languages/" + lang + ".yml");
+                Optional<Asset> langAsset = assetManager().asset(plugin.getContainer(), "languages/" + lang + ".yml");
                 if (langAsset.isPresent())
                 {
-                    urls.add(langAsset.get().getUrl());
+                    urls.add(langAsset.get().url());
                 }
                 else
                 {
@@ -204,10 +204,10 @@ public class I18n extends I18nTranslate
         {
             String lang = language.getLocale().getLanguage();
             String full = lang + "_ " + language.getLocale().getCountry();
-            Optional<Asset> asset = getAssetManager().getAsset(plugin, "translations/" + lang + "_" + name + ".po");
-            asset.map(Asset::getUrl).ifPresent(poFiles::add);
-            asset = getAssetManager().getAsset(plugin, "translations/" + full + "_" + name + ".po");
-            asset.map(Asset::getUrl).ifPresent(poFiles::add);
+            Optional<Asset> asset = assetManager().asset(plugin, "translations/" + lang + "_" + name + ".po");
+            asset.map(Asset::url).ifPresent(poFiles::add);
+            asset = assetManager().asset(plugin, "translations/" + full + "_" + name + ".po");
+            asset.map(Asset::url).ifPresent(poFiles::add);
         }
     }
 
@@ -220,9 +220,9 @@ public class I18n extends I18nTranslate
     {
         if (receiver instanceof CommandCause)
         {
-            final Audience audience = ((CommandCause) receiver).getAudience();
+            final Audience audience = ((CommandCause) receiver).audience();
             if (audience instanceof LocaleSource) {
-                defaultContext.set(LOCALE.with(((LocaleSource) audience).getLocale()));
+                defaultContext.set(LOCALE.with(((LocaleSource) audience).locale()));
             }
 
             return defaultContext.set(SOURCE.with(((CommandCause) receiver)));

@@ -29,7 +29,7 @@ import org.spongepowered.api.command.parameter.managed.ValueParser;
 public class StringListParser implements ValueParser<List<String>>
 {
     @Override
-    public Optional<? extends List<String>> getValue(Key<? super List<String>> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
+    public Optional<? extends List<String>> parseValue(Key<? super List<String>> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
         List<String> list = new ArrayList<>();
         do

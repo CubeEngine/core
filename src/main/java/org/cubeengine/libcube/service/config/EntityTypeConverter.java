@@ -32,7 +32,7 @@ public class EntityTypeConverter extends SimpleConverter<EntityType>
     @Override
     public Node toNode(EntityType object) throws ConversionException
     {
-        return StringNode.of(Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).valueKey(object).asString());
+        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE).valueKey(object).asString());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class EntityTypeConverter extends SimpleConverter<EntityType>
     {
         if (node instanceof StringNode)
         {
-            final Optional<EntityType<?>> type = Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).findValue(ResourceKey.resolve(node.getValue().toString()));
+            final Optional<EntityType<?>> type = Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE).findValue(ResourceKey.resolve(node.getValue().toString()));
             if (type.isPresent())
             {
                 return type.get();

@@ -130,15 +130,15 @@ public class AnnotationCommandBuilder
             final Builder builder = builder();
             final String name = this.getCommandName(null, holder, holderAnnotation);
 
-            builder.setShortDescription(Component.text(holderAnnotation.desc()));
+            builder.shortDescription(Component.text(holderAnnotation.desc()));
 
             //        builder.setExecutionRequirements()?
             //        builder.setExtendedDescription()!
             final Optional<CommandExecutor> dispatcherExecutor = this.createChildCommands(event, injector, moduleClass, plugin, holder, builder, getBasePerm(plugin), "command", name);
 
             final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-            builder.setExecutor(new DispatcherExecutor(helpExecutor, dispatcherExecutor.orElse(null)));
-            builder.child(builder().setExecutor(helpExecutor).build(), "?");
+            builder.executor(new DispatcherExecutor(helpExecutor, dispatcherExecutor.orElse(null)));
+            builder.addChild(builder().executor(helpExecutor).build(), "?");
 
             final Parameterized build = builder.build();
             helpExecutor.init(build, null,
@@ -205,7 +205,7 @@ public class AnnotationCommandBuilder
     private Optional<CommandExecutor> createChildCommands(RegisterCommandEvent<Parameterized> event, Injector injector, Class<?> moduleClass, PluginContainer plugin, Object holder, Builder dispatcher, String... permNodes)
     {
         final String basePermNode = String.join(".", permNodes);
-        dispatcher.setPermission(basePermNode + ".use");
+        dispatcher.permission(basePermNode + ".use");
         Optional<CommandExecutor> dispatcherExecutor = Optional.empty();
         final Set<Method> methods = this.getMethods(holder.getClass()).stream().filter(
             m -> m.isAnnotationPresent(Command.class)).collect(Collectors.toSet());
@@ -221,14 +221,14 @@ public class AnnotationCommandBuilder
                     newPermNodes[permNodes.length] = name;
                     final Parameterized build = buildCommand(injector, holder, method, methodAnnotation, newPermNodes);
 
-                    dispatcher.parameters(build.parameters());
+                    dispatcher.addParameters(build.parameters());
 
                     // TODO execution requirements - but they do not apply for child commands does it work?
-                    final Predicate<CommandCause> requirements = build.getExecutionRequirements();
+                    final Predicate<CommandCause> requirements = build.executionRequirements();
                     // TODO would get overwritten by other requirements... maybe wrap executor instead?
-                    dispatcher.setExecutionRequirements(requirements);
+                    dispatcher.executionRequirements(requirements);
 
-                    dispatcherExecutor = build.getExecutor();
+                    dispatcherExecutor = build.executor();
                 }
                 else
                 {
@@ -251,24 +251,24 @@ public class AnnotationCommandBuilder
                 {
                     final Builder builder = builder();
                     final String name = this.getCommandName(null, subHolder, subHolderAnnotation);
-                    builder.setShortDescription(Component.text(subHolderAnnotation.desc()));
+                    builder.shortDescription(Component.text(subHolderAnnotation.desc()));
                     //        builder.setExecutionRequirements()?
                     //        builder.setExtendedDescription()!
                     final String[] newPermNodes = Arrays.copyOf(permNodes, permNodes.length + 1);
                     newPermNodes[permNodes.length] = name;
                     final Optional<CommandExecutor> subDispatcherExecutor = this.createChildCommands(event, injector, moduleClass, plugin, subHolder, builder, newPermNodes);
                     final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-                    builder.setExecutor(new DispatcherExecutor(helpExecutor, subDispatcherExecutor.orElse(null)));
+                    builder.executor(new DispatcherExecutor(helpExecutor, subDispatcherExecutor.orElse(null)));
                     final List<String> alias = new ArrayList<>();
                     alias.add(name);
                     alias.addAll(Arrays.asList(subHolderAnnotation.alias()));
 
-                    final Parameterized helpChild = builder().setExecutor(helpExecutor).build();
-                    builder.child(helpChild, "?");
+                    final Parameterized helpChild = builder().executor(helpExecutor).build();
+                    builder.addChild(helpChild, "?");
 
                     final Parameterized build = builder.build();
                     helpExecutor.init(build, null, String.join(".", permNodes));
-                    dispatcher.child(build, alias);
+                    dispatcher.addChild(build, alias);
 
                     final Alias aliasAnnotation = subHolder.getClass().getAnnotation(Alias.class);
                     if (aliasAnnotation != null)
@@ -294,13 +294,13 @@ public class AnnotationCommandBuilder
         final List<String> alias = new ArrayList<>();
         alias.add(name);
         alias.addAll(Arrays.asList(methodAnnotation.alias()));
-        dispatcher.child(build, alias);
+        dispatcher.addChild(build, alias);
 
         if (this.isDelegateMethod(holder, name))
         {
             final List<Parameter> parameters = build.parameters();
-            dispatcher.parameters(parameters);
-            dispatcher.setExecutor(build.getExecutor().get());
+            dispatcher.addParameters(parameters);
+            dispatcher.executor(build.executor().get());
         }
 
         final Alias aliasAnnotation = method.getAnnotation(Alias.class);
@@ -373,7 +373,7 @@ public class AnnotationCommandBuilder
                 final String msg = restricted.msg().isEmpty() ? "Command is restricted to " + restrictedTo.getSimpleName() : restricted.msg();
 
                 this.add(commandCause -> {
-                    if (!restrictedTo.isAssignableFrom(commandCause.getSubject().getClass()))
+                    if (!restrictedTo.isAssignableFrom(commandCause.subject().getClass()))
                     {
 // TODO custom error message                       commandCause.getAudience().sendMessage(Identity.nil(), Component.text(msg));
                         return false;
@@ -418,12 +418,12 @@ public class AnnotationCommandBuilder
         buildParams(builder, params, namedParameter, executor);
         requirements.addPermission(String.join(".", permNodes) + ".use");
         requirements.add(method.getAnnotation(Restricted.class));
-        builder.setExecutionRequirements(requirements);
-        builder.setShortDescription(Component.text(annotation.desc()));
+        builder.executionRequirements(requirements);
+        builder.shortDescription(Component.text(annotation.desc()));
 //        builder.setExtendedDescription()
-        builder.setExecutor(executor);
+        builder.executor(executor);
         final HelpExecutor helpExecutor = new HelpExecutor(i18n);
-        builder.child(builder().setExecutor(helpExecutor).build(), "?");
+        builder.addChild(builder().executor(helpExecutor).build(), "?");
         final Parameterized build = builder.build();
         helpExecutor.init(build, executor, String.join(".", permNodes));
         return build;
@@ -450,7 +450,7 @@ public class AnnotationCommandBuilder
                     ((SequenceBuilder)param).terminal();
                 }
             }
-            builder.parameter(param.build());
+            builder.addParameter(param.build());
         }
 
         Map<Named, org.spongepowered.api.command.Command.Builder> namedSubCommands = new LinkedHashMap<>();
@@ -461,7 +461,7 @@ public class AnnotationCommandBuilder
 //                builder.flag(org.spongepowered.api.command.parameter.managed.Flag.of(namedParam.getValue(), namedParam.getKey().value()));
             }
             {
-                final Builder namedSubCmd = builder().parameter(namedParam.getValue().build()).setExecutor(executor);
+                final Builder namedSubCmd = builder().addParameter(namedParam.getValue().build()).executor(executor);
                 namedSubCommands.put(namedParam.getKey(), namedSubCmd);
 
 //                // Sequence
@@ -487,7 +487,7 @@ public class AnnotationCommandBuilder
                     {
                         firstofBuilder.or(subcommands.get(i));
                     }
-                    namedParam.getValue().parameter(firstofBuilder.build());
+                    namedParam.getValue().addParameter(firstofBuilder.build());
                 }
 
                 subcommands.add(Parameter.subcommand(namedParam.getValue().build(), namedParam.getKey().value()[0],
@@ -500,7 +500,7 @@ public class AnnotationCommandBuilder
             {
                 namedBuilder.or(subcommands.get(i));
             }
-            builder.parameter(namedBuilder.build());
+            builder.addParameter(namedBuilder.build());
         }
     }
 
@@ -573,15 +573,15 @@ public class AnnotationCommandBuilder
         final Class<? extends ValueParameter<T>> customParserType = parserAnnotation != null && parserAnnotation.parser() != ValueParser.class ? (Class<ValueParameter<T>>) parserAnnotation.parser() : null;
         final Class<? extends ValueCompleter> customCompleterType = parserAnnotation != null && parserAnnotation.completer() != ValueCompleter.class ? parserAnnotation.completer() : null;
 
-        parameterBuilder.parser(ParameterRegistry.getParser(injector, type, customParserType,index == last, greedyAnnotation != null));
+        parameterBuilder.addParser(ParameterRegistry.getParser(injector, type, customParserType,index == last, greedyAnnotation != null));
 
         final ValueCompleter completer = ParameterRegistry.getCompleter(injector, type, customCompleterType);
         if (completer != null)
         {
-            parameterBuilder.setSuggestions(completer);
+            parameterBuilder.suggestions(completer);
         }
 
-        parameterBuilder.setKey(name);
+        parameterBuilder.key(name);
         final Key<T> key = (Key<T>) Parameter.key(name, TypeToken.get(type));
 
         Default defaultAnnotation = getAnnotated(annotations, Default.class);
@@ -610,12 +610,12 @@ public class AnnotationCommandBuilder
         Label labelAnnotation = getAnnotated(annotations, Label.class);
         if (labelAnnotation != null)
         {
-            parameterBuilder.setUsage(k -> labelAnnotation.value());
+            parameterBuilder.usage(k -> labelAnnotation.value());
         }
 
         if (permAnnotation != null)
         {
-            parameterBuilder.setRequiredPermission(String.join(".", permNodes) + "." + name);
+            parameterBuilder.requiredPermission(String.join(".", permNodes) + "." + name);
         }
 
         if (namedAnnotation != null)
@@ -661,9 +661,9 @@ public class AnnotationCommandBuilder
             {
                 if (defaultParameterProvider != null)
                 {
-                    return commandContext.getOne(key).orElse(defaultParameterProvider.apply(commandContext.getCause()));
+                    return commandContext.one(key).orElse(defaultParameterProvider.apply(commandContext.cause()));
                 }
-                return commandContext.getOne(key).orElse(null);
+                return commandContext.one(key).orElse(null);
             }
             return commandContext.requireOne(key);
         }
@@ -681,7 +681,7 @@ public class AnnotationCommandBuilder
         @Override
         public Optional<T> apply(CommandContext commandContext)
         {
-            return commandContext.getOne(key);
+            return commandContext.one(key);
         }
     }
 
@@ -728,7 +728,7 @@ public class AnnotationCommandBuilder
     {
         final List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> firstValueParams = new ArrayList<>(params.subList(params.size() - extractors.size(), params.size()));
         params.removeAll(firstValueParams);
-        final FirstOfBuilder firstOfBuilder = Sponge.getGame().getBuilderProvider().provide(FirstOfBuilder.class);
+        final FirstOfBuilder firstOfBuilder = Sponge.game().builderProvider().provide(FirstOfBuilder.class);
         firstOfBuilder.orFirstOf(firstValueParams.stream().map(Buildable.Builder::build).collect(Collectors.toList()));
         params.add(firstOfBuilder);
 
@@ -753,12 +753,12 @@ public class AnnotationCommandBuilder
 
             final String finalShortName = shortName;
             final String finalLongName = longName;
-            final Value.Builder<Boolean> builderShort = Parameter.literal(Boolean.class, true, "-" + shortName).optional().setKey(name).setUsage(key -> "-" + finalShortName);
-            final Value.Builder<Boolean> builderLong = Parameter.literal(Boolean.class, true, "-" + longName).optional().setKey(name).setUsage(key -> "-" + finalLongName);
+            final Value.Builder<Boolean> builderShort = Parameter.literal(Boolean.class, true, "-" + shortName).optional().key(name).usage(key -> "-" + finalShortName);
+            final Value.Builder<Boolean> builderLong = Parameter.literal(Boolean.class, true, "-" + longName).optional().key(name).usage(key -> "-" + finalLongName);
             if (permAnnotation != null)
             {
-                builderShort.setRequiredPermission(String.join(".", permNodes) + "." + name);
-                builderLong.setRequiredPermission(String.join(".", permNodes) + "." + name);
+                builderShort.requiredPermission(String.join(".", permNodes) + "." + name);
+                builderLong.requiredPermission(String.join(".", permNodes) + "." + name);
             }
 
             final FirstOfBuilder flagParamBuilder = Parameter.firstOfBuilder(builderShort.build()).or(builderLong.build()).optional();
@@ -771,7 +771,7 @@ public class AnnotationCommandBuilder
 
     private static boolean playerRestricted(CommandCause cause)
     {
-        final boolean isPlayer = cause.getSubject() instanceof ServerPlayer;
+        final boolean isPlayer = cause.subject() instanceof ServerPlayer;
         if (!isPlayer)
         {
             // TODO show error message?
@@ -826,8 +826,8 @@ public class AnnotationCommandBuilder
     {
     }
 
-    private static final ContextExtractor<CommandCause> COMMAND_CAUSE = CommandContext::getCause;
+    private static final ContextExtractor<CommandCause> COMMAND_CAUSE = CommandContext::cause;
     private static final ContextExtractor<CommandContext> COMMAND_CONTEXT = c -> c;
-    private static final ContextExtractor<ServerPlayer> COMMAND_PLAYER = c -> (ServerPlayer)c.getCause().getAudience();
-    private static final ContextExtractor<Audience> COMMAND_AUDIENCE = c -> c.getCause().getAudience();
+    private static final ContextExtractor<ServerPlayer> COMMAND_PLAYER = c -> (ServerPlayer)c.cause().audience();
+    private static final ContextExtractor<Audience> COMMAND_AUDIENCE = c -> c.cause().audience();
 }

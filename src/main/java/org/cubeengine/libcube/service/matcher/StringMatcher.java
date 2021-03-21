@@ -44,7 +44,7 @@ public class StringMatcher
     {
         if (logProvider == null) // TODO EntityDataChanger Call
         {
-            this.logger = ((PluginLibCube) Sponge.getPluginManager().getPlugin("cubeengine-core").get().getInstance()).getCore().getModuleManager().getLoggerFor(StringMatcher.class);
+            this.logger = ((PluginLibCube) Sponge.pluginManager().plugin("cubeengine-core").get().getInstance()).getCore().getModuleManager().getLoggerFor(StringMatcher.class);
         }
         else
         {

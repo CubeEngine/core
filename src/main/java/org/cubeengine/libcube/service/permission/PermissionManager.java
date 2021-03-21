@@ -61,7 +61,7 @@ public class PermissionManager
     {
         this.plugin = plugin;
         this.mm = mm;
-        game.getEventManager().registerListeners(plugin, this);
+        game.eventManager().registerListeners(plugin, this);
         rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", emptySet())); // TODO translatable
     }
 
@@ -125,7 +125,7 @@ public class PermissionManager
     @Listener
     public void onRegisterService(StartedEngineEvent<Server> event)
     {
-        this.register(Sponge.getServer().getServiceProvider().permissionService());
+        this.register(Sponge.server().serviceProvider().permissionService());
     }
 
     private void register(PermissionService service)

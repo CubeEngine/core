@@ -52,7 +52,7 @@ public class EntityMatcher
     public EntityMatcher(StringMatcher stringMatcher, Reflector reflector)
     {
         this.stringMatcher = stringMatcher;
-        Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
+        Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
             ids.put(entry.key().asString(), entry.value());
 // TODO translactions            translations.put(type.getTranslation().get(Locale.getDefault()).toLowerCase(), type);
         });
@@ -93,7 +93,7 @@ public class EntityMatcher
             name = "minecraft:item_frame";
         }
 
-        EntityType<?> entity = Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).findValue(ResourceKey.resolve(name)).orElse(null);
+        EntityType<?> entity = Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE).findValue(ResourceKey.resolve(name)).orElse(null);
         if (entity != null)
         {
             return entity;
@@ -117,7 +117,7 @@ public class EntityMatcher
         if (entity == null && locale != null)
         {
             Map<String, EntityType> translations = new HashMap<>();
-            Sponge.getGame().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
+            Sponge.game().registries().registry(RegistryTypes.ENTITY_TYPE).streamEntries().forEach(entry -> {
                 // TODO translation                translations.put(type.getTranslation().get(locale, type), type);
             });
             entity = anyFromMap(name, translations); // Use Language Translations
@@ -159,7 +159,7 @@ public class EntityMatcher
     }
 
     public Entity getEntity(EntityType<?> type) {
-        final ServerWorld world = Sponge.getServer().getWorldManager().defaultWorld();
+        final ServerWorld world = Sponge.server().worldManager().defaultWorld();
         return world.createEntity(type, Vector3d.ZERO);
     }
 

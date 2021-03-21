@@ -31,7 +31,7 @@ public class ItemTypeConverter extends SimpleConverter<ItemType>
     @Override
     public Node toNode(ItemType object)
     {
-        return StringNode.of(Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).valueKey(object).asString());
+        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).valueKey(object).asString());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ItemTypeConverter extends SimpleConverter<ItemType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
+            return Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

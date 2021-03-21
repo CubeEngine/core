@@ -49,30 +49,30 @@ public class UserMatcher
             return null;
         }
         // Direct Match Online Players:
-        Optional<ServerPlayer> player = Sponge.getServer().getPlayer(name);
+        Optional<ServerPlayer> player = Sponge.server().player(name);
         if (player.isPresent())
         {
-            return Optional.of(player.get().getUser());
+            return Optional.of(player.get().user());
         }
 
         // Find Online Players with similar name
         Map<String, ServerPlayer> onlinePlayerMap = new HashMap<>();
-        for (ServerPlayer onlineUser : Sponge.getServer().getOnlinePlayers())
+        for (ServerPlayer onlineUser : Sponge.server().onlinePlayers())
         {
-            onlinePlayerMap.put(onlineUser.getName(), onlineUser);
+            onlinePlayerMap.put(onlineUser.name(), onlineUser);
         }
         String foundUser = sm.matchString(name, onlinePlayerMap.keySet());
         if (foundUser != null)
         {
-            return Optional.of(onlinePlayerMap.get(foundUser).getUser());
+            return Optional.of(onlinePlayerMap.get(foundUser).user());
         }
 
-        final UserManager userManager = Sponge.getServer().getUserManager();
+        final UserManager userManager = Sponge.server().userManager();
 
         Optional<User> directMatchOffline;
         try
         {
-            directMatchOffline = userManager.get(name);
+            directMatchOffline = userManager.find(name);
         }
         catch (IllegalArgumentException ignore)
         {
@@ -85,11 +85,11 @@ public class UserMatcher
 
         if (searchOffline)
         {
-            String match = sm.matchString(name, userManager.getAll().stream().map(GameProfile::getName)
+            String match = sm.matchString(name, userManager.all().stream().map(GameProfile::name)
                                                        .filter(Optional::isPresent).map(Optional::get).collect(toList()));
             if (match != null)
             {
-                return userManager.get(match);
+                return userManager.find(match);
             }
         }
 

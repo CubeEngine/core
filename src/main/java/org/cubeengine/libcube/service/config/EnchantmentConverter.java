@@ -31,7 +31,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     @Override
     public Node toNode(EnchantmentType object) throws ConversionException
     {
-        return StringNode.of(Sponge.getGame().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).valueKey(object).asString());
+        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).valueKey(object).asString());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.getGame().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
+            return Sponge.game().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

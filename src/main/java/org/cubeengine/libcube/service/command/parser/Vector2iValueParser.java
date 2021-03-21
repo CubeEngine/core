@@ -28,7 +28,7 @@ import org.spongepowered.math.vector.Vector2i;
 public class Vector2iValueParser implements ValueParser<Vector2i>
 {
     @Override
-    public Optional<? extends Vector2i> getValue(Key<? super Vector2i> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
+    public Optional<? extends Vector2i> parseValue(Key<? super Vector2i> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
         final int x = reader.parseInt();
         reader.skipWhitespace();

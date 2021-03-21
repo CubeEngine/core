@@ -123,7 +123,7 @@ public class ParameterRegistry
 
     private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> registryType)
     {
-        return VariableValueParameters.registryEntryBuilder(c -> Sponge.getGame().registries(), registryType).defaultNamespace(defaultNameSpace).build();
+        return VariableValueParameters.registryEntryBuilder(c -> Sponge.game().registries(), registryType).defaultNamespace(defaultNameSpace).build();
     }
 
     static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)

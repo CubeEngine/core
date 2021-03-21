@@ -59,6 +59,6 @@ public class ContextConverter extends SimpleConverter<Context>
 
     private boolean isValidWorld(String token)
     {
-        return Sponge.getServer().getWorldManager().worldKeys().contains(ResourceKey.sponge(token));
+        return Sponge.server().worldManager().worldKeys().contains(ResourceKey.sponge(token));
     }
 }

@@ -62,8 +62,8 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     @Override
     public List<String> complete(CommandContext context, String currentInput)
     {
-        List<String> list = Sponge.getServer().getWorldManager().worlds().stream()
-                                  .map(ServerWorld::getKey)
+        List<String> list = Sponge.server().worldManager().worlds().stream()
+                                  .map(ServerWorld::key)
                                   .map(ResourceKey::asString)
                                   .filter(n -> n.toLowerCase().startsWith(currentInput.toLowerCase()))
                                   .collect(toList());
@@ -79,8 +79,8 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
         if (currentInput.equals("world") || currentInput.toLowerCase().startsWith("world|"))
         {
             String subToken = currentInput.equals("world") ? "" : currentInput.substring(6);
-            list.addAll(Sponge.getServer().getWorldManager().worlds().stream()
-                              .map(ServerWorld::getKey)
+            list.addAll(Sponge.server().worldManager().worlds().stream()
+                              .map(ServerWorld::key)
                               .map(ResourceKey::asString)
                               .filter(n -> n.toLowerCase().startsWith(subToken.toLowerCase()))
                               .map(n -> "world|" + n)
@@ -90,7 +90,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     }
 
     @Override
-    public Optional<? extends Context> getValue(Key<? super Context> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
+    public Optional<? extends Context> parseValue(Key<? super Context> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
         String token = reader.parseUnquotedString();
         String checkToken = token.toLowerCase();
@@ -107,7 +107,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
             }
             if (!isValidWorld(parts[1]))
             {
-                throw reader.createException(i18n.translate(context.getCause(), "Unknown context: {}", token));
+                throw reader.createException(i18n.translate(context.cause(), "Unknown context: {}", token));
             }
             checkToken = parts[1];
         }
@@ -115,12 +115,12 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
         {
             return Optional.of(new Context(WORLD_KEY, checkToken));
         }
-        throw reader.createException(i18n.translate(context.getCause(), "Unknown context: {}", token));
+        throw reader.createException(i18n.translate(context.cause(), "Unknown context: {}", token));
     }
 
     private boolean isValidWorld(String token)
     {
-        return Sponge.getServer().getWorldManager().world(ResourceKey.resolve(token)).isPresent();
+        return Sponge.server().worldManager().world(ResourceKey.resolve(token)).isPresent();
     }
 
 

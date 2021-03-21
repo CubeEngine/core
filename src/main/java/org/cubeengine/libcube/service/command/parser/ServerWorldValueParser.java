@@ -43,11 +43,11 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
 {
 
     @Override
-    public Optional<? extends ServerWorld> getValue(Parameter.Key<? super ServerWorld> parameterKey, ArgumentReader.Mutable reader,
+    public Optional<? extends ServerWorld> parseValue(Parameter.Key<? super ServerWorld> parameterKey, ArgumentReader.Mutable reader,
             CommandContext.Builder context) throws ArgumentParseException
     {
         final ResourceKey key = reader.parseResourceKey("minecraft");
-        final Optional<ServerWorld> world = Sponge.getServer().getWorldManager().world(key);
+        final Optional<ServerWorld> world = Sponge.server().worldManager().world(key);
         if (!world.isPresent())
         {
             throw reader.createException(Component.text("World " + key + " does not exist."));
@@ -56,7 +56,7 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
     }
 
     @Override
-    public List<ClientCompletionType> getClientCompletionType()
+    public List<ClientCompletionType> clientCompletionType()
     {
         return Arrays.asList(ClientCompletionTypes.RESOURCE_KEY.get());
     }
@@ -65,14 +65,14 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
     public List<String> complete(CommandContext context, String currentInput)
     {
         final List<String> list = new ArrayList<>();
-        Sponge.getServer().getWorldManager().worlds().stream()
-                     .map(ServerWorld::getKey)
-                     .filter(k -> k.getFormatted().startsWith(currentInput) || k.getNamespace().equals("minecraft") && k.getValue().startsWith(currentInput))
+        Sponge.server().worldManager().worlds().stream()
+                     .map(ServerWorld::key)
+                     .filter(k -> k.formatted().startsWith(currentInput) || k.namespace().equals("minecraft") && k.value().startsWith(currentInput))
                      .forEach(k -> {
-                         list.add(k.getFormatted());
-                         if (k.getNamespace().equals("minecraft"))
+                         list.add(k.formatted());
+                         if (k.namespace().equals("minecraft"))
                          {
-                             list.add(k.getValue());
+                             list.add(k.value());
                          }
                      });
         return list;
@@ -81,9 +81,9 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
     @Override
     public ServerWorld apply(CommandCause commandCause)
     {
-        if (commandCause.getAudience() instanceof ServerPlayer)
+        if (commandCause.audience() instanceof ServerPlayer)
         {
-            return ((ServerPlayer)commandCause.getAudience()).getWorld();
+            return ((ServerPlayer)commandCause.audience()).world();
         }
         return null;
     }

@@ -44,77 +44,77 @@ public class SpongeTaskManager implements TaskManager
     public ScheduledTask runTask(Runnable runnable)
     {
         final Task task = newTask().execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTaskDelayed(Runnable runnable, Duration delay)
     {
         final Task task = newTask().delay(delay).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTaskDelayed(Runnable runnable, Ticks delay)
     {
         final Task task = newTask().delay(delay).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTaskAsync(Runnable runnable)
     {
         final Task task = newTask().execute(runnable).build();
-        return game.getAsyncScheduler().submit(task);
+        return game.asyncScheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTaskAsyncDelayed(Runnable runnable, Duration delay)
     {
         final Task task = newTask().delay(delay).execute(runnable).build();
-        return game.getAsyncScheduler().submit(task);
+        return game.asyncScheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTaskAsyncDelayed(Runnable runnable, Ticks delay)
     {
         final Task task = newTask().delay(delay).execute(runnable).build();
-        return game.getAsyncScheduler().submit(task);
+        return game.asyncScheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration delay, Duration interval)
     {
         final Task task = newTask().delay(delay).interval(interval).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval)
     {
         final Task task = newTask().delay(delay).interval(interval).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Duration interval)
     {
         final Task task = newTask().interval(interval).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTimer(Consumer<ScheduledTask> runnable, Ticks interval)
     {
         final Task task = newTask().interval(interval).execute(runnable).build();
-        return game.getServer().getScheduler().submit(task);
+        return game.server().scheduler().submit(task);
     }
 
     @Override
     public ScheduledTask runTimerAsync(Consumer<ScheduledTask> runnable, Ticks delay, Ticks interval)
     {
         final Task task = newTask().delay(delay).execute(runnable).interval(interval).build();
-        return game.getAsyncScheduler().submit(task);
+        return game.asyncScheduler().submit(task);
     }
 
     private Task.Builder newTask() {

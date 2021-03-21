@@ -64,7 +64,7 @@ public class InventoryGuard
     {
         this.em = em;
         this.tm = tm;
-        this.inventory = inventory instanceof Container ? (((Container)inventory)).getViewed().get(0) : inventory;
+        this.inventory = inventory instanceof Container ? (((Container)inventory)).viewed().get(0) : inventory;
         this.container = inventory instanceof Container ? (Container) inventory : null;
         this.users = new HashSet<>(Arrays.asList(users));
     }
@@ -81,7 +81,7 @@ public class InventoryGuard
         {
             for (UUID user : users)
             {
-                Optional<ServerPlayer> player = Sponge.getServer().getPlayer(user);
+                Optional<ServerPlayer> player = Sponge.server().player(user);
                 if (player.isPresent())
                 {
                     this.container = player.get().openInventory(this.inventory).orElse(null);
@@ -136,11 +136,11 @@ public class InventoryGuard
     @Listener
     public void onInventoryClose(InteractContainerEvent.Close event, @First Player player)
     {
-        if ((event.getContainer().equals(this.container)))
+        if ((event.container().equals(this.container)))
         {
-            if (this.users.contains(player.getUniqueId()))
+            if (this.users.contains(player.uniqueId()))
             {
-                this.users.remove(player.getUniqueId());
+                this.users.remove(player.uniqueId());
                 if (this.users.isEmpty())
                 {
                     em.removeListener(this); // no user left to check
@@ -153,8 +153,8 @@ public class InventoryGuard
     @Listener
     public void onInventoryInteract(ClickContainerEvent event)
     {
-        if (!event.getContainer().equals(this.container)
-                && !event.getContainer().getSlot(0).get().viewedSlot().parent().equals(this.inventory))
+        if (!event.container().equals(this.container)
+                && !event.container().slot(0).get().viewedSlot().parent().equals(this.inventory))
         {
             return;
         }
@@ -166,19 +166,19 @@ public class InventoryGuard
         //System.out.print("Event:\n");
         boolean cancel = false;
 
-        int upperSize = event.getContainer().getViewed().get(0).capacity();
+        int upperSize = event.container().viewed().get(0).capacity();
 
-        for (SlotTransaction transaction : event.getTransactions())
+        for (SlotTransaction transaction : event.transactions())
         {
-            ItemStack origStack = transaction.getOriginal().createStack();
-            ItemStack finalStack = transaction.getFinal().createStack();
+            ItemStack origStack = transaction.original().createStack();
+            ItemStack finalStack = transaction.finalReplacement().createStack();
 //            String origString = origStack.isEmpty() ? origStack.getType().getKey().asString() : origStack.getType().getKey().asString() + " " + origStack.getQuantity();
 //            String finalString = finalStack.isEmpty() ? finalStack.getType().getKey().asString() : finalStack.getType().getKey().asString() + " " + finalStack.getQuantity();
             //System.out.print(origString + "->" + finalString + "\n");
 
             //System.out.println("SI: " + transaction.getSlot().getProperty(SlotIndex.class, "slotindex").map(si -> si.getValue()).orElse(-1) + " " + transaction.getSlot().parent().capacity());
 
-            int affectedSlot = transaction.getSlot().get(Keys.SLOT_INDEX).orElse(-1);
+            int affectedSlot = transaction.slot().get(Keys.SLOT_INDEX).orElse(-1);
 
             boolean upper = affectedSlot != -1 && affectedSlot < upperSize;
 
@@ -203,13 +203,13 @@ public class InventoryGuard
 
     private boolean checkTransaction(ClickContainerEvent event, SlotTransaction transaction, ItemStack origStack, ItemStack finalStack)
     {
-        if (!transaction.getOriginal().equals(transaction.getFinal()))
+        if (!transaction.original().equals(transaction.finalReplacement()))
         {
-            if (transaction.getOriginal().isEmpty()) // Putting Item in Top Inventory
+            if (transaction.original().isEmpty()) // Putting Item in Top Inventory
             {
                 if (hasBlockIn(event, origStack, finalStack)) return true;
             }
-            else if (transaction.getFinal().isEmpty()) // Taking Item out of Top Inventory
+            else if (transaction.finalReplacement().isEmpty()) // Taking Item out of Top Inventory
             {
                 if (hasBlockOut(event, origStack, finalStack)) return true;
             }

@@ -37,7 +37,7 @@ public class UserConverter extends SimpleConverter<User>
     @Override
     public Node toNode(User user) throws ConversionException
     {
-        return StringNode.of(user.getName());
+        return StringNode.of(user.name());
     }
 
     @Override

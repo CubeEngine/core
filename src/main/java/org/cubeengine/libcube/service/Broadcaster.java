@@ -39,12 +39,12 @@ public class Broadcaster
 
     private Audience getAll()
     {
-        return Sponge.getServer().getBroadcastAudience();
+        return Sponge.server().broadcastAudience();
     }
 
     private Collection<ServerPlayer> getOnlinePlayers()
     {
-        return Sponge.getServer().getOnlinePlayers();
+        return Sponge.server().onlinePlayers();
     }
 
 
@@ -99,7 +99,7 @@ public class Broadcaster
 
     public void broadcastStatus(Style starColor, String message, Subject sender, Object... params)
     {
-        final String causeName = sender.getFriendlyIdentifier().orElse(sender.getIdentifier());
+        final String causeName = sender.friendlyIdentifier().orElse(sender.identifier());
         for (Player user : this.getOnlinePlayers())
         {
             i18n.send(user, starColor, "* {user} {input#message:color=WHITE}", causeName, message, params);
@@ -108,7 +108,7 @@ public class Broadcaster
 
     public void broadcastTranslatedStatus(Style starColor, String message, CommandCause sender, Object... params)
     {
-        final String causeName = sender.getSubject().getFriendlyIdentifier().orElse(sender.getSubject().getIdentifier());
+        final String causeName = sender.subject().friendlyIdentifier().orElse(sender.subject().identifier());
         for (Player user : this.getOnlinePlayers())
         {
             i18n.send(user, starColor, "* {user} {txt#message:color=WHITE}", causeName, i18n.translate(user, message, params));

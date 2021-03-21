@@ -79,7 +79,7 @@ public class MaterialMatcher
 
     public void onEnable()
     {
-        Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
+        Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
             final String translationKey = ((TranslatableComponent) type.asComponent()).key();
             // TODO get translation on server? GameDictionary?
 
@@ -93,7 +93,7 @@ public class MaterialMatcher
         buildLocalizedNames(defLocalizedName, localizedName);
 // TODO Taskbuilder        onEnable();
 
-        Sponge.getAsyncScheduler().submit(Task.builder().execute(() -> {
+        Sponge.asyncScheduler().submit(Task.builder().execute(() -> {
             this.blockStateItems = buildBlockStateItems(); // Helper
             this.variantMap.putAll(buildVariantMap());
             this.localizedVariantMap.put(Locale.getDefault(), buildLocalizedVariantMap(Locale.getDefault()));
@@ -132,13 +132,13 @@ public class MaterialMatcher
     }
 
     private void buildLocalizedNames(Map<String, ItemType> defLocalizedName, Map<String, ItemType> localizedName) {
-        Sponge.getGame().registries().registry(RegistryTypes.ITEM_TYPE).streamEntries().forEach(entry -> {
+        Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).streamEntries().forEach(entry -> {
             final ItemType itemType = entry.value();
             final ResourceKey id = entry.key();
             ids.put(id.asString(), itemType);
-            if ("minecraft".equals(id.getNamespace()))
+            if ("minecraft".equals(id.namespace()))
             {
-                ids.put(id.getValue(), itemType);
+                ids.put(id.value(), itemType);
             }
 // TODO get other language translations for items
 //            String defName = itemType.getTranslation().get(Locale.getDefault());
@@ -168,7 +168,7 @@ public class MaterialMatcher
 
         for (BlockState blockState : blockStateItems.values())
         {
-            final String transKey = ((TranslatableComponent) blockState.getType().asComponent()).key();
+            final String transKey = ((TranslatableComponent) blockState.type().asComponent()).key();
             // TODO locale
             map.put(transKey, blockState);
         }
@@ -180,7 +180,7 @@ public class MaterialMatcher
         Map<BlockType, Map<String, BlockState>> blockStateItemsByType = new HashMap<>();
         for (Entry<String, BlockState> entry : blockStateItems.entrySet())
         {
-            BlockType itemType = entry.getValue().getType();
+            BlockType itemType = entry.getValue().type();
 
             Map<String, BlockState> itemTypes = blockStateItemsByType.computeIfAbsent(itemType, k -> new HashMap<>());
             itemTypes.put(entry.getKey(), entry.getValue());
@@ -274,13 +274,13 @@ public class MaterialMatcher
         {
             try
             {
-                if (!blockState.getType().getItem().isPresent())
+                if (!blockState.type().item().isPresent())
                 {
                     continue;
                 }
                 ItemStack item = ItemStack.builder().fromBlockState(blockState).build();
 
-                Builder state = BlockState.builder().blockType(item.getType().getBlock().get());
+                Builder state = BlockState.builder().blockType(item.type().block().get());
 
                 blockState.getKeys().stream().map(Key.class::cast).forEach(
                     k -> {
@@ -338,9 +338,9 @@ public class MaterialMatcher
         if (parts.length > 1)
         {
             String variant = parts[1];
-            if (type.getBlock().isPresent())
+            if (type.block().isPresent())
             {
-                Map<String, BlockState> variants = variantMap.get(type.getBlock().get());
+                Map<String, BlockState> variants = variantMap.get(type.block().get());
                 if (variants != null)
                 {
                     String match2 = stringMatcher.matchString(variant, variants.keySet());

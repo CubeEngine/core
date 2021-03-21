@@ -37,7 +37,7 @@ public class AudienceValuerParser implements ValueParser<Audience>, ValueComplet
     public List<String> complete(CommandContext context, String currentInput)
     {
         final String token = currentInput.toLowerCase();
-        final List<String> list = Sponge.getServer().getOnlinePlayers().stream().map(Nameable::getName).filter(name -> name.toLowerCase().startsWith(token)).collect(Collectors.toList());
+        final List<String> list = Sponge.server().onlinePlayers().stream().map(Nameable::name).filter(name -> name.toLowerCase().startsWith(token)).collect(Collectors.toList());
         if ("console".startsWith(token))
         {
             list.add("console");
@@ -46,13 +46,13 @@ public class AudienceValuerParser implements ValueParser<Audience>, ValueComplet
     }
 
     @Override
-    public Optional<? extends Audience> getValue(Key<? super Audience> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
+    public Optional<? extends Audience> parseValue(Key<? super Audience> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
         final String name = reader.parseString();
         if ("console".equals(name))
         {
-            return Optional.of(Sponge.getSystemSubject());
+            return Optional.of(Sponge.systemSubject());
         }
-        return Sponge.getServer().getPlayer(name);
+        return Sponge.server().player(name);
     }
 }

@@ -27,9 +27,9 @@ public class ServerPlayerDefaultParameterProvider implements DefaultParameterPro
     @Override
     public ServerPlayer apply(CommandCause commandCause)
     {
-        if (commandCause.getSubject() instanceof ServerPlayer)
+        if (commandCause.subject() instanceof ServerPlayer)
         {
-            return ((ServerPlayer)commandCause.getSubject());
+            return ((ServerPlayer)commandCause.subject());
         }
         return null;
     }

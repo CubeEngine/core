@@ -27,8 +27,8 @@ public class SpawnUtil
 {
     public static void spawnItem(ItemStack item, ServerLocation at)
     {
-        Entity entity = at.getWorld().createEntityNaturally(EntityTypes.ITEM.get(), at.getPosition());
+        Entity entity = at.world().createEntityNaturally(EntityTypes.ITEM.get(), at.position());
         entity.offer(Keys.ITEM_STACK_SNAPSHOT, item.createSnapshot());
-        at.getWorld().spawnEntity(entity);
+        at.world().spawnEntity(entity);
     }
 }

@@ -41,7 +41,7 @@ public class EventManager
     @Inject
     public EventManager(Game game, PluginContainer plugin)
     {
-        this.em = game.getEventManager();
+        this.em = game.eventManager();
         this.plugin = plugin;
     }
 
