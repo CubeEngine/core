@@ -57,18 +57,18 @@ public abstract class CubeEnginePlugin {
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
-        this.mm.getLoggerFor(module).info("Module " + module.getSimpleName() + " loaded!");
-        this.mm.loadConfigs(this.module, true);
+        this.plugin.getLogger().info("Module " + module.getSimpleName() + " loaded!");
+        this.mm.loadConfigs(this.plugin, this.module, true);
     }
 
     @Listener(order = Order.EARLY)
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
-        this.mm.loadConfigs(this.module, false);
+        this.mm.loadConfigs(this.plugin, this.module, false);
         if (module == null)
         {
-            mm.getLoggerFor(this.module).error("Failed to load module for {}", plugin.getMetadata().getName());
+            plugin.getLogger().error("Failed to load module for {}", plugin.getMetadata().getName());
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class CubeEnginePlugin {
             Optional<?> provided = Sponge.server().serviceProvider().provide(field.getType());
             if (!provided.isPresent())
             {
-                mm.getLoggerFor(this.module).warn("Missing Service");
+                plugin.getLogger().warn("Missing Service");
             }
             else
             {

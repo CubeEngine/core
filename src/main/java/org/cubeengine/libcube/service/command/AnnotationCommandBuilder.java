@@ -76,7 +76,6 @@ import org.spongepowered.api.command.parameter.Parameter.Value;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
-import org.spongepowered.api.command.parameter.managed.ValueUsage;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.plugin.PluginContainer;
@@ -167,7 +166,7 @@ public class AnnotationCommandBuilder
                 }
                 catch (Exception e)
                 {
-                    momu.getLoggerFor(moduleClass).error(e, "Failed to register command {} in {}", name, holder.getClass().getSimpleName());
+                    plugin.getLogger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
                 }
             }
         }
@@ -237,7 +236,7 @@ public class AnnotationCommandBuilder
             }
             catch (Exception e)
             {
-                momu.getLoggerFor(moduleClass).error(e, "Failed to register command {} in {}", name, holder.getClass().getSimpleName());
+                plugin.getLogger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
             }
         }
 

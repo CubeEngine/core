@@ -28,10 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.logging.log4j.Logger;
 import org.cubeengine.i18n.language.DefinitionLoadingException;
 import org.cubeengine.i18n.language.LanguageDefinition;
 import org.cubeengine.i18n.language.LanguageLoader;
-import org.cubeengine.logscribe.Log;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 
@@ -41,9 +41,9 @@ public class I18nLanguageLoader extends LanguageLoader
 {
     private final Map<Locale, LocaleConfiguration> configurations = new HashMap<>();
     private final Reflector reflector;
-    private Log log;
+    private Logger log;
 
-    public I18nLanguageLoader(Reflector reflector, FileManager fm, Log log)
+    public I18nLanguageLoader(Reflector reflector, FileManager fm, Logger log)
     {
         this.reflector = reflector;
         this.log = log;
@@ -66,7 +66,7 @@ public class I18nLanguageLoader extends LanguageLoader
         }
         catch (IOException ex)
         {
-            log.error(ex, "Failed to load language configurations!");
+            log.error("Failed to load language configurations!", ex);
         }
     }
 

@@ -49,18 +49,11 @@ import org.cubeengine.libcube.service.event.ModuleListener;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
-import org.cubeengine.libcube.service.logging.Log4jProxyTarget;
-import org.cubeengine.libcube.service.logging.LogProvider;
-import org.cubeengine.libcube.service.logging.LoggerConfiguration;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
 import org.cubeengine.libcube.service.task.SpongeTaskManager;
 import org.cubeengine.libcube.service.task.TaskManager;
-import org.cubeengine.logscribe.DefaultLogFactory;
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.logscribe.LogFactory;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Server;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.Command.Parameterized;
 import org.spongepowered.api.command.manager.CommandMapping;
@@ -74,12 +67,11 @@ public class ModuleManager
     public static final String MAIN_LOGGER_ID = "CubeEngine";
 
     private final Game game;
-    private final Log mainLogger;
+    private final Logger mainLogger;
     private final FileManager fm;
     private final Reflector reflector;
     private final File path;
     private final LibCube plugin;
-    private final DefaultLogFactory logFactory;
     private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
     private final Module guiceModule = new CubeEngineGuiceModule();
     private final Map<Class<?>, PluginContainer> modulePlugins = new HashMap<>();
@@ -87,7 +79,6 @@ public class ModuleManager
     private final Map<Class<?>, Object> modules = new HashMap<>();
     private final Map<Class<?>, Injector> moduleInjectors = new HashMap<>();
     private final Map<Class<?>, Consumer<Binder>> bindings = new HashMap<>();
-    private final LogProvider logProvider;
     private final AnnotationCommandBuilder cm;
     private final I18n i18n;
     private final Injector injector;
@@ -103,41 +94,28 @@ public class ModuleManager
         this.path = path;
         this.plugin = libCube;
         this.fm = new FileManager(this, path, reflector);
-        this.logFactory = new DefaultLogFactory();
-        this.mainLogger = configureMainLogger(path);
+        this.mainLogger = configureMainLogger();
 
         this.injector = injector.createChildInjector(guiceModule);
         this.cm = this.injector.getInstance(AnnotationCommandBuilder.class);
         this.i18n = this.injector.getInstance(I18n.class);
-        this.logProvider = this.injector.getInstance(LogProvider.class);
     }
 
-    private Log configureMainLogger(File path) {
-        final LoggerConfiguration config = reflector.load(LoggerConfiguration.class,
-                                                        path.toPath().resolve("logger.yml").toFile());
-
-        // configure console logger
-        final Log4jProxyTarget baseTarget =
-            new Log4jProxyTarget((org.apache.logging.log4j.core.Logger)LogManager.getLogger(MAIN_LOGGER_ID));
-        // Sponge is already adding this baseTarget.appendFilter(new PrefixFilter("[CubeEngine] "));
-        baseTarget.setLevel((config.consoleLevel));
-
+    private Logger configureMainLogger() {
         // create main logger and attach console logger
-        return logFactory.getLog(LogFactory.class, MAIN_LOGGER_ID).addTarget(baseTarget);
+        return LogManager.getLogger(MAIN_LOGGER_ID);
     }
 
     public <T> T registerAndCreate(Class<T> module, PluginContainer plugin, Injector injector)
     {
         this.modulePlugins.put(module, plugin);
         Module moduleModule = binder -> {
-            final Log log = getLoggerFor(module);
             final PluginMetadata metadata = plugin.getMetadata();
             final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.getName().orElse(metadata.getId()));
-            binder.bind(Log.class).toInstance(log);
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
             binder.bind(ThreadGroup.class).toInstance(group);
-            binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, log));
+            binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, plugin.getLogger(), metadata.getId()));
         };
         Injector moduleInjector = injector.createChildInjector(Modules.override(guiceModule).with(moduleModule));
         this.moduleInjectors.put(module, moduleInjector);
@@ -223,10 +201,10 @@ public class ModuleManager
         return this.moduleCommands.get(module);
     }
 
-    public void loadConfigs(Class<?> module, boolean early)
+    public void loadConfigs(PluginContainer plugin, Class<?> module, boolean early)
     {
         Object instance = modules.get(module);
-        this.fm.injectConfig(instance, getAnnotatedFields(instance, ModuleConfig.class, a -> a.early() == early));
+        this.fm.injectConfig(plugin, instance, getAnnotatedFields(instance, ModuleConfig.class, a -> a.early() == early));
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
@@ -238,7 +216,6 @@ public class ModuleManager
             this.bind(ModuleManager.class).toInstance(ModuleManager.this);
             this.bind(FileManager.class).toInstance(fm); // TODO how to organize our folders?
             this.bind(Reflector.class).toInstance(reflector);
-            this.bind(LogFactory.class).toInstance(logFactory);
 
             bindings.forEach((owner, binding) -> binding.accept(binder()));
         }
@@ -288,31 +265,6 @@ public class ModuleManager
             throw new IllegalStateException(e);
         }
         return modulePath;
-    }
-
-    public Log getLoggerFor(Class<?> module)
-    {
-        PluginContainer container = this.modulePlugins.get(module);
-        String name;
-        if (container == null)
-        {
-            name = module.getSimpleName();
-        }
-        else
-        {
-            name = container.getMetadata().getName().orElse(container.getMetadata().getId());
-            if (name.startsWith("CubeEngine - "))
-            {
-                name = name.substring("CubeEngine - ".length());
-            }
-        }
-
-        return this.logProvider.getLogger(module, name);
-    }
-
-    public ThreadFactory getThreadFactory(Class<?> module)
-    {
-        return new ModuleThreadFactory(this.threadGroup, this.logProvider.getLogger(ThreadFactory.class, getModuleName(module).orElse(module.getSimpleName())));
     }
 
     public Object getModule(Class<?> module)

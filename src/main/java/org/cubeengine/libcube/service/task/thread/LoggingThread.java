@@ -17,15 +17,15 @@
  */
 package org.cubeengine.libcube.service.task.thread;
 
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.logscribe.LogLevel;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 public final class LoggingThread extends TrackedThread
 {
-    private final Log log;
-    private final LogLevel level;
+    private final Logger log;
+    private final Level level;
 
-    public LoggingThread(ThreadGroup group, Runnable target, String name, Log log, LogLevel level)
+    public LoggingThread(ThreadGroup group, Runnable target, String name, Logger log, Level level)
     {
         super(group, target, name);
         this.log = log;

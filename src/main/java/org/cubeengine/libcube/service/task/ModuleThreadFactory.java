@@ -18,19 +18,19 @@
 package org.cubeengine.libcube.service.task;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import org.cubeengine.logscribe.Log;
-import org.cubeengine.logscribe.LogLevel;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.cubeengine.libcube.service.task.thread.BaseThreadFactory;
 import org.cubeengine.libcube.service.task.thread.LoggingThread;
 
 public class ModuleThreadFactory extends BaseThreadFactory
 {
-    private final Log log;
+    private final Logger log;
     private final UncaughtExceptionHandler exceptionHandler;
 
-    public ModuleThreadFactory(ThreadGroup threadGroup, Log log)
+    public ModuleThreadFactory(ThreadGroup threadGroup, Logger log, String pluginId)
     {
-        super(new ThreadGroup(threadGroup, ModuleThreadFactory.class.getSimpleName() + " - " + log.getId()),
+        super(new ThreadGroup(threadGroup, ModuleThreadFactory.class.getSimpleName() + " - " + pluginId),
               log.getClass().getPackage().getName());
         this.log = log;
         this.exceptionHandler = new UncaughtModuleExceptionHandler(log);
@@ -47,7 +47,7 @@ public class ModuleThreadFactory extends BaseThreadFactory
     @Override
     protected Thread createThread(ThreadGroup threadGroup, Runnable r, String name)
     {
-        final LoggingThread thread = new LoggingThread(threadGroup, r, name, log, LogLevel.TRACE);
+        final LoggingThread thread = new LoggingThread(threadGroup, r, name, log, Level.TRACE);
         thread.setUncaughtExceptionHandler(this.exceptionHandler);
         return thread;
     }
@@ -55,9 +55,9 @@ public class ModuleThreadFactory extends BaseThreadFactory
 
     private static final class UncaughtModuleExceptionHandler implements UncaughtExceptionHandler
     {
-        private final Log log;
+        private final Logger log;
 
-        public UncaughtModuleExceptionHandler(Log log)
+        public UncaughtModuleExceptionHandler(Logger log)
         {
             this.log = log;
         }

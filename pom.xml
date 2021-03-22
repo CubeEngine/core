@@ -26,26 +26,6 @@
     </scm>
 
     <dependencies>
-        <!-- Sponge Dependencies -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.8.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.8.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>2.11.1</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- InHouse Libraries -->
         <dependency>
             <groupId>org.cubeengine</groupId>
@@ -57,11 +37,6 @@
                     <artifactId>snakeyaml</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.cubeengine</groupId>
-            <artifactId>logscribe-core</artifactId>
-            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.cubeengine</groupId>

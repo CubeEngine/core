@@ -26,31 +26,15 @@ import java.util.Set;
 import java.util.TreeMap;
 import com.google.common.base.Functions;
 import com.google.common.collect.Ordering;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.cubeengine.libcube.PluginLibCube;
-import org.cubeengine.libcube.service.logging.LogProvider;
-import org.cubeengine.logscribe.Log;
-import org.spongepowered.api.Sponge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class StringMatcher
 {
     private final DamerauLevenshteinAlgorithm editDistance = new DamerauLevenshteinAlgorithm(1, 1, 1, 1);
-    private final Log logger;
-
-    @Inject
-    public StringMatcher(LogProvider logProvider)
-    {
-        if (logProvider == null) // TODO EntityDataChanger Call
-        {
-            this.logger = ((PluginLibCube) Sponge.pluginManager().plugin("cubeengine-core").get().getInstance()).getCore().getModuleManager().getLoggerFor(StringMatcher.class);
-        }
-        else
-        {
-            this.logger = logProvider.getLogger(StringMatcher.class, "StringMatcher");
-        }
-    }
+    private static final Logger LOGGER = LogManager.getLogger(StringMatcher.class);
 
     /**
      * Returns all matches with their editDistance, having an editDistance less or equal to maxDistance
@@ -65,7 +49,7 @@ public class StringMatcher
     {
         if (maxDistance < 1)
         {
-            logger.warn(new Throwable(), "Checking EditDistance lower than 1!");
+            LOGGER.warn("Checking EditDistance lower than 1!", new Throwable());
             return new TreeMap<>();
         }
         Map<String, Integer> matches = new HashMap<>();
@@ -117,14 +101,14 @@ public class StringMatcher
                 double curPercentage = (entry.getKey().length() - entry.getValue()) * 100 / entry.getKey().length();
                 if (curPercentage >= firstMinPercentCorrect)
                 {
-                    logger.debug("1stDist FOUND: {} for {} (D:{}|{}%)",
-                                              firstEditDistanceCheck.keySet().iterator().next(), search,
-                                              firstEditDistanceCheck.values().iterator().next(), curPercentage);
+                    LOGGER.debug("1stDist FOUND: {} for {} (D:{}|{}%)",
+                                 firstEditDistanceCheck.keySet().iterator().next(), search,
+                                 firstEditDistanceCheck.values().iterator().next(), curPercentage);
                     return entry.getKey();
                 }
-                logger.debug("1stDist TO WEAK: {} for {} (D:{}|{}%)",
-                                          firstEditDistanceCheck.keySet().iterator().next(), search,
-                                          firstEditDistanceCheck.values().iterator().next(), curPercentage);
+                LOGGER.debug("1stDist TO WEAK: {} for {} (D:{}|{}%)",
+                             firstEditDistanceCheck.keySet().iterator().next(), search,
+                             firstEditDistanceCheck.values().iterator().next(), curPercentage);
             }
         }
         String bestMatch = null;
@@ -153,16 +137,16 @@ public class StringMatcher
                     double curPercentCorrect = searchStringLength * 100 / inList.length();
                     if (currentIndex < bestIndex && curPercentCorrect >= indexMinPercentCorrect) // Compare to last match
                     {
-                        logger.debug("Index: FOUND {} for {} (I:{}|{}%)", inList, search, currentIndex,
-                                                  curPercentCorrect);
+                        LOGGER.debug("Index: FOUND {} for {} (I:{}|{}%)", inList, search, currentIndex,
+                                     curPercentCorrect);
                         bestIndex = currentIndex;
                         bestPercentCorrect = curPercentCorrect;
                         bestMatch = inList;
                     }
                     else if (currentIndex == bestIndex && curPercentCorrect >= bestPercentCorrect)
                     {
-                        logger.debug("Index: FOUND {} for {} (I:{}|{}%)", inList, search, currentIndex,
-                                                  curPercentCorrect);
+                        LOGGER.debug("Index: FOUND {} for {} (I:{}|{}%)", inList, search, currentIndex,
+                                     curPercentCorrect);
                         bestPercentCorrect = curPercentCorrect;
                         bestMatch = inList;
                     }
@@ -189,16 +173,16 @@ public class StringMatcher
                 double curPercentCorrect = (searchStringLength - currentDistance) * 100 / inList.length();
                 if (currentDistance < bestDistance && curPercentCorrect >= secondMinPercentCorrect) // Found light Typo at start of String
                 {
-                    logger.debug("2nDist: Found {}|{} for {} (D:{}|{}%)", inList, subString, search,
-                                              currentDistance, (int)curPercentCorrect);
+                    LOGGER.debug("2nDist: Found {}|{} for {} (D:{}|{}%)", inList, subString, search,
+                                 currentDistance, (int)curPercentCorrect);
                     bestDistance = currentDistance;
                     bestMatch = inList;
                     bestPercentCorrect = curPercentCorrect;
                 }
                 else if (currentDistance == bestDistance && bestPercentCorrect <= curPercentCorrect)
                 {
-                    logger.debug("2nDist: Found {}|{} for {} (D:{}|{}%)", inList, subString, search,
-                                              currentDistance, (int)curPercentCorrect);
+                    LOGGER.debug("2nDist: Found {}|{} for {} (D:{}|{}%)", inList, subString, search,
+                                 currentDistance, (int)curPercentCorrect);
                     bestMatch = inList;
                     bestPercentCorrect = curPercentCorrect;
                 }

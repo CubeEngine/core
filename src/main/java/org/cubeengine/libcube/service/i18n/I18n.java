@@ -28,6 +28,8 @@ import com.google.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cubeengine.dirigent.builder.BuilderDirigent;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.i18n.I18nService;
@@ -53,9 +55,7 @@ import org.cubeengine.libcube.service.i18n.formatter.StringFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.TextMacro;
 import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
-import org.cubeengine.libcube.service.logging.LogProvider;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
-import org.cubeengine.logscribe.Log;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandCause;
@@ -89,6 +89,7 @@ import java.util.jar.JarFile;
 @Singleton
 public class I18n extends I18nTranslate
 {
+
     private final I18nService service;
     private final List<URL> poFiles = new LinkedList<>();
     private final Map<String, Language> languageLookupMap = new HashMap<>();
@@ -97,14 +98,14 @@ public class I18n extends I18nTranslate
     private final I18nConfig config;
     private final Context defaultContext;
 
-    private final Log log;
     private final LibCube plugin;
+    private final Logger logger;
 
     @Inject
-    public I18n(FileManager fm, Reflector reflector, LogProvider logProvider, ModuleManager mm, StringMatcher stringMatcher)
+    public I18n(FileManager fm, Reflector reflector, ModuleManager mm, StringMatcher stringMatcher)
     {
+        this.logger = LogManager.getLogger(getClass());
         this.stringMatcher = stringMatcher;
-        this.log = logProvider.getLogger(I18n.class, "I18n");
         this.plugin = ((LibCube) mm.getModule(LibCube.class));
         this.config = reflector.load(I18nConfig.class, fm.getDataPath().resolve("i18n.yml").toFile());
         reflector.getDefaultConverterManager().registerConverter(new PluralExprConverter(), PluralExpr.class);
@@ -112,7 +113,7 @@ public class I18n extends I18nTranslate
         this.addPoFilesFromDirectory(fm.getTranslationPath());
 
         GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
-        I18nLanguageLoader languageLoader = new I18nLanguageLoader(reflector, fm, log);
+        I18nLanguageLoader languageLoader = new I18nLanguageLoader(reflector, fm, logger);
         Locale defaultLocale = config.defaultLocale;
         if (defaultLocale == null)
         {
@@ -182,12 +183,12 @@ public class I18n extends I18nTranslate
                 }
                 else
                 {
-                    log.warn("Could not find language definition for: " + lang);
+                    logger.warn("Could not find language definition for: " + lang);
                 }
             }
             if (urls.size() != 0)
             {
-                log.info("Loading {} language definitions", urls.size());
+                logger.info("Loading {} language definitions", urls.size());
             }
             ((I18nLanguageLoader)languageLoader).loadLanguages(urls);
         }
@@ -254,7 +255,7 @@ public class I18n extends I18nTranslate
             }
             catch (IOException e)
             {
-                log.error(e, "Error while getting translation override files!");
+                logger.error("Error while getting translation override files!", e);
             }
         }
     }
@@ -323,7 +324,7 @@ public class I18n extends I18nTranslate
         }
         catch (TranslationLoadingException | DefinitionLoadingException e)
         {
-            log.error(e, "Error while getting Language!");
+            logger.error("Error while getting Language!", e);
             return null;
         }
     }

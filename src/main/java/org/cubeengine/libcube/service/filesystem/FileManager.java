@@ -21,9 +21,9 @@ import static java.nio.file.Files.createSymbolicLink;
 
 import com.google.inject.Inject;
 import org.cubeengine.libcube.ModuleManager;
-import org.cubeengine.logscribe.Log;
 import org.cubeengine.reflect.ReflectedFile;
 import org.cubeengine.reflect.Reflector;
+import org.spongepowered.plugin.PluginContainer;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,24 +128,23 @@ public class FileManager
         return translationPath;
     }
 
-    public <T extends ReflectedFile<?, ?, ?>> T loadConfig(Object instance, Class<T> clazz)
+    public <T extends ReflectedFile<?, ?, ?>> T loadConfig(PluginContainer plugin, Object instance, Class<T> clazz)
     {
         T config = reflector.create(clazz);
         Path path = mm.getPathFor(instance.getClass());
-        Log logger = mm.getLoggerFor(instance.getClass());
         config.setFile(path.resolve("config." + config.getCodec().getExtension()).toFile());
         if (config.reload(true))
         {
-            logger.info("Saved new configuration file! config.{}", config.getCodec().getExtension());
+            plugin.getLogger().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
         }
         return config;
     }
 
-    public void injectConfig(Object instance, List<Field> fields)
+    public void injectConfig(PluginContainer plugin, Object instance, List<Field> fields)
     {
         for (Field field : fields)
         {
-            ReflectedFile loaded = loadConfig(instance, (Class<? extends ReflectedFile>)field.getType());
+            ReflectedFile loaded = loadConfig(plugin, instance, (Class<? extends ReflectedFile>)field.getType());
             field.setAccessible(true);
             try
             {
