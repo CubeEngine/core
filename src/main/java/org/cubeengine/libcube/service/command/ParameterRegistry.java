@@ -53,7 +53,7 @@ import org.spongepowered.api.registry.DefaultedRegistryType;
 import org.spongepowered.api.registry.RegistryTypes;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.server.ServerWorld;
-import org.spongepowered.api.world.weather.Weather;
+import org.spongepowered.api.world.weather.WeatherType;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -112,7 +112,7 @@ public class ParameterRegistry
         registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
         registerSponge(GameMode.class, () -> registryTypeParser("sponge", RegistryTypes.GAME_MODE));
         registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
-        registerSponge(Weather.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER_TYPE));
+        registerSponge(WeatherType.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER_TYPE));
         registerSponge(ItemStackSnapshot.class, ResourceKeyedValueParameters.ITEM_STACK_SNAPSHOT);
 
         register((new TypeToken<List<String>>() {}).getType(), new StringListParser());
