@@ -130,6 +130,7 @@ public class FileManager
 
     public <T extends ReflectedFile<?, ?, ?>> T loadConfig(PluginContainer plugin, Object instance, Class<T> clazz)
     {
+        // TODO might be worth having module-specific file managers to avoid needing the plugin container
         T config = reflector.create(clazz);
         Path path = mm.getPathFor(instance.getClass());
         config.setFile(path.resolve("config." + config.getCodec().getExtension()).toFile());
