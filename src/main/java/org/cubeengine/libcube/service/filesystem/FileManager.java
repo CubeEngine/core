@@ -17,24 +17,15 @@
  */
 package org.cubeengine.libcube.service.filesystem;
 
-import static java.nio.file.Files.createSymbolicLink;
-
-import com.google.inject.Inject;
 import org.cubeengine.libcube.ModuleManager;
-import org.cubeengine.reflect.ReflectedFile;
-import org.cubeengine.reflect.Reflector;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.List;
 
 /**
  * Manages all the configurations of the CubeEngine.
@@ -42,45 +33,35 @@ import java.util.List;
 public class FileManager
 {
     private final ModuleManager mm;
-    private final File dataFolder;
-    private final Reflector reflector;
+    private final Path dataFolder;
+    private final Path modulesFolder;
 
     private final Path languagePath;
-    private final Path logPath;
 
     private final Path translationPath;
-    private final FileAttribute<?>[] folderCreateAttributes;
 
-    @Inject
-    public FileManager(ModuleManager moduleManager, File dataFolder, Reflector reflector)
+    public FileManager(ModuleManager moduleManager, Path dataFolder)
     {
         this.mm = moduleManager;
         this.dataFolder = dataFolder;
-        this.reflector = reflector;
-        try
-        {
-            createSymbolicLink(Paths.get(System.getProperty("user.dir", "."), "CubeEngine"), dataFolder.toPath());
-        }
-        catch (IOException ignored)
-        {}
+        this.modulesFolder = dataFolder.resolve("modules");
 
         try
         {
-            Path dataPath = dataFolder.toPath();
-            if (Files.getFileAttributeView(dataPath.resolve("modules"), PosixFileAttributeView.class) != null)
+            FileAttribute<?>[] folderCreateAttributes;
+            if (Files.getFileAttributeView(this.modulesFolder, PosixFileAttributeView.class) != null)
             {
                 folderCreateAttributes = new FileAttribute[] {PosixFilePermissions.asFileAttribute(FileUtil.DEFAULT_FOLDER_PERMS)};
-                Files.createDirectories(dataPath);
-                Files.setPosixFilePermissions(dataPath, FileUtil.DEFAULT_FOLDER_PERMS);
+                Files.createDirectories(dataFolder);
+                Files.setPosixFilePermissions(dataFolder, FileUtil.DEFAULT_FOLDER_PERMS);
             }
             else
             {
                 folderCreateAttributes = new FileAttribute[0];
             }
 
-            this.languagePath = Files.createDirectories(dataPath.resolve("language"), folderCreateAttributes);
-            this.logPath = Files.createDirectories(dataPath.resolve("log"), folderCreateAttributes);
-            this.translationPath = Files.createDirectories(dataPath.resolve("translations"), folderCreateAttributes);
+            this.languagePath = Files.createDirectories(dataFolder.resolve("language"), folderCreateAttributes);
+            this.translationPath = Files.createDirectories(dataFolder.resolve("translations"), folderCreateAttributes);
         }
         catch (IOException e)
         {
@@ -95,7 +76,7 @@ public class FileManager
      */
     public Path getDataPath()
     {
-        return this.dataFolder.toPath();
+        return this.dataFolder;
     }
 
     /**
@@ -109,16 +90,6 @@ public class FileManager
     }
 
     /**
-     * Returns the log directory
-     *
-     * @return the directory
-     */
-    public Path getLogPath()
-    {
-        return this.logPath;
-    }
-
-    /**
      * Returns the translation override directory
      *
      * @return the directory
@@ -128,33 +99,22 @@ public class FileManager
         return translationPath;
     }
 
-    public <T extends ReflectedFile<?, ?, ?>> T loadConfig(PluginContainer plugin, Object instance, Class<T> clazz)
-    {
-        // TODO might be worth having module-specific file managers to avoid needing the plugin container
-        T config = reflector.create(clazz);
-        Path path = mm.getPathFor(instance.getClass());
-        config.setFile(path.resolve("config." + config.getCodec().getExtension()).toFile());
-        if (config.reload(true))
-        {
-            plugin.getLogger().info("Saved new configuration file! config.{}", config.getCodec().getExtension());
-        }
-        return config;
+    public Path getModulePath(Class<?> clazz) {
+        return this.mm.getPlugin(clazz)
+                      .map(this::getModulePath)
+                      .orElseThrow(() -> new IllegalStateException("Failed to find the underlying plugin!"));
     }
 
-    public void injectConfig(PluginContainer plugin, Object instance, List<Field> fields)
-    {
-        for (Field field : fields)
+    public Path getModulePath(PluginContainer plugin) {
+        Path modulePath = this.modulesFolder.resolve(mm.getModuleId(plugin));
+        try
         {
-            ReflectedFile loaded = loadConfig(plugin, instance, (Class<? extends ReflectedFile>)field.getType());
-            field.setAccessible(true);
-            try
-            {
-                field.set(instance, loaded);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new IllegalStateException(e);
-            }
+            Files.createDirectories(modulePath);
         }
+        catch (IOException e)
+        {
+            throw new IllegalStateException(e);
+        }
+        return modulePath;
     }
 }

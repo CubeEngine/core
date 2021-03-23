@@ -67,6 +67,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,7 +113,7 @@ public class I18n extends I18nTranslate
 
         this.addPoFilesFromDirectory(fm.getTranslationPath());
 
-        GettextLoader translationLoader = new GettextLoader(Charset.forName("UTF-8"), this.poFiles);
+        GettextLoader translationLoader = new GettextLoader(StandardCharsets.UTF_8, this.poFiles);
         I18nLanguageLoader languageLoader = new I18nLanguageLoader(reflector, fm, logger);
         Locale defaultLocale = config.defaultLocale;
         if (defaultLocale == null)

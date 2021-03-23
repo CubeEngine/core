@@ -17,11 +17,8 @@
  */
 package org.cubeengine.libcube;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,12 +43,14 @@ import org.cubeengine.libcube.service.command.AnnotationCommandBuilder;
 import org.cubeengine.libcube.service.command.annotation.ModuleCommand;
 import org.cubeengine.libcube.service.event.EventManager;
 import org.cubeengine.libcube.service.event.ModuleListener;
+import org.cubeengine.libcube.service.filesystem.ConfigLoader;
 import org.cubeengine.libcube.service.filesystem.FileManager;
 import org.cubeengine.libcube.service.filesystem.ModuleConfig;
 import org.cubeengine.libcube.service.i18n.I18n;
 import org.cubeengine.libcube.service.task.ModuleThreadFactory;
 import org.cubeengine.libcube.service.task.SpongeTaskManager;
 import org.cubeengine.libcube.service.task.TaskManager;
+import org.cubeengine.reflect.ReflectedFile;
 import org.cubeengine.reflect.Reflector;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.Command;
@@ -70,7 +69,6 @@ public class ModuleManager
     private final Logger mainLogger;
     private final FileManager fm;
     private final Reflector reflector;
-    private final File path;
     private final LibCube plugin;
     private final ThreadGroup threadGroup = new ThreadGroup("CubeEngine");
     private final Module guiceModule = new CubeEngineGuiceModule();
@@ -85,15 +83,14 @@ public class ModuleManager
 
     private final Map<Class<? extends Annotation>, ModuleInjector<? extends Annotation>> injectors = new HashMap<>();
 
-    public ModuleManager(Game game, File path, LibCube libCube, PluginContainer container, Injector injector)
+    public ModuleManager(Game game, Path path, LibCube libCube, PluginContainer container, Injector injector)
     {
         this.game = game;
         this.reflector = new ReflectorProvider().get();
         this.modulePlugins.put(LibCube.class, container);
         this.modules.put(LibCube.class, libCube);
-        this.path = path;
         this.plugin = libCube;
-        this.fm = new FileManager(this, path, reflector);
+        this.fm = new FileManager(this, path);
         this.mainLogger = configureMainLogger();
 
         this.injector = injector.createChildInjector(guiceModule);
@@ -116,6 +113,7 @@ public class ModuleManager
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
             binder.bind(ThreadGroup.class).toInstance(group);
             binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, plugin.getLogger(), metadata.getId()));
+            binder.bind(ConfigLoader.class).toInstance(new ConfigLoader(this.fm, this.reflector, plugin));
         };
         Injector moduleInjector = injector.createChildInjector(Modules.override(guiceModule).with(moduleModule));
         this.moduleInjectors.put(module, moduleInjector);
@@ -204,7 +202,25 @@ public class ModuleManager
     public void loadConfigs(PluginContainer plugin, Class<?> module, boolean early)
     {
         Object instance = modules.get(module);
-        this.fm.injectConfig(plugin, instance, getAnnotatedFields(instance, ModuleConfig.class, a -> a.early() == early));
+        injectConfig(plugin, instance, getAnnotatedFields(instance, ModuleConfig.class, a -> a.early() == early));
+    }
+
+    private void injectConfig(PluginContainer plugin, Object instance, List<Field> fields)
+    {
+        for (Field field : fields)
+        {
+            @SuppressWarnings("unchecked")
+            ReflectedFile<?, ?, ?> loaded = ConfigLoader.loadConfig(fm, reflector, plugin, (Class<? extends ReflectedFile<?, ?, ?>>)field.getType());
+            field.setAccessible(true);
+            try
+            {
+                field.set(instance, loaded);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new IllegalStateException(e);
+            }
+        }
     }
 
     public class CubeEngineGuiceModule extends AbstractModule
@@ -226,11 +242,6 @@ public class ModuleManager
         this.i18n.enable();
     }
 
-    public File getBasePath()
-    {
-        return path;
-    }
-
     public static <T extends Annotation> List<Field> getAnnotatedFields(Object instance, Class<T> annotation)
     {
         return getAnnotatedFields(instance, annotation, a -> true);
@@ -248,25 +259,6 @@ public class ModuleManager
         return fields;
     }
 
-    public Path getPathFor(Class<?> module)
-    {
-        Optional<String> moduleID = getModuleID(module);
-        if (!moduleID.isPresent())
-        {
-            throw new UnsupportedOperationException("Path for non-modules is not supported yet");
-        }
-        Path modulePath = this.path.toPath().resolve("modules").resolve(moduleID.get());
-        try
-        {
-            Files.createDirectories(modulePath);
-        }
-        catch (IOException e)
-        {
-            throw new IllegalStateException(e);
-        }
-        return modulePath;
-    }
-
     public Object getModule(Class<?> module)
     {
         return this.modules.get(module);
@@ -279,19 +271,19 @@ public class ModuleManager
     }
 
 
-    public Optional<String> getModuleID(Class<?> clazz)
+    public Optional<String> getModuleId(Class<?> clazz)
     {
-        Optional<PluginContainer> container = getPlugin(clazz);
-        if (container.isPresent())
+        return getPlugin(clazz).map(this::getModuleId);
+    }
+
+    public String getModuleId(PluginContainer plugin)
+    {
+        String id = plugin.getMetadata().getId();
+        if (id.startsWith("cubeengine-"))
         {
-            String id = container.get().getMetadata().getId();
-            if (id.startsWith("cubeengine-"))
-            {
-                id = id.substring("cubeengine-".length());
-            }
-            return Optional.of(id);
+            return id.substring("cubeengine-".length());
         }
-        return Optional.empty();
+        return id;
     }
 
     public Optional<String> getModuleName(Class<?> clazz)

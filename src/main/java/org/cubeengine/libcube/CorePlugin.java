@@ -33,7 +33,7 @@ public abstract class CorePlugin
 
     public CorePlugin(Path path, Logger logger, Injector injector, PluginContainer container)
     {
-        libCube = new LibCube(Sponge.game(), path, logger, injector, container);
+        libCube = new LibCube(Sponge.game(), path, injector, container);
     }
 
     public LibCube getCore() {

@@ -23,7 +23,6 @@ import static java.util.Collections.emptySet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.cubeengine.libcube.ModuleManager;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
@@ -65,12 +64,12 @@ public class PermissionManager
         rootPermission = register(new Permission("cubeengine", "Root Permission for the CubeEngine Plugin", emptySet())); // TODO translatable
     }
 
-    private String permId(Class owner, String permission, Permission parent)
+    private String permId(Class<?> owner, String permission, Permission parent)
     {
         return (parent == null ? getBasePermission(owner).getId() : parent.getId()) + "." + permission;
     }
 
-    public Permission register(Class owner, String permission, String description, Permission parent, String... assigned)
+    public Permission register(Class<?> owner, String permission, String description, Permission parent, String... assigned)
     {
         return register(permId(owner, permission, parent), description, new HashSet<>(asList(assigned)));
     }
@@ -104,7 +103,7 @@ public class PermissionManager
         Permission perm = basePermission.get(owner);
         if (perm == null)
         {
-            String id = mm.getModuleID(owner).orElse(owner.getSimpleName());
+            String id = mm.getModuleId(owner).orElse(owner.getSimpleName());
             String name = mm.getModuleName(owner).orElse(owner.getSimpleName());
             perm = register(new Permission(permId(null, id.toLowerCase(), rootPermission), "Base Permission for " + name, emptySet())); // TODO translatable
             basePermission.put(owner, perm);

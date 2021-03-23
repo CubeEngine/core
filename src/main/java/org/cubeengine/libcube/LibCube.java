@@ -78,14 +78,14 @@ Trident
 @Core
 public class LibCube
 {
-    private final File path;
+    private final Path path;
     private PluginContainer container;
     private ModuleManager mm;
 
     @Inject
-    public LibCube(Game game, @ConfigDir(sharedRoot = true) Path path, Logger logger, Injector injector, PluginContainer container)
+    public LibCube(Game game, @ConfigDir(sharedRoot = true) Path path, Injector injector, PluginContainer container)
     {
-        this.path = path.resolve("cubeengine").toFile();
+        this.path = path.resolve("cubeengine");
         this.container = container;
         this.mm = new ModuleManager(game, this.path, this, container, injector);
     }

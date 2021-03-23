@@ -52,7 +52,7 @@ public abstract class CubeEnginePlugin {
     @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
-        final PluginContainer lib = event.game().pluginManager().plugin("cubeengine-core")
+        final PluginContainer lib = event.game().pluginManager().plugin(PluginLibCube.LIBCUBE_ID)
                                          .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
         PluginLibCube libCube = (PluginLibCube) lib.getInstance();
         this.mm = libCube.getCore().getModuleManager();
