@@ -175,7 +175,7 @@ public class ParameterRegistry
             if (ValueCompleter.class.isAssignableFrom(completerType))
             {
                 final ValueCompleter valueCompleter = injector.getInstance(completerType);
-                completers.put(type, () -> valueCompleter);
+                completers.put(completerType, () -> valueCompleter);
                 return valueCompleter;
             }
             throw new IllegalStateException("Completer cannot be created! " + completerType);

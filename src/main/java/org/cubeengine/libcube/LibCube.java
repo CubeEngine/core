@@ -17,11 +17,9 @@
  */
 package org.cubeengine.libcube;
 
-import java.io.File;
 import java.nio.file.Path;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import org.apache.logging.log4j.Logger;
 import org.cubeengine.processor.Core;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
