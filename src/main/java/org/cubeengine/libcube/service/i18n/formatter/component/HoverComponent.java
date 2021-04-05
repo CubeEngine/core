@@ -17,8 +17,6 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter.component;
 
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.cubeengine.dirigent.parser.Text;
 import org.cubeengine.dirigent.parser.component.Component;

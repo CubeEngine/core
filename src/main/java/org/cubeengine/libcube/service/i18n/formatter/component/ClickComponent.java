@@ -46,7 +46,12 @@ public class ClickComponent implements Component
 
     public static Component openURL(URL url, Component component)
     {
-        return new ClickComponent(ClickEvent.openUrl(url.toString()), component);
+        return openURL(url.toString(), component);
+    }
+
+    public static Component openURL(String url, Component component)
+    {
+        return new ClickComponent(ClickEvent.openUrl(url), component);
     }
 
     public static Component runCommand(String command, Component component)

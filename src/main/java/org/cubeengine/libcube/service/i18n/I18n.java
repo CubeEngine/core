@@ -53,6 +53,7 @@ import org.cubeengine.libcube.service.i18n.formatter.ContextFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.NumberFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.StringFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.TextMacro;
+import org.cubeengine.libcube.service.i18n.formatter.UrlFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
@@ -155,6 +156,7 @@ public class I18n extends I18nTranslate
 
         compositor.registerFormatter(new WorldFormatter());
         compositor.registerFormatter(new StringFormatter());
+        compositor.registerFormatter(new UrlFormatter());
         compositor.registerFormatter(new BooleanFormatter(this.service));
         compositor.registerFormatter(new NumberFormatter());
         compositor.registerFormatter(new CommandSourceFormatter(this.service));
