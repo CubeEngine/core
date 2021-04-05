@@ -37,7 +37,7 @@ public class StringFormatter extends ReflectedFormatter
     }
 
     @Format
-    public Component format(TranslatableComponent translation, Context context)
+    public Component format(TranslatableComponent translation)
     {
         return new TextComponent(translation);
     }

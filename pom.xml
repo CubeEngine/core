@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.cubeengine</groupId>
             <artifactId>dirigent</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
         </dependency>
         <!-- Other Libraries -->
         <dependency>
