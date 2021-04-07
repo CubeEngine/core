@@ -40,11 +40,9 @@ commands: flags repeat
 commands: errors are not shown?
 ValueParser get if used in completion
 List of quoted String as one parameter
-missing gamerule registration
 missing weather event
 missing potioneffect event? Data instead?
 
-Entity#copy does also copy the UUID making it useless
 
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?
@@ -65,13 +63,13 @@ InteractBlockEvent.Secondary cancel does not reset item in hand on client
 
 CommandMapping does not contain all aliases (sub-commands)
 
-CollideEntityEvent not implemented
-
 Piglin Aggro does not call retarget event
 
 resourekey completion does NOT ignore default namespace prefix making tab-completion annoying
 
 Trident
+
+protector interactprimary block
  */
 @Core
 public class LibCube
