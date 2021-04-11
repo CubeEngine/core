@@ -17,35 +17,33 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.cubeengine.converter.ConversionException;
 import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.NullNode;
 import org.cubeengine.converter.node.StringNode;
-import org.cubeengine.libcube.util.ChatFormat;
 
-public class ChatFormatConverter extends SimpleConverter<ChatFormat>
+public class ChatFormatConverter extends SimpleConverter<NamedTextColor>
 {
     @Override
-    public Node toNode(ChatFormat object) throws ConversionException
+    public Node toNode(NamedTextColor object) throws ConversionException
     {
-        return StringNode.of(object.name());
+        return StringNode.of(object.toString());
     }
 
     @Override
-    public ChatFormat fromNode(Node node) throws ConversionException
+    public NamedTextColor fromNode(Node node) throws ConversionException
     {
         if (node instanceof NullNode)
         {
             return null;
         }
-        try
-        {
-            return ChatFormat.valueOf(node.asText());
+
+        final NamedTextColor color = NamedTextColor.NAMES.value(node.asText());
+        if (color == null) {
+            throw ConversionException.of(this, node, "Invalid ChatFormat");
         }
-        catch (IllegalArgumentException e)
-        {
-            throw ConversionException.of(this, node, "Invalid ChatFormat", e);
-        }
+        return color;
     }
 }

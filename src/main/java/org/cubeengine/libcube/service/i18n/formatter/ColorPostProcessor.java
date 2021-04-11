@@ -17,26 +17,25 @@
  */
 package org.cubeengine.libcube.service.i18n.formatter;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.cubeengine.dirigent.context.Arguments;
 import org.cubeengine.dirigent.context.Context;
 import org.cubeengine.dirigent.formatter.PostProcessor;
 import org.cubeengine.dirigent.parser.component.Component;
 import org.cubeengine.dirigent.parser.component.ResolvedMacro;
-import org.cubeengine.libcube.util.ChatFormat;
 import org.cubeengine.libcube.service.i18n.formatter.component.StyledComponent;
-
-import static org.cubeengine.libcube.util.ChatFormat.GOLD;
 
 public class ColorPostProcessor implements PostProcessor
 {
-    private final ChatFormat defaultColor;
+    public static final String RESET_NAME = "reset";
+    private final NamedTextColor defaultColor;
 
     public ColorPostProcessor()
     {
-        this(GOLD);
+        this(NamedTextColor.GOLD);
     }
 
-    public ColorPostProcessor(ChatFormat defaultColor)
+    public ColorPostProcessor(NamedTextColor defaultColor)
     {
         this.defaultColor = defaultColor;
     }
@@ -49,21 +48,21 @@ public class ColorPostProcessor implements PostProcessor
             return component;
         }
         String colorString = ((ResolvedMacro)component).getArguments().get("color");//context.get("color");
-        ChatFormat color = defaultColor;
+        NamedTextColor color = defaultColor;
         if (colorString != null)
         {
             try
             {
-                color = ChatFormat.valueOf(colorString);
+                color = NamedTextColor.NAMES.value(colorString);
             }
             catch (IllegalArgumentException ignored)
             {
             }
         }
-        else if (defaultColor == ChatFormat.RESET)
+        else if (colorString.equalsIgnoreCase(RESET_NAME))
         {
             return component;
         }
-        return new StyledComponent(color.getColor(), component);
+        return new StyledComponent(color, component);
     }
 }
