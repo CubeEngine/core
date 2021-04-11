@@ -25,9 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.spongepowered.api.adventure.SpongeComponents;
 
 import static java.util.Collections.singletonList;
+import static org.spongepowered.api.adventure.SpongeComponents.legacyAmpersandSerializer;
+import static org.spongepowered.api.adventure.SpongeComponents.plainSerializer;
 
 public class ComponentUtil
 {
@@ -48,7 +49,7 @@ public class ComponentUtil
     }
 
     public static Component legacyToComponent(String message) {
-        return SpongeComponents.legacyAmpersandSerializer().deserialize(message);
+        return legacyAmpersandSerializer().deserialize(message);
     }
 
     public static Component deepAppend(Component target, Component component) {
@@ -126,5 +127,13 @@ public class ComponentUtil
         } else {
             return Component.join(Component.empty(), parts);
         }
+    }
+
+    public static Component fromLegacy(String legacy) {
+        return legacyAmpersandSerializer().deserialize(legacy);
+    }
+
+    public static String stripLegacy(String legacy) {
+        return plainSerializer().serialize(legacyAmpersandSerializer().deserialize(legacy));
     }
 }
