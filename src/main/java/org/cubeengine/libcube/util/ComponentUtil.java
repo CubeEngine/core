@@ -32,12 +32,17 @@ import static java.util.Collections.singletonList;
 public class ComponentUtil
 {
     private static final Pattern TEMPLATE_TOKENS = Pattern.compile("(\\{[^}]+}|[^{]+)");
+    private static final Pattern URL_IN_STRING = Pattern.compile("https?://\\S+(?=\\s|$)", Pattern.CASE_INSENSITIVE);
 
     public static Component clickableLink(String label, String url) {
+        return clickableLink(label, url, url);
+    }
+
+    public static Component clickableLink(String label, String url, String hover) {
         return Component.text()
                         .content(label)
                         .clickEvent(ClickEvent.openUrl(url))
-                        .hoverEvent(Component.text(url).asHoverEvent())
+                        .hoverEvent(Component.text(hover).asHoverEvent())
                         .build();
     }
 
@@ -88,5 +93,33 @@ public class ComponentUtil
                 return new Pair<>(Component.text().append(previous.getLeft()).append(next.getLeft()).build(), false);
             }
         }).map(Pair::getLeft).orElse(Component.empty());
+    }
+
+    public static Component autoLink(String input, String hover) {
+        Matcher matcher = URL_IN_STRING.matcher(input);
+        List<Component> parts = new ArrayList<>();
+        int offset = 0;
+        while (matcher.find()) {
+            String url = matcher.group();
+            int start = matcher.start();
+            if (matcher.start() != offset) {
+                parts.add(Component.text(input.substring(offset, start)));
+            }
+
+            parts.add(clickableLink(url, url, hover));
+            offset = matcher.end();
+        }
+
+        if (offset < input.length()) {
+            parts.add(Component.text(input.substring(offset)));
+        }
+
+        if (parts.isEmpty()) {
+            return Component.empty();
+        } else if (parts.size() == 1) {
+            return parts.get(0);
+        } else {
+            return Component.join(Component.empty(), parts);
+        }
     }
 }
