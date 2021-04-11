@@ -36,7 +36,8 @@ public class StringUtilsTest
         assertEquals("trim failed!", testString, StringUtils.trim(whilespace + testString + whilespace));
     }
 
-    public void testStripFileExtention()
+    @Test
+    public void testStripFileExtension()
     {
         final String testString = "blabla";
 
