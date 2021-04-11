@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.util;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.junit.Test;
 
 import static net.kyori.adventure.text.Component.*;
@@ -25,15 +26,24 @@ import static org.junit.Assert.*;
 
 public class ComponentUtilTest
 {
+    private final Component hover = text("open");
+    private final Component link = ComponentUtil.clickableLink(text("http://test"), "http://test", hover);
+
     @Test
     public void autoLink()
     {
-        final String hover = "open";
-        final Component link = ComponentUtil.clickableLink("http://test", "http://test", hover);
-
         assertEquals(link, ComponentUtil.autoLink("http://test", hover));
         assertEquals(empty(), ComponentUtil.autoLink("", hover));
         assertEquals(join(empty(), space(), link, space()), ComponentUtil.autoLink(" http://test ", hover));
         assertEquals(join(empty(), space(), link, space(), link, space()), ComponentUtil.autoLink(" http://test http://test ", hover));
+    }
+
+    @Test
+    public void recursiveAutoLink()
+    {
+        final Component child = Component.text("http://test");
+        final TextComponent expected = empty().append(empty().append(link)).append(empty().append(link));
+        final Component actual = ComponentUtil.autoLink(empty().append(child).append(child), hover);
+        assertEquals(expected, actual);
     }
 }

@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.spongepowered.api.adventure.SpongeComponents.legacyAmpersandSerializer;
 import static org.spongepowered.api.adventure.SpongeComponents.plainSerializer;
 
@@ -95,6 +98,25 @@ public class ComponentUtil
                 return new Pair<>(Component.text().append(previous.getLeft()).append(next.getLeft()).build(), false);
             }
         }).map(Pair::getLeft).orElse(Component.empty());
+    }
+
+    public static Component autoLink(Component input, Component hover) {
+        if (input instanceof TextComponent) {
+            TextComponent text = (TextComponent) input;
+            final String content = text.content();
+            if (!content.isEmpty()) {
+                final List<Component> children = text.children();
+                if (children.isEmpty()) {
+                    return text.content("").append(autoLink(content, hover));
+                } else {
+                    return text.content("")
+                               .children(emptyList())
+                               .append(autoLink(content, hover))
+                               .append(text.content("").children(children.stream().map(c -> autoLink(c, hover)).collect(toList())));
+                }
+            }
+        }
+        return input.children(input.children().stream().map(c -> autoLink(c, hover)).collect(toList()));
     }
 
     public static Component autoLink(String input, String hover) {
