@@ -17,6 +17,8 @@
  */
 package org.cubeengine.libcube.util;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,5 +42,14 @@ public class StringUtilsTest
 
         assertEquals("Something got stripped out even though there was not extention", testString, testString);
         assertEquals("Extention not properly stripped", testString, StringUtils.stripFileExtension(testString + ".test"));
+    }
+
+    @Test
+    public void replaceWithCallback()
+    {
+        AtomicInteger counter = new AtomicInteger(0);
+        String actual = StringUtils.replaceWithCallback(Pattern.compile("a"), "aaaab", match -> match.group(0) + counter.getAndIncrement());
+
+        assertEquals("a0a1a2a3b", actual);
     }
 }

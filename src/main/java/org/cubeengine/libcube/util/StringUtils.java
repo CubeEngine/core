@@ -415,15 +415,13 @@ public final class StringUtils
 
     public static String replaceWithCallback(Pattern pattern, String string, ReplaceCallback callback)
     {
-        final Matcher matcher = pattern.matcher(string);
-        while(matcher.find())
-        {
-            final MatchResult matchResult = matcher.toMatchResult();
-            final String replacement = callback.replace(matchResult);
-            string = string.substring(0, matchResult.start()) + replacement + string.substring(matchResult.end());
-            matcher.reset(string);
+        StringBuffer resultString = new StringBuffer();
+        Matcher regexMatcher = pattern.matcher(string);
+        while (regexMatcher.find()) {
+            regexMatcher.appendReplacement(resultString, callback.replace(regexMatcher.toMatchResult()));
         }
-        return string;
+        regexMatcher.appendTail(resultString);
+        return resultString.toString();
     }
 
     public static String getLastPart(String string, String separator)
