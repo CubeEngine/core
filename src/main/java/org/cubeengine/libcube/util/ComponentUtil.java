@@ -39,11 +39,12 @@ public class ComponentUtil
     }
 
     public static Component clickableLink(String label, String url, String hover) {
-        return Component.text()
-                        .content(label)
-                        .clickEvent(ClickEvent.openUrl(url))
-                        .hoverEvent(Component.text(hover).asHoverEvent())
-                        .build();
+        return clickableLink(Component.text(label), url, Component.text(hover));
+    }
+
+    public static Component clickableLink(Component label, String url, Component hover) {
+        return label.clickEvent(ClickEvent.openUrl(url))
+                    .hoverEvent(hover.asHoverEvent());
     }
 
     public static Component legacyToComponent(String message) {
