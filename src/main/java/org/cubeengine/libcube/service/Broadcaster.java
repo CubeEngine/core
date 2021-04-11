@@ -20,6 +20,7 @@ package org.cubeengine.libcube.service;
 
 import com.google.inject.Inject;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import org.cubeengine.libcube.service.i18n.I18n;
@@ -97,7 +98,11 @@ public class Broadcaster
         this.broadcastMessageWithPerm(format, message, null, params);
     }
 
-    public void broadcastStatus(Style starColor, String message, Subject sender, Object... params)
+    public void broadcastStatus(Style starColor, String message, Subject sender, Object... params) {
+        broadcastStatus(starColor, Component.text(message), sender, params);
+    }
+
+    public void broadcastStatus(Style starColor, Component message, Subject sender, Object... params)
     {
         final String causeName = sender.friendlyIdentifier().orElse(sender.identifier());
         for (Player user : this.getOnlinePlayers())
@@ -116,6 +121,11 @@ public class Broadcaster
     }
 
     public void broadcastStatus(String message, Subject sender, Object... params)
+    {
+        broadcastStatus(Component.text(message), sender, params);
+    }
+
+    public void broadcastStatus(Component message, Subject sender, Object... params)
     {
         this.broadcastStatus(Style.style(NamedTextColor.WHITE), message, sender, params);
     }
