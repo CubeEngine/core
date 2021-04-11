@@ -51,6 +51,11 @@ public class ColorPostProcessor implements PostProcessor
         NamedTextColor color = defaultColor;
         if (colorString != null)
         {
+            if (RESET_NAME.equalsIgnoreCase(colorString))
+            {
+                return component;
+            }
+
             try
             {
                 color = NamedTextColor.NAMES.value(colorString);
@@ -58,10 +63,6 @@ public class ColorPostProcessor implements PostProcessor
             catch (IllegalArgumentException ignored)
             {
             }
-        }
-        else if (colorString.equalsIgnoreCase(RESET_NAME))
-        {
-            return component;
         }
         return new StyledComponent(color, component);
     }
