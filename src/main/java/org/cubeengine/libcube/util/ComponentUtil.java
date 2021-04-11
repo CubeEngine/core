@@ -97,6 +97,10 @@ public class ComponentUtil
     }
 
     public static Component autoLink(String input, String hover) {
+        return autoLink(input, Component.text(hover));
+    }
+
+    public static Component autoLink(String input, Component hover) {
         Matcher matcher = URL_IN_STRING.matcher(input);
         List<Component> parts = new ArrayList<>();
         int offset = 0;
@@ -107,7 +111,7 @@ public class ComponentUtil
                 parts.add(Component.text(input.substring(offset, start)));
             }
 
-            parts.add(clickableLink(url, url, hover));
+            parts.add(clickableLink(Component.text(url), url, hover));
             offset = matcher.end();
         }
 
