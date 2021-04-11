@@ -27,6 +27,7 @@ import org.cubeengine.dirigent.formatter.reflected.Format;
 import org.cubeengine.dirigent.formatter.reflected.Names;
 import org.cubeengine.dirigent.formatter.reflected.ReflectedFormatter;
 import org.cubeengine.dirigent.parser.component.Component;
+import org.cubeengine.dirigent.parser.component.ComponentGroup;
 import org.cubeengine.i18n.I18nService;
 import org.cubeengine.libcube.service.i18n.formatter.component.HoverComponent;
 import org.spongepowered.api.entity.Tamer;
@@ -35,9 +36,12 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.util.Identifiable;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
-@Names({"player", "user","sender","tamer"})
+@Names({"player", "user", "sender", "tamer"})
 public class CommandSourceFormatter extends ReflectedFormatter
 {
     private final I18nService i18n;
@@ -50,6 +54,26 @@ public class CommandSourceFormatter extends ReflectedFormatter
     public Component format(String string)
     {
         return colored(NamedTextColor.DARK_GREEN, string);
+    }
+
+    @Format
+    public Component format(ListOfNames names)
+    {
+        final List<String> list = names.getNames();
+        final Iterator<String> iterator = list.iterator();
+        if (iterator.hasNext()) {
+            List<Component> components = new ArrayList<>(list.size() * 2 - 1);
+            components.add(colored(NamedTextColor.DARK_GREEN, iterator.next()));
+            while (iterator.hasNext()) {
+                components.add(new org.cubeengine.libcube.service.i18n.formatter.component.TextComponent(
+                    net.kyori.adventure.text.Component.text(", ")));
+                components.add(colored(NamedTextColor.DARK_GREEN, iterator.next()));
+            }
+            return new ComponentGroup(components);
+        } else {
+            return new org.cubeengine.libcube.service.i18n.formatter.component.TextComponent(
+                net.kyori.adventure.text.Component.empty());
+        }
     }
 
     @Format
@@ -89,5 +113,19 @@ public class CommandSourceFormatter extends ReflectedFormatter
     public Component format(Tamer tamer)
     {
         return this.format(tamer.name());
+    }
+
+    public static class ListOfNames {
+        private final List<String> names;
+
+        public ListOfNames(List<String> names)
+        {
+            this.names = names;
+        }
+
+        public List<String> getNames()
+        {
+            return names;
+        }
     }
 }
