@@ -45,16 +45,16 @@ public class VectorFormatter extends ReflectedFormatter
         {
             return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
                                         new StyledComponent(WHITE, arg0),
-                                        new StyledComponent(GOLD, String.valueOf(v.getX())),
+                                        new StyledComponent(GOLD, String.valueOf(v.x())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg1),
-                                        new StyledComponent(GOLD, String.valueOf(v.getY())),
+                                        new StyledComponent(GOLD, String.valueOf(v.y())),
                                         new StyledComponent(DARK_AQUA, "]")));
         }
         return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
-                                    new StyledComponent(GOLD, String.valueOf(v.getX())),
+                                    new StyledComponent(GOLD, String.valueOf(v.x())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.getY())),
+                                    new StyledComponent(GOLD, String.valueOf(v.y())),
                                     new StyledComponent(DARK_AQUA, "]")));
     }
 
@@ -68,21 +68,21 @@ public class VectorFormatter extends ReflectedFormatter
         {
             return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
                                         new StyledComponent(WHITE, arg0),
-                                        new StyledComponent(GOLD, String.valueOf(v.getX())),
+                                        new StyledComponent(GOLD, String.valueOf(v.x())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg1),
-                                        new StyledComponent(GOLD, String.valueOf(v.getY())),
+                                        new StyledComponent(GOLD, String.valueOf(v.y())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg2),
-                                        new StyledComponent(GOLD, String.valueOf(v.getZ())),
+                                        new StyledComponent(GOLD, String.valueOf(v.z())),
                                         new StyledComponent(DARK_AQUA, "]")));
         }
         return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
-                                    new StyledComponent(GOLD, String.valueOf(v.getX())),
+                                    new StyledComponent(GOLD, String.valueOf(v.x())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.getY())),
+                                    new StyledComponent(GOLD, String.valueOf(v.y())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.getZ())),
+                                    new StyledComponent(GOLD, String.valueOf(v.z())),
                                     new StyledComponent(DARK_AQUA, "]")));
     }
 
@@ -96,21 +96,21 @@ public class VectorFormatter extends ReflectedFormatter
         {
             return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
                                         new StyledComponent(WHITE, arg0),
-                                        new StyledComponent(GOLD, String.valueOf(v.getFloorX())),
+                                        new StyledComponent(GOLD, String.valueOf(v.floorX())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg1),
-                                        new StyledComponent(GOLD, String.valueOf(v.getFloorY())),
+                                        new StyledComponent(GOLD, String.valueOf(v.floorY())),
                                         new StyledComponent(DARK_AQUA, ","),
                                         new StyledComponent(WHITE, arg2),
-                                        new StyledComponent(GOLD, String.valueOf(v.getFloorZ())),
+                                        new StyledComponent(GOLD, String.valueOf(v.floorZ())),
                                         new StyledComponent(DARK_AQUA, "]")));
         }
         return new ComponentGroup(asList(new StyledComponent(DARK_AQUA, "["),
-                                    new StyledComponent(GOLD, String.valueOf(v.getFloorX())),
+                                    new StyledComponent(GOLD, String.valueOf(v.floorX())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.getFloorY())),
+                                    new StyledComponent(GOLD, String.valueOf(v.floorY())),
                                     new StyledComponent(DARK_AQUA, ","),
-                                    new StyledComponent(GOLD, String.valueOf(v.getFloorZ())),
+                                    new StyledComponent(GOLD, String.valueOf(v.floorZ())),
                                     new StyledComponent(DARK_AQUA, "]")));
     }
 

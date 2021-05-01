@@ -45,7 +45,7 @@ public class Cylinder implements Shape
 
     public Cylinder( Vector3d point, double radiusX, double radiusZ, double height )
     {
-        this( point, radiusX, radiusZ, height, new Vector3d( point.getX(), point.getY() + height / 2d, point.getZ()), new Vector3d( 0, 0, 0 ) );
+        this( point, radiusX, radiusZ, height, new Vector3d( point.x(), point.y() + height / 2d, point.z()), new Vector3d( 0, 0, 0 ) );
     }
 
     public Cylinder setRadiusX( double radiusX )
@@ -117,7 +117,7 @@ public class Cylinder implements Shape
     @Override
     public Shape scale( Vector3d vector )
     {
-        return new Cylinder( this.point, this.radiusX * vector.getX(), this.radiusZ * vector.getZ(), this.height * vector.getY(), this.centerOfRotation, this.rotationAngle );
+        return new Cylinder( this.point, this.radiusX * vector.x(), this.radiusZ * vector.z(), this.height * vector.y(), this.centerOfRotation, this.rotationAngle );
     }
 
     @Override
@@ -125,7 +125,7 @@ public class Cylinder implements Shape
     {
         return new Cuboid
         (
-                new Vector3d( this.getPoint().getX() - this.getRadiusX(), this.getPoint().getY(), this.getPoint().getZ() - this.getRadiusZ() ),
+                new Vector3d( this.getPoint().x() - this.getRadiusX(), this.getPoint().y(), this.getPoint().z() - this.getRadiusZ() ),
                 this.getRadiusX() * 2d,
                 this.getHeight(),
                 this.getRadiusZ() * 2d,
@@ -137,14 +137,14 @@ public class Cylinder implements Shape
     @Override
     public boolean contains( Vector3d point )
     {
-        return this.contains( point.getX(), point.getY(), point.getZ() );
+        return this.contains( point.x(), point.y(), point.z() );
     }
     
     @Override
     public boolean contains( double x, double y, double z )
     {
-        return !(y < this.getPoint().getY() || y > this.getPoint().getY() + this.getHeight()) && MathHelper.pow(
-            (x - this.getPoint().getX()) / this.getRadiusX(), 2) + MathHelper.pow( (z - this.getPoint().getZ()) / this.getRadiusZ(), 2 ) < 1;
+        return !(y < this.getPoint().y() || y > this.getPoint().y() + this.getHeight()) && MathHelper.pow(
+            (x - this.getPoint().x()) / this.getRadiusX(), 2) + MathHelper.pow( (z - this.getPoint().z()) / this.getRadiusZ(), 2 ) < 1;
     }
     
     @Override

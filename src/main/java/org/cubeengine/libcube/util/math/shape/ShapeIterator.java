@@ -52,9 +52,9 @@ final class ShapeIterator implements Iterator<Vector3d>
 
         Vector3d rotAngle = shape.getRotationAngle();
 
-        if( rotAngle.getX() != 0 )
+        if( rotAngle.x() != 0 )
         {
-            double angle = MathHelper.degreeToRadians(rotAngle.getX());
+            double angle = MathHelper.degreeToRadians(rotAngle.x());
             this.multMatrix = new Matrix3d
             (
                 1, 0, 0,
@@ -62,9 +62,9 @@ final class ShapeIterator implements Iterator<Vector3d>
                 0, Math.sin( -angle ), Math.cos( angle ) 
             );
         }
-        if( rotAngle.getY() != 0 )
+        if( rotAngle.y() != 0 )
         {
-            double angle = MathHelper.degreeToRadians( rotAngle.getY() );
+            double angle = MathHelper.degreeToRadians( rotAngle.y() );
             this.multMatrix = this.multMatrix.mul
             (
                 new Matrix3d
@@ -75,9 +75,9 @@ final class ShapeIterator implements Iterator<Vector3d>
                 )
             );
         }
-        if( rotAngle.getZ() != 0 )
+        if( rotAngle.z() != 0 )
         {
-            double angle = MathHelper.degreeToRadians( rotAngle.getZ() );
+            double angle = MathHelper.degreeToRadians( rotAngle.z() );
             this.multMatrix = this.multMatrix.mul
             ( 
                 new Matrix3d
@@ -103,7 +103,7 @@ final class ShapeIterator implements Iterator<Vector3d>
             {
                 return false;
             }
-            if( this.shape.contains( this.x + this.cuboidPoint.getX(), this.y + this.cuboidPoint.getY(), this.z + this.cuboidPoint.getZ()) )
+            if( this.shape.contains( this.x + this.cuboidPoint.x(), this.y + this.cuboidPoint.y(), this.z + this.cuboidPoint.z()) )
             {
                 return true;
             }
@@ -140,13 +140,13 @@ final class ShapeIterator implements Iterator<Vector3d>
     
     private Vector3d calculatePoint()
     {
-        double diffx = this.cuboidPoint.getX() - this.shape.getCenterOfRotation().getX();
-        double diffy = this.cuboidPoint.getY() - this.shape.getCenterOfRotation().getY();
-        double diffz = this.cuboidPoint.getZ() - this.shape.getCenterOfRotation().getZ();
+        double diffx = this.cuboidPoint.x() - this.shape.getCenterOfRotation().x();
+        double diffy = this.cuboidPoint.y() - this.shape.getCenterOfRotation().y();
+        double diffz = this.cuboidPoint.z() - this.shape.getCenterOfRotation().z();
 
         Vector3d point = this.multMatrix.transform(this.x + diffx, this.y + diffy, this.z + diffz);
 
-        return new Vector3d( point.getX() + this.cuboidPoint.getX() - diffx, point.getY() + this.cuboidPoint.getY() - diffy, point.getZ() + this.cuboidPoint.getZ() -diffz );
+        return new Vector3d( point.x() + this.cuboidPoint.x() - diffx, point.y() + this.cuboidPoint.y() - diffy, point.z() + this.cuboidPoint.z() -diffz );
     }
 
     @Override

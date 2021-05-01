@@ -31,9 +31,9 @@ public class Vector3iConverter extends SingleClassConverter<Vector3i>
     public Node toNode(Vector3i blockVector3, ConverterManager converterManager) throws ConversionException
     {
         MapNode mapNode = MapNode.emptyMap();
-        mapNode.set("x", new IntNode(blockVector3.getX()));
-        mapNode.set("y", new IntNode(blockVector3.getY()));
-        mapNode.set("z", new IntNode(blockVector3.getZ()));
+        mapNode.set("x", new IntNode(blockVector3.x()));
+        mapNode.set("y", new IntNode(blockVector3.y()));
+        mapNode.set("z", new IntNode(blockVector3.z()));
         return mapNode;
     }
 

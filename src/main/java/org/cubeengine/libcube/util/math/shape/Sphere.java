@@ -98,14 +98,13 @@ public class Sphere implements Shape
     @Override
     public boolean contains( Vector3d point )
     {
-        return contains(point.getX(), point.getY(), point.getZ());
+        return contains(point.x(), point.y(), point.z());
     }
 
     @Override
     public boolean contains( double x, double y, double z )
     {
-        return MathHelper.pow( this.point.getX() - x, 2 ) + MathHelper.pow( this.point.getY() - y, 2 ) + MathHelper.pow( this.point.getZ() -z, 2 ) < this
-                .radius * this.radius;
+        return MathHelper.pow( this.point.x() - x, 2 ) + MathHelper.pow( this.point.y() - y, 2 ) + MathHelper.pow( this.point.z() -z, 2 ) < this.radius * this.radius;
     }
 
     @Override
@@ -125,8 +124,7 @@ public class Sphere implements Shape
     {
         return new Cuboid
         (
-                new Vector3d( this.getPoint().getX() - this.getRadius(), this.getPoint().getX() - this.getRadius(), this.getPoint().getX() - this
-                        .getRadius() ),
+                new Vector3d( this.getPoint().x() - this.getRadius(), this.getPoint().x() - this.getRadius(), this.getPoint().x() - this.getRadius() ),
                 this.getRadius() * 2d,
                 this.getRadius() * 2d,
                 this.getRadius() * 2d,

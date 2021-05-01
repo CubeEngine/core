@@ -34,12 +34,12 @@ public class TransformConverter extends SingleClassConverter<Transform>
     public Node toNode(Transform transform, ConverterManager manager) throws ConversionException
     {
         Map<String, Object> loc = new LinkedHashMap<>();
-        loc.put("x", transform.position().getX());
-        loc.put("y", transform.position().getY());
-        loc.put("z", transform.position().getZ());
-        loc.put("rx", transform.rotation().getX());
-        loc.put("ry", transform.rotation().getY());
-        loc.put("rz", transform.rotation().getZ());
+        loc.put("x", transform.position().x());
+        loc.put("y", transform.position().y());
+        loc.put("z", transform.position().z());
+        loc.put("rx", transform.rotation().x());
+        loc.put("ry", transform.rotation().y());
+        loc.put("rz", transform.rotation().z());
         return manager.convertToNode(loc);
     }
 
