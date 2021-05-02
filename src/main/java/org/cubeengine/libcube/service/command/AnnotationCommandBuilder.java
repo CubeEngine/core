@@ -166,7 +166,7 @@ public class AnnotationCommandBuilder
                 }
                 catch (Exception e)
                 {
-                    plugin.getLogger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
+                    plugin.logger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
                 }
             }
         }
@@ -174,7 +174,7 @@ public class AnnotationCommandBuilder
 
     public String getBasePerm(PluginContainer plugin)
     {
-        final String id = plugin.getMetadata().getId();
+        final String id = plugin.metadata().id();
         if (id.startsWith("cubeengine-"))
         {
             return "cubeengine." + id.substring(11);
@@ -236,7 +236,7 @@ public class AnnotationCommandBuilder
             }
             catch (Exception e)
             {
-                plugin.getLogger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
+                plugin.logger().error("Failed to register command {} in {}", name, holder.getClass().getSimpleName(), e);
             }
         }
 

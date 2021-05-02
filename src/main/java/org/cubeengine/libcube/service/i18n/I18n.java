@@ -203,7 +203,7 @@ public class I18n extends I18nTranslate
 
     public void registerPlugin(PluginContainer plugin)
     {
-        String name = plugin.getMetadata().getName().orElse(plugin.getMetadata().getId());
+        String name = plugin.metadata().name().orElse(plugin.metadata().id());
         for (Language language : getLanguages())
         {
             String lang = language.getLocale().getLanguage();

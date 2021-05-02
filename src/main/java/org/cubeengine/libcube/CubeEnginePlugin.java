@@ -54,10 +54,10 @@ public abstract class CubeEnginePlugin {
     {
         final PluginContainer lib = event.game().pluginManager().plugin(PluginLibCube.LIBCUBE_ID)
                                          .orElseThrow(() -> new IllegalArgumentException("libcube not found"));
-        PluginLibCube libCube = (PluginLibCube) lib.getInstance();
+        PluginLibCube libCube = (PluginLibCube) lib.instance();
         this.mm = libCube.getCore().getModuleManager();
         this.instance = this.mm.registerAndCreate(this.module, this.plugin, this.injector);
-        this.plugin.getLogger().info("Module " + module.getSimpleName() + " loaded!");
+        this.plugin.logger().info("Module " + module.getSimpleName() + " loaded!");
         this.mm.loadConfigs(this.plugin, this.module, true);
     }
 
@@ -68,7 +68,7 @@ public abstract class CubeEnginePlugin {
         this.mm.loadConfigs(this.plugin, this.module, false);
         if (module == null)
         {
-            plugin.getLogger().error("Failed to load module for {}", plugin.getMetadata().getName());
+            plugin.logger().error("Failed to load module for {}", plugin.metadata().name());
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class CubeEnginePlugin {
             Optional<?> provided = Sponge.server().serviceProvider().provide(field.getType());
             if (!provided.isPresent())
             {
-                plugin.getLogger().warn("Missing Service");
+                plugin.logger().warn("Missing Service");
             }
             else
             {

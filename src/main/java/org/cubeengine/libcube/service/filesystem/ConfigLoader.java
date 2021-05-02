@@ -54,7 +54,7 @@ public class ConfigLoader
         config.setFile(path.resolve(fileName).toFile());
         if (config.reload(true))
         {
-            plugin.getLogger().info("Saved new configuration file! {}", fileName);
+            plugin.logger().info("Saved new configuration file! {}", fileName);
         }
         return config;
     }

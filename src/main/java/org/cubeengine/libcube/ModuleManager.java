@@ -107,12 +107,12 @@ public class ModuleManager
     {
         this.modulePlugins.put(module, plugin);
         Module moduleModule = binder -> {
-            final PluginMetadata metadata = plugin.getMetadata();
-            final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.getName().orElse(metadata.getId()));
+            final PluginMetadata metadata = plugin.metadata();
+            final ThreadGroup group = new ThreadGroup(this.threadGroup, metadata.name().orElse(metadata.id()));
             binder.bind(TaskManager.class).toInstance(new SpongeTaskManager(game, plugin));
             binder.bind(EventManager.class).toInstance(new EventManager(game, plugin));
             binder.bind(ThreadGroup.class).toInstance(group);
-            binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, plugin.getLogger(), metadata.getId()));
+            binder.bind(ThreadFactory.class).toInstance(new ModuleThreadFactory(group, plugin.logger(), metadata.id()));
             binder.bind(ConfigLoader.class).toInstance(new ConfigLoader(this.fm, this.reflector, plugin));
         };
         Injector moduleInjector = injector.createChildInjector(Modules.override(guiceModule).with(moduleModule));
@@ -278,7 +278,7 @@ public class ModuleManager
 
     public String getModuleId(PluginContainer plugin)
     {
-        String id = plugin.getMetadata().getId();
+        String id = plugin.metadata().id();
         if (id.startsWith("cubeengine-"))
         {
             return id.substring("cubeengine-".length());
@@ -291,7 +291,7 @@ public class ModuleManager
         Optional<PluginContainer> container = getPlugin(clazz);
         if (container.isPresent())
         {
-            String name = container.get().getMetadata().getName().orElse(container.get().getMetadata().getId());
+            String name = container.get().metadata().name().orElse(container.get().metadata().id());
             if (name.startsWith("CubeEngine - "))
             {
                 name = name.substring("CubeEngine - ".length());
