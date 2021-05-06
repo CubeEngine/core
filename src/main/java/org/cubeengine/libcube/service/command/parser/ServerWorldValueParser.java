@@ -22,6 +22,7 @@ import org.cubeengine.libcube.service.command.DefaultParameterProvider;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.exception.ArgumentParseException;
 import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -62,17 +63,17 @@ public class ServerWorldValueParser implements ValueParser<ServerWorld>, ValueCo
     }
 
     @Override
-    public List<String> complete(CommandContext context, String currentInput)
+    public List<CommandCompletion> complete(CommandContext context, String currentInput)
     {
-        final List<String> list = new ArrayList<>();
+        final List<CommandCompletion> list = new ArrayList<>();
         Sponge.server().worldManager().worlds().stream()
                      .map(ServerWorld::key)
                      .filter(k -> k.formatted().startsWith(currentInput) || k.namespace().equals("minecraft") && k.value().startsWith(currentInput))
                      .forEach(k -> {
-                         list.add(k.formatted());
+                         list.add(CommandCompletion.of(k.formatted()));
                          if (k.namespace().equals("minecraft"))
                          {
-                             list.add(k.value());
+                             list.add(CommandCompletion.of(k.value()));
                          }
                      });
         return list;

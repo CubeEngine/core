@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.kyori.adventure.audience.Audience;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.exception.ArgumentParseException;
 import org.spongepowered.api.command.parameter.ArgumentReader.Mutable;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -34,13 +35,15 @@ import org.spongepowered.api.util.Nameable;
 public class AudienceValuerParser implements ValueParser<Audience>, ValueCompleter
 {
     @Override
-    public List<String> complete(CommandContext context, String currentInput)
+    public List<CommandCompletion> complete(CommandContext context, String currentInput)
     {
         final String token = currentInput.toLowerCase();
-        final List<String> list = Sponge.server().onlinePlayers().stream().map(Nameable::name).filter(name -> name.toLowerCase().startsWith(token)).collect(Collectors.toList());
+        final List<CommandCompletion> list = Sponge.server().onlinePlayers().stream().map(Nameable::name).filter(name -> name.toLowerCase().startsWith(token))
+                                                   .map(CommandCompletion::of)
+                                                   .collect(Collectors.toList());
         if ("console".startsWith(token))
         {
-            list.add("console");
+            list.add(CommandCompletion.of("console"));
         }
         return list;
     }

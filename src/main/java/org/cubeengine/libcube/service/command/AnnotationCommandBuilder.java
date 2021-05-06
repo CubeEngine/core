@@ -577,7 +577,7 @@ public class AnnotationCommandBuilder
         final ValueCompleter completer = ParameterRegistry.getCompleter(injector, type, customCompleterType);
         if (completer != null)
         {
-            parameterBuilder.suggestions(completer);
+            parameterBuilder.completer(completer);
         }
 
         parameterBuilder.key(name);

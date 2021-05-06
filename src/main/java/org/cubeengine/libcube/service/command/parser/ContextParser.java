@@ -27,6 +27,7 @@ import org.cubeengine.libcube.service.i18n.I18n;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCause;
+import org.spongepowered.api.command.CommandCompletion;
 import org.spongepowered.api.command.exception.ArgumentParseException;
 import org.spongepowered.api.command.parameter.ArgumentReader.Mutable;
 import org.spongepowered.api.command.parameter.CommandContext;
@@ -60,20 +61,21 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
     }
 
     @Override
-    public List<String> complete(CommandContext context, String currentInput)
+    public List<CommandCompletion> complete(CommandContext context, String currentInput)
     {
-        List<String> list = Sponge.server().worldManager().worlds().stream()
+        List<CommandCompletion> list = Sponge.server().worldManager().worlds().stream()
                                   .map(ServerWorld::key)
                                   .map(ResourceKey::asString)
                                   .filter(n -> n.toLowerCase().startsWith(currentInput.toLowerCase()))
+                                  .map(CommandCompletion::of)
                                   .collect(toList());
         if ("global".startsWith(currentInput.toLowerCase()))
         {
-            list.add("global");
+            list.add(CommandCompletion.of("global"));
         }
         if ("world".startsWith(currentInput))
         {
-            list.add("world");
+            list.add(CommandCompletion.of("world"));
         }
 
         if (currentInput.equals("world") || currentInput.toLowerCase().startsWith("world|"))
@@ -84,6 +86,7 @@ public class ContextParser implements ValueParser<Context>, ValueCompleter, Defa
                               .map(ResourceKey::asString)
                               .filter(n -> n.toLowerCase().startsWith(subToken.toLowerCase()))
                               .map(n -> "world|" + n)
+                              .map(CommandCompletion::of)
                               .collect(toList()));
         }
         return list;
