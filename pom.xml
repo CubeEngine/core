@@ -91,7 +91,7 @@
         <repository>
             <id>cubeengine-repo</id>
             <name>CubeEngine Public Repository</name>
-            <url>http://repo.cubeengine.org/</url>
+            <url>https://repo.cubeengine.org/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
