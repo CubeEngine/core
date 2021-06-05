@@ -26,12 +26,11 @@ import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.spongepowered.api.adventure.SpongeComponents.legacyAmpersandSerializer;
-import static org.spongepowered.api.adventure.SpongeComponents.plainSerializer;
 
 public class ComponentUtil
 {
@@ -52,7 +51,7 @@ public class ComponentUtil
     }
 
     public static Component legacyToComponent(String message) {
-        return legacyAmpersandSerializer().deserialize(message);
+        return PlainComponentSerializer.plain().deserialize(message);
     }
 
     public static Component deepAppend(Component target, Component component) {
@@ -152,10 +151,10 @@ public class ComponentUtil
     }
 
     public static Component fromLegacy(String legacy) {
-        return legacyAmpersandSerializer().deserialize(legacy);
+        return PlainComponentSerializer.plain().deserialize(legacy);
     }
 
     public static String stripLegacy(String legacy) {
-        return plainSerializer().serialize(legacyAmpersandSerializer().deserialize(legacy));
+        return PlainComponentSerializer.plain().serialize(PlainComponentSerializer.plain().deserialize(legacy));
     }
 }
