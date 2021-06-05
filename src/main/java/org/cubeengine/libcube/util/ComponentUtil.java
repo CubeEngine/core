@@ -52,7 +52,7 @@ public class ComponentUtil
     }
 
     public static Component legacyToComponent(String message) {
-        return PlainComponentSerializer.plain().deserialize(message);
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(message);
     }
 
     public static Component deepAppend(Component target, Component component) {
