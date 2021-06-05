@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 
 import static java.util.Collections.emptyList;
@@ -151,10 +152,10 @@ public class ComponentUtil
     }
 
     public static Component fromLegacy(String legacy) {
-        return PlainComponentSerializer.plain().deserialize(legacy);
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(legacy);
     }
 
     public static String stripLegacy(String legacy) {
-        return PlainComponentSerializer.plain().serialize(PlainComponentSerializer.plain().deserialize(legacy));
+        return PlainComponentSerializer.plain().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(legacy));
     }
 }
