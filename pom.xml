@@ -153,8 +153,7 @@
                         <artifactId>ore-deploy-maven-plugin</artifactId>
                         <version>1.2.0-SNAPSHOT</version>
                         <configuration>
-                            <projectOwner>Faithcaio</projectOwner>
-                            <projectSlug>cubeengine---libcube</projectSlug>
+                            <pluginId>cubeengine-core</pluginId>
                         </configuration>
                     </plugin>
                 </plugins>

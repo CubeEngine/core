@@ -40,9 +40,6 @@ commands: flags repeat
 commands: errors are not shown?
 ValueParser get if used in completion
 List of quoted String as one parameter
-missing weather event
-missing potioneffect event? Data instead?
-
 
 translations for various types (TranslationTextComponent LanguageMap)
 enchantment data allowed?
