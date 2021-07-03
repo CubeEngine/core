@@ -203,14 +203,13 @@ public class I18n extends I18nTranslate
 
     public void registerPlugin(PluginContainer plugin)
     {
-        String name = plugin.metadata().name().orElse(plugin.metadata().id());
         for (Language language : getLanguages())
         {
             String lang = language.getLocale().getLanguage();
-            String full = lang + "_ " + language.getLocale().getCountry();
-            Optional<Asset> asset = assetManager().asset(plugin, "translations/" + lang + "_" + name + ".po");
+            String full = lang + "_" + language.getLocale().getCountry();
+            Optional<Asset> asset = assetManager().asset(plugin, "translations/" + lang + ".po");
             asset.map(Asset::url).ifPresent(poFiles::add);
-            asset = assetManager().asset(plugin, "translations/" + full + "_" + name + ".po");
+            asset = assetManager().asset(plugin, "translations/" + full + ".po");
             asset.map(Asset::url).ifPresent(poFiles::add);
         }
     }
