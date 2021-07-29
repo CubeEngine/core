@@ -17,18 +17,16 @@
  */
 package org.cubeengine.libcube.service.event;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.function.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
+import org.spongepowered.api.event.EventListenerRegistration;
 import org.spongepowered.plugin.PluginContainer;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * This class manages all Event-(Un-)Registration and fires Events.
@@ -57,7 +55,12 @@ public class EventManager
     }
 
     public <T extends Event> EventManager listenUntil(Class<?> owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
-        em.registerListener(this.plugin, eventClass, new UntilEventListener<>(filter, listener));
+
+        final EventListenerRegistration<T> registration = EventListenerRegistration.builder(eventClass)
+                                                                                   .plugin(this.plugin)
+                                                                                   .listener(new UntilEventListener<>(filter, listener))
+                                                                                   .build();
+        em.registerListener(registration);
         return this;
     }
 

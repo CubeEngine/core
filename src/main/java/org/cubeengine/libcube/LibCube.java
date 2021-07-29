@@ -69,6 +69,9 @@ Trident
 protector interactprimary block
 
 get blocks colliding with aabb on world somewhere
+
+userManager.exists(name)?
+Creator Context is not Entity reference anymore
  */
 @Core
 public class LibCube

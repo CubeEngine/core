@@ -33,7 +33,6 @@ import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
 import org.cubeengine.libcube.service.command.parser.StringListParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.cubeengine.libcube.service.command.parser.Vector2iValueParser;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
@@ -92,7 +91,6 @@ public class ParameterRegistry
         register(Audience.class, new AudienceValuerParser());
         registerSponge(String.class, ResourceKeyedValueParameters.STRING);
         registerSponge(ServerPlayer.class, ResourceKeyedValueParameters.PLAYER);
-        registerSponge(User.class, ResourceKeyedValueParameters.USER);
         registerSponge(Boolean.class, ResourceKeyedValueParameters.BOOLEAN);
         final DefaultParameterProvider<Boolean> booleanDefaultProvider = c -> false;
         register(Boolean.class, booleanDefaultProvider);
@@ -123,7 +121,7 @@ public class ParameterRegistry
 
     private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> registryType)
     {
-        return VariableValueParameters.registryEntryBuilder(c -> Sponge.game().registries(), registryType).defaultNamespace(defaultNameSpace).build();
+        return VariableValueParameters.registryEntryBuilder(c -> registryType.defaultHolder().get(), registryType).defaultNamespace(defaultNameSpace).build();
     }
 
     static <T> ValueParser<T> getParser(Injector injector, Type type, Class<? extends ValueParser<T>> parserType, boolean last, boolean greedy)
@@ -218,4 +216,5 @@ public class ParameterRegistry
         }
         throw new IllegalArgumentException("No default provider was registered for " + type);
     }
+
 }

@@ -22,7 +22,6 @@ import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
 import org.spongepowered.api.ResourceKey;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.registry.RegistryTypes;
 
@@ -32,7 +31,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     @Override
     public Node toNode(BlockType object)
     {
-        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE).valueKey(object).asString());
+        return StringNode.of(object.key(RegistryTypes.BLOCK_TYPE).asString());
     }
 
     @Override
@@ -40,7 +39,7 @@ public class BlockTypeConverter extends SimpleConverter<BlockType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.game().registries().registry(RegistryTypes.BLOCK_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
+            return RegistryTypes.BLOCK_TYPE.get().findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

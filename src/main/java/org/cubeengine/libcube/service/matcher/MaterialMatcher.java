@@ -79,7 +79,7 @@ public class MaterialMatcher
 
     public void onEnable()
     {
-        Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
+        Sponge.game().registry(RegistryTypes.ITEM_TYPE).stream().forEach(type -> {
             final String translationKey = ((TranslatableComponent) type.asComponent()).key();
             // TODO get translation on server? GameDictionary?
 
@@ -132,7 +132,7 @@ public class MaterialMatcher
     }
 
     private void buildLocalizedNames(Map<String, ItemType> defLocalizedName, Map<String, ItemType> localizedName) {
-        Sponge.game().registries().registry(RegistryTypes.ITEM_TYPE).streamEntries().forEach(entry -> {
+        RegistryTypes.ITEM_TYPE.get().streamEntries().forEach(entry -> {
             final ItemType itemType = entry.value();
             final ResourceKey id = entry.key();
             ids.put(id.asString(), itemType);

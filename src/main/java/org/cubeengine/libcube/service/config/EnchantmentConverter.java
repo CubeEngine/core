@@ -22,7 +22,6 @@ import org.cubeengine.converter.converter.SimpleConverter;
 import org.cubeengine.converter.node.Node;
 import org.cubeengine.converter.node.StringNode;
 import org.spongepowered.api.ResourceKey;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.registry.RegistryTypes;
 
@@ -31,7 +30,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     @Override
     public Node toNode(EnchantmentType object) throws ConversionException
     {
-        return StringNode.of(Sponge.game().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).valueKey(object).asString());
+        return StringNode.of(object.key(RegistryTypes.ENCHANTMENT_TYPE).asString());
     }
 
     @Override
@@ -39,7 +38,7 @@ public class EnchantmentConverter extends SimpleConverter<EnchantmentType>
     {
         if (node instanceof StringNode)
         {
-            return Sponge.game().registries().registry(RegistryTypes.ENCHANTMENT_TYPE).findValue(ResourceKey.resolve(node.asText())).orElse(null);
+            return RegistryTypes.ENCHANTMENT_TYPE.get().findValue(ResourceKey.resolve(node.asText())).orElse(null);
         }
         throw ConversionException.of(this, node, "Node is not a StringNode!");
     }

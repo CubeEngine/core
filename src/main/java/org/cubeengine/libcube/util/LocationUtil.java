@@ -105,7 +105,7 @@ public class LocationUtil
     public static ServerLocation getBlockInSight(Player player)
     {
         BlockType headIn = player.location().relativeTo(UP).blockType();
-        List<BlockType> fluidBlocks = Sponge.game().registries().registry(RegistryTypes.FLUID_TYPE).stream()
+        List<BlockType> fluidBlocks = RegistryTypes.FLUID_TYPE.get().stream()
                 .filter(t -> !t.equals(FluidTypes.EMPTY.get()))
                 .map(FluidType::defaultState)
                 .map(FluidState::block)

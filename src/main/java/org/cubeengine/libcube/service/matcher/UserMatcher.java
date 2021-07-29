@@ -72,7 +72,7 @@ public class UserMatcher
         Optional<User> directMatchOffline;
         try
         {
-            directMatchOffline = userManager.find(name);
+            directMatchOffline = userManager.load(name).join();
         }
         catch (IllegalArgumentException ignore)
         {
@@ -85,11 +85,11 @@ public class UserMatcher
 
         if (searchOffline)
         {
-            String match = sm.matchString(name, userManager.all().stream().map(GameProfile::name)
+            String match = sm.matchString(name, userManager.streamAll().map(GameProfile::name)
                                                        .filter(Optional::isPresent).map(Optional::get).collect(toList()));
             if (match != null)
             {
-                return userManager.find(match);
+                return userManager.load(match).join();
             }
         }
 
