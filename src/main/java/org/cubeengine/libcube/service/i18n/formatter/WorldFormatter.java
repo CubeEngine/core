@@ -46,6 +46,6 @@ public class WorldFormatter extends ReflectedFormatter
     {
         return HoverComponent.hoverText(
             net.kyori.adventure.text.Component.text(world.uniqueId().toString()).color(NamedTextColor.YELLOW),
-            StyledComponent.colored(NamedTextColor.GOLD, world.world().get().directory().getFileName().toString()));
+            StyledComponent.colored(NamedTextColor.GOLD, new TextComponent(world.displayName().orElse(net.kyori.adventure.text.Component.text(world.key().asString())))));
     }
 }

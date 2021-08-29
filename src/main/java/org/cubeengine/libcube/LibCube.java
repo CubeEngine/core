@@ -71,7 +71,8 @@ protector interactprimary block
 get blocks colliding with aabb on world somewhere
 
 userManager.exists(name)?
-Creator Context is not Entity reference anymore
+Creator Context in events is not Entity reference anymore
+Custom Data on User cannot work atm.
  */
 @Core
 public class LibCube

@@ -29,10 +29,14 @@ import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
 import org.cubeengine.libcube.service.command.parser.AudienceValuerParser;
 import org.cubeengine.libcube.service.command.parser.ServerPlayerDefaultParameterProvider;
+import org.cubeengine.libcube.service.command.parser.ServerWorldPropertiesValueParser;
 import org.cubeengine.libcube.service.command.parser.ServerWorldValueParser;
 import org.cubeengine.libcube.service.command.parser.StringListParser;
 import org.cubeengine.libcube.service.command.parser.UserDefaultParameterProvider;
 import org.cubeengine.libcube.service.command.parser.Vector2iValueParser;
+import org.cubeengine.libcube.service.command.parser.Vector3iValueParser;
+import org.cubeengine.libcube.service.command.parser.WorldTemplateValueParser;
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParameter;
@@ -43,6 +47,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.enchantment.EnchantmentType;
@@ -50,11 +55,18 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.registry.DefaultedRegistryType;
 import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.SerializationBehavior;
+import org.spongepowered.api.world.WorldType;
+import org.spongepowered.api.world.WorldTypes;
+import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.server.ServerWorld;
+import org.spongepowered.api.world.server.WorldTemplate;
+import org.spongepowered.api.world.server.storage.ServerWorldProperties;
 import org.spongepowered.api.world.weather.WeatherType;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.math.vector.Vector3d;
+import org.spongepowered.math.vector.Vector3i;
 
 public class ParameterRegistry
 {
@@ -89,6 +101,7 @@ public class ParameterRegistry
     {
         register(ServerWorld.class, new ServerWorldValueParser());
         register(Audience.class, new AudienceValuerParser());
+        registerSponge(ResourceKey.class, ResourceKeyedValueParameters.RESOURCE_KEY);
         registerSponge(String.class, ResourceKeyedValueParameters.STRING);
         registerSponge(ServerPlayer.class, ResourceKeyedValueParameters.PLAYER);
         registerSponge(Boolean.class, ResourceKeyedValueParameters.BOOLEAN);
@@ -104,19 +117,31 @@ public class ParameterRegistry
         register(User.class, new UserDefaultParameterProvider());
         registerSponge(Vector3d.class, ResourceKeyedValueParameters.VECTOR3D);
         register(Vector2i.class, new Vector2iValueParser());
+        register(Vector3i.class, new Vector3iValueParser());
         registerSponge(ItemType.class, () -> registryTypeParser("minecraft", RegistryTypes.ITEM_TYPE));
         registerSponge(BlockType.class, () -> registryTypeParser("minecraft", RegistryTypes.BLOCK_TYPE));
         registerSponge(EntityType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENTITY_TYPE));
         registerSponge(Difficulty.class, () -> registryTypeParser("sponge", RegistryTypes.DIFFICULTY));
+        register(Difficulty.class, (DefaultParameterProvider<Difficulty>)o -> Difficulties.NORMAL.get());
         registerSponge(GameMode.class, () -> registryTypeParser("sponge", RegistryTypes.GAME_MODE));
+        register(GameMode.class, (DefaultParameterProvider<GameMode>)o -> GameModes.SURVIVAL.get());
         registerSponge(EnchantmentType.class, () -> registryTypeParser("minecraft", RegistryTypes.ENCHANTMENT_TYPE));
         registerSponge(WeatherType.class, () -> registryTypeParser("sponge", RegistryTypes.WEATHER_TYPE));
+        registerSponge(WorldType.class, () -> registryTypeParser("minecraft", RegistryTypes.WORLD_TYPE));
+        register(WorldType.class, (DefaultParameterProvider<WorldType>)o -> WorldTypes.OVERWORLD.get());
+        register(ServerWorldProperties.class, new ServerWorldPropertiesValueParser());
+        register(WorldTemplate.class, new WorldTemplateValueParser());
+
+        registerSponge(SerializationBehavior.class, () -> VariableValueParameters.enumChoices(SerializationBehavior.class));
+        register(SerializationBehavior.class, (DefaultParameterProvider<SerializationBehavior>)o -> SerializationBehavior.AUTOMATIC);
+
         registerSponge(ItemStackSnapshot.class, ResourceKeyedValueParameters.ITEM_STACK_SNAPSHOT);
 
         register((new TypeToken<List<String>>() {}).getType(), new StringListParser());
         registerSponge((new TypeToken<Collection<Entity>>() {}).getType(), ResourceKeyedValueParameters.MANY_ENTITIES);
         registerSponge((new TypeToken<Collection<ServerPlayer>>() {}).getType(), ResourceKeyedValueParameters.MANY_PLAYERS);
         registerSponge((new TypeToken<Collection<GameProfile>>() {}).getType(), ResourceKeyedValueParameters.MANY_GAME_PROFILES);
+
     }
 
     private static <T> ValueParameter<T> registryTypeParser(String defaultNameSpace, DefaultedRegistryType<T> registryType)
