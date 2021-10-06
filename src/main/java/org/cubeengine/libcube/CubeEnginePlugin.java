@@ -23,8 +23,6 @@ import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.Command;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
 import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
@@ -49,7 +47,6 @@ public abstract class CubeEnginePlugin {
         this.module = module;
     }
 
-    @Listener
     public void onConstruction(ConstructPluginEvent event)
     {
         final PluginContainer lib = event.game().pluginManager().plugin(PluginLibCube.LIBCUBE_ID)
@@ -61,7 +58,6 @@ public abstract class CubeEnginePlugin {
         this.mm.loadConfigs(this.plugin, this.module, true);
     }
 
-    @Listener(order = Order.EARLY)
     public void onInit(StartingEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
@@ -72,7 +68,6 @@ public abstract class CubeEnginePlugin {
         }
     }
 
-    @Listener(order = Order.FIRST)
     public void onStarted(StartedEngineEvent<Server> event)
     {
         Object module = mm.getModule(this.module);
@@ -98,7 +93,6 @@ public abstract class CubeEnginePlugin {
         }
     }
 
-    @Listener
     public void onRegisterCommand(final RegisterCommandEvent<Command.Parameterized> event)
     {
         this.mm.registerCommands(event, this.plugin, this.instance);
