@@ -17,8 +17,10 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -180,10 +182,11 @@ public class I18n extends I18nTranslate
         LanguageLoader languageLoader = service.getLanguageLoader();
         final Path languagesDir = Paths.get("assets", "cubeengine-core", "languages");
         final URI langs = plugin.getContainer().locateResource(pathToURI(languagesDir.resolve("languages.yml"))).get();
-        try
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(langs.toURL().openStream()));)
         {
             List<URL> urls = new ArrayList<>();
-            for (String lang : Files.readAllLines(Paths.get(langs)))
+            String lang;
+            while ((lang = reader.readLine()) != null)
             {
                 final Optional<URI> langAsset = plugin.getContainer().locateResource(pathToURI(languagesDir.resolve(lang + ".yml")));
                 if (langAsset.isPresent())
