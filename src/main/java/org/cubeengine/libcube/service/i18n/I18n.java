@@ -17,8 +17,11 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -172,27 +175,29 @@ public class I18n extends I18nTranslate
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
         final Path languagesDir = Paths.get("assets", "cubeengine-core", "languages");
-        final URI langs = plugin.getContainer().locateResource(URI.create(languagesDir.resolve("languages.yml").toString())).get();
-        try
+        final InputStream langs = plugin.getContainer().openResource(URI.create(languagesDir.resolve("languages.yml").toString())).get();
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(langs)))
         {
-            List<URL> urls = new ArrayList<>();
-            for (String lang : Files.readAllLines(Paths.get(langs)))
+            int i = 0;
+            for (String lang : br.lines().collect(toList()))
             {
-                final Optional<URI> langAsset = plugin.getContainer().locateResource(languagesDir.resolve(lang + ".yml").toUri());
-                if (langAsset.isPresent())
+                final URI langUri = URI.create(languagesDir.resolve(lang + ".yml").toString());
+                final Optional<InputStream> is = plugin.getContainer().openResource(langUri);
+                if (is.isPresent())
                 {
-                    urls.add(langAsset.get().toURL());
+                    i++;
+                    ((I18nLanguageLoader)languageLoader).loadLanguage(is.get());
                 }
                 else
                 {
                     logger.warn("Could not find language definition for: " + lang);
                 }
             }
-            if (urls.size() != 0)
+            if (i > 0)
             {
-                logger.info("Loading {} language definitions", urls.size());
+                logger.info("Loaded {} language definitions", i);
             }
-            ((I18nLanguageLoader)languageLoader).loadLanguages(urls);
         }
         catch (IOException e)
         {

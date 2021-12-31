@@ -18,6 +18,7 @@
 package org.cubeengine.libcube.service.i18n;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
@@ -34,7 +35,6 @@ import org.cubeengine.i18n.language.LanguageDefinition;
 import org.cubeengine.i18n.language.LanguageLoader;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.filesystem.FileManager;
-import org.spongepowered.api.resource.Resource;
 
 import static org.cubeengine.libcube.service.filesystem.FileExtensionFilter.YAML;
 
@@ -71,26 +71,23 @@ public class I18nLanguageLoader extends LanguageLoader
         }
     }
 
-    protected void loadLanguages(List<URL> languageFiles) throws IOException
+    protected void loadLanguage(InputStream languageFile) throws IOException
     {
-        for (URL url : languageFiles)
+        try (Reader reader = new InputStreamReader(languageFile))
         {
-            try (Reader reader = new InputStreamReader(url.openStream()))
+            LocaleConfiguration config = reflector.load(LocaleConfiguration.class, reader);
+            if (!this.configurations.containsKey(config.getLocale()))
             {
-                LocaleConfiguration config = reflector.load(LocaleConfiguration.class, reader);
-                if (!this.configurations.containsKey(config.getLocale()))
+                this.configurations.put(config.getLocale(), config);
+            }
+            Locale[] clones = config.getClones();
+            if (clones != null)
+            {
+                for (Locale clone : clones)
                 {
-                    this.configurations.put(config.getLocale(), config);
-                }
-                Locale[] clones = config.getClones();
-                if (clones != null)
-                {
-                    for (Locale clone : clones)
+                    if (!this.configurations.containsKey(clone))
                     {
-                        if (!this.configurations.containsKey(clone))
-                        {
-                            this.configurations.put(clone, config);
-                        }
+                        this.configurations.put(clone, config);
                     }
                 }
             }
