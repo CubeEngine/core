@@ -17,12 +17,30 @@
  */
 package org.cubeengine.libcube.service.i18n;
 
-import static java.util.stream.Collectors.toList;
-import static org.cubeengine.dirigent.context.Contexts.LOCALE;
-import static org.cubeengine.dirigent.context.Contexts.createContext;
-import static org.cubeengine.libcube.service.i18n.Properties.SOURCE;
-import static org.spongepowered.api.Sponge.assetManager;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
@@ -58,34 +76,14 @@ import org.cubeengine.libcube.service.i18n.formatter.VectorFormatter;
 import org.cubeengine.libcube.service.i18n.formatter.WorldFormatter;
 import org.cubeengine.libcube.service.matcher.StringMatcher;
 import org.cubeengine.reflect.Reflector;
-import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.util.locale.LocaleSource;
 import org.spongepowered.plugin.PluginContainer;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import static java.util.stream.Collectors.toList;
+import static org.cubeengine.dirigent.context.Contexts.LOCALE;
+import static org.cubeengine.dirigent.context.Contexts.createContext;
+import static org.cubeengine.libcube.service.i18n.Properties.SOURCE;
 
 
 @Singleton
@@ -173,16 +171,17 @@ public class I18n extends I18nTranslate
     public void enable()
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
-        Asset langs = assetManager().asset(plugin.getContainer(), "languages/languages.yml").get();
+        final Path languagesDir = Paths.get("assets", "cubeengine-core", "languages");
+        final URI langs = plugin.getContainer().locateResource(URI.create(languagesDir.resolve("languages.yml").toString())).get();
         try
         {
             List<URL> urls = new ArrayList<>();
-            for (String lang : langs.readLines())
+            for (String lang : Files.readAllLines(Paths.get(langs)))
             {
-                Optional<Asset> langAsset = assetManager().asset(plugin.getContainer(), "languages/" + lang + ".yml");
+                final Optional<URI> langAsset = plugin.getContainer().locateResource(languagesDir.resolve(lang + ".yml").toUri());
                 if (langAsset.isPresent())
                 {
-                    urls.add(langAsset.get().url());
+                    urls.add(langAsset.get().toURL());
                 }
                 else
                 {
@@ -207,10 +206,21 @@ public class I18n extends I18nTranslate
         {
             String lang = language.getLocale().getLanguage();
             String full = lang + "_" + language.getLocale().getCountry();
-            Optional<Asset> asset = assetManager().asset(plugin, "translations/" + lang + ".po");
-            asset.map(Asset::url).ifPresent(poFiles::add);
-            asset = assetManager().asset(plugin, "translations/" + full + ".po");
-            asset.map(Asset::url).ifPresent(poFiles::add);
+            final Path translationsDir = Paths.get("assets", plugin.metadata().id(), "translations");
+            plugin.locateResource(URI.create(translationsDir.resolve(lang + ".po").toString())).ifPresent(poUri -> {
+                try
+                {
+                    poFiles.add(poUri.toURL());
+                }
+                catch (MalformedURLException ignored) {}
+            });
+            plugin.locateResource(translationsDir.resolve(full + ".po").toUri()).ifPresent(poUri -> {
+                try
+                {
+                    poFiles.add(poUri.toURL());
+                }
+                catch (MalformedURLException ignored) {}
+            });
         }
     }
 

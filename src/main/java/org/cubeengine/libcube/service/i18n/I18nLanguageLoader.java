@@ -34,6 +34,7 @@ import org.cubeengine.i18n.language.LanguageDefinition;
 import org.cubeengine.i18n.language.LanguageLoader;
 import org.cubeengine.reflect.Reflector;
 import org.cubeengine.libcube.service.filesystem.FileManager;
+import org.spongepowered.api.resource.Resource;
 
 import static org.cubeengine.libcube.service.filesystem.FileExtensionFilter.YAML;
 

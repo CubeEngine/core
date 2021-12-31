@@ -89,18 +89,13 @@ public class LibCube
         this.mm = new ModuleManager(game, this.path, this, container, injector);
     }
 
-    @Listener
-    public void onConstructed(LoadedGameEvent event)
-    {
-        this.mm.init();
-    }
-
     public ModuleManager getModuleManager()
     {
         return mm;
     }
 
-    public PluginContainer getContainer() {
+    public PluginContainer getContainer()
+    {
         return container;
     }
 }

@@ -43,7 +43,10 @@ public abstract class CorePlugin
         return libCube;
     }
 
-    public void onConstruction(ConstructPluginEvent event) {}
+    public void onConstruction(ConstructPluginEvent event) {
+        this.libCube.getModuleManager().init();
+    }
+
     public void onInit(StartingEngineEvent<Server> event) {}
     public void onStarted(StartedEngineEvent<Server> event) {}
 
