@@ -49,9 +49,10 @@ public class EventManager
      * @param listener the listener
      * @return fluent interface
      */
-    public void registerListener(Object listener)
+    public EventManager registerListener(Object listener)
     {
         this.em.registerListeners(this.plugin, listener);
+        return this;
     }
 
     public <T extends Event> EventManager listenUntil(Class<?> owner, Class<T> eventClass, Predicate<T> filter, Predicate<? super T> listener) {
@@ -70,9 +71,10 @@ public class EventManager
      * @param listener the listener
      * @return fluent interface
      */
-    public void removeListener(Object listener)
+    public EventManager removeListener(Object listener)
     {
         em.unregisterListeners(listener);
+        return this;
     }
 
     /**

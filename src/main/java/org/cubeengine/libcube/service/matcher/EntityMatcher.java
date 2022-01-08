@@ -60,7 +60,7 @@ public class EntityMatcher
     }
 
                                                                                                        /**
-     * Tries to match an EntityType<?> for given string
+     * Tries to match an EntityType for given string
      *
      * @param name the name to match
      *
@@ -141,7 +141,7 @@ public class EntityMatcher
     }
 
     /**
-     * Tries to match an EntityType<?> that is a Mob for given string
+     * Tries to match an EntityType that is a Mob for given string
      *
      * @param s the string to match
      *
