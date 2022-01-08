@@ -23,8 +23,6 @@ import com.google.inject.Injector;
 import org.cubeengine.processor.Core;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
 import org.spongepowered.plugin.PluginContainer;
 
 /*
