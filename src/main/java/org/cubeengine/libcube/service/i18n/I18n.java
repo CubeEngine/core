@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import net.kyori.adventure.audience.Audience;
@@ -168,17 +170,22 @@ public class I18n extends I18nTranslate
         defaultContext = createContext(LOCALE.with(defaultLocale));
     }
 
+    public static URI pathToURI(Path path)
+    {
+        return URI.create(StreamSupport.stream(path.spliterator(), false).map(Path::toString).collect(Collectors.joining("/")));
+    }
+
     public void enable()
     {
         LanguageLoader languageLoader = service.getLanguageLoader();
         final Path languagesDir = Paths.get("assets", "cubeengine-core", "languages");
-        final URI langs = plugin.getContainer().locateResource(URI.create(languagesDir.resolve("languages.yml").toString())).get();
+        final URI langs = plugin.getContainer().locateResource(pathToURI(languagesDir.resolve("languages.yml"))).get();
         try
         {
             List<URL> urls = new ArrayList<>();
             for (String lang : Files.readAllLines(Paths.get(langs)))
             {
-                final Optional<URI> langAsset = plugin.getContainer().locateResource(languagesDir.resolve(lang + ".yml").toUri());
+                final Optional<URI> langAsset = plugin.getContainer().locateResource(pathToURI(languagesDir.resolve(lang + ".yml")));
                 if (langAsset.isPresent())
                 {
                     urls.add(langAsset.get().toURL());
@@ -207,7 +214,7 @@ public class I18n extends I18nTranslate
             String lang = language.getLocale().getLanguage();
             String full = lang + "_" + language.getLocale().getCountry();
             final Path translationsDir = Paths.get("assets", plugin.metadata().id(), "translations");
-            plugin.locateResource(URI.create(translationsDir.resolve(lang + ".po").toString())).ifPresent(poUri -> {
+            plugin.locateResource(pathToURI(translationsDir.resolve(lang + ".po"))).ifPresent(poUri -> {
                 try
                 {
                     poFiles.add(poUri.toURL());
