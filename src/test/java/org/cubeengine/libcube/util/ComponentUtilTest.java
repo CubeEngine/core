@@ -19,10 +19,11 @@ package org.cubeengine.libcube.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static net.kyori.adventure.text.Component.*;
-import static org.junit.Assert.*;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComponentUtilTest
 {
@@ -34,8 +35,8 @@ public class ComponentUtilTest
     {
         assertEquals(link, ComponentUtil.autoLink("http://test", hover));
         assertEquals(empty(), ComponentUtil.autoLink("", hover));
-        assertEquals(join(empty(), space(), link, space()), ComponentUtil.autoLink(" http://test ", hover));
-        assertEquals(join(empty(), space(), link, space(), link, space()), ComponentUtil.autoLink(" http://test http://test ", hover));
+        assertEquals(join(separator(empty()), space(), link, space()), ComponentUtil.autoLink(" http://test ", hover));
+        assertEquals(join(separator(empty()), space(), link, space(), link, space()), ComponentUtil.autoLink(" http://test http://test ", hover));
     }
 
     @Test

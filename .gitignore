@@ -1,9 +1,9 @@
-# Maven
 build/
 dist/
 nbproject/
 target/
 dependency-reduced-pom.xml
+.gradle/
 
 # Netbeans
 nb-configuration.xml

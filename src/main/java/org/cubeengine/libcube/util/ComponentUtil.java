@@ -27,11 +27,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static net.kyori.adventure.text.JoinConfiguration.separator;
 
 public class ComponentUtil
 {
@@ -147,7 +148,7 @@ public class ComponentUtil
         } else if (parts.size() == 1) {
             return parts.get(0);
         } else {
-            return Component.join(Component.empty(), parts);
+            return Component.join(separator(Component.empty()), parts);
         }
     }
 
@@ -156,6 +157,6 @@ public class ComponentUtil
     }
 
     public static String stripLegacy(String legacy) {
-        return PlainComponentSerializer.plain().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(legacy));
+        return PlainTextComponentSerializer.plainText().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(legacy));
     }
 }

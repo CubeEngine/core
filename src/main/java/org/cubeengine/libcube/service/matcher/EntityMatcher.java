@@ -31,6 +31,7 @@ import org.spongepowered.api.entity.living.animal.Animal;
 import org.spongepowered.api.entity.living.trader.Villager;
 import org.spongepowered.api.entity.projectile.Projectile;
 import org.spongepowered.api.registry.RegistryTypes;
+import org.spongepowered.api.world.DefaultWorldKeys;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3d;
 
@@ -159,7 +160,7 @@ public class EntityMatcher
     }
 
     public Entity getEntity(EntityType<?> type) {
-        final ServerWorld world = Sponge.server().worldManager().defaultWorld();
+        final ServerWorld world = Sponge.server().worldManager().world(DefaultWorldKeys.DEFAULT).get();
         return world.createEntity(type, Vector3d.ZERO);
     }
 

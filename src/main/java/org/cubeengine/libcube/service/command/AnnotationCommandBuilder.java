@@ -42,6 +42,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.builder.AbstractBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.Buildable;
 import org.cubeengine.libcube.ModuleManager;
@@ -728,7 +729,7 @@ public class AnnotationCommandBuilder
         final List<org.spongepowered.api.util.Builder<? extends Parameter, ?>> firstValueParams = new ArrayList<>(params.subList(params.size() - extractors.size(), params.size()));
         params.removeAll(firstValueParams);
         final FirstOfBuilder firstOfBuilder = Sponge.game().builderProvider().provide(FirstOfBuilder.class);
-        firstOfBuilder.orFirstOf(firstValueParams.stream().map(Buildable.Builder::build).collect(Collectors.toList()));
+        firstOfBuilder.orFirstOf(firstValueParams.stream().map(AbstractBuilder::build).collect(Collectors.toList()));
         params.add(firstOfBuilder);
 
         return new FirstOfContextExtractor<>(rawType, injector, extractors);

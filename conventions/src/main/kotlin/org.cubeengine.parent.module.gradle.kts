@@ -1,0 +1,168 @@
+import org.cadixdev.gradle.licenser.tasks.LicenseUpdate
+import java.io.ByteArrayOutputStream
+
+plugins {
+    java
+    signing
+    `maven-publish`
+    id("io.github.gradle-nexus.publish-plugin")
+    id("org.cadixdev.licenser")
+}
+
+group = "org.cubeengine.parent"
+
+// repos for modules **using** this convention
+repositories {
+    mavenCentral()
+    maven("https://repo.cubeengine.org")
+    mavenLocal()
+}
+
+val spongeVersion = "9.0.0"
+
+dependencies {
+    // Configurations
+    implementation("org.cubeengine:reflect-yaml:3.0.0")
+    // Translations
+    implementation("org.cubeengine:i18n:1.0.4")
+    // Message formatting
+    implementation("org.cubeengine:dirigent:5.0.2")
+    // sponge
+    implementation("org.spongepowered:spongeapi:$spongeVersion")
+
+    val pluginGenVersion = "1.0.7-SNAPSHOT"
+    implementation("org.cubeengine:plugin-gen:$pluginGenVersion")
+    annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
+
+    // Other stuff
+    implementation("org.ocpsoft.prettytime:prettytime:5.0.4.Final")
+
+    // Testing
+    val junitVersion = "5.9.1"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.slf4j:slf4j-simple:2.0.3")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+fun getGitCommit() : String {
+    return try {
+        val byteOut = ByteArrayOutputStream()
+        project.exec {
+            commandLine = "git rev-parse HEAD".split(" ")
+            standardOutput = byteOut
+        }
+        byteOut.toString("UTF-8").trim()
+    } catch (ex: Exception) {
+        // ignore
+        "unknown"
+    }
+}
+
+val orgName = "CubeEngine"
+val orgUrl = "https://cubeengine.org"
+val moduleId: String by project.properties
+val moduleName: String by project.properties
+
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.addAll(
+        listOf(
+            "-Acubeengine.module.version=${project.version}",
+            "-Acubeengine.module.sourceversion=${getGitCommit()}",
+            "-Acubeengine.module.description=${project.description}",
+            "-Acubeengine.module.id=${moduleId}",
+            "-Acubeengine.module.name=${moduleName}",
+            "-Acubeengine.module.team=$orgName",
+            "-Acubeengine.module.url=$orgUrl",
+            "-Acubeengine.module.libcube.version=${project.properties["libCubeVersion"] ?: project.version}",
+            "-Acubeengine.module.sponge.version=$spongeVersion",
+        )
+    )
+}
+
+val projectJvmTarget = "17"
+java {
+    sourceCompatibility = JavaVersion.toVersion(projectJvmTarget)
+    targetCompatibility = JavaVersion.toVersion(projectJvmTarget)
+
+    toolchain {
+        // languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        publications.withType<MavenPublication> {
+            pom {
+                name.set(project.name)
+                description.set(project.description)
+                url.set("https://cubeengine.org")
+                licenses {
+                    license {
+                        name.set("GPLv3")
+                        url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("pschichtel")
+                        name.set("Phillip Schichtel")
+                        email.set("phillip@schich.tel")
+                    }
+                    developer {
+                        id.set("faithcaio")
+                        name.set("Anselm Brehme")
+                    }
+                    developer {
+                        id.set("boeserwolf91")
+                        name.set("Stefan Wolf")
+                    }
+                    developer {
+                        id.set("totokaka")
+                        name.set("Tobias Laundal")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/CubeEngine/core")
+                    connection.set("scm:git:https://github.com/CubeEngine/core")
+                    developerConnection.set("scm:git:git@github.com:CubeEngine/core")
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
+}
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
+tasks.classes.configure {
+    dependsOn(tasks.licenseFormat)
+}
+
+license {
+    header(project.resources.text.fromUri("https://raw.github.com/CubeEngine/parent/master/header.txt"))
+    newLine(false)
+    exclude("**/*.info")
+    exclude("assets/**")
+    exclude("*.kts")
+    exclude("**/*.json")
+    exclude("**/*.properties")
+    exclude("*.txt")
+}
