@@ -108,7 +108,7 @@ publishing {
                 url.set("https://cubeengine.org")
                 licenses {
                     license {
-                        name.set("GPLv3")
+                        name.set("GNU General Public License Version 3")
                         url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
                     }
                 }
