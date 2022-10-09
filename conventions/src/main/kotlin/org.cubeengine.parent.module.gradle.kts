@@ -87,11 +87,8 @@ tasks.withType<JavaCompile>().configureEach {
 
 val projectJvmTarget = "17"
 java {
-    sourceCompatibility = JavaVersion.toVersion(projectJvmTarget)
-    targetCompatibility = JavaVersion.toVersion(projectJvmTarget)
-
     toolchain {
-        // languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
+        languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 }
