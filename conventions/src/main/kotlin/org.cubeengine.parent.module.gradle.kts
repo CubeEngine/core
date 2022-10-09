@@ -1,4 +1,3 @@
-import org.cadixdev.gradle.licenser.tasks.LicenseUpdate
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -48,7 +47,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-fun getGitCommit() : String {
+fun getGitCommit(): String? {
     return try {
         val byteOut = ByteArrayOutputStream()
         project.exec {
@@ -56,9 +55,9 @@ fun getGitCommit() : String {
             standardOutput = byteOut
         }
         byteOut.toString("UTF-8").trim()
-    } catch (ex: Exception) {
+    } catch (e: Exception) {
         // ignore
-        "unknown"
+        null
     }
 }
 
@@ -67,19 +66,21 @@ val orgUrl = "https://cubeengine.org"
 val moduleId: String by project.properties
 val moduleName: String by project.properties
 
+fun annotationProcessorArg(name: String, value: Any?) = value?.let { "-A$name=$it" }
+fun pluginGenArg(name: String, value: Any?) = annotationProcessorArg("cubeengine.module.$name", value)
 
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.addAll(
-        listOf(
-            "-Acubeengine.module.version=${project.version}",
-            "-Acubeengine.module.sourceversion=${getGitCommit()}",
-            "-Acubeengine.module.description=${project.description}",
-            "-Acubeengine.module.id=${moduleId}",
-            "-Acubeengine.module.name=${moduleName}",
-            "-Acubeengine.module.team=$orgName",
-            "-Acubeengine.module.url=$orgUrl",
-            "-Acubeengine.module.libcube.version=${project.properties["libCubeVersion"] ?: project.version}",
-            "-Acubeengine.module.sponge.version=$spongeVersion",
+        listOfNotNull(
+            pluginGenArg("version", project.version),
+            pluginGenArg("sourceversion", getGitCommit()),
+            pluginGenArg("description", project.description),
+            pluginGenArg("id", moduleId),
+            pluginGenArg("name", moduleName),
+            pluginGenArg("team", orgName),
+            pluginGenArg("url", orgUrl),
+            pluginGenArg("libcube.version", project.properties["libCubeVersion"]),
+            pluginGenArg("sponge.version", spongeVersion),
         )
     )
 }
