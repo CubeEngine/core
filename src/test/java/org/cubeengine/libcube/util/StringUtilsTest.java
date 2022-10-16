@@ -32,9 +32,9 @@ public class StringUtilsTest
         final String testString = "blabla";
         final String whilespace = " \n\t\n";
 
-        assertEquals("trimRight failed!", testString, StringUtils.trimRight(testString + whilespace));
-        assertEquals("trimLeft failed!", testString, StringUtils.trimLeft(whilespace + testString));
-        assertEquals("trim failed!", testString, StringUtils.trim(whilespace + testString + whilespace));
+        assertEquals(testString, StringUtils.trimRight(testString + whilespace), "trimRight failed!");
+        assertEquals(testString, StringUtils.trimLeft(whilespace + testString), "trimLeft failed!");
+        assertEquals(testString, StringUtils.trim(whilespace + testString + whilespace), "trim failed!");
     }
 
     @Test
@@ -42,8 +42,8 @@ public class StringUtilsTest
     {
         final String testString = "blabla";
 
-        assertEquals("Something got stripped out even though there was not extention", testString, testString);
-        assertEquals("Extention not properly stripped", testString, StringUtils.stripFileExtension(testString + ".test"));
+        assertEquals(testString, testString, "Something got stripped out even though there was not extention");
+        assertEquals(testString, StringUtils.stripFileExtension(testString + ".test"), "Extention not properly stripped");
     }
 
     @Test
