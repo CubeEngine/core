@@ -116,10 +116,10 @@ tasks.withType<JavaCompile>().configureEach {
 val projectJvmTarget = "17"
 java {
     withSourcesJar()
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
-//        vendor.set(JvmVendorSpec.ADOPTIUM)
-//    }
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
 }
 
 tasks.withType<Test> {
