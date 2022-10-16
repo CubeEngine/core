@@ -62,7 +62,7 @@ dependencies {
     }
 
     constraints {
-        val pluginGenVersion = "1.0.7-SNAPSHOT"
+        val pluginGenVersion = "1.0.8-SNAPSHOT"
         annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
 
         listOf(configurations.shadow, configurations.implementation).forEach { config ->
@@ -118,10 +118,10 @@ tasks.withType<JavaCompile>().configureEach {
 val projectJvmTarget = "17"
 java {
     withSourcesJar()
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
-        vendor.set(JvmVendorSpec.ADOPTIUM)
-    }
+//    toolchain {
+//        languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
+//        vendor.set(JvmVendorSpec.ADOPTIUM)
+//    }
 }
 
 tasks.withType<Test> {
