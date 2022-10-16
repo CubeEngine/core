@@ -30,6 +30,7 @@ val snapshotsRepoUrl = uri("https://maven.cubyte.org/repository/snapshots/")
 // repos for modules **using** this convention
 repositories {
     mavenCentral()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven(releasesRepoUrl)
     maven(snapshotsRepoUrl)
     mavenLocal()
