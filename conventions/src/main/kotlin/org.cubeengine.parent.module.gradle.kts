@@ -102,6 +102,7 @@ tasks.withType<JavaCompile>().configureEach {
 
 val projectJvmTarget = "17"
 java {
+    withSourcesJar()
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(projectJvmTarget))
         vendor.set(JvmVendorSpec.ADOPTIUM)
@@ -131,8 +132,8 @@ tasks.withType<ShadowJar>().configureEach {
 publishing {
     publications {
         publications.create<MavenPublication>("cubyte") {
-            //from(components["java"])
             project.shadow.component(this)
+            artifact(tasks.getByName("sourcesJar"))
             pom {
                 name.set(project.name)
                 description.set(project.description)
