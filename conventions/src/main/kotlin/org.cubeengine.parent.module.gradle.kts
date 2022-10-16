@@ -41,6 +41,12 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.slf4j:slf4j-simple:2.0.3")
+
+    // LibCube Plugin Dependency
+    val libCubeVersion = project.properties["libCubeVersion"]
+    if (libCubeVersion!=null) {
+        implementation("org.cubeengine:libcube:$libCubeVersion")
+    }
 }
 
 tasks.test {
