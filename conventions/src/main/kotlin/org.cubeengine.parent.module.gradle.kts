@@ -1,9 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.ByteArrayOutputStream
 
 plugins {
     java
     `maven-publish`
     id("org.cadixdev.licenser")
+    id("com.github.johnrengelman.shadow")
 }
 
 val pluginGroupId: String by project.properties
@@ -33,32 +35,28 @@ repositories {
 }
 
 dependencies {
-    // Configurations
-    implementation("org.cubeengine:reflect-yaml:3.0.0")
-    // Translations
-    implementation("org.cubeengine:i18n:1.0.4")
-    // Message formatting
-    implementation("org.cubeengine:dirigent:5.0.2")
     // sponge
-    implementation("org.spongepowered:spongeapi:$spongeVersion")
+    compileOnly("org.spongepowered:spongeapi:$spongeVersion")
 
-    val pluginGenVersion = "1.0.7-SNAPSHOT"
-    implementation("org.cubeengine:plugin-gen:$pluginGenVersion")
-    annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
-
-    // Other stuff
-    implementation("org.ocpsoft.prettytime:prettytime:5.0.4.Final")
+    annotationProcessor("org.cubeengine:plugin-gen")
 
     // Testing
     val junitVersion = "5.9.1"
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.slf4j:slf4j-simple:2.0.3")
+    testImplementation("org.spongepowered:spongeapi:$spongeVersion")
 
     // LibCube Plugin Dependency
     val libCubeVersion = project.properties["libCubeVersion"]
     if (libCubeVersion != null) {
         implementation("org.cubeengine:libcube:$libCubeVersion")
+    }
+
+    constraints {
+        val pluginGenVersion = "1.0.7-SNAPSHOT"
+        annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
+        implementation("org.cubeengine:plugin-gen:$pluginGenVersion")
     }
 }
 
@@ -126,10 +124,15 @@ project.gradle.projectsEvaluated {
     }
 }
 
+tasks.withType<ShadowJar>().configureEach {
+    archiveClassifier.set("")
+}
+
 publishing {
     publications {
         publications.create<MavenPublication>("cubyte") {
-            from(components["java"])
+            //from(components["java"])
+            project.shadow.component(this)
             pom {
                 name.set(project.name)
                 description.set(project.description)

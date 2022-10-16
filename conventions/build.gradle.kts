@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "org.cubeengine.gradle"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.1-SNAPSHOT"
 
 // repos **used by** this convention
 repositories {
@@ -21,6 +21,7 @@ dependencies {
     api(plugin("io.github.gradle-nexus.publish-plugin", "1.1.0"))
     api(plugin("org.spongepowered.gradle.plugin", "2.0.2"))
     api(plugin("org.cadixdev.licenser", "0.6.1"))
+    api(plugin("com.github.johnrengelman.shadow", "7.1.2"))
 }
 
 fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"
