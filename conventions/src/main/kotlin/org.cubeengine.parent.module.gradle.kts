@@ -52,6 +52,7 @@ dependencies {
     val libCubeVersion = project.properties["libCubeVersion"]
     if (libCubeVersion != null) {
         compileOnly("org.cubeengine:libcube:$libCubeVersion")
+        testImplementation("org.cubeengine:libcube:$libCubeVersion")
     }
 
     constraints {
