@@ -1,5 +1,4 @@
 plugins {
-    `java-library`
     id("org.cubeengine.parent.module")
     signing
 }
@@ -21,10 +20,6 @@ dependencies {
 signing {
     useGpgCmd()
     sign(publishing.publications)
-}
-
-tasks.shadowJar {
-
 }
 
 tasks.publish {
