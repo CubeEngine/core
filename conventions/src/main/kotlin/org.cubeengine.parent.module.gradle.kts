@@ -173,7 +173,8 @@ tasks.classes.configure {
 }
 
 license {
-    header(project.resources.text.fromUri("https://raw.github.com/CubeEngine/parent/master/header.txt"))
+    // TODO change to master branch once it's merged
+    header(project.resources.text.fromUri("https://raw.githubusercontent.com/CubeEngine/core/feature/gradle/header.txt"))
     newLine(false)
     exclude("**/*.info")
     exclude("assets/**")
