@@ -50,7 +50,7 @@ dependencies {
     // LibCube Plugin Dependency
     val libCubeVersion = project.properties["libCubeVersion"]
     if (libCubeVersion != null) {
-        implementation("org.cubeengine:libcube:$libCubeVersion")
+        compileOnly("org.cubeengine:libcube:$libCubeVersion")
     }
 
     constraints {
