@@ -1,6 +1,11 @@
 plugins {
     `kotlin-dsl`
+    `maven-publish`
+    id("io.github.gradle-nexus.publish-plugin") version("1.1.0")
 }
+
+group = "org.cubeengine.gradle"
+version = "1.0.0-SNAPSHOT"
 
 // repos **used by** this convention
 repositories {
@@ -19,3 +24,13 @@ dependencies {
 }
 
 fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
+tasks.publish {
+    dependsOn(tasks.check)
+}
