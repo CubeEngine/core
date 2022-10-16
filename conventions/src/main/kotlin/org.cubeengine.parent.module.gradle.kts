@@ -140,9 +140,6 @@ project.gradle.projectsEvaluated {
     }
 }
 
-tasks.withType<ShadowJar>().configureEach {
-    archiveClassifier.set("")
-}
 
 publishing {
     publications {
@@ -191,6 +188,14 @@ publishing {
 signing {
     useGpgCmd()
     sign(publishing.publications)
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+}
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
 }
 
 tasks.publish {
