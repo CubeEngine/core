@@ -22,6 +22,7 @@ dependencies {
     api(plugin("org.spongepowered.gradle.plugin", "2.0.2"))
     api(plugin("org.cadixdev.licenser", "0.6.1"))
     api(plugin("com.github.johnrengelman.shadow", "7.1.2"))
+    api(plugin("org.spongepowered.gradle.ore", "2.1.1"))
 }
 
 fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"

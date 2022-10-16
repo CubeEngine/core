@@ -1,4 +1,4 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.spongepowered.gradle.ore.task.PublishToOreTask
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -7,6 +7,7 @@ plugins {
     signing
     id("org.cadixdev.licenser")
     id("com.github.johnrengelman.shadow")
+    id("org.spongepowered.gradle.ore")
 }
 
 val pluginGroupId: String by project.properties
