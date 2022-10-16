@@ -53,12 +53,25 @@ dependencies {
     if (libCubeVersion != null) {
         compileOnly("org.cubeengine:libcube:$libCubeVersion")
         testImplementation("org.cubeengine:libcube:$libCubeVersion")
+
+        shadow("org.cubeengine:reflect-yaml")
+        shadow("org.cubeengine:i18n")
+        shadow("org.cubeengine:dirigent")
+        shadow("org.cubeengine:plugin-gen")
+        shadow("org.ocpsoft.prettytime:prettytime")
     }
 
     constraints {
         val pluginGenVersion = "1.0.7-SNAPSHOT"
         annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
-        implementation("org.cubeengine:plugin-gen:$pluginGenVersion")
+
+        listOf(configurations.shadow, configurations.implementation).forEach { config ->
+            add(config.name, "org.cubeengine:reflect-yaml:3.0.1")
+            add(config.name, "org.cubeengine:i18n:1.0.4")
+            add(config.name, "org.cubeengine:dirigent:5.0.2")
+            add(config.name, "org.cubeengine:plugin-gen:$pluginGenVersion")
+            add(config.name, "org.ocpsoft.prettytime:prettytime:5.0.4.Final")
+        }
     }
 }
 

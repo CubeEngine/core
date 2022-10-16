@@ -4,15 +4,15 @@ plugins {
 
 dependencies {
     // Configurations
-    api("org.cubeengine:reflect-yaml:3.0.1")
+    implementation("org.cubeengine:reflect-yaml")
     // Translations
-    api("org.cubeengine:i18n:1.0.4")
+    implementation("org.cubeengine:i18n")
     // Message formatting
-    api("org.cubeengine:dirigent:5.0.2")
+    implementation("org.cubeengine:dirigent")
     // plugin generator for annotations
-    api("org.cubeengine:plugin-gen")
+    implementation("org.cubeengine:plugin-gen")
     // Other stuff
-    api("org.ocpsoft.prettytime:prettytime:5.0.4.Final")
+    implementation("org.ocpsoft.prettytime:prettytime")
 }
 
 tasks.register("cleanAll") {
