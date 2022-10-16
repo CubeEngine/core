@@ -9,7 +9,6 @@ pluginManagement {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven("https://repo.cubeengine.org")
         mavenLocal()
     }
 }

@@ -1,7 +1,7 @@
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version("1.1.0")
+    signing
 }
 
 group = "org.cubeengine.gradle"
@@ -25,10 +25,20 @@ dependencies {
 
 fun plugin(id: String, version: String) = "$id:$id.gradle.plugin:$version"
 
-nexusPublishing {
+publishing {
     repositories {
-        sonatype()
+        maven {
+            name = "cubyte"
+            val repoName = if (project.version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"
+            url = uri("https://maven.cubyte.org/repository/$repoName/")
+            credentials(PasswordCredentials::class)
+        }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
 }
 
 tasks.publish {

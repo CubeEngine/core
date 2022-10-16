@@ -2,9 +2,7 @@ import java.io.ByteArrayOutputStream
 
 plugins {
     java
-    signing
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin")
     id("org.cadixdev.licenser")
 }
 
@@ -23,10 +21,14 @@ group = pluginGroupId
 version = "$spongeMajorVersion.$pluginVersion$snapshotVersion"
 description = pluginDescription
 
+val releasesRepoUrl = uri("https://maven.cubyte.org/repository/releases/")
+val snapshotsRepoUrl = uri("https://maven.cubyte.org/repository/snapshots/")
+
 // repos for modules **using** this convention
 repositories {
     mavenCentral()
-    maven("https://repo.cubeengine.org")
+    maven(releasesRepoUrl)
+    maven(snapshotsRepoUrl)
     mavenLocal()
 }
 
@@ -112,9 +114,21 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+project.gradle.projectsEvaluated {
+    publishing {
+        repositories {
+            maven {
+                name = "cubyte"
+                url = if (project.version.toString().endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                credentials(PasswordCredentials::class)
+            }
+        }
+    }
+}
+
 publishing {
     publications {
-        publications.withType<MavenPublication> {
+        publications.create<MavenPublication>("cubyte") {
             pom {
                 name.set(project.name)
                 description.set(project.description)
@@ -151,17 +165,6 @@ publishing {
                 }
             }
         }
-    }
-}
-
-signing {
-    useGpgCmd()
-    sign(publishing.publications)
-}
-
-nexusPublishing {
-    repositories {
-        sonatype()
     }
 }
 
