@@ -129,6 +129,7 @@ project.gradle.projectsEvaluated {
 publishing {
     publications {
         publications.create<MavenPublication>("cubyte") {
+            from(components["java"])
             pom {
                 name.set(project.name)
                 description.set(project.description)

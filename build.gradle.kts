@@ -1,4 +1,5 @@
 plugins {
+    `java-library`
     id("org.cubeengine.parent.module")
     signing
 }
@@ -11,7 +12,6 @@ signing {
 tasks.publish {
     dependsOn(tasks.check)
 }
-
 
 tasks.register("cleanAll") {
     group = "build"
