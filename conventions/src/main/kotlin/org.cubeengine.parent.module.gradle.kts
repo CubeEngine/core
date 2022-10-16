@@ -8,7 +8,20 @@ plugins {
     id("org.cadixdev.licenser")
 }
 
-group = "org.cubeengine.parent"
+val pluginGroupId: String by project.properties
+val pluginDescription: String by project.properties
+val pluginVersion: String by project.properties
+val spongeVersion: String by project.properties
+val pluginIsSnapshot: String by project.properties
+val moduleId: String by project.properties
+val moduleName: String by project.properties
+
+val spongeMajorVersion: String = spongeVersion.substring(0, spongeVersion.indexOf('.'))
+val snapshotVersion = if (pluginIsSnapshot.toBoolean()) "-SNAPSHOT" else ""
+
+group = pluginGroupId
+version = "$spongeMajorVersion.$pluginVersion$snapshotVersion"
+description = pluginDescription
 
 // repos for modules **using** this convention
 repositories {
@@ -16,8 +29,6 @@ repositories {
     maven("https://repo.cubeengine.org")
     mavenLocal()
 }
-
-val spongeVersion = "9.0.0"
 
 dependencies {
     // Configurations
@@ -44,7 +55,7 @@ dependencies {
 
     // LibCube Plugin Dependency
     val libCubeVersion = project.properties["libCubeVersion"]
-    if (libCubeVersion!=null) {
+    if (libCubeVersion != null) {
         implementation("org.cubeengine:libcube:$libCubeVersion")
     }
 }
@@ -69,8 +80,6 @@ fun getGitCommit(): String? {
 
 val orgName = "CubeEngine"
 val orgUrl = "https://cubeengine.org"
-val moduleId: String by project.properties
-val moduleName: String by project.properties
 
 fun annotationProcessorArg(name: String, value: Any?) = value?.let { "-A$name=$it" }
 fun pluginGenArg(name: String, value: Any?) = annotationProcessorArg("cubeengine.module.$name", value)
