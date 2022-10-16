@@ -12,8 +12,6 @@ dependencies {
     implementation("org.cubeengine:i18n")
     // Message formatting
     implementation("org.cubeengine:dirigent")
-    // plugin generator for annotations
-    implementation("org.cubeengine:plugin-gen")
     // Other stuff
     implementation("org.ocpsoft.prettytime:prettytime")
 }

@@ -41,7 +41,9 @@ dependencies {
     // sponge
     compileOnly("org.spongepowered:spongeapi:$spongeVersion")
 
-    annotationProcessor("org.cubeengine:plugin-gen")
+    val pluginGenVersion = "1.0.8-SNAPSHOT"
+    compileOnly("org.cubeengine:plugin-gen:$pluginGenVersion")
+    annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
 
     // Testing
     val junitVersion = "5.9.1"
@@ -59,19 +61,14 @@ dependencies {
         shadow("org.cubeengine:reflect-yaml")
         shadow("org.cubeengine:i18n")
         shadow("org.cubeengine:dirigent")
-        shadow("org.cubeengine:plugin-gen")
         shadow("org.ocpsoft.prettytime:prettytime")
     }
 
     constraints {
-        val pluginGenVersion = "1.0.8-SNAPSHOT"
-        annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
-
         listOf(configurations.shadow, configurations.implementation).forEach { config ->
             add(config.name, "org.cubeengine:reflect-yaml:3.0.1")
             add(config.name, "org.cubeengine:i18n:1.0.4")
             add(config.name, "org.cubeengine:dirigent:5.0.2")
-            add(config.name, "org.cubeengine:plugin-gen:$pluginGenVersion")
             add(config.name, "org.ocpsoft.prettytime:prettytime:5.0.4.Final")
         }
     }
@@ -131,13 +128,35 @@ tasks.withType<Test> {
 }
 
 project.gradle.projectsEvaluated {
+    val isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
     publishing {
         repositories {
             maven {
                 name = "cubyte"
-                url = if (project.version.toString().endsWith("-SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                url = if (isSnapshot) snapshotsRepoUrl else releasesRepoUrl
                 credentials(PasswordCredentials::class)
             }
+        }
+    }
+
+    oreDeployment {
+        val moduleId: String by project.properties
+        val oreStaging = project.properties["oreStaging"]?.toString()?.toBoolean() ?: false
+        val oreCreateForumPost =  project.properties["oreCreateForumPost"]?.toString()?.toBoolean() ?: false
+
+        if (oreStaging) {
+            oreEndpoint("https://staging-ore.spongeproject.net")
+        } else {
+            oreEndpoint("https://ore.spongepowered.org")
+        }
+
+        // must exist
+        defaultPublication {
+            projectId.set("cubeengine-$moduleId")
+            createForumPost.set(oreCreateForumPost)
+            versionBody.set(project.description) // TODO actually provide a changelog
+            channel.set(if (isSnapshot) "Dev" else "Release")
+            publishArtifacts.from(tasks.shadowJar.map { it.outputs })
         }
     }
 }
@@ -202,6 +221,10 @@ tasks.build {
 
 tasks.publish {
     dependsOn(tasks.check)
+}
+
+tasks.withType<PublishToOreTask>().configureEach {
+    dependsOn(tasks.build)
 }
 
 tasks.classes.configure {
