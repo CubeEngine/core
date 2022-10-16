@@ -1,6 +1,5 @@
 plugins {
     id("org.cubeengine.parent.module")
-    signing
 }
 
 dependencies {
@@ -15,15 +14,6 @@ dependencies {
 
     // Other stuff
     implementation("org.ocpsoft.prettytime:prettytime:5.0.4.Final")
-}
-
-signing {
-    useGpgCmd()
-    sign(publishing.publications)
-}
-
-tasks.publish {
-    dependsOn(tasks.check)
 }
 
 tasks.register("cleanAll") {

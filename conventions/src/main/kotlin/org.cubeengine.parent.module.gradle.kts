@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream
 plugins {
     `java-library`
     `maven-publish`
+    signing
     id("org.cadixdev.licenser")
     id("com.github.johnrengelman.shadow")
 }
@@ -171,6 +172,15 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications)
+}
+
+tasks.publish {
+    dependsOn(tasks.check)
 }
 
 tasks.classes.configure {
