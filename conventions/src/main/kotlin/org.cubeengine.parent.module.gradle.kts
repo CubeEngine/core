@@ -31,7 +31,6 @@ val snapshotsRepoUrl = uri("https://maven.cubyte.org/repository/snapshots/")
 // repos for modules **using** this convention
 repositories {
     mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven(releasesRepoUrl)
     maven(snapshotsRepoUrl)
     mavenLocal()
@@ -41,7 +40,7 @@ dependencies {
     // sponge
     compileOnly("org.spongepowered:spongeapi:$spongeVersion")
 
-    val pluginGenVersion = "1.0.8-SNAPSHOT"
+    val pluginGenVersion = "1.0.8"
     compileOnly("org.cubeengine:plugin-gen:$pluginGenVersion")
     annotationProcessor("org.cubeengine:plugin-gen:$pluginGenVersion")
 
