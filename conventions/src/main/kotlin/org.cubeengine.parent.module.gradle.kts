@@ -100,6 +100,7 @@ fun pluginGenArg(name: String, value: Any?) = annotationProcessorArg("cubeengine
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.addAll(
         listOfNotNull(
+            "-parameters",
             pluginGenArg("version", project.version),
             pluginGenArg("sourceversion", getGitCommit()),
             pluginGenArg("description", project.description),
