@@ -33,6 +33,8 @@ import org.spongepowered.api.command.parameter.managed.ValueCompleter;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionType;
 import org.spongepowered.api.command.parameter.managed.clientcompletion.ClientCompletionTypes;
+import org.spongepowered.api.datapack.DataPackTypes;
+import org.spongepowered.api.world.server.DataPackManager;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.api.world.server.WorldTemplate;
 
@@ -49,7 +51,8 @@ public class WorldTemplateValueParser implements ValueParser<WorldTemplate>, Val
         {
             throw reader.createException(Component.text("World " + key + " must be unloaded."));
         }
-        return Sponge.server().worldManager().loadTemplate(key).join();
+        final DataPackManager dpm = Sponge.server().dataPackManager();
+        return dpm.findPack(DataPackTypes.WORLD, key).flatMap(pack -> dpm.load(pack, key).join());
     }
 
     @Override
@@ -62,7 +65,7 @@ public class WorldTemplateValueParser implements ValueParser<WorldTemplate>, Val
     public List<CommandCompletion> complete(CommandContext context, String currentInput)
     {
         final List<CommandCompletion> list = new ArrayList<>();
-        Sponge.server().worldManager().templateKeys().stream()
+        Sponge.server().worldManager().worldKeys().stream()
               .filter(key -> !Sponge.server().worldManager().world(key).isPresent())
               .forEach(k -> {
                      list.add(CommandCompletion.of(k.formatted()));
