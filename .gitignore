@@ -4,6 +4,8 @@ nbproject/
 target/
 dependency-reduced-pom.xml
 .gradle/
+src/main/generated/
+out/
 
 # Netbeans
 nb-configuration.xml
