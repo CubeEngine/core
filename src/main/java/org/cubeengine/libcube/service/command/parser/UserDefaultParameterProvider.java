@@ -17,21 +17,18 @@
  */
 package org.cubeengine.libcube.service.command.parser;
 
+import java.util.Optional;
 import org.cubeengine.libcube.service.command.DefaultParameterProvider;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCause;
 import org.spongepowered.api.command.exception.ArgumentParseException;
-import org.spongepowered.api.command.parameter.ArgumentReader;
 import org.spongepowered.api.command.parameter.ArgumentReader.Mutable;
-import org.spongepowered.api.command.parameter.CommandContext;
 import org.spongepowered.api.command.parameter.CommandContext.Builder;
-import org.spongepowered.api.command.parameter.Parameter;
 import org.spongepowered.api.command.parameter.Parameter.Key;
 import org.spongepowered.api.command.parameter.managed.ValueParser;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
-import org.spongepowered.math.vector.Vector2i;
-import java.util.Optional;
+import org.spongepowered.api.profile.GameProfile;
 
 public class UserDefaultParameterProvider implements DefaultParameterProvider<User>, ValueParser<User>
 {
@@ -47,6 +44,13 @@ public class UserDefaultParameterProvider implements DefaultParameterProvider<Us
     @Override
     public Optional<? extends User> parseValue(Key<? super User> parameterKey, Mutable reader, Builder context) throws ArgumentParseException
     {
-        return Sponge.server().userManager().load(reader.parseString()).join();
+        final String name = reader.parseString();
+        final Optional<User> user = Sponge.server().userManager().load(name).join();
+        if (user.isPresent())
+        {
+            return user;
+        }
+        final GameProfile profile = Sponge.server().gameProfileManager().basicProfile(name).join();
+        return Optional.of(Sponge.server().userManager().loadOrCreate(profile.uuid()).join());
     }
 }
